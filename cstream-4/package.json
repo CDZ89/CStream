@@ -1,22 +1,15 @@
 {
   "name": "workspace",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "api/index.js",
   "type": "module",
   "scripts": {
     "dev": "cd project && npm run dev",
-    "start": "node server.js",
+    "start": "node api/index.js",
     "build": "cd project && npm run build",
-    "serve": "node server.js"
+    "serve": "node api/index.js"
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "compression": "^1.8.1",
-    "concurrently": "^9.2.1",
-    "csv-parser": "^3.2.0",
-    "discord.js": "^14.25.1",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
-    "jszip": "^3.10.1"
+    "concurrently": "^9.2.1"
   }
 }

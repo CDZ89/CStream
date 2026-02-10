@@ -323,7 +323,7 @@ app.post("/api/bot/control", async (req, res) => {
 
 app.get("/api/bot/data", (req, res) => {
   try {
-    const dataPath = path.join(__dirname, 'bot', 'bot-data.json');
+    const dataPath = path.join(__dirname, '..', 'bot', 'bot-data.json');
     if (fs.existsSync(dataPath)) {
       const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
       return res.json(data);
@@ -337,7 +337,7 @@ app.get("/api/bot/data", (req, res) => {
 app.post("/api/bot/notify", (req, res) => {
   try {
     const { channelId, message, embed } = req.body;
-    const notifyRequestPath = path.join(__dirname, 'bot', 'notify-request.json');
+    const notifyRequestPath = path.join(__dirname, '..', 'bot', 'notify-request.json');
     fs.writeFileSync(notifyRequestPath, JSON.stringify({
       channelId,
       message,
@@ -388,7 +388,7 @@ app.get("/api/user", (req, res) => {
 // ============================================
 app.get("/api/discord/status", (req, res) => {
   try {
-    const statusPath = path.join(__dirname, 'bot', 'bot-status.json');
+    const statusPath = path.join(__dirname, '..', 'bot', 'bot-status.json');
     if (fs.existsSync(statusPath)) {
       const statusData = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
       const lastUpdate = new Date(statusData.lastUpdate);
@@ -589,10 +589,12 @@ app.get("/api/livetv/channels", async (req, res) => {
     // 3. CSV Local Channels
     const localDbPath = path.join(
       __dirname,
+      "..",
       "Lecteur media complet/Database Fot Tv Api/database-master/data/channels.csv",
     );
     const localLogosPath = path.join(
       __dirname,
+      "..",
       "Lecteur media complet/Database Fot Tv Api/database-master/data/logos.csv",
     );
 
@@ -793,9 +795,9 @@ async function startServer() {
   const httpServer = createHttpServer(app);
 
   // Check if we are in the 'project' subdirectory or the root
-  const projectPath = fs.existsSync(path.resolve(__dirname, "project"))
-    ? path.resolve(__dirname, "project")
-    : __dirname;
+  const projectPath = fs.existsSync(path.resolve(__dirname, "..", "project"))
+    ? path.resolve(__dirname, "..", "project")
+    : path.resolve(__dirname, "..");
 
   const distPath = path.join(projectPath, "dist");
 
