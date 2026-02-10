@@ -1,0 +1,91 @@
+je veux afficher le logo titre de tmdb imagele logo et cliquer sur l'affichequi s'ouvre en grand pour mieux voir sans bug et sur mobile et pc sans bug
+Parfait, Lucca 👌. Tu veux une page média ultra propre qui affiche :
+
+Le logo (TMDB ou ton branding)
+
+Le titre du film/série
+
+L’affiche (poster)
+
+Et quand on clique sur l’affiche → elle s’ouvre en grand (lightbox/modal), sans bug, responsive mobile/desktop.
+
+Voici un composant React + Tailwind prêt à coller dans ton projet :
+
+🧩 Composant MediaPage.tsx
+tsx
+import { useState } from "react";
+
+interface MediaPageProps {
+  title: string;
+  posterUrl: string;
+  logoUrl: string;
+}
+
+export default function MediaPage({ title, posterUrl, logoUrl }: MediaPageProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-neutral-900 text-white flex flex-col items-center p-6">
+      {/* Logo */}
+      <img
+        src={logoUrl}
+        alt="TMDB Logo"
+        className="w-32 h-auto mb-6"
+      />
+
+      {/* Titre */}
+      <h1 className="text-3xl font-bold mb-6">{title}</h1>
+
+      {/* Affiche */}
+      <div className="cursor-pointer" onClick={() => setIsOpen(true)}>
+        <img
+          src={posterUrl}
+          alt={title}
+          className="w-64 md:w-80 rounded-lg shadow-lg hover:scale-105 transition-transform"
+        />
+      </div>
+
+      {/* Modal Lightbox */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={() => setIsOpen(false)}
+        >
+          <img
+            src={posterUrl}
+            alt={title}
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-2xl"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+🎨 Points clés
+Responsive :
+
+Sur mobile → affiche centrée, modal en plein écran.
+
+Sur desktop → affiche plus large, modal max 90% viewport.
+
+Sans bug :
+
+z-50 pour que la modal soit toujours au-dessus.
+
+fixed inset-0 pour couvrir tout l’écran.
+
+Fermeture en cliquant n’importe où sur le fond.
+
+Thèmes dark/light :
+
+Ajoute des classes conditionnelles (bg-neutral-900 text-white pour dark, bg-white text-black pour light).
+
+Tu peux brancher ça sur ton toggle de thème existant.
+
+🚀 Exemple d’utilisation
+tsx
+<MediaPage
+  title="Avatar"
+  posterUrl="https://image.tmdb.org/t/p/w500/xyz.jpg"
+  logoUrl="https://www.themoviedb.org/assets/2/v4/logos/blue.svg"
+/>

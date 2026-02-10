@@ -1,0 +1,70 @@
+🎨 1. Palette & Atmosphère
+Évite le gris : remplace par un fond bleu nuit (#0a0b14) avec accents violet/bleu translucides.
+
+Aurora animé : ajoute un dégradé radial violet/bleu flouté en arrière‑plan pour donner de la profondeur.
+
+Texte : blanc légèrement violacé (#f5f3ff) pour rester lisible et élégant.
+
+🪟 2. Effet Liquid Glass
+Utilise backdrop-filter: blur(30px) sur les bulles, sidebar et composer.
+
+Ajoute une bordure subtile (rgba(167,139,250,0.25)) pour renforcer l’effet verre.
+
+Ombres douces (rgba(50,20,80,0.55)) pour donner du relief.
+
+💬 3. Bulles de Chat
+User : bulles alignées à droite, dégradé bleu translucide.
+
+IA : bulles alignées à gauche, dégradé violet translucide.
+
+Ajoute métadonnées élégantes (auteur + heure/date) en petit texte violet clair.
+
+Animation fade-in + hover glow violet.
+
+📑 4. Rich Content (Markdown)
+Intègre react-markdown pour que l’IA puisse afficher :
+
+Gras, italique, barré
+
+Titres (#, ##)
+
+Listes et tableaux translucides
+
+Blocs de code avec fond violet foncé translucide et police monospace
+
+📂 5. Sidebar Historique
+Slide bar fermable avec bouton ☰.
+
+Liste des conversations avec boutons ✏️ (renommer) et 🗑️ (supprimer).
+
+Effet glass + hover violet.
+
+Animation fluide (slide‑in/out).
+
+🏠 6. Écran d’Accueil
+Logo rond translucide au centre.
+
+Titre premium violet : “Bienvenue dans CAi ✨”.
+
+Champ d’entrée central pour démarrer une nouvelle conversation.
+
+Aurora visible derrière pour un effet magique.
+
+⚡ 7. Micro‑Animations
+Hover sur boutons : glow violet.
+
+Typing indicator : trois points violets pulsants.
+
+Transitions fluides : fade + slide pour sidebar et passage accueil → chat.
+
+🚀 Exemple d’amélioration TSX
+Dans ton TSX, tu peux remplacer le rendu des bulles par :
+
+tsx
+<div className={`bubble ${m.role}`}>
+  <div className="meta">
+    <strong>{m.role === "user" ? "Moi" : "CAi"}</strong> • <small>{m.time}</small>
+  </div>
+  <ReactMarkdown>{m.text}</ReactMarkdown>
+</div>
+Et dans ton CSS/Tailwind, applique les styles premium (blur, dégradés, violet translucide).

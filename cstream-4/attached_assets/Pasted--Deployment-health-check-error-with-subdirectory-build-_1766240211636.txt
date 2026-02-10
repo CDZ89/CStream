@@ -1,0 +1,133 @@
+### Deployment health check error with subdirectory build
+
+It’s still failing because the platform is:
+- Running a build in the subfolder (`cd project && npm run build:dev`) instead of your production build.
+- Sending a health check to `/` but your app either isn’t serving HTTP quickly, isn’t listening on the right port, or isn’t routing `/` to a fast 200 OK.
+
+Let’s fix this without removing anything — we’ll add/adjust scripts and a production server that starts fast, uses `process.env.PORT`, and serves `dist` with a 200 OK on `/`.
+
+---
+
+### Package.json scripts aligned to the project subfolder
+
+Keep all your existing scripts. Add these two, so the platform can build and start from the `project` directory and pass health checks:
+
+```json
+{
+  "scripts": {
+    "build:prod": "cd project && npm run build",
+    "serve:prod": "cd project && node server.js"
+  }
+}
+```
+
+- **Label:** Why this helps  
+  - **Build:** Uses your existing `project` build (Vite production) instead of `build:dev`.  
+  - **Start:** Launches the Express server in `project`, which will open the correct port.
+
+If your platform lets you set commands:
+- **Build command:** `npm run build:prod`
+- **Start command:** `npm run serve:prod`
+
+---
+
+### Server.js that passes health checks fast
+
+Place this inside `project/server.js` (or adjust paths if `server.js` is elsewhere). It serves `dist`, replies 200 on `/`, respects `process.env.PORT`, and supports React Router:
+
+```js
+// project/server.js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Fast health check: immediate 200 OK
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream healthy");
+});
+
+// Serve the Vite production build
+app.use(express.static(path.join(__dirname, "dist")));
+
+// SPA fallback for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on ${PORT}`);
+});
+```
+
+- **Label:** Important  
+  - The health check hits `/` — this route returns fast and doesn’t do any heavy work.  
+  - The server serves files from `project/dist`, so make sure your build outputs there.
+
+---
+
+### Vite build output location
+
+Ensure Vite writes to `project/dist`. If your build currently writes elsewhere, add this to `project/vite.config.ts` (or `.js`):
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: "dist"
+  }
+});
+```
+
+- **Label:** Check  
+  - After `npm run build:prod`, the directory `project/dist` must exist and contain `index.html`.
+
+---
+
+### Replit/.replit run command and port
+
+In `.replit`, ensure it starts your production server (not dev):
+
+```
+run = "npm run serve:prod"
+```
+
+- **Label:** Port  
+  - Replit/hosting expects your app to open `process.env.PORT`. The server above does.  
+  - Avoid `npm run dev` in production; it’s slower, may not open the expected port, and fails health checks.
+
+---
+
+### If you want dual mode (frontend-only vs. full server)
+
+You can keep both and choose at deploy time:
+
+- **Frontend-only (CDN serving, no Express):**
+  - Build: `npm run build:prod`
+  - Start: `cd project && vite preview --port ${PORT:-3000}`
+
+- **Full server (Express + static):**
+  - Build: `npm run build:prod`
+  - Start: `npm run serve:prod`
+
+Given your health check requirement on `/`, Express is safer and faster to respond.
+
+---
+
+### Quick checklist to redeploy
+
+- **Build command:** `npm run build:prod`  
+- **Start command:** `npm run serve:prod`  
+- **Server:** Listens on `process.env.PORT` and returns 200 on `/`.  
+- **Output:** `project/dist` exists after build.  
+- **No “dev” commands** in the run/start configuration.
+
+Want me to generate the exact diff for your `package.json` and confirm the pathing if `project` isn’t the right folder name?

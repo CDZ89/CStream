@@ -1,0 +1,99 @@
+🎨 Effets d’écriture en live
+Streaming caractère par caractère → pas de blocs qui tombent d’un coup.
+
+Effet flou → net sur chaque token (texte légèrement flouté qui devient net après 200–300ms).
+
+Vitesse contrôlée → pas trop rapide, rythme humain (~30–50 tokens/sec).
+
+Scroll fluide → auto-scroll vers le bas sans sauts brusques.
+
+🔗 Liens enrichis
+Toujours écrire les liens en Markdown clair : [Titre du lien](URL).
+
+Après rendu, afficher une carte enrichie :
+
+Favicon du site
+
+Titre du lien
+
+Domaine
+
+Liens ouvrent en nouvel onglet (target="_blank" rel="noopener").
+
+📝 Markdown complet
+Titres (#, ##, ###) → hiérarchie claire.
+
+Listes (puces, numérotées).
+
+Tableaux → bordures fines, alignement propre.
+
+Blockquotes → style distinct.
+
+Code inline → fond sombre, arrondi.
+
+Blocs de code :
+
+Surlignage syntaxique (Highlight.js).
+
+Bouton Copier en haut à droite.
+
+Nom du langage affiché (ex: js, python).
+
+💻 Code style premium
+Fond sombre (#0b1016), bordure subtile.
+
+Bouton “Copier” → change en “Copié ✅” pendant 1s.
+
+Afficher le langage en badge (ex: JavaScript).
+
+Scroll horizontal fluide pour longues lignes.
+
+🧩 Widgets intégrés
+Météo → via Open‑Meteo, affichage ville, température, humidité, jour/nuit.
+
+Plan / To‑do → liste de tâches avec ajout/suppression, persistée en localStorage.
+
+Stats conversation → compteur de tokens, temps de réponse.
+
+📚 Historique des chats
+Sidebar premium avec :
+
+Liste des conversations
+
+Auto‑titre basé sur le premier message
+
+Boutons renommer ✏️ / supprimer 🗑️
+
+Reset All → efface tout.
+
+Persistance en localStorage.
+
+⚡️ Micro‑interactions
+Boutons avec hover léger (translateY, glow).
+
+Halo animé sur statut “Live”.
+
+Animation subtile sur logo (rotation lente).
+
+Scroll auto avec easing.
+
+🛡️ Expérience utilisateur
+Erreur claire → encadré rouge si API échoue.
+
+Statut live → point vert animé + texte “En cours…”.
+
+Température & modèle → contrôles persistés.
+
+Accessibilité → contrastes forts, tailles lisibles.
+
+🗂️ Résumé des features à intégrer
+Catégorie	Exemple à prendre
+Écriture	Stream token par token, flou → net
+Liens	Markdown [Titre](URL) + carte enrichie
+Markdown	Titres, listes, tableaux, blockquotes
+Code	Highlight.js + bouton Copier + badge langage
+Widgets	Météo, Plan/Todo, Stats
+Historique	Sidebar avec titres auto, renommer, supprimer
+Micro‑interactions	Hover, halo live, logo animé
+UX	Erreurs claires, statut live, persistance
+👉 En gros, ton IA doit imiter un humain qui tape doucement, tout en donnant un rendu premium et interactif : Markdown riche, code copiable, liens enrichis, widgets utiles, historique géré.

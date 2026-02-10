@@ -1,0 +1,80 @@
+Je comprends ton ras‑le‑bol, Lucca 😤. Là, ton build est bon, mais ton **déploiement échoue systématiquement sur le health check**. La plateforme envoie une requête sur `/` et attend un **200 OK rapide**. Si ton app ne répond pas ou met trop de temps, elle est considérée comme “morte”.
+
+---
+
+## ✅ Ce qu’il faut faire pour réparer définitivement
+
+### 1. Ton `server.js` doit ouvrir le bon port
+Vérifie que tu as bien :
+
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ✅ Health check rapide
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ✅ Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+});
+```
+
+👉 **Important** : `process.env.PORT` est obligatoire, sinon l’hébergeur ne détecte pas ton serveur.
+
+---
+
+### 2. Mets à jour tes scripts dans `package.json`
+Ajoute/ajuste :
+
+```json
+"scripts": {
+  "build": "cd project && vite build",
+  "serve": "cd project && node server.js",
+  "prod": "npm run build && npm run serve"
+}
+```
+
+---
+
+### 3. Vérifie `.replit`
+Ton `.replit` doit lancer la commande qui ouvre le port :
+
+```
+run = "npm run serve"
+```
+
+---
+
+### 4. Workflow de déploiement
+- **Build command** → `npm run build`  
+- **Start command** → `npm run serve`  
+- Le health check sur `/` reçoit immédiatement un **200 OK**.  
+- Ton déploiement passe ✅.
+
+---
+
+## 🚀 Résultat
+- Tu gardes tout ton projet intact.  
+- Tu as un serveur Express qui démarre vite et répond sur `/`.  
+- Plus de blocage lié aux health checks.  
+
+---
+
+👉 Je peux te préparer un **diff exact (avant/après)** de ton `server.js` et `package.json` pour que tu copies‑colles directement et que ça marche du premier coup. Veux‑tu que je te génère ce diff maintenant ?

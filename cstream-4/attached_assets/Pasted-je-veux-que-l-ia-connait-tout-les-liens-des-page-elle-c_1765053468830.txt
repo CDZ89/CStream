@@ -1,0 +1,140 @@
+je veux que l'ia connait tout les liens des page elle connais combien il y a de media sur ce site elle sera connecter avec mon sit et tmdb elle sera aussi quand elle donne une image quand ton IA te renvoie une image (par exemple trouvée sur Google), tu veux la voir directement affichée dans le chat en grand et propre, pas juste un lien brut.
+
+👉 La clé, c’est d’utiliser l’affichage d’image intégré (Markdown ou HTML) au lieu de renvoyer uniquement l’URL.
+
+✅ Exemple en Markdown (comme ici dans le chat)
+markdown
+![Brawl Stars](https://upload.wikimedia.org/wikipedia/en/3/3c/Brawl_Stars_logo.png)
+Résultat :
+
+✅ Exemple en HTML
+html
+<img src="https://upload.wikimedia.org/wikipedia/en/3/3c/Brawl_Stars_logo.png" 
+     alt="Brawl Stars" 
+     style="width:500px; border-radius:10px;">
+Résultat : l’image s’affiche directement dans ton interface, avec largeur fixée et coins arrondis.
+
+🚀 Ce que ça implique pour ton IA
+Quand elle récupère une image (via Google, Bing, API…), elle doit renvoyer le lien dans une balise Markdown ou HTML.
+
+Si ton chat supporte Markdown (comme ici), le plus simple est ![alt](url).
+
+Si ton chat est en HTML (par exemple un site que tu codes), utilise <img>.Parfait Chems ⚡, tu veux un **prompt complet et détaillé** qui décrit toutes les fonctions avancées que ton IA doit avoir (sans les histoires de lecteurs/épisodes). Voici une version **mega-structurée** que tu peux utiliser comme base pour ton projet Groq ou tout autre orchestrateur :
+
+---
+
+# 🧩 Prompt Complet – Assistant IA Premium
+
+## 🎯 Objectif
+Créer une IA multimédia intelligente capable de :
+- Retenir les préférences utilisateur (**mémoire personnalisée**).
+- Automatiser des tâches via **API et scraping**.
+- Afficher des **widgets dynamiques** (météo, bourse, crypto, calendrier).
+- Offrir un **mode assistant multimédia** (images, cartes, bande-annonces).
+- Gérer un **historique de chat fluide** avec reprise sans bug.
+- Centraliser tout dans une **couche Knowledge**.
+
+---
+
+## 🧠 Mémoire personnalisée
+- Retenir :
+  - Thème préféré (dark/light).
+  - Style d’affichage (minimaliste, premium).
+  - Sources favorites (sites, API).
+- Exemple stockage :
+  ```json
+  {
+    "user": "Chems",
+    "preferences": {
+      "theme": "dark",
+      "style": "minimalist",
+      "sources": ["TMDb", "OpenWeather", "Google Maps"]
+    }
+  }
+  ```
+
+---
+
+## ⚙️ Automatisation
+- **Scraping intelligent** : récupérer planning anime, horaires cinéma, résultats sportifs.
+- **API connectées** :
+  - TMDb → films/séries tendances.
+  - OpenWeather → météo locale.
+  - CoinGecko → crypto.
+  - Google Maps → cartes interactives.
+- **Formatage automatique** en cards visuelles.
+
+---
+
+## 📊 Widgets dynamiques
+- **Météo** : icône + température + description.
+- **Bourse/crypto** : cours en temps réel + mini graphique.
+- **Calendrier** : événements du jour/semaine.
+- **News tendances** : titres + aperçu visuel.
+
+---
+
+## 🎬 Mode Assistant Multimédia
+- Quand l’utilisateur demande un film/série :
+  - 🎥 Affiche officielle.
+  - ⭐ Note TMDb avec logo.
+  - 📝 Synopsis.
+  - ▶️ Bouton « Regarder la bande-annonce ».
+  - 📍 Carte si lieu lié.
+- **Carrousel auto-play** : films/séries tendances qui défilent automatiquement avec flèches de navigation.
+- **Images intégrées** : pas de lien brut, mais aperçu direct.
+
+---
+
+## 🧩 Knowledge Layer
+- **Centralisation** : toutes les sources (API, scraping, mémoire).
+- **Fusion** : combiner plusieurs infos en une seule réponse enrichie.
+- **Fallback** : si Groq est limité, le module Knowledge enrichit la réponse.
+
+---
+
+## 🗂️ Historique du chat
+- **Sauvegarde automatique** : chaque message est enregistré.
+- **Navigation fluide** : liste des conversations passées avec date + aperçu.
+- **Reprise sans bug** : reload du contexte exact.
+- **Recherche historique** : retrouver une conversation par mot-clé.
+
+Exemple structure :
+```json
+{
+  "conversations": [
+    {
+      "id": "conv_001",
+      "date": "2025-12-06T21:15:00",
+      "messages": [
+        {"role": "user", "text": "Cherche Wittelsheim sur Maps"},
+        {"role": "ia", "text": "Voici la carte de Wittelsheim..."}
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 🚀 Exemple d’expérience utilisateur
+Tu dis : *« Cherche Wittelsheim sur Maps »*  
+→ L’IA affiche :
+- Une **carte interactive** intégrée.  
+- Une **card cliquable** : titre « Wittelsheim – Google Maps », image d’aperçu, bouton « Ouvrir ».  
+- Une **mini description** (population, région, points d’intérêt).  
+- Bonus : météo locale + restaurants tendances.
+
+---
+
+## 🛠️ Résumé
+Ton IA doit :
+1. **Mémoriser** tes préférences.
+2. **Automatiser** via API/scraping.
+3. **Afficher** des widgets dynamiques.
+4. **Fusionner** infos multimédia dans une seule réponse.
+5. **Gérer** un historique fluide et consultable.
+
+---
+
+👉 Veux-tu que je te fasse un **diagramme visuel d’architecture** (pipeline avec Groq + mémoire + API + UI) pour que tu voies clairement comment tout s’emboîte ?

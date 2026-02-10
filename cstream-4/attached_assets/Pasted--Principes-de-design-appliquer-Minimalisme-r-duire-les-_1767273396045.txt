@@ -1,0 +1,113 @@
+🎨 Principes de design à appliquer
+Minimalisme : réduire les bordures épaisses, les couleurs trop contrastées, garder une palette sombre élégante.
+
+Fluidité : transitions douces (hover, fade-in/out), animations subtiles.
+
+Premium : typographie moderne (Inter, SF Pro, Neue Haas), alignements parfaits, espaces généreux.
+
+Cohérence : fond sombre uniforme, accents colorés discrets (bleu électrique ou violet premium).
+
+🧱 Structure proposée
+🔝 Header
+Fond sombre semi‑transparent avec blur.
+
+Logo CStream minimaliste + titre Agent CAi.
+
+Navigation réduite (Accueil | Agents | Paramètres).
+
+Hover → glow discret sur les liens.
+
+👤 Carte Agent
+Bloc central premium :
+
+Code
+🤖 Agent CAi
+🧠 Rôle : Assistant IA avancé
+📌 Contexte : Développement, UI/UX, TMDB, analyse
+⚡ Statut : Actif
+Carte arrondie, fond #111, bordure fine #222.
+
+Texte blanc premium, gris clair pour détails.
+
+Animation hover : légère élévation + glow subtil.
+
+📊 Capacités
+Tableau minimaliste :
+
+Domaine	Description
+🎬 TMDB	Recherche films/séries, cartes médias
+🧩 Code	Génération JS/TS/React/CSS/SQL
+🎨 UI/UX	Composants premium minimalistes
+🌍 Multi-langues	FR, EN, JP, AR, etc.
+🔍 Analyse	Bugs, workflows, optimisations
+🧩 Actions rapides
+Boutons premium :
+
+[ ⚡ Lancer une requête ]
+
+[ 🎬 Recherche TMDB ]
+
+[ 🧱 Générer UI ]
+
+[ 🔍 Analyser un bug ]
+
+Style : arrondis, fond sombre, texte blanc, hover → fond clair + texte noir.
+
+🔐 Footer
+Liens : À propos | Contact | API TMDB.
+
+Texte gris clair, taille réduite.
+
+Fond sombre uniforme.
+
+✨ Améliorations visuelles
+Couleurs : noir premium (#0a0a0a), gris clair (#aaa), accent bleu (#3b82f6).
+
+Effets : transitions fluides, hover glow subtil, blur pour overlays.
+
+Animations : fade-in des cartes, hover lift sur boutons.
+
+Dark mode natif : tout pensé sombre premium.
+
+🧩 Exemple Tailwind minimaliste
+tsx
+export default function AgentPage() {
+  return (
+    <div className="min-h-screen bg-neutral-950 text-white flex flex-col">
+      <header className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between backdrop-blur">
+        <h1 className="text-xl font-semibold">🤖 Agent CAi</h1>
+        <nav className="flex gap-4 text-neutral-400">
+          <a href="/">Accueil</a>
+          <a href="/agents">Agents</a>
+          <a href="/settings">Paramètres</a>
+        </nav>
+      </header>
+      <main className="flex-1 flex flex-col items-center justify-center p-8 gap-6">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 max-w-md w-full shadow-lg hover:shadow-xl transition">
+          <h2 className="text-lg font-bold mb-2">Assistant IA avancé</h2>
+          <p className="text-neutral-300 mb-4">Rôle : Développement, UI/UX, TMDB, analyse</p>
+          <p className="text-green-400 font-medium">⚡ Statut : Actif</p>
+        </div>
+        <table className="w-full max-w-2xl text-sm border-collapse border border-neutral-800">
+          <tbody>
+            <tr><td className="p-2 border border-neutral-700">🎬 TMDB</td><td className="p-2 border border-neutral-700">Recherche films/séries, cartes médias</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🧩 Code</td><td className="p-2 border border-neutral-700">Génération JS/TS/React/CSS/SQL</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🎨 UI/UX</td><td className="p-2 border border-neutral-700">Composants premium minimalistes</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🌍 Multi-langues</td><td className="p-2 border border-neutral-700">FR, EN, JP, AR, etc.</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🔍 Analyse</td><td className="p-2 border border-neutral-700">Bugs, workflows, optimisations</td></tr>
+          </tbody>
+        </table>
+        <div className="flex gap-3 mt-4">
+          <button className="px-3 py-2 bg-white text-black rounded-md">⚡ Lancer une requête</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md hover:bg-neutral-700">🎬 Recherche TMDB</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md hover:bg-neutral-700">🧱 Générer UI</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md hover:bg-neutral-700">🔍 Analyser un bug</button>
+        </div>
+      </main>
+      <footer className="px-6 py-4 border-t border-neutral-800 text-neutral-500 text-sm">
+        © 2026 CStream · Powered by CAi
+      </footer>
+    </div>
+  );
+}
+👉 En appliquant ces principes, ta page Agent sera minimaliste, premium et fluide, parfaitement alignée avec le style CStream.

@@ -1,0 +1,120 @@
+API Documentation
+Comprehensive video streaming API documentation for embedding movies, TV shows, and anime content with customizable players
+
+Embed Movies
+ID is required from The Movie Database API.
+
+https://player.vidplus.to/embed/movie/{tmdbId}
+
+Code Example:
+<iframe src="https://player.vidplus.to/embed/movie/78692" frameborder="0" allowfullscreen ></iframe>
+
+Embed Shows
+ID is required from The Movie Database API. season and episode number should not be empty.
+
+https://player.vidplus.to/embed/tv/{tmdbId}/{season}/{episode}
+
+Code Example:
+<iframe src="https://player.vidplus.to/embed/tv/94997/1/1" frameborder="0" allowfullscreen ></iframe>
+
+Embed Anime
+ID is required from Anilist API. Id should not be empty, dub by default is false.
+
+https://player.vidplus.to/embed/anime/{AnilistId}/{number}?dub={trueOrFalse}
+
+https://player.vidplus.to/embed/anime/{AnilistId}/{number}?dub={trueOrFalse}
+
+Code Example:
+<iframe src="https://player.vidplus.to/embed/anime/21/1?dub=true" frameborder="0" allowfullscreen ></iframe>
+
+Player Options
+primaryColor
+Sets the primary color of the player, including sliders and autoplay controls.
+
+primarycolor=B20710
+
+secondaryColor
+Defines the color of the progress bar behind the sliders.
+
+secondarycolor=170000
+
+iconColor
+Changes the color of the icons within the player.
+
+iconcolor=B20710
+
+autoplay
+Controls whether the player automatically starts playing media.
+
+autoplay=true
+
+autoNext
+Controls whether the player automatically plays the next episode/content.
+
+autoNext=true
+
+nextButton
+Controls whether the next button is displayed in the player controls.
+
+nextButton=true
+
+subtitleColor
+Sets the color of subtitle text.
+
+fontcolor=FFFFFF
+
+subtitleFontSize
+Controls the font size of subtitles.
+
+fontsize=16
+
+subtitleOpacity
+Controls the opacity of the subtitle background.
+
+opacity=0.5
+
+poster
+Determines if the poster image is shown.
+
+poster=true
+
+title
+Controls whether the title is displayed in the player interface.
+
+title=true
+
+icons
+Sets the icon style for player controls (default or VidStack style).
+
+icons=vid
+
+progress
+Sets the starting position in seconds (e.g., 600 seconds = 10 minutes).
+
+progress=600
+
+watchparty
+Enables or disables the WatchParty feature for synchronized viewing.
+
+watchparty=true
+
+chromecast
+Enables or disables Chromecast support in the player.
+
+chromecast=false
+
+episodelist
+Shows or hides the episode list in the player interface.
+
+episodelist=false
+
+servericon
+Shows or hides the server icon in the player interface.
+
+servericon=false
+
+Server
+Specifies the server name or server number to use for playback.
+
+server=hindi or 14
+

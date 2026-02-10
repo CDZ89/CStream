@@ -1,0 +1,129 @@
+IDs authentiques: Utiliser supabase.auth.getUser().user.id pour sender_id/user_id et profiles.id (UUID = auth.users.id) pour receiver_id/friend_id.
+
+Résolution destinataire: Résoudre le destinataire via profil (username/slug/email) → récupérer profiles.id, jamais un ID local.
+
+Gardiens côté client: Bloquer les inserts si IDs manquants, formats invalides, ou destinataire introuvable.
+
+Ergonomie mobile: Confirmer layout chat responsive, sidebar collapsible, input sticky, safe-area sur iOS.
+
+Journalisation: Log des payloads avant insert (sender_id, receiver_id, content) + trace des erreurs RLS/FK.
+
+Messages d’erreur clairs: Mapper les erreurs RLS/FK en feedback utilisateur (“Destinataire introuvable” / “Session expirée”).
+
+Optimistic UI: Afficher le message localement, revert si insert échoue, avec toast explicite.
+
+Perf et stabilité: Debounce envoi, éviter double submit, retry contrôlé en cas de réseau.
+
+Amis & demandes: Vérifier cohérence friend_requests → friendships; empêcher duplication et cycles.
+
+Implémentations clés
+Résolution d’IDs et inserts
+ts
+// 1) Récupérer mon UUID auth
+const { data: meRes, error: meErr } = await supabase.auth.getUser();
+if (meErr || !meRes.user?.id) throw new Error('Session invalide');
+const senderId = meRes.user.id;
+
+// 2) Résoudre le destinataire via son profil
+const { data: profile, error: profErr } = await supabase
+  .from('profiles')
+  .select('id, username')
+  .eq('username', receiverUsername)
+  .single();
+
+if (profErr || !profile?.id) throw new Error('Destinataire introuvable');
+const receiverId = profile.id;
+
+// 3) Guard: empêcher envoi à soi-même si non voulu
+if (receiverId === senderId) throw new Error('Vous ne pouvez pas vous envoyer un message');
+
+// 4) Insert message (RLS: sender_id doit === auth.uid())
+const { error: msgErr } = await supabase
+  .from('messages')
+  .insert({ sender_id: senderId, receiver_id: receiverId, content });
+
+if (msgErr) {
+  console.error('Insert message error', { senderId, receiverId, content, msgErr });
+  throw msgErr;
+}
+
+// 5) Ajout d’ami
+const { error: frErr } = await supabase
+  .from('friendships')
+  .insert({ user_id: senderId, friend_id: receiverId });
+
+if (frErr) {
+  console.error('Insert friendship error', { senderId, receiverId, frErr });
+  throw frErr;
+}
+Protection double‑submit et optimistic UI
+ts
+let sending = false;
+
+async function sendMessageSafe(content: string) {
+  if (sending) return;
+  sending = true;
+
+  const optimisticId = crypto.randomUUID();
+  addMessageOptimistic({ id: optimisticId, sender_id: senderId, receiver_id: receiverId, content });
+
+  try {
+    await sendMessage(content); // la fonction ci-dessus
+    confirmMessageOptimistic(optimisticId);
+  } catch (e) {
+    revertMessageOptimistic(optimisticId);
+    showToastError(humanizeError(e));
+  } finally {
+    sending = false;
+  }
+}
+Vérifications UX/UI rapides
+Navigation:
+
+Header sticky: Afficher destinataire + actions; éviter overlap clavier.
+
+Input bar: Collée en bas, safe-area iOS, hauteur contrôlée, auto-grow jusqu’à N lignes.
+
+Listes:
+
+Virtualization légère: Préserver perf sur mobile.
+
+Auto‑scroll: Vers le bas à l’envoi/réception, avec “New messages” indicator si l’utilisateur scrolle en haut.
+
+Accessibilité:
+
+Focus management: Remettre le focus sur input après envoi.
+
+Roles/ARIA: Boutons envoi/attach ont labels.
+
+Tests côté site à exécuter
+Ajout d’ami:
+
+Cas nominal: deux comptes réels → insert OK.
+
+Cas erreur: destinataire inexistant → message “Destinataire introuvable”.
+
+Envoi de message:
+
+Nominal: insert, message visible pour les deux parties → OK.
+
+RLS: tenter avec sender_id forcé ≠ auth.uid() → doit échouer, message d’erreur clair.
+
+Suppression utilisateur de test:
+
+Validation: messages et amitiés disparaissent (cascade), UI rafraîchie sans orphelins.
+
+Message court à envoyer à l’agent site
+AGENT SITE — OBJECTIFS FRONTEND
+
+Utiliser auth.getUser().user.id pour sender_id/user_id et profiles.id pour receiver_id/friend_id.
+
+Ajouter des gardiens côté client (IDs valides, destinataire résolu) et logs détaillés avant insert.
+
+Implémenter optimistic UI + protection anti double‑submit.
+
+Finaliser l’ergonomie mobile (safe-area, sticky input, auto-scroll).
+
+Tester: ajout d’ami, envoi de message, cas d’erreur RLS/FK, suppression utilisateur → cascade OK.
+
+Rapporter: payloads et erreurs capturées, et confirmer que tous les flux passent.

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <title>CStream Discord Widget</title>
+</head>
+<body>
+
+  <div class="page">
+    <div class="discord-widget">
+
+      <!-- LANG SWITCH -->
+      <div class="lang-switch">
+        <button id="lang-fr" class="lang-btn active">FR</button>
+        <button id="lang-en" class="lang-btn">EN</button>
+      </div>
+
+      <!-- HEADER -->
+      <div class="dw-header">
+        <div class="dw-logo-block">
+          <div class="dw-logo">
+            <img src="https://share.creavite.co/697a3798bab97f02c66bd91c.gif" alt="CStream Logo" />
+          </div>
+          <div class="dw-server-info">
+            <span class="dw-badge">DISCORD</span>
+            <h2 class="dw-title" id="dw-server-name">CStream</h2>
+            <p class="dw-subtitle" id="dw-subtitle"></p>
+          </div>
+        </div>
+
+        <div class="dw-stats">
+          <div class="dw-stat-line">
+            <span class="dw-stat-icon">●</span>
+            <span class="dw-stat-text">
+              <span id="dw-online-count">–</span>
+              <span id="dw-online-text"></span>
+            </span>
+          </div>
+          <div class="dw-stat-line">
+            <span class="dw-stat-icon">👥</span>
+            <span class="dw-stat-text">
+              <span id="dw-total-count">–</span>
+              <span id="dw-members-text"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROGRESSION BAR -->
+      <div class="goal-box">
+        <div class="goal-header">
+          <span id="goal-text">Objectif membres</span>
+          <span id="goal-count">0 / 1500</span>
+        </div>
+        <div class="goal-bar">
+          <div id="goal-progress"></div>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="dw-body">
+        <div class="dw-avatars" id="dw-avatars"></div>
+        <p class="dw-footer-text" id="dw-footer-text"></p>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="dw-actions">
+        <a id="dw-join-btn" class="dw-btn" href="#" target="_blank"></a>
+        <span class="dw-note" id="dw-note"></span>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="widget.js"></script>
+</body>
+</html>

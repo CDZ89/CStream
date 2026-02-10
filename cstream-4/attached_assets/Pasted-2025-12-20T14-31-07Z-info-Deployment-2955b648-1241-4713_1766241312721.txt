@@ -1,0 +1,59 @@
+2025-12-20T14:31:07Z info: Deployment: 2955b648-1241-4713-b763-ecf7268b5cb1
+2025-12-20T14:31:07Z info: Build: a01e0159-a211-4083-a7fd-1d3e471a4052
+2025-12-20T14:31:07Z info: Connecting to builder
+2025-12-20T14:31:07Z info: Builder connected
+2025-12-20T14:31:08Z info: Installing packages
+2025-12-20T14:31:09Z info: Starting Build
+
+> workspace@1.0.0 build
+> cd project && npm run build
+
+
+
+> vite_react_shadcn_ts@0.0.0 build
+> vite build
+
+
+vite v5.4.21 building for production...
+
+transforming...
+
+warn - The class `duration-[8s]` is ambiguous and matches multiple utilities.
+
+warn - If this is content and not a class, replace it with `duration-&lsqb;8s&rsqb;` to silence this warning.
+
+✓ 3436 modules transformed.
+
+rendering chunks...
+
+computing gzip size...
+
+dist/assets/Beta-DtYqqRym.js                  10.39 kB │ gzip:   3.20 kB
+
+✓ built in 28.23s
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
+
+2025-12-20T14:31:42Z info: Pushing pid1 binary layer...
+2025-12-20T14:31:44Z info: Pushing hosting layer...
+2025-12-20T14:31:44Z info: Pushing Repl layer...
+2025-12-20T14:31:44Z info: Retrieved cached nix layer
+2025-12-20T14:31:44Z info: Created hosting layer
+2025-12-20T14:31:45Z info: Created pid1 binary layer
+2025-12-20T14:32:18Z info: Created Repl layer
+2025-12-20T14:32:21Z info: Pushed image manifest
+2025-12-20T14:32:22Z info: Pushed soci index manifest
+2025-12-20T14:32:25Z info: Creating Autoscale service
+> vite_react_shadcn_ts@0.0.0 start
+> workspace@1.0.0 serve
+------------------------------------------
+------------------------------------------
+[dotenv@17.2.3] injecting env (4) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+🔧 Services Configuration Status:
+🔑 Groq API Key: Configured
+a port configuration was specified but the required port was never opened
+2025-12-20T14:34:56Z error: The deployment failed because the application failed to open a port in time. This can happen because the application takes to long to open a server, or doesn't open one at all on the expected port. Note that this doesn't mean that the application is crashing, only that it's not opening a port in time. The application must serve traffic on the first port specified as 'localPort' in the port configuration specified in the .replit file. Make sure that the application opens a port quickly and that there are no operations taking too long on startup. Check the logs for more information.

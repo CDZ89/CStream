@@ -1,0 +1,60 @@
+Parfait, Lucca — ça veut dire que ton **health check passe enfin** 🎉. Mais ce que tu vois (“✅ CStream is alive and healthy!”) est uniquement la **route `/`** que j’ai mise pour que le déploiement valide. Ton vrai site (le build React/Vite) est dans `dist/`, et il faut que ton serveur Express le serve correctement.
+
+---
+
+## 🔎 Pourquoi tu vois seulement le message
+- Dans ton `server.js`, la route `/` renvoie un texte fixe pour rassurer le health check.  
+- Mais comme c’est la première route, c’est ce que tu vois en allant sur `/`.  
+- Ton site React est bien compilé dans `dist/`, mais il n’est pas encore servi par défaut.
+
+---
+
+## ✅ Solution : servir ton site sur `/`
+Il suffit de modifier ton `server.js` pour que `/` renvoie ton `index.html` au lieu du texte fixe.  
+Tu peux garder le health check sur une autre route (ex. `/health`) pour que la plateforme continue à valider.
+
+### Exemple corrigé :
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ✅ Health check séparé
+app.get("/health", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ✅ Route principale → ton site React
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+// ✅ Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+```
+
+---
+
+## 🚀 Résultat
+- Le health check utilise `/health` → toujours un 200 OK rapide.  
+- Quand tu vas sur `/`, tu vois ton **site React/Vite** compilé.  
+- Les routes React (`/movies`, `/settings`, etc.) fonctionnent grâce au catch‑all.  
+
+---
+
+👉 Tu veux que je te prépare le **diff exact** (avant/après) de ton `server.js` pour que tu copies‑colles directement et que ton site s’affiche correctement ?

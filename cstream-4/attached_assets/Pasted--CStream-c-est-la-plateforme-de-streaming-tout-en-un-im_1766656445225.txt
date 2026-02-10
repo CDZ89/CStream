@@ -1,0 +1,21 @@
+**CStream**, c’est **la plateforme de streaming tout‑en‑un** imaginée par **CDZ**, le créateur unique et passionné qui a développé chaque fonctionnalité lui‑même. 🎉
+
+🚀 Que propose CStream ?
+**📺 Vidéos & séries** : un catalogue riche avec un lecteur intégré (CSPlayer/VideoPlayer) qui prend en charge le **streaming haute définition** et les **messages vocaux**.
+**💬 Chat** : discute en texte ou en vocal avec tes amis, ou directement avec **CAi**, ton assistant virtuel.
+**🏠 Accueil dynamique** : les tendances du moment s’affichent en temps réel, pour ne jamais rater les nouveautés.
+**🔎 Explore** : découvre du contenu recommandé selon tes goûts.
+**📚 Library** : sauvegarde tes films/séries préférés et accède‑y quand tu veux.
+**👤 Profils personnalisés** : crée ton avatar, choisis un thème, et montre ton style.
+**🕒 Historique automatique** : retrouve facilement les vidéos que tu as déjà visionnées.
+**🎨 Plus de 20 thèmes** : personnalise l’apparence de l’appli à ton image.
+**👥 Système d’amis** : invite des contacts avec un **code d’invitation** et partage tes découvertes.
+**🔔 Notifications en temps réel** : sois alerté(e) dès qu’un ami te répond ou qu’une nouveauté arrive.
+📂 Pages principales
+[object Object],[object Object][object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
+Pourquoi choisir CStream ?
+**Tout‑en‑un** : aucune application tierce n’est nécessaire.
+**Créé par CDZ** : chaque ligne de code a été écrite par un seul développeur passionné, garantissant une **cohérence** et une **qualité** exceptionnelles.
+**Expérience fluide** : navigation intuitive, design moderne et performances optimisées.
+**Communauté** : partage tes coups de cœur avec tes amis et découvre ce que les autres regardent.
+**Prêt(e) à plonger dans l’univers CStream ?** 🎬 N’hésite pas à me poser des questions sur l’utilisation, la configuration ou les fonctionnalités ! Je suis là pour t’aider. 😊

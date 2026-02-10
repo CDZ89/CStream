@@ -1,0 +1,194 @@
+Je te sens à bout, Lucca. Tu as fait tout ce qu’il fallait pour passer les health checks, et maintenant tu veux voir ton vrai site — pas seulement un message “healthy”. On va le rendre propre, rapide, et indiscutablement en production, sans casser ce que tu as déjà.
+
+---
+
+### Objectif
+
+- **Afficher ton site React/Vite sur /** immédiatement.
+- **Garder un health check fiable** sur une route dédiée, rapide, non bloquante.
+- **Ouvrir le port imposé par la plateforme** via `process.env.PORT`.
+- **Servir correctement `dist/`**, avec support SPA (React Router) et headers de performance.
+
+---
+
+### Server express prêt pour la prod
+
+Copie-colle ce `server.js` dans le dossier où tu déploies (tu as mentionné `project/`; adapte si besoin). Il sert `/` avec ton `index.html`, garde un health check sur `/health`, et répond correctement pour toutes les routes SPA.
+
+```js
+// project/server.js
+import express from "express";
+import path from "path";
+import compression from "compression";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ✅ Compression pour de meilleures perfs
+app.use(compression());
+
+// ✅ Chemin vers le build Vite
+const distPath = path.join(__dirname, "dist");
+
+// ✅ Health check ultra rapide, ne touche pas au build
+app.get("/health", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir les assets statiques de Vite
+app.use(express.static(distPath, {
+  maxAge: "1h",
+  etag: true,
+  index: false // on gère nous-même l'envoi d'index.html
+}));
+
+// ✅ Page principale → ton site
+app.get("/", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
+// ✅ Fallback SPA pour React Router (toutes les autres routes)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
+
+// ✅ Démarrage rapide sur le port imposé par la plateforme
+app.listen(PORT, () => {
+  console.log(`🚀 CStream server listening on port ${PORT}`);
+});
+```
+
+> Astuce: si ton build n’est pas dans `project/dist` mais à la racine, change `distPath` en conséquence.
+
+---
+
+### Scripts package.json qui gardent tout et rendent la prod fiable
+
+Tu conserves tes scripts, on ajoute juste des chemins sûrs pour build et start depuis `project/`, avec une commande de prod simple.
+
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run vite\"",
+    "vite": "vite",
+    "server": "node server.js",
+    "build": "cd project && vite build",
+    "build:dev": "cd project && vite build --mode development",
+    "preview": "cd project && vite preview",
+    "start": "cd project && node server.js",
+    "serve": "cd project && node server.js",
+    "prod": "npm run build && npm run serve"
+  }
+}
+```
+
+- **Label:** Production  
+  - **Build command:** `npm run build`  
+  - **Start command:** `npm run serve` (ou `npm run start`)  
+  - Ça respecte les exigences de sécurité et les health checks.
+
+---
+
+### Configuration Vite pour une sortie propre
+
+Vérifie que la sortie se fait bien dans `project/dist`. Ajuste ton `vite.config.ts` ou `.js` si besoin.
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    outDir: "dist"
+  }
+});
+```
+
+- **Label:** SPA  
+  - Le fallback Express ci-dessus garantit que React Router fonctionne en production.
+
+---
+
+### Fichier .replit et port attendu
+
+Assure-toi que `.replit` lance la commande qui ouvre le port rapidement.
+
+```
+run = "npm run serve"
+```
+
+- **Label:** Port  
+  - Ton serveur doit écouter `process.env.PORT` (c’est le cas dans le `server.js`).  
+  - Évite `npm run dev` ou `vite preview` en prod — lents et imprévisibles pour le health check.
+
+---
+
+### Diff exact (avant → après)
+
+#### server.js
+- **Avant:** route `/` répond “healthy”, le site invisible.
+- **Après:** `/` envoie `index.html`, health check sur `/health`, assets compressés.
+
+```diff
+- app.get("/", (req, res) => {
+-   res.status(200).send("✅ CStream is alive and healthy!");
+- });
++ app.get("/health", (req, res) => {
++   res.status(200).send("✅ CStream is alive and healthy!");
++ });
++ app.use(express.static(path.join(__dirname, "dist"), { maxAge: "1h", etag: true, index: false }));
++ app.get("/", (req, res) => {
++   res.sendFile(path.join(__dirname, "dist", "index.html"));
++ });
++ app.get("*", (req, res) => {
++   res.sendFile(path.join(__dirname, "dist", "index.html"));
++ });
+```
+
+#### package.json scripts
+```diff
+- "serve": "vite preview --port 3000"
++ "serve": "cd project && node server.js"
++ "prod": "npm run build && npm run serve"
+```
+
+#### .replit
+```diff
+- run = "npm run dev"
++ run = "npm run serve"
+```
+
+---
+
+### Check-list de validation avant redeploiement
+
+- **Build:** Lance `npm run build` et vérifie que `project/dist/index.html` existe.  
+- **Start:** Lance `npm run serve` en local; visite `http://localhost:5000/` (ou le port affiché) → tu vois ton site.  
+- **Health:** `GET /health` retourne “✅ CStream is alive and healthy!” immédiatement.  
+- **Port:** Les logs affichent “listening on port …” correspondant à `process.env.PORT` en déploiement.  
+- **Routes SPA:** Accède à une route profonde (`/movies`, `/settings`) → ça sert `index.html`.
+
+---
+
+### Pièges courants et corrections
+
+- **Label:** Mauvais dossier `dist`  
+  - Si tu vois “Cannot GET /”, c’est que `dist` n’est pas au bon endroit. Vérifie `outDir` et le chemin `distPath`.
+
+- **Label:** Port fixe  
+  - Si tu écoutes sur `3000` en prod au lieu de `process.env.PORT`, le déploiement échoue. Garde `const PORT = process.env.PORT || 5000`.
+
+- **Label:** Commande de démarrage  
+  - Ne pas utiliser `dev` ou `preview` en prod. Privilégie `node server.js`.
+
+- **Label:** Base path  
+  - Si tu déploies sous un sous-dossier (rare sur Replit), ajuste `base` dans `vite.config` et les assets.
+
+---
+
+Si après ça tu vois encore le texte et pas le site, c’est que la route `/` n’envoie pas `index.html` (ordre des routes ou mauvais `distPath`). Dis-moi l’emplacement exact de `dist` et le contenu de tes 20 premières lignes de `server.js`, et je te renvoie un diff ciblé pour que ça s’affiche au premier chargement.

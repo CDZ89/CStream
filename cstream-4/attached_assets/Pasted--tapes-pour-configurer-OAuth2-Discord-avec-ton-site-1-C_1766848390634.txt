@@ -1,0 +1,61 @@
+⚙️ Étapes pour configurer OAuth2 Discord avec ton site
+1. Créer ton application Discord
+Va sur Discord Developer Portal.
+
+Crée une nouvelle application (ex. CStream Verify).
+
+Récupère ton Client ID et Client Secret.
+
+Dans OAuth2 → Redirects, ajoute :
+
+Code
+https://cstream--trte11.replit.app/api/auth/discord/callback
+2. Construire l’URL d’autorisation
+C’est l’URL que tu mets dans ton embed Discord (bouton « Vérifier ») :
+
+Code
+https://discord.com/oauth2/authorize?client_id=TON_CLIENT_ID&redirect_uri=https%3A%2F%2Fcstream--trte11.replit.app%2Fapi%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify%20guilds
+client_id = ton Client ID Discord.
+
+redirect_uri = l’URL callback de ton site (encodée).
+
+scope = identify (pour récupérer l’ID utilisateur) + éventuellement guilds.
+
+3. Implémenter la route /api/auth/discord/callback
+Sur ton site (Next.js ou Express), tu crées une route qui :
+
+Récupère le code envoyé par Discord.
+
+Échange ce code contre un access token via POST https://discord.com/api/oauth2/token.
+
+Utilise l’access_token pour appeler :
+
+Code
+GET https://discord.com/api/users/@me
+Authorization: Bearer ACCESS_TOKEN
+→ Tu obtiens l’ID Discord de l’utilisateur.
+
+Tu stockes cet ID dans ta base (ex. Supabase) et tu l’associes au compte du site.
+
+4. Synchroniser avec ton bot
+Ton site appelle une API de ton bot (ou envoie un webhook) avec l’ID Discord vérifié.
+
+Le bot ajoute le rôle Vérifié à l’utilisateur dans ton serveur.
+
+Dans ton site, la section « Comptes liés » affiche Discord comme lié.
+
+5. Embed permanent dans Discord
+Commande /verify de ton bot envoie un embed avec bouton « Vérifier mon compte ».
+
+Ce bouton pointe vers https://cstream--trte11.replit.app/verify.
+
+L’utilisateur suit le flux → revient sur Discord avec rôle attribué.
+
+🛡️ Points pour éviter les bugs
+Vérifie que ton redirect URI est exactement identique dans le Developer Portal et ton code.
+
+Ne mets jamais ton Client Secret côté front, uniquement côté serveur.
+
+Donne au bot la permission Manage Roles.
+
+Teste avec un compte test avant de déployer.

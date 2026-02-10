@@ -1,0 +1,53 @@
+Crée une page radio ultra premium avec design "liquid glass" et un mini player overlay global.
+
+### 🎧 Objectif
+- Offrir une expérience magique et futuriste pour écouter des radios en live.
+- Design inspiré d’Apple Music, Tesla UI et interfaces haut de gamme.
+- Le player doit être utilisable sur la page radio ET en overlay global (activable dans Settings).
+
+### 🖼️ Style visuel
+- Glassmorphism liquide : fonds translucides, blur dynamique, reflets subtils.
+- Dégradés premium (emerald, violet, cyan, gold) avec saturation contrôlée.
+- Ombres profondes et diffuses (0 24px 64px rgba(0,0,0,0.45)).
+- Micro‑animations fluides (hover scale, fade, slide, morphing d’icônes).
+- Dark mode par défaut, light mode élégant.
+
+### 📻 Page Radio
+- Grille responsive de stations (Charts, Dance, Deutschrap, Hits, Piano House, Hip-Hop, Hits2K, Summer, Original, Deutschrap Gold, Hip-Hop Gold, Lo-Fi, Chill, Gaming, XMAS).
+- Chaque carte station :
+  - Titre + badge "Live".
+  - Bouton Play/Pause animé (icône morphing).
+  - Bouton Favori (cœur ou étoile animé).
+- Hover : zoom léger, halo coloré autour du bouton.
+- Header avec toggle "Radio overlay global" (checkbox premium).
+
+### 🎛️ Overlay Mini Player
+- Position : bottom‑right, flottant partout sur le site.
+- Contenu :
+  - Titre de la station en cours.
+  - Boutons Play/Pause, Fermer, Favori.
+  - Slider volume néon avec glow.
+- Style : panneau liquide translucide, blur, reflets.
+- Animation : slide‑in/out, fade, rebond subtil.
+- Responsive : compact sur mobile, étendu sur desktop.
+
+### ⚡ Interactions
+- Play/Pause instantané avec feedback visuel.
+- Fermer = stop + fade out overlay.
+- Favori = animation cœur qui pulse.
+- Volume = slider néon avec glow.
+- Overlay activé/désactivé via Settings (persisté en localStorage/Supabase).
+
+### 🌍 Expérience utilisateur
+- Continuité : la musique ne s’arrête pas quand on change de page.
+- Accessibilité : aria‑labels, contrastes, focus states.
+- Internationalisation : textes i18n‑ready.
+- Performance : animations GPU‑friendly, pas de lag.
+
+### 🚀 Bonus
+- Favoris persistés (localStorage ou Supabase).
+- Affichage du "Now Playing" si le flux expose des métadonnées ICY.
+- Intégration dans Settings : toggle overlay global.
+- Test sur desktop et mobile.
+
+🎯 Objectif final : une page radio et un overlay mini player qui donnent l’impression d’un bijou liquide, futuriste, et qui rivalisent avec les meilleures interfaces du monde.

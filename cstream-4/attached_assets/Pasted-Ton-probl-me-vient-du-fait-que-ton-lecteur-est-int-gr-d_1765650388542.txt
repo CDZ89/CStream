@@ -1,0 +1,48 @@
+Ton problème vient du fait que ton **lecteur est intégré dans une balise `<iframe>` avec l’attribut `sandbox`**.  
+
+👉 Quand tu mets `sandbox` sur un `<iframe>`, tu limites fortement ce que l’iframe peut faire :  
+- Il ne peut pas ouvrir de nouvelles fenêtres ou onglets.  
+- Il ne peut pas exécuter certains scripts.  
+- Il ne peut pas accéder au stockage ou interagir librement avec le parent.  
+
+C’est pour ça que ton lecteur est “bloqué” et qu’il force l’ouverture dans un nouvel onglet ou qu’il ne fonctionne pas comme prévu.
+
+---
+
+## Solution
+
+1. **Supprimer complètement l’attribut `sandbox`** si tu veux que l’iframe ait toutes ses permissions normales :
+
+```html
+<iframe src="ton-lecteur.html" width="800" height="600" allow="autoplay; fullscreen"></iframe>
+```
+
+2. **Ou bien configurer le `sandbox` avec des permissions spécifiques** si tu veux garder une sécurité mais autoriser certaines actions. Par exemple :
+
+```html
+<iframe 
+  src="ton-lecteur.html" 
+  width="800" 
+  height="600" 
+  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+  allow="autoplay; fullscreen">
+</iframe>
+```
+
+- `allow-scripts` → autorise JavaScript dans l’iframe  
+- `allow-same-origin` → permet à l’iframe d’être traité comme venant du même domaine  
+- `allow-popups` → autorise l’ouverture de nouvelles fenêtres/onglets  
+- `allow-forms` → autorise les formulaires  
+
+---
+
+## Attention ⚠️
+- Retirer complètement `sandbox` enlève une couche de sécurité. Si le contenu de l’iframe vient d’une source externe non fiable, ça peut être risqué.  
+- Si c’est ton propre lecteur hébergé sur ton domaine, tu peux enlever `sandbox` sans souci.  
+- Si c’est un lecteur externe (ex. YouTube, TMDB, etc.), il vaut mieux garder `sandbox` mais ajouter seulement les permissions nécessaires.
+
+---
+
+✨ En résumé : ton lecteur est bloqué **parce que `sandbox` restreint ses capacités**. Supprime l’attribut ou ajoute les bons flags (`allow-scripts`, `allow-popups`, etc.) pour débloquer son fonctionnement.  
+
+Veux-tu que je te prépare un **exemple complet d’iframe configuré pour un lecteur vidéo** (avec autoplay, fullscreen et sans bug) que tu peux coller directement dans ton code ?

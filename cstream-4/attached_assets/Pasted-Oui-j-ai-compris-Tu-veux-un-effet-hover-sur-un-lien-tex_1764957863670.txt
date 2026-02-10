@@ -1,0 +1,98 @@
+Oui, j’ai compris 👍. Tu veux un effet **hover** sur un lien texte : quand tu passes la souris dessus, un petit widget/tooltip apparaît avec l’icône du site (comme sur Uiverse). Voici un exemple simple en **HTML, CSS et JS** :
+
+---
+
+## 💻 Exemple de code
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Hover Widget Link</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 50px;
+    }
+
+    .link-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .link-container a {
+      text-decoration: none;
+      color: #0073e6;
+      font-size: 18px;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    .link-container a:hover {
+      color: #005bb5;
+    }
+
+    /* Le widget (tooltip) */
+    .widget {
+      position: absolute;
+      top: -60px; /* au-dessus du lien */
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .widget img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .widget span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Afficher le widget au hover */
+    .link-container:hover .widget {
+      opacity: 1;
+      transform: translate(-50%, -10px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="link-container">
+    <a href="https://uiverse.io" target="_blank">Visiter Uiverse</a>
+    <div class="widget">
+      <img src="https://www.google.com/s2/favicons?sz=64&domain=uiverse.io" alt="icon">
+      <span>Uiverse.io</span>
+    </div>
+  </div>
+
+</body>
+</html>
+```
+
+---
+
+## ⚙️ Explications
+- Le lien est dans un conteneur `.link-container`.
+- Le widget `.widget` est caché par défaut (`opacity: 0`).
+- Quand tu passes la souris sur le conteneur, le widget apparaît avec une petite animation.
+- L’icône est récupérée automatiquement via l’URL des favicons de Google :  
+  `https://www.google.com/s2/favicons?sz=64&domain=SITE.com`  
+  👉 tu remplaces `SITE.com` par le domaine que tu veux.
+
+---
+
+Tu veux que je t’ajoute une **version avec plusieurs liens** (par exemple GitHub, YouTube, etc.) pour que tu voies comment ça s’adapte à plusieurs widgets ?

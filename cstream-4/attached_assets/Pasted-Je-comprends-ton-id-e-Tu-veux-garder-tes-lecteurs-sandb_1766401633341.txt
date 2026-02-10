@@ -1,0 +1,34 @@
+Je comprends ton idée 👍. Tu veux garder tes lecteurs *sandbox* actifs (donc ne pas les bloquer), mais empêcher uniquement les publicités, en les redirigeant vers une URL de type *blocked/adblocked*.  
+
+Voici quelques pistes techniques pour y parvenir :
+
+### 🛠️ Approches possibles
+- **Filtrage par domaine/URL**  
+  - Tu laisses passer les requêtes vers tes lecteurs sandbox.  
+  - Tu bloques ou rediriges uniquement les requêtes vers les domaines publicitaires connus (Google Ads, DoubleClick, etc.).  
+  - Cela peut se faire via un proxy, un firewall applicatif, ou un middleware dans ton serveur.
+
+- **Adblock côté navigateur**  
+  - Si tes lecteurs sont intégrés dans une page web, tu peux injecter un script qui intercepte les requêtes vers les pubs et les redirige vers une URL factice (*redirectURL*).  
+  - Exemple : utiliser `window.fetch` ou `XMLHttpRequest` interception pour détecter les URLs publicitaires et les remplacer.
+
+- **Reverse proxy (Nginx/Apache)**  
+  - Tu configures des règles de réécriture :  
+    - `if (request_uri ~* "ads|doubleclick|tracking") { return 302 /blocked-ad; }`  
+  - Tes sandbox restent intacts, mais les pubs sont redirigées.
+
+- **Liste noire dynamique**  
+  - Tu maintiens une liste des domaines publicitaires.  
+  - Toute requête vers ces domaines est redirigée vers `/adblocked`.  
+  - Les autres (lecteurs sandbox) passent normalement.
+
+### ⚠️ Points à surveiller
+- Certains lecteurs sandbox peuvent charger des pubs via le même domaine que le contenu → il faut être précis pour ne pas casser le lecteur.  
+- Redirection vers une URL factice doit être cohérente (par ex. une page "Ad blocked" ou un pixel transparent).  
+- Si tu veux que ce soit invisible pour l’utilisateur, tu peux juste bloquer la requête sans redirection (status 403 ou drop).
+
+👉 Pour que je t’aide plus concrètement, dis-moi :  
+- Tu travailles sur un **site web** (HTML/JS), un **serveur** (Nginx/Apache), ou un **logiciel** ?  
+- Tu veux que le blocage soit côté **client** (navigateur) ou côté **serveur** ?  
+
+Ainsi je pourrai te donner un exemple de configuration ou de code adapté.

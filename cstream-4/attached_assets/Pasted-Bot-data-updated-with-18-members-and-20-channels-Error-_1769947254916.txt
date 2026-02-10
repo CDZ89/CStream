@@ -1,0 +1,40 @@
+Bot data updated with 18 members and 20 channels
+Error deferring reply: DiscordAPIError[10062]: Unknown interaction
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/ai.js:20:13)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:246:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: { message: 'Unknown interaction', code: 10062 },
+  code: 10062,
+  status: 404,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467489536354287790/aW50ZXJhY3Rpb246MTQ2NzQ4OTUzNjM1NDI4Nzc5MDo5QW1Gc1BTUlduS3FoMFdCcGd5ZzEyYTlzRlhtd1VOeThVVHM2VEtrcFJ1Z1d6WHNaU2Zoc2FVZXdQU3AwVEVDUnFQQUIyWExCMzJCSVBWdk40Z2d0N295T2dYbXpoQWJWZ21MTXIzSHpYZjJUNzk0a05wbnNIZmpyeWg1VXNrUQ/callback?with_response=false'
+}
+(node:1736) Warning: Supplying "ephemeral" for interaction response options is deprecated. Utilize flags instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Clear Command Error: DiscordAPIError[10062]: Unknown interaction
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/clear.js:20:7)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:246:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: { message: 'Unknown interaction', code: 10062 },
+  code: 10062,
+  status: 404,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467489546471215280/aW50ZXJhY3Rpb246MTQ2NzQ4OTU0NjQ3MTIxNTI4MDpQckFHOXdvc3hIWk5uVlc2em9NSXhKQkd0VDh0ZlJ6cHZxUk1LTXRyT0Vxem9wckVRRVVBekFIV1JOcU9Md0hWSlFZaWNyUExnRW1xN25vSWpOaE16enFucElKd0xjVld6VGxQdldTVVlPeDBUdkdJT0RnZENEMDVJVjB4dmQzaQ/callback?with_response=false'
+}
+Interaction Error: Error [InteractionNotReplied]: The reply to this interaction has not been sent or deferred.
+    at ChatInputCommandInteraction.editReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:246:48)
+    at Object.execute (/home/runner/workspace/bot/commands/clear.js:33:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:246:9) {
+  code: 'InteractionNotReplied'
+}

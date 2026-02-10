@@ -1,0 +1,183 @@
+Nontongo : 
+
+TMDB id movie API
+URL API : https://www.NontonGo.win/embed/movie/TMDB ID
+TMDB id tv show API
+URL API : https://www.NontonGo.win/embed/tv/TMDB ID/SEASON NUMBER/EPISODE NUMBER
+Or
+URL API : https://www.NontonGo.win/embed/tv/?id=TMDB ID&s=SEASON NUMBER&e=EPISODE NUMBER
+
+Anime API
+URL API : https://nontongo.win/embed/anime/{SLUG}
+"You can use Underscore (_) or Hyphen (-) in SLUG"
+EXAMPLE {SLUG} :
+Shingeki_no_Kyojin_Season_3_Part_2_episode_5
+or
+Shingeki-no-Kyojin-Season-3-Part-2-episode-5
+
+Get Slug from myanimelist.net HERE
+Complete Url with SLUG
+https://nontongo.win/embed/anime/one-piece-episode-1136
+or
+https://nontongo.win/embed/anime/one_piece_episode_1136
+https://nontongo.win/embed/anime/steinsgate_episode_1
+
+"You may change the Episode Number at the end of slug"
+i.e. https://nontongo.win/embed/anime/steinsgate_episode_2
+
+API Lecteur 111movies : 
+Detailed representation of the API endpoints for 111movies includes comprehensive information regarding the available methods, request formats, required parameters and optional parameters.
+Endpoint
+https://111movies.com/movie/{id}
+Valid parameters:
+- {id} required - from imdb.com or themoviedb.com, imdb id must have tt prefix.
+
+Examples
+https://111movies.com/movie/tt6263850
+
+https://111movies.com/movie/533535
+
+Endpoint
+https://111movies.com/tv/{id}/{season}/{episode}
+Valid parameters:
+- {id} required - from imdb.com or themoviedb.com, imdb id must have tt prefix.
+
+- {season} required - the eason number
+
+- {episode} required - the episode number
+
+Examples
+https://111movies.com/tv/tt30217403/1/5
+
+https://111movies.com/tv/240411/1/5
+
+vidsrc 2 : 
+
+Streaming API
+
+Vidsrc.cx streaming never stops.
+Serve movies and TV episodes through an iframe-friendly player with auto source selection, captions, and metadata handled for you.
+
+Launch test player
+Global CDN
+Edge cached
+Formats
+HLS + DASH
+Captions
+Multi-track
+Embed preview
+
+/embed/movie/550
+
+Ready
+Embed anywhere
+
+<iframe
+
+src="https://vidsrc.cx/embed/movie/550"
+
+allowfullscreen
+
+referrerpolicy="origin"
+
+></iframe>
+
+TV episodes
+
+Use /embed/tv/:id/:seasonId/:episodeId when you need precise episode playback. The player auto-rotates through embeds and captions.
+
+Endpoints
+Quick reference
+
+GET
+/embed/movie/:tmdbId
+GET
+/embed/tv/:tmdbId/:seasonId/:episodeId
+Pass TMDB ids for the show, season, and episode.
+const tmdbId = "550";
+const embedUrl = `https://vidsrc.cx/embed/movie/${tmdbId}`;
+const player = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+Drop-in embeds
+Load the player anywhere with a single URL. Movie embeds are one path; TV embeds accept season + episode ids.
+
+Fast metadata
+TMDB-powered metadata lookup with aggressive caching so the player boots instantly.
+
+Smart sources
+Automatic source selection with fallback embeds, captions, and adaptive streams handled for you.
+
+Workflow
+Simple integration steps
+
+1 - Pick your title
+
+Grab the TMDB id for the movie or show + episode you want to play.
+
+2 - Build the URL
+
+Use /embed/movie/:id or /embed/tv/:id/:season/:episode to get an embeddable player.
+
+3 - Drop in your app
+
+Iframe it, open it in a new tab, or deep link from mobile. The player handles sources and captions.
+
+Status
+
+Live & performant
+
+The player will request metadata and streams automatically. For API hosting, point your instance to the correct backend URL in .env.
+
+Backend URL
+https://vidsrc.cx
+Docs
+https://vidsrc.cx
+
+lecteur moviesapi :
+
+Endpoint
+https://moviesapi.to/movie/$id
+Valid parameters:
+- $id required: Can be a tmdbid or imdbid.
+
+Examples
+https://moviesapi.club/movie/385687 (tmdbid)
+
+https://moviesapi.club/movie/tt5433140 (imdbid)
+
+Endpoint
+https://moviesapi.to/tv/$id-$season-$episode
+Valid parameters:
+- $id required: Can be a tmdbid or imdbid.
+
+- $season required: The season number.
+
+- $episode required: The episode number.
+
+Examples
+https://moviesapi.club/tv/1399-1-3 (tmdbid for Season 1, Episode 3)
+
+https://moviesapi.club/tv/tt0944947-2-5 (imdbid for Season 2, Episode 5)
+
+Endpoint
+https://moviesapi.to/api/discover/movie
+Query Parameters:
+page: The page number. Default: 1.
+resultsPerPage: Number of results per page. Default: 20.
+ordering: Sorting field (id, year, upload_date).
+direction: Sort direction (asc or desc).
+query: Search for a movie by title. Minimum 3 characters.
+year: Filter movies by release year.
+imdb_id: Search by IMDb ID.
+Example Request:
+https://moviesapi.to/api/discover/movie?direction=desc&page=1
+
+Endpoint
+https://moviesapi.to/api/discover/tv
+Query Parameters:
+page: The page number. Default: 1.
+resultsPerPage: Number of results per page. Default: 20.
+ordering: Sorting field (id, year, last_upload_date).
+direction: Sort direction (asc or desc).
+query: Search for a TV show by title. Minimum 3 characters.
+Example Request:
+https://moviesapi.to/api/discover/tv?direction=desc&page=1

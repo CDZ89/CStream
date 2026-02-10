@@ -1,0 +1,226 @@
+Je te sens à bout, et je comprends: tu veux un prompt qui “oblige” le rendu à être compatible et sans blocages. Je te donne un méga prompt complet + un composant SafeIframe prêt à l’emploi. Important: on ne peut pas contourner les politiques serveur (X-Frame-Options, CSP frame-ancestors) ni forcer un lecteur distant à accepter l’embed, mais on peut maximiser la compatibilité, détecter les blocages et basculer proprement.
+
+---
+
+### Méga prompt de spécification pour iframes vidéo 100% compatibles
+
+Utilise ce prompt comme cahier des charges (pour toi, pour un générateur, ou pour ton équipe). Il impose tout ce qui est nécessaire et prévoit les fallbacks.
+
+- **Objectif:** Générer un composant `SafeIframe` (framework agnostique ou React/Vue) qui embarque des lecteurs vidéo externes avec compatibilité maximale, détection d’erreurs, et fallback automatique.
+- **Contraintes de sécurité:** Ne pas tenter de contourner `X-Frame-Options` ou `Content-Security-Policy` (`frame-ancestors`). Si ces headers bloquent, le composant doit le détecter et déclencher un fallback UX.
+- **Attributs iframe requis:**  
+  - `allow="autoplay; fullscreen; picture-in-picture; encrypted-media"`  
+  - `referrerpolicy="strict-origin-when-cross-origin"`  
+  - `allowfullscreen` toujours activé  
+  - `loading="lazy"` si non critique pour UX  
+- **Gestion du sandbox:**  
+  - Par défaut: ne pas utiliser `sandbox`.  
+  - Si sandbox imposé par une source interne, inclure strictement `allow-scripts allow-same-origin allow-forms allow-popups allow-presentation` et rien d’autre.  
+  - Le composant doit afficher un état “Sandbox restrictions detected” si `same-origin` ou `scripts` manquent.
+- **Détection de blocage (runtime):**  
+  - Timeout de readiness: si aucune preuve de readiness dans 4–6 s, basculer en état “Possibly blocked”.  
+  - Écoute `postMessage` sur `window` avec un protocole simple: attendre `PLAYER_READY`, `PLAYER_ERROR`, `PING`.  
+  - Si aucun message et `onload` ne mène à interaction, marquer “No handshake — likely CSP/XFO”.
+- **Fallback UX obligatoire:**  
+  - État “Chargement…”  
+  - État “Lecture bloquée / restreinte” avec cause probable (sandbox manquant, CSP/XFO, cross-origin silencieux).  
+  - Boutons: “Essayer une autre source”, “Ouvrir dans nouvel onglet”, “Signaler le lecteur”.
+- **Priorisation multi-sources:**  
+  - Essayer dans l’ordre des sources compatibles (ex.: Videasy MULTI, VidKing, puis autres).  
+  - Si une source échoue, basculer automatiquement sur la suivante avec mémorisation du motif d’échec.
+- **Journalisation et observabilité:**  
+  - Émettre des événements: `iframe_attempt`, `iframe_ready`, `iframe_blocked`, `iframe_timeout`, `iframe_fallback_switch`.  
+  - Inclure le `src`, les attributs utilisés, la latence, et le motif probable (sandbox/CSP/XFO).
+- **Accessibilité et UX:**  
+  - States clairs, non techniques pour l’utilisateur; détails techniques dans un bouton “Détails”.  
+  - Focus management et labels ARIA pour états et boutons.
+- **Compatibilité navigateur:**  
+  - Test Chrome/Firefox/Safari/Edge; si `picture-in-picture` indisponible, ne pas afficher l’option.  
+- **Sécurité additionnelle:**  
+  - Pas d’injection de scripts dans l’iframe.  
+  - Pas de tentatives de lecture de `contentWindow` si cross-origin.  
+  - Se conformer aux Feature Policies: uniquement les permissions listées.
+- **API du composant:**  
+  - Props: `src`, `title`, `sandboxMode` (“none” | “required”), `allow`, `timeoutMs`, `onReady`, `onBlocked`, `onFallback`, `fallbackSources`.  
+  - Méthodes: `switchSource(index)`, `reload()`.  
+  - États publics: `status` (“loading” | “ready” | “blocked” | “timeout” | “fallback”).
+
+---
+
+### Composant React SafeIframe (prêt à brancher)
+
+```tsx
+import React, { useEffect, useRef, useState } from 'react';
+
+type SafeIframeStatus = 'idle' | 'loading' | 'ready' | 'blocked' | 'timeout' | 'fallback';
+
+interface Source {
+  label: string;
+  src: string;
+  sandbox?: string | null; // null => no sandbox, string => sandbox value
+  allow?: string;
+}
+
+interface SafeIframeProps {
+  title?: string;
+  sources: Source[]; // ordered by priority
+  timeoutMs?: number; // readiness timeout
+  onReady?: (src: string) => void;
+  onBlocked?: (src: string, reason: string) => void;
+  onFallback?: (fromSrc: string, toSrc: string, reason: string) => void;
+}
+
+export const SafeIframe: React.FC<SafeIframeProps> = ({
+  title = 'Video player',
+  sources,
+  timeoutMs = 5000,
+  onReady,
+  onBlocked,
+  onFallback,
+}) => {
+  const [index, setIndex] = useState(0);
+  const [status, setStatus] = useState<SafeIframeStatus>('idle');
+  const [reason, setReason] = useState<string>('');
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const current = sources[index];
+
+  // Heuristique: sandbox sans same-origin ou scripts => probablement bloqué
+  const sandboxRisk = current.sandbox
+    ? !current.sandbox.includes('allow-scripts') || !current.sandbox.includes('allow-same-origin')
+    : false;
+
+  useEffect(() => {
+    setStatus('loading');
+    setReason('');
+    const timer = window.setTimeout(() => {
+      if (status === 'loading') {
+        setStatus('timeout');
+        setReason('No readiness handshake received within timeout.');
+        onBlocked?.(current.src, 'timeout');
+        // auto-fallback si possible
+        if (index < sources.length - 1) {
+          const from = current.src;
+          const to = sources[index + 1].src;
+          setIndex(i => i + 1);
+          setStatus('fallback');
+          onFallback?.(from, to, 'timeout');
+        }
+      }
+    }, timeoutMs);
+
+    const onMessage = (e: MessageEvent) => {
+      // Attendre des messages du lecteur embarqué
+      if (typeof e.data === 'string') {
+        if (e.data === 'PLAYER_READY') {
+          window.clearTimeout(timer);
+          setStatus('ready');
+          onReady?.(current.src);
+        } else if (e.data.startsWith('PLAYER_ERROR')) {
+          window.clearTimeout(timer);
+          setStatus('blocked');
+          setReason('Player reported an error via postMessage.');
+          onBlocked?.(current.src, 'player_error');
+        }
+      } else if (e.data && e.data.type === 'PLAYER_READY') {
+        window.clearTimeout(timer);
+        setStatus('ready');
+        onReady?.(current.src);
+      }
+    };
+
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('message', onMessage);
+    };
+  }, [index]); // switch source resets detection
+
+  useEffect(() => {
+    // Détection de risque sandbox à l'affichage
+    if (sandboxRisk) {
+      setStatus('blocked');
+      setReason('Sandbox missing allow-scripts or allow-same-origin.');
+      onBlocked?.(current.src, 'sandbox_restriction');
+    }
+  }, [current.sandbox]);
+
+  const tryNextSource = () => {
+    if (index < sources.length - 1) {
+      const from = current.src;
+      const to = sources[index + 1].src;
+      setIndex(i => i + 1);
+      setStatus('fallback');
+      onFallback?.(from, to, 'manual_switch');
+    }
+  };
+
+  return (
+    <div className="safe-iframe">
+      <div className="player-wrapper">
+        <iframe
+          ref={iframeRef}
+          title={title}
+          src={current.src}
+          allow={current.allow ?? 'autoplay; fullscreen; picture-in-picture; encrypted-media'}
+          referrerPolicy="strict-origin-when-cross-origin"
+          loading="lazy"
+          allowFullScreen
+          // Appliquer sandbox uniquement si explicitement fourni
+          {...(current.sandbox ? { sandbox: current.sandbox } : {})}
+          style={{ width: '100%', height: '100%', border: '0', background: 'black' }}
+        />
+      </div>
+
+      <div className="player-status" aria-live="polite">
+        {status === 'loading' && <span>Chargement du lecteur…</span>}
+        {status === 'ready' && <span>Lecteur prêt.</span>}
+        {status === 'timeout' && (
+          <span>Lecture incertaine (timeout). Tentative de bascule vers une autre source.</span>
+        )}
+        {status === 'blocked' && (
+          <div>
+            <strong>Lecture bloquée.</strong>
+            <div>Détail: {reason}</div>
+            <button onClick={tryNextSource}>Essayer une autre source</button>
+          </div>
+        )}
+        {status === 'fallback' && (
+          <span>Changement de source pour assurer la lecture…</span>
+        )}
+      </div>
+
+      <div className="player-actions">
+        <button onClick={tryNextSource} disabled={index >= sources.length - 1}>
+          **Action:** Essayer la source suivante
+        </button>
+        <a href={current.src} target="_blank" rel="noopener noreferrer">
+          **Action:** Ouvrir dans un nouvel onglet
+        </a>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+### Headers serveur qui bloquent et que tu ne peux pas “forcer”
+
+- **X-Frame-Options:** **DENY** ou **SAMEORIGIN** empêche l’embed hors du domaine autorisé.
+- **Content-Security-Policy:** `frame-ancestors` contrôle quelles origines peuvent intégrer le contenu; `none` ou absence de ton domaine bloque.
+- **Feature/Permissions-Policy:** peut désactiver `autoplay`, `fullscreen`, `encrypted-media` côté distant.
+- **Referrer/CORS:** politiques strictes peuvent empêcher certains comportements, sans lever d’erreurs visibles.
+
+---
+
+### Stratégie multi-sources recommandée
+
+- **Labeling clair:** Videasy MULTI, VidKing, etc., avec indicateur de compatibilité (sandbox requis / sandbox interdit).
+- **Essais ordonnés:** Commence par les sources sans sandbox; applique sandbox uniquement si la source interne l’exige.
+- **Telemetry:** Logge les motifs d’échec par source pour ajuster ton ordre automatiquement avec un score de fiabilité.
+
+---
+
+### Direct answer
+
+Tu ne peux pas “obliger” un lecteur externe à se laisser intégrer si le serveur bloque via XFO/CSP. Le méga prompt ci-dessus + le composant SafeIframe te donnent la meilleure robustesse: permissions complètes, détection des blocages, bascule automatique, et UX propre. Envoie-moi une URL spécifique qui échoue: je l’intègre dans `sources` et je te règle les attributs exacts et l’ordre optimal.

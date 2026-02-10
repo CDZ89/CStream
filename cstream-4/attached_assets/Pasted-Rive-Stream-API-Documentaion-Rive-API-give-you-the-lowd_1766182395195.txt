@@ -1,0 +1,111 @@
+Rive Stream : 
+API Documentaion
+Rive API give you the lowdown on all the methods, request formats, and both required and optional parameters.
+
+1. Movie Embed
+TmdbId is required from The Movie Database API.
+
+Endpoint
+https://rivestream.net/embed?type=movie&id={tmdbId}
+Examples
+https://rivestream.net/embed?type=movie&id=533535
+https://rivestream.net/embed?type=movie&id=278
+Code Examples
+<iframe src="https://rivestream.net/embed?type=movie&id=533535" allowfullscreen ></iframe>
+2. Tv Show Embed
+TmdbId is required from The Movie Database API. season and episode number should not be empty.
+
+Endpoint
+https://rivestream.net/embed?type=tv&id={tmdbId}&season={season}&episode={episode}
+Examples
+https://rivestream.net/embed?type=tv&id=1396&season=1&episode=1
+https://rivestream.net/embed?type=tv&id=1399&season=1&episode=1
+Code Examples
+<iframe src="https://rivestream.net/embed?type=tv&id=1396&season=1&episode=1" allowfullscreen ></iframe>
+Torrent API
+Your complete guide to streaming high-quality movies and TV shows using torrents. Includes details on available methods, request formats, and parameters to retrieve and stream torrent-backed video content seamlessly.
+
+1. Movie Embed
+TmdbId is required from The Movie Database API.
+
+Endpoint
+https://rivestream.net/embed/torrent?type=movie&id={tmdbId}
+Examples
+https://rivestream.net/embed/torrent?type=movie&id=533535
+https://rivestream.net/embed/torrent?type=movie&id=278
+Code Examples
+<iframe src="https://rivestream.net/embed/torrent?type=movie&id=533535" allowfullscreen ></iframe>
+2. Tv Show Embed
+TmdbId is required from The Movie Database API. season and episode number should not be empty.
+
+Endpoint
+https://rivestream.net/embed/torrent?type=tv&id={tmdbId}&season={season}&episode={episode}
+Examples
+https://rivestream.net/embed/torrent?type=tv&id=1396&season=1&episode=1
+https://rivestream.net/embed/torrent?type=tv&id=1399&season=1&episode=1
+Code Examples
+<iframe src="https://rivestream.net/embed/torrent?type=tv&id=1396&season=1&episode=1" allowfullscreen ></iframe>
+Aggregator API
+Stream movies and TV shows from multiple aggregator servers. This API documentation details all methods, request formats, and parameters required to access and integrate streams from various reliable sources.
+
+1. Movie Embed
+TmdbId is required from The Movie Database API.
+
+Endpoint
+https://rivestream.net/embed/agg?type=movie&id={tmdbId}
+Examples
+https://rivestream.net/embed/agg?type=movie&id=533535
+https://rivestream.net/embed/agg?type=movie&id=278
+Code Examples
+<iframe src="https://rivestream.net/embed/agg?type=movie&id=533535" allowfullscreen ></iframe>
+2. Tv Show Embed
+TmdbId is required from The Movie Database API. season and episode number should not be empty.
+
+Endpoint
+https://rivestream.net/embed/agg?type=tv&id={tmdbId}&season={season}&episode={episode}
+Examples
+https://rivestream.net/embed/agg?type=tv&id=1396&season=1&episode=1
+https://rivestream.net/embed/agg?type=tv&id=1399&season=1&episode=1
+Code Examples
+<iframe src="https://rivestream.net/embed/agg?type=tv&id=1396&season=1&episode=1" allowfullscreen ></iframe>
+Download API
+Download movies and TV shows from multiple aggregator servers. This API documentation details all methods, request formats, and parameters required to access and download streams from various reliable sources.
+
+1. Movie Download
+TmdbId is required from The Movie Database API.
+
+Endpoint
+https://rivestream.net/download?type=movie&id={tmdbId}
+Examples
+https://rivestream.net/download?type=movie&id=533535
+https://rivestream.net/download?type=movie&id=278
+Code Examples
+<iframe src="https://rivestream.net/download?type=movie&id=533535" allowfullscreen ></iframe>
+2. Tv Show Download
+TmdbId is required from The Movie Database API. season and episode number should not be empty.
+
+Endpoint
+https://rivestream.net/download?type=tv&id={tmdbId}&season={season}&episode={episode}
+Examples
+https://rivestream.net/download?type=tv&id=1396&season=1&episode=1
+https://rivestream.net/download?type=tv&id=1399&season=1&episode=1
+Code Examples
+<iframe src="https://rivestream.net/download?type=tv&id=1396&season=1&episode=1" allowfullscreen ></iframe>
+Feautes
+Deliver an optimized UI/UX
+We’ve loaded up on essential features, all fine-tuned to make sure you get the best user experience possible. Every detail is optimized to keep things smooth and awesome for you
+
+Responsive
+The player is responsive and can work on every Desktop, Mobile, Tablet without problem.
+
+Auto Update
+Content added every day, updated automatically
+
+Highest Quality
+Latest available quality and the fastest
+
+Fast Streaming
+The player includes a list of fastest streaming servers, users can easily optional.
+
+Huge Library
+We have been delivering contents from various other sources with better and faster streaming service

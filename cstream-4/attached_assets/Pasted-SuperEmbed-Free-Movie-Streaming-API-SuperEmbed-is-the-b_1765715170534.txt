@@ -1,0 +1,124 @@
+SuperEmbed
+Free Movie Streaming API
+SuperEmbed is the best free movie streaming API for your website. Auto embed thousands of movies and tv shows available on multiple servers. Great 2embed.to alternative.
+
+Install Player
+About SuperEmbed
+Built for streaming websites.
+Are you a webmaster of a movie streaming website? Use SuperEmbed and you will never have to take care of uploading movies or searching links. We always provide fresh and working links with the best available quality from multiple servers.
+
+Totally free
+No registration needed, no API key needed. Just install our player on your website and let visitors enjoy unlimited number of movies and TV shows.
+
+Best sources
+We provide the most sources among other video streaming api services. Choose from more than 10 popular video streaming servers.
+
+
+
+
+Frequently asked questions
+Everything you want to know.
+Is it free? How do I join?
+Yes, everything is free. You don't have to create account or api key. Just download our player and upload it to your website.
+
+Are there any ads?
+There is only popup ad from us to cover servers costs. Ad level on all video streaming servers is set to the lowest level possible (0% earnings and usually just 1 popup). If you see more than 1 popup or notifications/banners/videos before or while playing video - those are ads from video hosting servers and we can't control them. You can embed only our VIP player with just one popup ad or you can contact us if you have a website with big traffic and we'll lower the ads for you.
+
+Does it work with Dooplay/Psyplay/Toroflix?
+Yes, our player works with any template. We also offer integration files ready to download for Dooplay here.
+
+What servers are available?
+You can choose from premium servers with quality selector and subtitles or from the most popular videohosts, namely streamtape, doodstream, mixdrop, streamsb, voe, upstream, abyss, streamhide and more.
+
+Do you have a demo player?
+Yes, you can check our player with Godzilla vs Kong 2021.
+
+Open player
+
+337862
+Movies
+756160
+Episodes
+2177775
+Streaming Links
+16
+Video Servers
+Auto Embed Integrations
+Use SuperEmbed with Dooplay, PsyPlay and other themes.
+You can use SuperEmbed on any website with any theme. You can download these working themes with already installed auto embed features.
+
+Dooplay AutoEmbed Integration Dooplay Full Theme + AutoEmbed PsyPlay Full Theme + AutoEmbed Wovie Redux Full Theme + AutoEmbed
+
+Installation Guide
+Let's get started.
+We offer two types of implementation. Easy way and advanced way. In order to make our player work on your website the advanced way you need a server with PHP and cURL or file_get_contents enabled. You download our player php file and upload it to your website. This file calls our server for a player url and then redirects to it.
+
+Simple way
+Just paste url to iframe. No extra files needed. Works on all servers, even Blogger.
+
+Request movie by IMDB id: https://multiembed.mov/?video_id=tt8385148
+Request movie by TMDB id: https://multiembed.mov/?video_id=522931&tmdb=1
+Request episode by IMDB id: https://multiembed.mov/?video_id=tt13157618&s=1&e=2
+Request episode by TMDB id: https://multiembed.mov/?video_id=114472&tmdb=1&s=1&e=2
+
+Paste these urls to iframe and the player will appear there. Just change imdb or tmdb id.
+For IMDB id you can use tt0000000 or just number 0000000.
+For season and episode parameters you can use s=1&e=1 or season=1&episode=1.
+Don't forget to always include &tmdb=1 if using TMDB id.
+
+NEW! Request VIP player
+With this method you can request only VIP player (multi quality, fast HLS streaming, subtitles) with just one popup ad. If the requested movie/episode is not available with VIP player our normal player will be used.
+
+Request movie by IMDB id: https://multiembed.mov/directstream.php?video_id=tt6791350
+Request movie by TMDB id: https://multiembed.mov/directstream.php?video_id=447365&tmdb=1
+Request episode by IMDB id: https://multiembed.mov/directstream.php?video_id=tt13157618&s=1&e=2
+Request episode by TMDB id: https://multiembed.mov/directstream.php?video_id=114472&tmdb=1&s=1&e=2
+
+Paste these urls to iframe and the player will appear there. Just change imdb or tmdb id.
+For IMDB id you can use tt0000000 or just number 0000000.
+For season and episode parameters you can use s=1&e=1 or season=1&episode=1.
+Don't forget to always include &tmdb=1 if using TMDB id.
+
+You can Check if VIP player is available by adding &check=1. Returns 0 if not available and 1 if available.
+Example: https://multiembed.mov/directstream.php?video_id=tt6791350&check=1
+
+You can Add your own subtitles by adding &sub_url and &sub_label parameters. Your subtitles will appear first in list and autoplay. Must be urlencoded!
+Example: https://multiembed.mov/directstream.php?video_id=tt6791350&sub_url=SUBTITLES_URL&sub_label=SUBTITLES_LABEL
+
+
+Advanced way (recommended)
+
+1. Download our player file.
+Unzip it and upload it to the root of your website. You can rename the file or upload into subfolder but then you need to change the path and name accordingly in next steps.
+
+Download
+
+2. Customize the settings. (optional)
+You can change the look and behaviour of our player. Open the se_player.php file and change some variables. Everything is described inside the file.
+
+3. Request the player.
+Now that you have uploaded the player into your website you can start calling the player with parameters.
+
+Request movie by IMDB id: https://yourwebsite.com/se_player.php?video_id=tt8385148
+Request movie by TMDB id: https://yourwebsite.com/se_player.php?video_id=522931&tmdb=1
+Request episode by IMDB id: https://yourwebsite.com/se_player.php?video_id=tt2861424&s=5&e=5
+Request episode by TMDB id: https://yourwebsite.com/se_player.php?video_id=60625&tmdb=1&s=5&e=5
+
+Paste these urls to iframe and the player will appear there.
+For IMDB id you can use tt0000000 or just number 0000000.
+For season and episode parameters you can use s=1&e=1 or season=1&episode=1.
+Don't forget to always include &tmdb=1 if using TMDB id.
+
+
+
+
+Do you have a website with big traffic? Contact us for individual customizations, private api or lowering ads.
+
+
+Do you have more questions, suggestions, error reports or just want to chat?
+
+Send us a message
+
+
+
+© Copyrights 2021 SuperEmbed.Developed with ♥

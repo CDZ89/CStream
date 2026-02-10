@@ -1,0 +1,238 @@
+# Méga prompt ultra pour un panel admin “style Discord” complet, stable et temps réel
+
+Ce prompt est prêt à être copié-collé pour obtenir un panel admin propre, robuste et sans bugs, avec statuts en temps réel, gestion des rôles, persistance fiable, ajout/retour des utilisateurs comme sur Discord, analytics temps réel et un socle extensible. Il inclut objectifs, exigences fonctionnelles, non-fonctionnelles, modèles de données, API, flux temps réel, UI/UX, sécurité, observabilité, tests et critères d’acceptation.
+
+---
+
+## Objectifs du projet
+
+- **But:** Construire un panel admin complet “type Discord” permettant de voir les statuts des utilisateurs en temps réel, gérer leurs rôles et permissions, ajouter/supprimer/bannir des utilisateurs, et disposer d’analytics en temps réel sur tout le site.
+- **Qualités clés:** Fiabilité (persistance cohérente), performance (temps réel <250 ms), sécurité (RBAC strict), extensibilité (modules), traçabilité (audit log), UX propre et accessible.
+- **Compatibilité:** Desktop moderne, responsive mobile/tablette, compatibilité Chrome/Firefox/Safari/Edge, internationalisation (FR/EN).
+
+---
+
+## Exigences fonctionnelles détaillées
+
+### Statuts et présence “comme Discord”
+- **Types de statut:** online, idle, dnd, offline, custom message, activité (jeu/app), timestamps de dernière activité.
+- **Mise à jour temps réel:** WebSocket/SSE avec fallback long-polling; push status à tous les observateurs autorisés.
+- **Détection d’inactivité:** timer configurable (ex. idle après 5 min sans interaction).
+- **Rich presence:** option d’attacher “activité” avec nom, icône, durée.
+
+### Gestion des utilisateurs
+- **CRUD utilisateurs:** création, lecture, mise à jour, suppression, désactivation, réactivation.
+- **Ajout/suppression “sans bug”:** transactions atomiques, rollback en cas d’échec, validations strictes, messages d’erreur clairs.
+- **Import/Export:** CSV/JSON sécurisé, mapping de champs, preview avec validation.
+- **Recherche/filtrage:** par rôle, statut, date d’inscription, activité, tags.
+
+### Rôles et permissions (RBAC)
+- **Hiérarchie de rôles:** admin, modérateur, staff, membre, invité; possibilité de rôles custom.
+- **Permissions granulaires:** lecture/écriture sur modules, gestion des rôles, bannissement, accès analytics, gestion webhooks/intégrations.
+- **Conflits de permissions:** règle “deny > allow”, héritage explicite, overrides documentés.
+- **Attribution multiples:** utilisateur peut avoir plusieurs rôles; calcul d’un “effective permission set”.
+
+### Persistance fiable
+- **Écriture durable:** toutes les modifications (utilisateurs, rôles, statuts custom) sont persistées jusqu’à suppression explicite.
+- **Audit log:** chaque action avec user_id, action, payload, résultat, timestamp, IP/UA; non altérable (append-only).
+- **Versionning des rôles:** historique des changements, rollback possible.
+
+### Analytics temps réel du site
+- **Tableau de bord live:** utilisateurs actifs, nouveaux inscrits, sessions simultanées, taux d’erreur, latence moyenne, temps de réponse des endpoints, événements clés (login, rôle changé, ban).
+- **Segmentation:** par rôle, région, device, version client.
+- **Graphes temps réel:** streaming avec agrégation (1s/5s/1min), sparkline + histogrammes.
+- **Alertes:** seuils configurables (ex. erreurs >1% pendant 1 min), notifications (email/webhook).
+
+### Modération
+- **Actions:** warn, mute, kick, ban (temporaire/définitif), raisons, durée, preuve (liens), escalade.
+- **File d’attente de signalements:** tri par sévérité, SLA, assignation à modérateurs.
+- **Journal modération:** exportable avec filtres.
+
+### Intégrations et webhooks
+- **Webhooks sortants:** events (user.created, role.updated, status.changed, analytics.alert).
+- **API clés:** rotation, scopes, rate limits, signatures HMAC.
+
+---
+
+## Exigences non-fonctionnelles
+
+- **Performance:** latence p95 < 250 ms pour interactions UI; push status < 1s propagation; analytics agrégées en ≤ 2s.
+- **Scalabilité:** 100k utilisateurs, 10k connexions simultanées; horizontale via sharding ou pub/sub.
+- **Disponibilité:** 99.9% SLA; graceful degradation si WebSocket indisponible.
+- **Sécurité:** OAuth2/OIDC, JWT à court terme + refresh, CSRF pour formulaires, CSP stricte, chiffrement en transit (TLS) et au repos.
+- **Conformité:** RGPD (consentement, droit à l’oubli, export des données).
+- **Accessibilité:** WCAG 2.1 AA.
+
+---
+
+## Modèles de données (schémas conceptuels)
+
+#### Utilisateur
+- **Champs:** id (UUID), username, display_name, email, avatar_url, status (enum), status_message, activity_name, last_seen_at, roles [IDs], created_at, updated_at, is_banned, is_disabled, tags [string].
+- **Index:** username unique, email unique, last_seen_at, is_banned.
+
+#### Rôle
+- **Champs:** id, name, description, priority (int), permissions [string], created_at, updated_at, is_system.
+- **Règles:** deny > allow; priority décide résolutions en conflit.
+
+#### Audit log
+- **Champs:** id, actor_user_id, target_type, target_id, action, payload (JSON), result (success/fail), timestamp, ip, user_agent, signature.
+
+#### Analytics event
+- **Champs:** id, event_type, user_id, session_id, metadata (JSON), timestamp.
+- **Agrégations:** fenêtres de 1s/5s/1min pour tableaux de bord.
+
+---
+
+## API et endpoints
+
+#### Auth
+- **POST /auth/login:** email + password → JWT + refresh.
+- **POST /auth/refresh:** refresh → nouveau JWT.
+- **POST /auth/logout:** invalide refresh.
+
+#### Utilisateurs
+- **GET /users:** liste avec filtres (status, role, banned, search).
+- **POST /users:** créer (validations strictes).
+- **GET /users/{id}:** détails + statuts + rôles.
+- **PATCH /users/{id}:** mise à jour (atomic).
+- **DELETE /users/{id}:** suppression logique ou dure selon policy.
+- **POST /users/{id}/roles:** assigner/désassigner.
+- **POST /users/{id}/ban:** ban temp/définitif (raison, durée).
+- **POST /users/import:** upload CSV/JSON + preview + commit.
+
+#### Statuts/presence
+- **GET /presence:** snapshot global (paginated).
+- **WS /presence:** stream des changements (subscribe/unsubscribe par filtres).
+- **POST /users/{id}/status:** changer status + message + activité.
+
+#### Rôles
+- **GET /roles:** liste + permissions.
+- **POST /roles:** créer.
+- **PATCH /roles/{id}:** modifier.
+- **DELETE /roles/{id}:** supprimer (avec vérifs).
+
+#### Analytics
+- **GET /analytics/live:** métriques agrégées (interval param).
+- **WS /analytics:** stream (events + agrégations).
+- **GET /analytics/events:** export filtré.
+- **POST /alerts:** créer/mettre à jour seuils.
+- **GET /alerts:** liste + états.
+
+#### Audit
+- **GET /audit:** filtres par actor, action, target, date.
+- **GET /audit/{id}:** détail.
+
+#### Webhooks
+- **POST /webhooks:** créer (URL, events, secret).
+- **GET /webhooks:** liste.
+- **DELETE /webhooks/{id}:** supprimer.
+
+---
+
+## Flux temps réel et cohérence
+
+- **Transport:** WebSocket prioritaire; fallback SSE; reconnection expon. backoff; ping/pong health.
+- **Abonnements:** rooms par rôle/projet; filtres (ex. status != offline).
+- **Cohérence:** write-through cache + pub/sub (ex. Redis) pour propager changements; idempotence via request_id; transactions DB pour mises à jour critiques.
+- **Ordering:** horodatage monotone; clients gèrent out-of-order avec version fields.
+
+---
+
+## UI/UX du panel
+
+- **Dashboard principal:** cartes “Utilisateurs actifs”, “Latence”, “Erreurs”, “Alertes”, “Événements récents”.
+- **Liste utilisateurs:** avatar, nom, rôles, statut live, dernière activité, actions rapides.
+- **Profil utilisateur:** onglets “Infos”, “Rôles”, “Historique”, “Modération”.
+- **Gestion des rôles:** tableau avec permissions, priorité, nombre d’utilisateurs; éditeur de permissions.
+- **Analytics live:** graphes, filtres, comparaisons (jour/semaine), export.
+- **Accessibilité:** contraste, focus visible, commandes clavier, labels ARIA.
+- **États vides et erreurs:** messages utiles, CTA clairs, logs de contexte.
+
+---
+
+## Sécurité, conformité et résilience
+
+- **RBAC strict:** middleware vérifie permissions sur chaque endpoint; journaux d’accès.
+- **Protection:** rate limiting, anti-bruteforce sur login, IP allowlist pour endpoints sensibles, validation schémas (JSON Schema), sanitisation inputs.
+- **Secrets:** rotation clés JWT, stockage KMS, secrets jamais en client.
+- **RGPD:** consentement analytics, anonymisation des IP si nécessaire, export/effacement des données utilisateur, registre des traitements.
+- **Backups:** snapshots DB quotidiens, tests de restauration, RPO ≤ 15 min, RTO ≤ 1 h.
+
+---
+
+## Observabilité et qualité
+
+- **Logs structurés:** niveau, trace_id, user_id, action, durée.
+- **Metrics:** CPU, mémoire, latence p50/p95/p99, taux d’erreur, connexions WS, backpressure.
+- **Traces distribuées:** corrélation requêtes API ↔ events WS.
+- **Tests:** unitaires (≥80% couverture logique), intégration (API + WS), end-to-end (Cypress/Playwright), tests de charge (connexion WS 10k).
+- **CI/CD:** lint, tests, build, déploiement progressif, rollback auto.
+
+---
+
+## Critères d’acceptation
+
+- **Statuts live:** changement de statut visible à tous en <1s, stable après reconnection.
+- **Gestion rôles:** création/édition/suppression avec permissions appliquées immédiatement et audit log enregistré.
+- **Persistance:** toute modification persiste après redémarrage; audit log immuable.
+- **Ajout utilisateurs:** import 1k entrées sans erreur; validation des doublons; feedback clair.
+- **Analytics:** dashboard affiche utilisateurs actifs, erreurs, latence en temps réel; alertes déclenchées à seuil configuré.
+- **Sécurité:** accès refusé sans permission; logs d’accès complets; tokens expirent/renouvellent correctement.
+- **Performance:** p95 < 250 ms API, 10k connexions WS gérées sans dégradation majeure.
+
+---
+
+## Exemples de payloads
+
+```json
+// PATCH /users/{id}
+{
+  "display_name": "Alex Martin",
+  "status": "dnd",
+  "status_message": "En réunion",
+  "roles": ["role_admin", "role_staff"],
+  "tags": ["beta", "fr"]
+}
+```
+
+```json
+// POST /roles
+{
+  "name": "moderator",
+  "description": "Gestion signalements et modération",
+  "priority": 50,
+  "permissions": [
+    "users.read",
+    "users.update",
+    "moderation.ban",
+    "analytics.read"
+  ]
+}
+```
+
+```json
+// WebSocket event: presence.update
+{
+  "type": "presence.update",
+  "user_id": "u_123",
+  "status": "idle",
+  "status_message": "Au café",
+  "activity_name": "Figma",
+  "last_seen_at": "2025-12-13T11:12:33Z",
+  "version": 42
+}
+```
+
+---
+
+## Extensions possibles
+
+- **Tags et groupes dynamiques:** auto-assignation par règles (ex. activité > X min).
+- **Segmentation AB:** comparer comportements par version UI.
+- **Règles d’alerte avancées:** expressions (ex. erreurs_api > 100 ET latence_p95 > 500ms).
+- **Rapports programmés:** PDF/CSV envoyés par email/webhook.
+
+---
+
+Si tu veux, je peux adapter ce prompt à ta stack (framework, DB, hébergeur) et au volume attendu. Dis-moi tes technos actuelles et la taille de ta base d’utilisateurs.

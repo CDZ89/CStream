@@ -1,0 +1,105 @@
+Je comprends très bien ton besoin 👌 : tu veux un **agent DevOps IA pour CStream** qui fonctionne uniquement avec **GitHub Actions**, sans dépendre d’un dépôt externe compliqué ni d’une IA qui “ne connaît rien du site”. L’idée est que ton pipeline GitHub Actions soit **complet, autonome et fiable**, et qu’il gère tout : tests, build, déploiement, changelog, widget Update et notification Discord.
+
+---
+
+## 🛠️ Plan clair : GitHub Actions “full stack” pour CStream
+
+### 1. **Structure de ton projet**
+- Ton site CStream doit être dans un dépôt GitHub (c’est obligatoire pour GitHub Actions).
+- Arborescence typique :
+  ```
+  /src        → ton code (pages, backend, frontend)
+  /tests      → tes tests automatiques
+  /build      → sortie du build
+  update.json → changelog généré
+  ```
+
+---
+
+### 2. **Workflow GitHub Actions complet**
+Voici un exemple de fichier `.github/workflows/cstream.yml` :
+
+```yaml
+name: CStream CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * 0'   # chaque dimanche minuit
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
+        run: npm run build
+
+      - name: Generate changelog
+        run: |
+          echo "{" > update.json
+          echo "  \"version\": \"v1.$GITHUB_RUN_NUMBER\"," >> update.json
+          echo "  \"changes\": [" >> update.json
+          echo "    \"Correction des bugs de lecture vidéo\"," >> update.json
+          echo "    \"Amélioration de la fluidité du streaming\"," >> update.json
+          echo "    \"Nouvelle section films populaires\"" >> update.json
+          echo "  ]" >> update.json
+          echo "}" >> update.json
+
+      - name: Deploy to server
+        run: npm run deploy
+
+      - name: Notify Discord
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            📢 Mise à jour CStream v1.${{ github.run_number }}
+            ✅ Corrections : bug lecteur vidéo
+            🚀 Améliorations : fluidité streaming
+            🛠️ Nouveautés : section films populaires
+```
+
+---
+
+### 3. **Ce que ça fait**
+- **Tests** → vérifie ton code avant déploiement.  
+- **Build** → compile ton site.  
+- **Changelog** → génère un fichier `update.json` que ton widget lit.  
+- **Déploiement** → met ton site à jour automatiquement.  
+- **Discord** → envoie un message formaté sur ton webhook.  
+
+---
+
+### 4. **Secrets et sécurité**
+- Dans GitHub → `Settings > Secrets and variables > Actions` :
+  - Ajoute `DISCORD_WEBHOOK` avec l’URL de ton webhook Discord.
+  - Ajoute tes clés serveur si tu déploies sur un hébergeur externe.
+
+---
+
+### 5. **Résultat attendu**
+- Chaque **push sur `main`** ou chaque **dimanche minuit** :
+  - Ton site est testé, corrigé, déployé.  
+  - Le widget Update affiche la nouvelle version.  
+  - Discord reçoit le changelog.  
+- Tu as un **agent fiable et autonome**, sans dépendre d’une IA externe qui “ne connaît rien du site”.
+
+---
+
+👉 Si tu veux, je peux te préparer une **variante spéciale** de ce workflow pour **GitHub Pages** (si ton site est statique) ou pour **déploiement SSH/Docker** (si ton site est dynamique). Tu veux que je te montre la version adaptée à ton type de site ?

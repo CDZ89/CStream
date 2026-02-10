@@ -1,0 +1,296 @@
+API
+Aperçu
+Chaînes
+Flux
+Logos
+Rivières
+Guides
+Catégories
+Traduction
+Pays
+Subdivisions
+Villes
+Régions
+Fuseaux horaires
+Liste de blocage
+Chaînes
+https://iptv-org.github.io/api/channels.json
+[
+  //...
+  {
+    "id": "AnhuiTV.cn",
+    "name": "Anhui TV",
+    "alt_names": ["安徽卫视"],
+    "network": "Anhui",
+    "owners": ["China Central Television"],
+    "country": "CN",
+    "categories": ["general"],
+    "is_nsfw": false,
+    "launched": "2016-07-28",
+    "closed": "2020-05-31",
+    "replaced_by": "CCTV1.cn",
+    "website": "http://www.ahtv.cn/"
+  }
+  //...
+]
+Terrain	Type	Description
+id	Corde	ID de canal unique
+Nom	Corde	Nom complet de la chaîne
+alt_names	Tableau	Liste des noms alternatifs des chaînes
+réseau	chaîne ou nulle	Nom du réseau exploitant la chaîne
+Propriétaires	Tableau	Liste des propriétaires de chaînes
+Pays	Corde	Code pays depuis lequel la diffusion est transmise (ISO 3166-1 alpha-2)
+Catégories	Tableau	Liste des catégories auxquelles appartient cette chaîne
+is_nsfw	Booléen	Indique si la chaîne diffuse du contenu adulte
+lancement	chaîne ou nulle	Date de lancement de la chaîne (YYYY-MM-DD)
+fermé	chaîne ou nulle	Date de fermeture de la chaîne (YYYY-MM-DD)
+replaced_by	chaîne ou nulle	L’identifiant de la chaîne par laquelle cette chaîne a été remplacée
+site internet	chaîne ou nulle	URL officiel du site web
+Source des données : https://github.com/iptv-org/database
+
+Flux
+https://iptv-org.github.io/api/feeds.json
+[
+  //...
+  {
+    "channel": "France3.fr",
+    "id": "ParisIledeFrance",
+    "name": "Paris Ile-de-France",
+    "alt_names": ["Paris Île-de-France"],
+    "is_main": false,
+    "broadcast_area": ["c/FR"],
+    "timezones": ["Europe/Paris"],
+    "languages": ["fra"],
+    "format": "576i"
+  }
+  //...
+]
+Terrain	Type	Description
+Chaîne	Corde	Identifiant de la chaîne
+id	Corde	Identifiant unique de flux
+Nom	Corde	Nom du flux
+alt_names	Tableau	Liste des noms alternatifs du flux
+is_main	Booléen	Indique si ce flux est le principal du canal
+broadcast_area	Tableau	Liste des codes décrivant la zone de diffusion (, , , r/<region_code>c/<country_code>s/<subdivision_code>ct/<city_code>)
+Fuseaux horaires	Tableau	Liste des fuseaux horaires dans lesquels le flux est diffusé
+Traduction	Tableau	Liste des langues de diffusion
+Format	Corde	Format vidéo du flux
+Source des données : https://github.com/iptv-org/database
+
+Logos
+https://iptv-org.github.io/api/logos.json
+[
+  //...
+  {
+    "channel": "France3.fr",
+    "feed": "ParisIledeFrance",
+    "tags": ["horizontal", "white"],
+    "width": 1000,
+    "height": 468,
+    "format": "SVG",
+    "url": "https://example.com/logo.svg"
+  }
+  //...
+]
+Terrain	Type	Description
+Chaîne	Corde	Identifiant de la chaîne
+Feed	chaîne ou nulle	Identifiant du flux
+étiquettes	Tableau	Liste des mots-clés décrivant cette version du logo
+Largeur	Nombre	La largeur de l’image en pixels
+Taille	Nombre	La hauteur de l’image en pixels
+Format	chaîne ou nulle	Format d’image (l’un des suivants : , , , , PNGJPEGSVGGIFWebPAVIFAPNG)
+URL	Corde	Logo URL
+Source des données : https://github.com/iptv-org/database
+
+Rivières
+https://iptv-org.github.io/api/streams.json
+[
+  //...
+  {
+    "channel": "France3.fr",
+    "feed": "NordPasdeCalaisHD",
+    "title": "France 3 Nord Pas-de-Calais HD",
+    "url": "http://1111296894.rsc.cdn77.org/LS-ATL-54548-6/index.m3u8",
+    "referrer": "http://example.com/",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "quality": "720p"
+  }
+  //...
+]
+Terrain	Type	Description
+Chaîne	chaîne ou nulle	Identifiant de la chaîne
+Feed	chaîne ou nulle	Identifiant du flux
+Titre	Corde	Titre du stream
+URL	Corde	URL du flux
+référent	chaîne ou nulle	L’en-tête de requête Referer pour le flux
+user_agent	chaîne ou nulle	L’en-tête de requête User-Agent pour le flux
+Qualité	chaîne ou nulle	Qualité maximale du flux
+Source des données : https://github.com/iptv-org/iptv
+
+Guides
+https://iptv-org.github.io/api/guides.json
+[
+  //...
+  {
+    "channel": "BBCOne.uk",
+    "feed": "EastMidlandsHD",
+    "site": "sky.co.uk",
+    "site_id": "bbcone",
+    "site_name": "BBC One",
+    "lang": "en"
+  }
+  //...
+]
+Terrain	Type	Description
+Chaîne	chaîne ou nulle	Identifiant de la chaîne
+Feed	chaîne ou nulle	Identifiant du flux
+Site	Corde	Nom de domaine du site
+site_id	Corde	Identifiant de canal unique utilisé sur le site
+site_name	Corde	Nom de la chaîne utilisée sur le site
+lang	Corde	Langage du guide (code ISO 639-1)
+Source des données : https://github.com/iptv-org/epg
+
+Catégories
+https://iptv-org.github.io/api/categories.json
+[
+  //...
+  {
+    "id": "documentary",
+    "name": "Documentary",
+    "description": "Programming that depicts a person or real-world event"
+  }
+  //...
+]
+Terrain	Type	Description
+id	Corde	ID de catégorie
+Nom	Corde	Nom de la catégorie
+Description	Corde	Brève description de la catégorie
+Source des données : https://github.com/iptv-org/database
+
+Traduction
+https://iptv-org.github.io/api/languages.json
+[
+  //...
+  {
+    "name": "French",
+    "code": "fra"
+  }
+  //...
+]
+Terrain	Type	Description
+Nom	Corde	Nom de la langue
+Code	Corde	Code ISO 639-3 du langage
+Source des données : https://github.com/iptv-org/database
+
+Pays
+https://iptv-org.github.io/api/countries.json
+[
+  //...
+  {
+    "name": "Canada",
+    "code": "CA",
+    "languages": ["eng", "fra"],
+    "flag": "🇨🇦"
+  }
+  //...
+]
+Terrain	Type	Description
+Nom	Corde	Nom du pays
+Code	Corde	Code ISO 3166-1 alpha-2 du pays
+Traduction	Tableau	Liste des langues officielles du pays (code ISO 639-3)
+drapeau	Corde	Emoji drapeau de pays
+Source des données : https://github.com/iptv-org/database
+
+Subdivisions
+https://iptv-org.github.io/api/subdivisions.json
+[
+  //...
+  {
+    "country": "BD",
+    "name": "Bandarban",
+    "code": "BD-01",
+    "parent": "BD-B"
+  }
+  //...
+]
+Terrain	Type	Description
+Pays	Corde	Code ISO 3166-1 alpha-2 du pays
+Nom	Corde	Nom de la subdivision
+Code	Corde	Code ISO 3166-2 de la subdivision
+parent	chaîne ou nulle	Code ISO 3166-2 de la subdivision mère
+Source des données : https://github.com/iptv-org/database
+
+Villes
+https://iptv-org.github.io/api/cities.json
+[
+  //...
+  {
+    "country": "CN",
+    "subdivision": "CN-SD",
+    "name": "Yantai",
+    "code": "CNYAT",
+    "wikidata_id": "Q210493"
+  }
+  //...
+]
+Terrain	Type	Description
+Pays	Corde	Code ISO 3166-1 alpha-2 du pays où se trouve la ville
+Subdivision	chaîne ou nulle	Code ISO 3166-2 du lotissement où se trouve la ville
+Nom	Corde	Nom de la ville
+Code	Corde	UN/LOCODE de la ville
+wikidata_id	Corde	Identification de cette ville sur Wikidata
+Source des données : https://github.com/iptv-org/database
+
+Régions
+https://iptv-org.github.io/api/regions.json
+[
+  //...
+  {
+    "code": "MAGHREB",
+    "name": "Maghreb",
+    "countries": ["DZ", "LY", "MA", "MR", "TN"]
+  }
+  //...
+]
+Terrain	Type	Description
+Code	Corde	Code de la région
+Nom	Corde	Nom complet de la région
+Pays	Tableau	Liste des pays de la région
+Source des données : https://github.com/iptv-org/database
+
+Fuseaux horaires
+https://iptv-org.github.io/api/timezones.json
+[
+  //...
+  {
+    "id": "Europe/London",
+    "utc_offset": "+00:00",
+    "countries": ["UK", "GG", "IM", "JE"]
+  }
+  //...
+]
+Terrain	Type	Description
+id	Corde	ID de fuseau horaire à partir de la base de données tz
+utc_offset	Corde	Décalage UTC pour ce fuseau horaire
+Pays	Tableau	Liste des pays inclus dans ce fuseau horaire
+Source des données : https://github.com/iptv-org/database
+
+Liste de blocage
+https://iptv-org.github.io/api/blocklist.json
+[
+  //...
+  {
+    "channel": "AnimalPlanetEast.us",
+    "reason": "dmca",
+    "ref": "https://github.com/iptv-org/iptv/issues/1831"
+  }
+  //...
+]
+Terrain	Type	Description
+Chaîne	Corde	Identifiant de la chaîne
+Raison	Corde	Raison du blocage ( ou dmcansfw)
+référer	Corde	Lien vers une demande de retrait ou un avis de retrait DMCA
+Source des données : https://github.com/iptv-org/database
+
+Contribution
+Si vous trouvez un bug ou souhaitez contribuer au code ou à la documentation, vous pouvez aider en soumettant un problème ou une pull request.

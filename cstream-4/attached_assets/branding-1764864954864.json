@@ -1,0 +1,114 @@
+{
+  "colorScheme": "dark",
+  "fonts": [
+    {
+      "family": "Abcgintodiscord",
+      "role": "display"
+    },
+    {
+      "family": "ABC Ginto Normal",
+      "role": "body"
+    },
+    {
+      "family": "Ggsans",
+      "role": "body"
+    },
+    {
+      "family": "Arial",
+      "role": "body"
+    }
+  ],
+  "colors": {
+    "primary": "#5865F2",
+    "accent": "#F7F7FD",
+    "background": "#333333",
+    "textPrimary": "#1A2081",
+    "link": "#1A2081"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "ABC Ginto Normal",
+      "heading": "Abcgintodiscord"
+    },
+    "fontStacks": {
+      "heading": [
+        "Abcgintodiscord",
+        "Arial",
+        "sans-serif"
+      ],
+      "body": [
+        "Ggsans",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Abcgintodiscord",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "56px",
+      "h2": "22px",
+      "body": "20px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "7px"
+  },
+  "components": {
+    "input": {
+      "borderColor": "#CCCCCC",
+      "borderRadius": "7px"
+    },
+    "buttonPrimary": {
+      "background": "#5865F2",
+      "textColor": "#FFFFFF",
+      "borderRadius": "12px",
+      "shadow": "none"
+    },
+    "buttonSecondary": {
+      "background": "#F7F7FD",
+      "textColor": "#23272A",
+      "borderRadius": "12px",
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "File saved at: attached_assets/logo.svg",
+    "favicon": "File saved at: attached_assets/favicon.png",
+    "ogImage": "File saved at: attached_assets/ogImage.jpg"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Logo #0 visually represents the brand name 'Discord' and is located in the header, linking to the homepage, making it the most suitable choice for the brand logo.",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 0,
+      "text": "Open Discord in your browser",
+      "reasoning": "Button #0 has a vibrant blue background (#5865F2), which is the brand color, and features action-oriented text 'Open Discord in your browser'. This aligns with the criteria for a primary CTA."
+    },
+    "secondary": {
+      "index": 1,
+      "text": "Download for Windows",
+      "reasoning": "Button #1 has a different background color (#F7F7FD) compared to the primary button and is less prominent, making it suitable as a secondary CTA. It also features action-oriented text 'Download for Windows'."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "modern",
+    "energy": "high",
+    "targetAudience": "gamers and tech-savvy users"
+  },
+  "designSystem": {
+    "framework": "custom",
+    "componentLibrary": null
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  }
+}

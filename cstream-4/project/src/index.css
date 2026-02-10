@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base HSL Colors - Default Dark */
+    --background: 240 10% 2%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 240 3.7% 10%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 240 3.7% 10%;
+    --muted-foreground: 240 5% 70%;
+    
+    --accent: 263.4 70% 50.4%;
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 240 3.7% 12%;
+    --input: 240 3.7% 12%;
+    --ring: 263.4 70% 50.4%;
+    --radius: 1rem;
+
+    /* Theme Engine Variables - HEX/RGBA */
+    --primary-hex: #8B5CF6;
+    --accent-color: #8B5CF6;
+    --text-color: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.015);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --bg-gradient: radial-gradient(circle at 50% 0%, #0a0a14 0%, #020205 100%);
+    --svg-stroke: var(--primary-hex);
+    
+    /* Global Variables for themes */
+    --theme-primary: var(--primary-hex);
+    --theme-primary-rgb: 139, 92, 246;
+    --theme-border: var(--border-color);
+    --theme-text: #ffffff;
+    --theme-radius-xl: 1.5rem;
+    --theme-radius-2xl: 2.5rem;
+    --theme-shadow-glow: 0 0 40px rgba(var(--theme-primary-rgb), 0.1);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(var(--theme-primary-rgb), 0.3)); }
+  50% { filter: drop-shadow(0 0 8px rgba(var(--theme-primary-rgb), 0.6)); }
+}
+
+.glow-text {
+  text-shadow: 0 0 15px rgba(var(--theme-primary-rgb), 0.4);
+}
+
+.premium-border {
+  position: relative;
+  border-radius: var(--theme-radius-xl);
+  background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+              linear-gradient(135deg, rgba(var(--theme-primary-rgb), 0.3), transparent, rgba(var(--theme-primary-rgb), 0.1)) border-box;
+  border: 1px solid transparent;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px rgba(var(--theme-primary-rgb), 0.2); }
+  50% { box-shadow: 0 0 20px rgba(var(--theme-primary-rgb), 0.4); }
+  100% { box-shadow: 0 0 5px rgba(var(--theme-primary-rgb), 0.2); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 5s ease infinite;
+}
+
+* {
+  border-color: var(--theme-border);
+}
+
+.transition-theme {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+body {
+  background: var(--bg-gradient) !important;
+  background-attachment: fixed !important;
+  color: var(--theme-text) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+}
+
+/* Mobile-Specific Performance & UI Optimizations */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(12px) saturate(150%) !important;
+    box-shadow: 0 4px 16px -1px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .glass-card:hover {
+    transform: none !important;
+    box-shadow: 0 4px 16px -1px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Safe Area Utilities */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+  
+  /* Prevent layout shift during loading */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Force consistency across the app */
+.text-primary { color: var(--theme-primary) !important; }
+.bg-primary { background-color: var(--theme-primary) !important; }
+.border-primary { border-color: var(--theme-primary) !important; }
+.ring-primary { --tw-ring-color: var(--theme-primary) !important; }
+
+/* Premium Glassmorphism */
+.glass-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--theme-border) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  border-radius: var(--theme-radius-xl) !important;
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2), var(--theme-shadow-glow) !important;
+}
+
+.glass-card:hover {
+  border-color: rgba(var(--theme-primary-rgb), 0.4) !important;
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.5), 0 0 30px rgba(var(--theme-primary-rgb), 0.2) !important;
+  transform: translateY(-4px) scale(1.01);
+}
+
+.glass-card-sm {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Intercept Tailwind utility classes to respect theme */
+.from-primary { --tw-gradient-from: var(--theme-primary) !important; --tw-gradient-to: rgba(var(--theme-primary-rgb), 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+.to-primary { --tw-gradient-to: var(--theme-primary) !important; }
+
+/* Global variables for cards and UI elements */
+.bg-secondary\/40 { background-color: rgba(var(--theme-primary-rgb), 0.05) !important; }
+
+/* Dynamic icon coloring */
+svg[class*="text-primary"] {
+  stroke: var(--theme-primary) !important;
+  color: var(--theme-primary) !important;
+}
+
+/* Auth & Input fixes */
+input, textarea, select {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--theme-border) !important;
+  color: var(--theme-text) !important;
+}
+
+input:focus {
+  border-color: var(--theme-primary) !important;
+  outline: none;
+}

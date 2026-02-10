@@ -1,0 +1,72 @@
+Parfait, stesp 🙌. Je vais te donner un **prompt clair, détaillé et complet** que tu pourras utiliser pour générer ou coder ta **page planning synchronisée avec TMDB et ton site**, tout en corrigeant la gestion des favoris et de l’historique.  
+
+---
+
+## 🧾 Prompt complet
+
+> Crée une page **Planning des prochaines sorties** pour un site de streaming nommé **CStream**.  
+> - La page doit afficher les **prochains films, séries et animes** synchronisés avec l’API **TMDB** et avec la base de données interne du site.  
+> - Chaque entrée doit contenir :  
+>   - 📅 **Jour et date de sortie**  
+>   - 🖼️ **Image d’affiche (poster)**  
+>   - 🎬 **Titre du média**  
+>   - ⭐ **Note (rating TMDB)**  
+>   - 📝 **Description courte (overview)**  
+> - L’affichage doit être **propre et responsive**, avec une grille ou un calendrier clair.  
+> - Ajoute un **filtre par type** (Films, Séries, Anime) et un **tri par date ou popularité**.  
+> - La barre de recherche doit permettre de trouver rapidement un média dans le planning.  
+> - Les couleurs doivent rester dans le thème sombre/violet de CStream.  
+
+### 🔗 Synchronisation
+- **TMDB Sync** : utilise l’API TMDB pour récupérer les prochains films/séries/animes avec leurs métadonnées (titre, date, poster, note).  
+- **Site Sync** : relie ces données à la base interne pour afficher uniquement les médias disponibles ou prévus sur CStream.  
+
+### 👤 Gestion du profil utilisateur
+- **Favoris** : lorsqu’un utilisateur clique sur "Ajouter aux favoris" dans une page média (exemple : *Trones*), l’information doit être **enregistrée dans son profil** et **persistée en base de données**.  
+- **Historique** : chaque média regardé doit être ajouté automatiquement à l’historique du profil (avec date et progression).  
+- **Synchronisation** : favoris et historique doivent être liés au compte utilisateur (connexion requise) et rester disponibles même après déconnexion/reconnexion.  
+
+### 🧩 Fonctionnalités techniques
+- **API Calls** :  
+  - `/tmdb/upcoming` → récupère les prochaines sorties.  
+  - `/user/favorites` → ajoute/supprime un favori.  
+  - `/user/history` → ajoute une entrée historique.  
+- **Base de données** :  
+  - Table `favorites` liée à `user_id` et `media_id`.  
+  - Table `history` liée à `user_id`, `media_id`, `date_viewed`.  
+- **UI/UX** :  
+  - Bouton violet "Favoris" avec icône ⭐.  
+  - Bouton "Regarder" qui ajoute automatiquement au **historique**.  
+  - Page planning avec affichage en **cards** (image + infos).  
+
+---
+
+## ✨ Exemple de structure visuelle (HTML/CSS simplifié)
+
+```html
+<div class="planning">
+  <h2>Prochaines sorties</h2>
+  <div class="filters">
+    <button>Films</button>
+    <button>Séries</button>
+    <button>Anime</button>
+    <input type="text" placeholder="Rechercher...">
+  </div>
+  <div class="grid">
+    <div class="card">
+      <img src="poster.jpg" alt="Titre">
+      <h3>Titre du média</h3>
+      <p>Date de sortie: 12 Décembre 2025</p>
+      <p>Note: ⭐ 7.8/10</p>
+      <button class="fav">⭐ Favoris</button>
+      <button class="watch">▶ Regarder</button>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+👉 Ce prompt est prêt à l’emploi pour générer une **page planning synchronisée avec TMDB et ton site**, avec une **gestion correcte des favoris et de l’historique**.  
+
+Veux-tu que je t’écrive aussi le **prompt API côté backend** (Node.js/Express ou autre) pour gérer la synchro TMDB + base utilisateur ?

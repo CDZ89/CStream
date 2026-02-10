@@ -1,0 +1,58 @@
+(node:773) Warning: Supplying "ephemeral" for interaction response options is deprecated. Utilize flags instead.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Interaction Error: DiscordAPIError[40060]: Interaction has already been acknowledged.
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/ai.js:12:9)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:249:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: {
+    message: 'Interaction has already been acknowledged.',
+    code: 40060
+  },
+  code: 40060,
+  status: 400,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467492581352018082/aW50ZXJhY3Rpb246MTQ2NzQ5MjU4MTM1MjAxODA4MjpIaE1FVHJzcjdWVUlsWkZubHhGTWVSWnVMd2lzRUdVeDBoQkNhdzdUbWRhSFVQaHM3ZDludFQ0dnFhS2V1YmhBS3p4b2VFb3VPcVhORnk1RGFUNFc2QmlyNDRNczZEalNnMlNoMlNwZXMyRnVxM2l5SDNXUkhkNVJFWEZRWVRTYw/callback?with_response=false'
+}
+Interaction Error: DiscordAPIError[40060]: Interaction has already been acknowledged.
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/clear.js:17:5)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:249:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: {
+    message: 'Interaction has already been acknowledged.',
+    code: 40060
+  },
+  code: 40060,
+  status: 400,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467492608203948175/aW50ZXJhY3Rpb246MTQ2NzQ5MjYwODIwMzk0ODE3NTpaZXdCOUhrSnNNYWxlbEh5TXB1SzBwRWd0d3B0VlZ5YXBleVB4aGtSMlFSU21pcGhVNGVwWFNEYXNGV3V4UXNpQnd1MkZvY0ZxbXIyNERpblRaVlZXT3VoZ09GVzROMTNCdmdEQ1lrYTh0SjVyVFJCSGlvanFjYVJBREdxU2t1Sg/callback?with_response=false'
+}
+Bot data updated with 18 members and 19 channels
+Bot data updated with 18 members and 18 channels
+Interaction Error: DiscordAPIError[40060]: Interaction has already been acknowledged.
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/ai.js:12:9)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:249:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: {
+    message: 'Interaction has already been acknowledged.',
+    code: 40060
+  },
+  code: 40060,
+  status: 400,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467492872399097949/aW50ZXJhY3Rpb246MTQ2NzQ5Mjg3MjM5OTA5Nzk0OTpjTW91c01zaHBuM2RNRUp3S01UZTQzeXM2YXIzY3U1MHhzS3JkOGdnZU9ITGJtZmNtQW4wdkZJM0NNVlNaZWdaOFpnUjhONDZ0U1A1N1V4aFo4aVRpZHNVYlZtQlNZRkNHeEpVRkR1SVFkS0l1c3RJOVQ5RzhuUVJHNjZ5R1ZVdw/callback?with_response=false'
+}

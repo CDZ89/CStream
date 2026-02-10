@@ -1,0 +1,45 @@
+Créer un thème graphique complet et professionnel inspiré de Noël, avec une esthétique minimaliste, élégante et cohérente. Le design doit être épuré, moderne et chaleureux, sans scintillement ni effets excessifs, mais riche en détails subtils et raffinés.
+
+🎨 Palette de couleurs :
+- Rouge profond et mat
+- Vert sapin naturel
+- Blanc neige pur
+- Gris clair et argent doux
+- Doré discret et non brillant
+
+🖼️ Style visuel :
+- Minimalisme moderne, lignes simples et géométriques
+- Espaces blancs généreux pour respirer
+- Icônes vectorielles sobres (sapin stylisé, étoile simple, cadeau minimal)
+- Illustrations plates ou semi‑plates, sans textures lourdes
+- Ombres douces et légères pour donner de la profondeur
+
+🎄 Éléments graphiques :
+- Sapins stylisés en formes triangulaires simples
+- Boules de Noël monochromes, sans reflets brillants
+- Étoiles géométriques dorées, fines et discrètes
+- Cadeaux représentés par des cubes avec rubans minimalistes
+- Couronnes et guirlandes réduites à des formes abstraites
+
+📐 Mise en page :
+- Grilles claires et équilibrées
+- Sections aérées, avec titres bien espacés
+- Utilisation de blocs rectangulaires pour structurer le contenu
+- Navigation simple et intuitive, sans surcharge
+
+🔠 Typographie :
+- Police sans‑serif moderne et élégante
+- Titres en rouge ou vert sapin
+- Sous‑titres en gris clair
+- Corps de texte en noir ou gris foncé
+- Style uniforme, sans effets décoratifs
+
+✨ Ambiance générale :
+- Chaleureuse mais sobre
+- Inspirée des cartes de vœux minimalistes scandinaves
+- Atmosphère calme, douce et accueillante
+- Pas de scintillement, pas d’animations excessives
+- Éventuelles micro‑animations discrètes (ex. transition fluide entre sections)
+
+🎁 Résultat attendu :
+Un thème de Noël minimaliste, propre et professionnel, qui évoque la magie des fêtes avec élégance et sobriété. Chaque élément doit être cohérent, épuré et parfaitement intégré dans une interface moderne. Le design doit respirer la simplicité festive et la chaleur de Noël, sans surcharge visuelle.

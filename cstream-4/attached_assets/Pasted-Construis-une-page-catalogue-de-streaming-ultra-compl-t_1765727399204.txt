@@ -1,0 +1,56 @@
+Construis une page catalogue de streaming ultra complète, fluide et sécurisée, en exploitant la liste d’APIs disponibles. Cette fonctionnalité est en **BETA** et accessible uniquement aux **administrateurs et créateurs du site**.
+
+1. Structure générale
+   - Grille responsive affichant les ressources (Films, Séries, Jeux, Musique, Archives).
+   - Chaque ressource est présentée sous forme de carte avec :
+     - Affiche ou logo principal.
+     - Titre du média ou de la collection.
+     - Source API (nom + badge).
+     - Bouton d’action (Lire, Infos, Explorer).
+   - Organisation par catégories (Films, Séries, Jeux, Musique, Archives).
+
+2. Intégration technique
+   - Décodage automatique des URLs encodées en base64.
+   - Connexion API via proxy interne pour éviter pubs/redirections.
+   - Lecteur intégré :
+     - `<video>` ou `<audio>` HTML5 pour flux multimédia.
+     - Lecteur PDF/texte pour archives.
+     - Émulateur web pour ROMs/jeux rétro.
+   - Catalogue dynamique généré à partir des données API.
+
+3. Présentation fluide
+   - Page détail média :
+     - Titre stylisé (comme sur l’affiche).
+     - Affiche/logo en haut.
+     - Métadonnées (date, durée, genres, production).
+     - Boutons d’action : Lire, Favoris, Watchlist, Partager.
+   - Carrousel d’affiches avec logos, navigation par flèches et swipe mobile.
+   - Sections interactives : Overview, Galerie d’images, Reviews, Cast & Credits, Recommendations.
+   - Navigation fluide avec scroll animé, flèche retour en haut (↑), indicateur circulaire de progression.
+
+4. Sécurité et fiabilité
+   - Sandbox strict : `sandbox="allow-scripts allow-same-origin"`.
+   - Ne jamais autoriser `allow-popups` ou `allow-top-navigation`.
+   - CSP stricte : `default-src 'self'; frame-src 'self'; script-src 'self'`.
+   - Favoris, Watchlist, Likes, Reviews, Commentaires persistants en base, jamais supprimés automatiquement.
+   - Tests : vérifier que chaque API se charge sans bug, que le lecteur lit bien les flux, et qu’aucun popup/redirection ne se déclenche.
+
+5. Accessibilité et qualité
+   - Navigation clavier complète.
+   - ARIA labels pour boutons, modals, images.
+   - Texte lisible avec interligne suffisant.
+   - Responsive sur desktop, tablette, mobile.
+
+6. Performances
+   - Lazy load des images et médias lourds.
+   - Minification CSS/JS.
+   - Cache navigateur pour assets.
+   - CDN pour distribution rapide.
+   - Préchargement des données critiques (titre, affiche, score).
+
+7. Tests et validation
+   - Affichage complet des fiches média.
+   - Actions persistantes (favoris, watchlist, notation).
+   - Modal login réservé aux admins/créateurs.
+   - Responsive et fluide sur tous les écrans.
+   - Temps de chargement < 3s, interactions < 250ms.

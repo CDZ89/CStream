@@ -1,0 +1,364 @@
+# Module complet de visionnage propre avec TMDB, sélecteur de lecteur dynamique et épisodes synchronisés
+
+Tu veux un module “Regarder” prêt à coller, propre, compact, sans bug, qui:
+- Affiche la saison choisie (titre, poster, overview).
+- Affiche un sélecteur de lecteur qui, lorsqu’on change de lecteur, liste uniquement les épisodes de ce lecteur.
+- Affiche un sélecteur d’épisode avec le vrai nom TMDB, l’image officielle de l’épisode, et la description sous le lecteur.
+- S’adapte automatiquement si tu ajoutes un nouveau lecteur (nouvel array).
+- Synchronise le nombre d’épisodes avec TMDB pour éviter les doublons (pas 49 quand il y en a 12).
+- Gère les cas limites (images manquantes, overview manquant, lecteur avec moins d’épisodes).
+
+---
+
+## Pré-requis et données
+
+- **Label des lecteurs:** utilise des clés lisibles (ex: “Sibnet”, “Vidmoly”, “Sendvid”, “Anime-Sama”).
+- **Arrays d’URLs par lecteur:** un array par lecteur contenant 1 URL par épisode, dans l’ordre.
+- **TMDB:** une clé API et l’ID de la série + numéro de saison.
+
+```js
+// Tes arrays (exemple fournis)
+var eps1 = [
+  'https://video.sibnet.ru/shell.php?videoid=4668080',
+  'https://video.sibnet.ru/shell.php?videoid=4668082',
+  'https://video.sibnet.ru/shell.php?videoid=4668083',
+  'https://video.sibnet.ru/shell.php?videoid=4668085',
+  'https://video.sibnet.ru/shell.php?videoid=4668087',
+  'https://video.sibnet.ru/shell.php?videoid=4668088',
+  'https://video.sibnet.ru/shell.php?videoid=4668090',
+  'https://video.sibnet.ru/shell.php?videoid=4668091',
+  'https://video.sibnet.ru/shell.php?videoid=4668094',
+  'https://video.sibnet.ru/shell.php?videoid=4668095',
+  'https://video.sibnet.ru/shell.php?videoid=4668098',
+  'https://video.sibnet.ru/shell.php?videoid=4668106',
+];
+
+var eps2 = [
+  'https://vidmoly.to/embed-rjnzgaf5w0ws.html',
+  'https://vidmoly.to/embed-cikjuhfts65b.html',
+  'https://vidmoly.to/embed-p7zc4vzjz2lb.html',
+  'https://vidmoly.to/embed-y4l224ktmch4.html',
+  'https://vidmoly.to/embed-jiwcaigraw5w.html',
+  'https://vidmoly.to/embed-lr8dl22lgmu6.html',
+  'https://vidmoly.to/embed-v9czimxwgm88.html',
+  'https://vidmoly.to/embed-pe65p0eciuvq.html',
+  'https://vidmoly.to/embed-i4yfmqdil7es.html',
+  'https://vidmoly.to/embed-gw1iq07yxijz.html',
+  'https://vidmoly.to/embed-9vfps6qsc8xs.html',
+  'https://vidmoly.to/embed-nx9clh683mai.html',
+];
+
+var eps3 = [
+  'https://sendvid.com/embed/ytgsv65i',
+  'https://sendvid.com/embed/p45osn9f',
+  'https://sendvid.com/embed/1vthdt7c',
+  'https://sendvid.com/embed/b4d5ebas',
+  'https://sendvid.com/embed/zy4pbvz4',
+  'https://sendvid.com/embed/1u9e4bbk',
+  'https://sendvid.com/embed/btobszpo',
+  'https://sendvid.com/embed/7643i19x',
+  'https://sendvid.com/embed/lcep3cwg',
+  'https://sendvid.com/embed/33whggwd',
+  'https://sendvid.com/embed/my798tho',
+  'https://sendvid.com/embed/mqefep53',
+];
+
+var epsAS = [
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_01_VOSTFR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_02_VOSTFR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_03_VOSTFR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_04_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_05_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_06_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_07_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_08_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_09_VOSTFRR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_10_VOSTFR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_11_VOSTFR.mp4',
+  'https://s22.anime-sama.fr/videos/Classroom%20of%20the%20Elite/Saison%201/VOSTFR/Classroom_of_the_Elite_S1_12_VOSTFR.mp4',
+];
+
+// Regroupement dynamique des lecteurs
+const players = {
+  "Sibnet": eps1,
+  "Vidmoly": eps2,
+  "Sendvid": eps3,
+  "Anime-Sama": epsAS,
+  // Exemple d’ajout: var epsNew=[...]; players["MonLecteur"]=epsNew;
+};
+
+// Config TMDB (exemple: TV 85937, Saison 1)
+const TMDB_API_KEY = "TA_CLE_TMDB";
+const TV_ID = 85937;
+const SEASON_NUMBER = 1;
+const TMDB_IMAGE = (path, size = "w500") => path ? `https://image.tmdb.org/t/p/${size}${path}` : "";
+```
+
+---
+
+## HTML complet
+
+```html
+<div class="watch-container">
+  <!-- En-tête série/saison -->
+  <div class="season-header">
+    <div class="season-meta">
+      <img id="season-poster" alt="Poster saison">
+      <div class="season-texts">
+        <h2 id="season-title"></h2>
+        <p id="season-overview"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sélecteurs -->
+  <div class="selectors">
+    <div class="selector-item">
+      <label for="player-selector">Lecteur:</label>
+      <select id="player-selector"></select>
+    </div>
+
+    <div class="selector-item">
+      <label for="episode-selector">Épisode:</label>
+      <select id="episode-selector"></select>
+    </div>
+  </div>
+
+  <!-- Bloc image + lecteur -->
+  <div class="view-block">
+    <div class="episode-side">
+      <img id="episode-image" alt="Image épisode">
+    </div>
+    <div class="player-side">
+      <iframe id="player" width="100%" height="480" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Description épisode -->
+  <div class="episode-description">
+    <h3 id="episode-title"></h3>
+    <p id="episode-overview"></p>
+  </div>
+</div>
+```
+
+---
+
+## CSS propre
+
+```css
+.watch-container { max-width: 1100px; margin: 24px auto; font-family: system-ui, -apple-system, Arial; }
+.season-meta { display: flex; gap: 16px; align-items: flex-start; }
+#season-poster { width: 180px; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: cover; }
+.season-texts { display: flex; flex-direction: column; gap: 8px; }
+#season-title { margin: 0; font-size: 22px; font-weight: 700; }
+#season-overview { margin: 0; font-size: 14px; line-height: 1.6; color: #333; }
+
+.selectors { display: flex; gap: 16px; margin: 16px 0; }
+.selector-item { display: flex; align-items: center; gap: 8px; }
+label { font-weight: 600; }
+select { padding: 6px 8px; border: 1px solid #d0d0d0; border-radius: 6px; background: #fff; min-width: 200px; }
+
+.view-block { display: grid; grid-template-columns: 280px 1fr; gap: 16px; align-items: start; }
+#episode-image { width: 100%; border-radius: 8px; object-fit: cover; background: #f2f2f2; }
+.player-side iframe { border-radius: 8px; background: #000; }
+
+.episode-description { margin-top: 16px; background: #f8f8f8; padding: 12px; border-radius: 8px; }
+.episode-description h3 { margin: 0 0 6px; font-size: 18px; }
+.episode-description p { margin: 0; color: #333; font-size: 14px; line-height: 1.6; }
+
+@media (max-width: 820px) {
+  .season-meta { flex-direction: column; }
+  .view-block { grid-template-columns: 1fr; }
+  #episode-image { max-height: 220px; }
+}
+```
+
+---
+
+## JavaScript complet, synchronisé et sans bug
+
+```js
+const playerSelector = document.getElementById("player-selector");
+const episodeSelector = document.getElementById("episode-selector");
+const playerFrame = document.getElementById("player");
+
+const seasonTitleEl = document.getElementById("season-title");
+const seasonOverviewEl = document.getElementById("season-overview");
+const seasonPosterEl = document.getElementById("season-poster");
+
+const episodeImageEl = document.getElementById("episode-image");
+const episodeTitleEl = document.getElementById("episode-title");
+const episodeOverviewEl = document.getElementById("episode-overview");
+
+async function fetchSeason(tvId, seasonNumber) {
+  const url = `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=fr-FR`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Erreur TMDB");
+  return res.json();
+}
+
+let tmdbSeason = null;
+
+async function init() {
+  tmdbSeason = await fetchSeason(TV_ID, SEASON_NUMBER);
+
+  // En-tête saison (exemple: "Saison 1" + poster + overview)
+  seasonTitleEl.textContent = tmdbSeason.name || `Saison ${SEASON_NUMBER}`;
+  seasonOverviewEl.textContent = tmdbSeason.overview || "Pas de description disponible.";
+  seasonPosterEl.src = TMDB_IMAGE(tmdbSeason.poster_path) || TMDB_IMAGE(tmdbSeason.episodes?.[0]?.still_path);
+
+  // Remplir le sélecteur de lecteurs automatiquement
+  playerSelector.innerHTML = "";
+  Object.keys(players).forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name; // Exemples: "Sibnet", "Vidmoly", "Sendvid", "Anime-Sama"
+    playerSelector.appendChild(opt);
+  });
+
+  // Initialisation: sélectionner le premier lecteur et charger ses épisodes
+  playerSelector.value = Object.keys(players)[0];
+  onPlayerChange();
+}
+
+function onPlayerChange() {
+  const provider = playerSelector.value;
+  const urls = players[provider] || [];
+
+  // Synchronisation: limiter au min(URLs, TMDB) pour éviter les doublons
+  const count = Math.min(urls.length, tmdbSeason.episodes.length);
+
+  episodeSelector.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const tmdbEp = tmdbSeason.episodes[i]; // i=0 => Épisode 1 (TMDB est ordonné)
+    const opt = document.createElement("option");
+    opt.value = i; // index pour lookup
+    // Exemple: "Épisode 1 – What is Classroom of the Elite?"
+    opt.textContent = tmdbEp?.name
+      ? `Épisode ${tmdbEp.episode_number} – ${tmdbEp.name}`
+      : `Épisode ${i + 1}`;
+    episodeSelector.appendChild(opt);
+  }
+
+  // Charger automatiquement l’épisode 1 de ce lecteur
+  if (count > 0) {
+    episodeSelector.value = "0";
+    onEpisodeChange();
+  } else {
+    // Aucun épisode pour ce lecteur (exemple: array vide)
+    playerFrame.src = "";
+    episodeImageEl.src = TMDB_IMAGE(tmdbSeason.poster_path);
+    episodeTitleEl.textContent = "Aucun épisode disponible pour ce lecteur.";
+    episodeOverviewEl.textContent = "";
+  }
+}
+
+function onEpisodeChange() {
+  const provider = playerSelector.value;
+  const urls = players[provider] || [];
+  const idx = parseInt(episodeSelector.value, 10);
+
+  // Sécurité: si index hors bornes (exemple)
+  if (!urls[idx]) {
+    playerFrame.src = "";
+    episodeTitleEl.textContent = "Épisode indisponible pour ce lecteur.";
+    episodeOverviewEl.textContent = "";
+    episodeImageEl.src = TMDB_IMAGE(tmdbSeason.poster_path);
+    return;
+  }
+
+  // Charger le player pour cet épisode et ce lecteur
+  playerFrame.src = urls[idx];
+
+  // Récup infos TMDB pour affichage propre
+  const tmdbEp = tmdbSeason.episodes[idx];
+  episodeTitleEl.textContent = tmdbEp?.name
+    ? `Épisode ${tmdbEp.episode_number} — ${tmdbEp.name}`
+    : `Épisode ${idx + 1}`;
+  episodeOverviewEl.textContent = tmdbEp?.overview || "Pas de description disponible.";
+
+  const still = TMDB_IMAGE(tmdbEp?.still_path, "w500");
+  episodeImageEl.src = still || TMDB_IMAGE(tmdbSeason.poster_path);
+}
+
+// Événements
+playerSelector.addEventListener("change", onPlayerChange);
+episodeSelector.addEventListener("change", onEpisodeChange);
+
+// Lancer
+init().catch(err => {
+  console.error(err);
+  seasonTitleEl.textContent = "Erreur de chargement des données TMDB";
+});
+```
+
+---
+
+## Exemples et comportement attendu
+
+- **Exemple “Sibnet”:** tu choisis “Sibnet” → le sélecteur d’épisodes affiche 12 entrées, chacune nommée avec le titre TMDB de l’épisode (ex: “Épisode 1 – …”). L’iframe charge `eps1[i]` pour l’épisode i.
+- **Exemple “Vidmoly”:** tu passes à “Vidmoly” → le sélecteur se met à jour pour les 12 épisodes Vidmoly, mêmes noms TMDB, et l’iframe charge `eps2[i]`.
+- **Exemple “Sendvid”:** idem, l’iframe charge `eps3[i]`.
+- **Exemple d’ajout d’un nouveau lecteur:** tu déclares `var epsGDrive = ['urlEp1', 'urlEp2', ...];` puis `players["GDrive"] = epsGDrive;` → “GDrive” apparaît automatiquement dans le sélecteur, avec ses épisodes.
+- **Nombre d’épisodes synchronisé:** si un lecteur a 8 URLs, mais TMDB dit 12 épisodes, le sélecteur montrera 8 épisodes (min des deux), jamais 49.
+- **Images et descriptions propres:** l’image de l’épisode (still_path) s’affiche à gauche, la description sous le lecteur, avec fallback propre si une image ou description manque.
+
+---
+
+## Option: sélecteur de saison propre (si tu veux multi-saisons)
+
+Si tu veux gérer plusieurs saisons, ajoute un sélecteur de saison et recharge TMDB + remapping des épisodes quand la saison change.
+
+```html
+<div class="selector-item">
+  <label for="season-selector">Saison:</label>
+  <select id="season-selector"></select>
+</div>
+```
+
+```js
+async function fetchShow(tvId) {
+  const url = `https://api.themoviedb.org/3/tv/${tvId}?api_key=${TMDB_API_KEY}&language=fr-FR`;
+  const r = await fetch(url);
+  return r.json();
+}
+
+async function initMultiSeason() {
+  const show = await fetchShow(TV_ID);
+  const seasonSelector = document.getElementById("season-selector");
+  seasonSelector.innerHTML = "";
+
+  // Exemple: remplir “Saison 1”, “Saison 2”, etc.
+  show.seasons.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.season_number;
+    opt.textContent = s.name || `Saison ${s.season_number}`;
+    seasonSelector.appendChild(opt);
+  });
+
+  // Définir saison courante et recharger
+  seasonSelector.value = SEASON_NUMBER;
+  seasonSelector.addEventListener("change", async () => {
+    const newSeason = parseInt(seasonSelector.value, 10);
+    tmdbSeason = await fetchSeason(TV_ID, newSeason);
+    seasonTitleEl.textContent = tmdbSeason.name || `Saison ${newSeason}`;
+    seasonOverviewEl.textContent = tmdbSeason.overview || "Pas de description disponible.";
+    seasonPosterEl.src = TMDB_IMAGE(tmdbSeason.poster_path) || TMDB_IMAGE(tmdbSeason.episodes?.[0]?.still_path);
+    onPlayerChange(); // Remapper les épisodes avec la nouvelle saison
+  });
+}
+
+// Appelle initMultiSeason() après init() si tu veux multi-saisons,
+// et pense à aligner tes arrays par saison (players dépendant de la saison).
+```
+
+---
+
+## Besoin d’un dernier ajustement ?
+
+- **Label d’épisode personnalisé:** on peut remplacer le nom TMDB par “Épisode X – VOSTFR” ou autre.
+- **Qualités/Options de lecteur:** ajouter un petit menu pour la qualité si un lecteur supporte plusieurs résolutions.
+- **Admin interne:** si tu as une base qui mappe les URLs par saison/épisode, on peut remplacer `players` par un fetch de ton admin et garder le même comportement.
+
+Si tu me dis comment ton admin expose les données (SQL, JSON, endpoints), je te branche ça directement à ce module.

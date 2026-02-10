@@ -1,0 +1,49 @@
+Construis un système complet de type “Discord + TMDB” pour mon site, sans bug, avec les fonctionnalités suivantes :
+
+1. **Panel Admin**
+   - Gestion des rôles et permissions (RBAC) : création, édition, suppression, attribution persistante (reste jusqu’à modification ou suppression).
+   - Statuts des membres en temps réel (online, idle, dnd, offline, custom message, activité).
+   - Dashboard admin avec analytics live (utilisateurs actifs, erreurs, latence, changements de rôles).
+   - Audit log immuable pour toutes les actions (assignation de rôle, changement de statut, suppression).
+
+2. **Gestion Utilisateurs**
+   - CRUD complet (ajout, suppression, modification).
+   - Favoris et likes persistants : ajout depuis page média → visibles dans profil et historique.
+   - Historique des actions (favoris, likes, rôles, statuts).
+   - Import/export CSV/JSON avec validations.
+
+3. **Système d’Amis**
+   - Demandes d’amis fiables : envoi, réception, acceptation/refus, persistance.
+   - Liste d’amis visible dans profil et chat.
+   - Chat temps réel : messages texte, emojis, fichiers, vocal (WebRTC).
+   - Historique des conversations persistant.
+   - Notifications (nouvelle demande, nouveau message, ami connecté).
+
+4. **Analytics Temps Réel**
+   - Tableau de bord live : utilisateurs actifs, sessions, erreurs, latence, événements clés.
+   - Graphes temps réel (sparkline, histogrammes).
+   - Alertes configurables (ex. erreurs >1%).
+   - Segmentation par rôle, région, device.
+
+5. **Architecture Technique**
+   - Base de données avec tables `users`, `roles`, `user_roles`, `friend_requests`, `friends`, `messages`, `voice_sessions`, `user_actions`, `audit_log`.
+   - API REST + WebSocket :
+     - Endpoints pour rôles, statuts, amis, messages, favoris/likes.
+     - WebSocket pour présence, chat, notifications.
+     - WebRTC pour vocal.
+   - Persistance fiable avec contraintes UNIQUE et transactions atomiques.
+   - Sécurité : JWT, OAuth2, CSRF, rate limiting, RGPD compliance.
+
+6. **Tests et Qualité**
+   - Tests unitaires (permissions, statuts, rôles).
+   - Tests intégration (favoris → profil, demande d’ami → acceptation).
+   - Tests E2E (chat temps réel, vocal).
+   - Tests de charge (10k connexions WS).
+   - Critères d’acceptation : aucune perte de données, propagation statuts <1s, rôles persistants, demandes d’amis fiables.
+
+Résultat attendu :
+- Panel admin stable, rôles persistants et statuts temps réel.
+- Favoris/likes visibles dans profil et historique.
+- Système d’amis complet avec demandes, chat, emojis, vocal.
+- Analytics live sur tout le site.
+- Sécurité, audit et tests garantissant zéro bug.

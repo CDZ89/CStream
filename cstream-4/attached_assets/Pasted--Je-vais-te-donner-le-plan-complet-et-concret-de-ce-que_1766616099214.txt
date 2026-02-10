@@ -1,0 +1,87 @@
+. Je vais te donner le plan complet et concret de ce que ton agent doit lancer et changer pour que tout fonctionne (ajout d’ami + envoi de message) sans plus d’erreurs FK.
+
+1️⃣ Vérifications et migrations côté base
+Ton agent doit exécuter ces scripts SQL (SAFE) :
+
+a) Table messages
+Vérifier que les deux colonnes pointent vers auth.users(id) :
+
+sql
+ALTER TABLE public.messages
+  DROP CONSTRAINT IF EXISTS messages_sender_id_fkey,
+  DROP CONSTRAINT IF EXISTS messages_receiver_id_fkey;
+
+CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON public.messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_receiver_id ON public.messages(receiver_id);
+
+ALTER TABLE public.messages
+  ADD CONSTRAINT messages_sender_id_fkey FOREIGN KEY (sender_id) REFERENCES auth.users(id) ON DELETE CASCADE,
+  ADD CONSTRAINT messages_receiver_id_fkey FOREIGN KEY (receiver_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+b) Table friendships
+Migrer aussi les FKs vers auth.users(id) :
+
+sql
+ALTER TABLE public.friendships
+  DROP CONSTRAINT IF EXISTS friendships_user_id_fkey,
+  DROP CONSTRAINT IF EXISTS friendships_friend_id_fkey;
+
+CREATE INDEX IF NOT EXISTS idx_friendships_user_id   ON public.friendships(user_id);
+CREATE INDEX IF NOT EXISTS idx_friendships_friend_id ON public.friendships(friend_id);
+
+ALTER TABLE public.friendships
+  ADD CONSTRAINT friendships_user_id_fkey FOREIGN KEY (user_id)   REFERENCES auth.users(id) ON DELETE CASCADE,
+  ADD CONSTRAINT friendships_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES auth.users(id) ON DELETE CASCADE;
+2️⃣ Vérifications des données
+Créer les utilisateurs manquants dans auth.users (via signup ou insertion admin).
+
+Aligner les profils : chaque ligne de public.profiles doit avoir un champ user_id qui correspond à un UUID existant dans auth.users(id).
+
+sql
+SELECT p.id, p.username, p.user_id
+FROM public.profiles p
+LEFT JOIN auth.users u ON u.id = p.user_id
+WHERE u.id IS NULL;
+→ Si cette requête retourne des lignes, ce sont des profils orphelins → il faut corriger leur user_id.
+
+3️⃣ RLS policies à appliquer
+Ton agent doit s’assurer que les policies suivantes existent :
+
+Messages
+sql
+CREATE POLICY messages_insert_own
+ON public.messages FOR INSERT TO authenticated
+WITH CHECK (sender_id = auth.uid());
+
+CREATE POLICY messages_select_owner_or_recipient
+ON public.messages FOR SELECT TO authenticated
+USING (sender_id = auth.uid() OR receiver_id = auth.uid());
+Friendships
+sql
+CREATE POLICY friendships_insert_own
+ON public.friendships FOR INSERT TO authenticated
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY friendships_select_own
+ON public.friendships FOR SELECT TO authenticated
+USING (user_id = auth.uid() OR friend_id = auth.uid());
+4️⃣ Côté application (frontend / backend)
+Ton agent doit modifier le code pour utiliser les bons UUID :
+
+Sender ID : toujours supabase.auth.getUser().user.id
+
+Receiver ID : récupérer via profiles.user_id (qui pointe vers auth.users.id)
+
+Ajout d’ami : insérer dans friendships avec user_id = auth.uid() et friend_id = autre auth.users.id
+
+Envoi de message : insérer dans messages avec sender_id = auth.uid() et receiver_id = autre auth.users.id
+
+5️⃣ Tests finaux
+Ton agent doit exécuter ces tests en staging :
+
+Ajout d’ami avec deux comptes → doit réussir.
+
+Envoi de message avec deux comptes → doit réussir.
+
+Suppression d’un utilisateur de test → ses messages et amitiés doivent disparaître (ON DELETE CASCADE).
+
+✅ Si ton agent applique ces 5 étapes (migrations, données, policies, code, tests), tout ton système (amis + messages) sera cohérent et fonctionnel.

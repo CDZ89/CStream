@@ -1,0 +1,47 @@
+Error updating bot data: GatewayRateLimitError: Request with opcode 8 was rate limited. Retry after 0.302 seconds.
+    at Client.rateLimitHandler (/home/runner/workspace/node_modules/discord.js/src/managers/GuildMemberManager.js:287:18)
+    at Client.emit (node:events:524:28)
+    at WebSocketManager.<anonymous> (/home/runner/workspace/node_modules/discord.js/src/client/websocket/WebSocketManager.js:233:19)
+    at WebSocketManager.emit (/home/runner/workspace/node_modules/@vladfrangu/async_event_emitter/dist/index.cjs:2504:31)
+    at WebSocketShard.<anonymous> (/home/runner/workspace/node_modules/@discordjs/ws/dist/index.js:1190:51)
+    at WebSocketShard.emit (/home/runner/workspace/node_modules/@vladfrangu/async_event_emitter/dist/index.cjs:2504:31)
+    at WebSocketShard.onMessage (/home/runner/workspace/node_modules/@discordjs/ws/dist/index.js:1007:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  data: {
+    retry_after: 0.302,
+    opcode: 8,
+    meta: { nonce: '1467946579481595923', guild_id: '1444692903439110229' }
+  },
+  payload: {
+    guild_id: '1444692903439110229',
+    presences: undefined,
+    user_ids: undefined,
+    query: '',
+    nonce: '1467946579481595923',
+    limit: 0
+  }
+}
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Bot data updated with 18 members and 18 channels
+Interaction Error: DiscordAPIError[10062]: Unknown interaction
+    at handleErrors (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:762:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async BurstHandler.runRequest (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:866:23)
+    at async _REST.request (/home/runner/workspace/node_modules/@discordjs/rest/dist/index.js:1307:22)
+    at async ChatInputCommandInteraction.deferReply (/home/runner/workspace/node_modules/discord.js/src/structures/interfaces/InteractionResponses.js:122:22)
+    at async Object.execute (/home/runner/workspace/bot/commands/ai.js:12:9)
+    at async Client.<anonymous> (/home/runner/workspace/bot/index.js:246:9) {
+  requestBody: { files: undefined, json: { type: 5, data: [Object] } },
+  rawError: { message: 'Unknown interaction', code: 10062 },
+  code: 10062,
+  status: 404,
+  method: 'POST',
+  url: 'https://discord.com/api/v10/interactions/1467947745674395748/aW50ZXJhY3Rpb246MTQ2Nzk0Nzc0NTY3NDM5NTc0ODpxRXExNFA0dGhaQXN5bUpERGw4NWtmZllvWHhVZ3dNaldCaUtQazZTWnhJbUZIUnZ3MUdocHN4b2UzWlRIcnRnbm5NdlhMeE5McjNKUUp0bXVDcFFBVkYwVmpBMWV3NmdZQjFtMDZFRU5OWGZTeWJYQVpxVTZjNHdra1NxRmhYRA/callback?with_response=false'
+}

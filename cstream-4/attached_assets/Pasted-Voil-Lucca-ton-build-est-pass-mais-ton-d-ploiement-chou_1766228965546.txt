@@ -1,0 +1,58 @@
+Voilà, Lucca — ton build est passé ✅ mais ton **déploiement échoue** parce que l’application ne **ouvre pas de port** attendu par l’hébergeur (Replit ou Render).  
+
+---
+
+## 🔎 Pourquoi ça bloque
+- Les hébergeurs attendent que ton app démarre un serveur HTTP sur un port précis (souvent fourni via la variable d’environnement `PORT`).  
+- Ton script `"start": "node server.js"` lance bien Express, mais si ton `server.js` n’écoute pas sur `process.env.PORT`, l’hébergeur considère que le port n’est pas ouvert → déploiement bloqué.  
+- Sur Replit, le `.replit` ou la config attend que ton app ouvre **le premier port déclaré** (`localPort`).  
+
+---
+
+## ✅ Solution : adapter ton `server.js`
+Dans ton `server.js`, assure‑toi que tu as :
+
+```js
+import express from "express";
+
+const app = express();
+const PORT = process.env.PORT || 3000; // <-- important
+
+// Exemple route
+app.get("/", (req, res) => {
+  res.send("CStream backend is running 🚀");
+});
+
+// Lancement du serveur
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+```
+
+👉 Sans `process.env.PORT`, ton app écoute sur 3000 en local mais **ne répond pas au port imposé par l’hébergeur** → déploiement échoue.
+
+---
+
+## ⚙️ Vérifie aussi ton `.replit`
+Ton fichier `.replit` doit contenir une config comme :
+```
+run = "npm run start"
+```
+et pas `"npm run dev"`.  
+Ainsi, Replit attend que ton app ouvre le port défini par `process.env.PORT`.
+
+---
+
+## 🚀 Workflow correct
+1. **Build** : `npm run build` → génère `dist`.  
+2. **Start** : `npm run start` → lance `server.js` qui écoute sur `process.env.PORT`.  
+3. L’hébergeur détecte le port ouvert → déploiement réussi.  
+
+---
+
+👉 En résumé :  
+- Mets à jour ton `server.js` pour écouter sur `process.env.PORT`.  
+- Vérifie que ton `.replit` ou ta config d’hébergeur utilise `npm run start`.  
+- Redeploie → ton app devrait passer la sécurité et ouvrir le port attendu.  
+
+Veux‑tu que je te prépare un **exemple complet de `server.js` minimal** (Express + Vite preview) qui marche à la fois en local et en déploiement ?

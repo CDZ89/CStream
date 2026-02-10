@@ -1,0 +1,73 @@
+Parfait stesp 👌. Ton prompt est déjà solide, mais je vais l’**améliorer au maximum** pour qu’il soit **clair, structuré, exhaustif et prêt à être utilisé** par un développeur ou une IA générative. J’ajoute des précisions sur l’UX, la synchronisation, la gestion des erreurs et la performance.  
+
+---
+
+# 🎯 Prompt amélioré : Page de visionnage de série TV
+
+## 📌 Contexte
+Le système doit générer une **page de visionnage de série TV** en combinant :  
+- Les **données officielles de TMDB** (titres, images, descriptions, notes).  
+- Les **informations internes de l’admin** (lecteurs disponibles, URLs des épisodes).  
+
+Cette page doit être **intuitive, responsive et synchronisée** pour offrir une expérience fluide à l’utilisateur.
+
+---
+
+## 🧭 Objectifs fonctionnels
+- **Sélecteur de saison** : clair, compact et dynamique (ex. : Saison 1, Saison 2, …).  
+- **Sélecteur de lecteur** : afficher tous les lecteurs disponibles pour la saison choisie (Lecteur 1, Lecteur 2, …).  
+- **Episodes par lecteur** :  
+  - Afficher uniquement les épisodes du lecteur sélectionné.  
+  - Infos affichées par épisode :  
+    - 🎬 Titre officiel (TMDB)  
+    - 🖼️ Image officielle (still_path TMDB)  
+    - 📝 Description (overview TMDB)  
+    - ▶️ URL du lecteur (iframe ou vidéo depuis l’admin)  
+- **Synchronisation stricte** :  
+  - Pas de mélange entre lecteurs.  
+  - Chaque lecteur affiche uniquement ses épisodes disponibles.  
+- **Enrichissement visuel** : utiliser TMDB (poster_path, vote_average, vote_count) pour améliorer l’affichage.  
+- **Admin dynamique** : tout nouveau lecteur ajouté dans l’admin doit apparaître automatiquement, sans duplication ni bug.
+
+---
+
+## ⚙️ Comportement attendu
+- Exemple : Saison 1 → Lecteur Sibnet / Lecteur Vidmoly / Lecteur Sendvid / Lecteur Anime-Sama.  
+- Si l’utilisateur clique sur **Lecteur Sibnet** → afficher uniquement les épisodes Sibnet avec leurs infos TMDB.  
+- Si l’utilisateur change de lecteur → mise à jour automatique des épisodes.  
+- Si l’utilisateur change de saison → mise à jour automatique des lecteurs et épisodes correspondants.  
+- Si un nouveau lecteur est ajouté (ex. `epsNew`) → il apparaît immédiatement dans le sélecteur et fonctionne sans bug.
+
+---
+
+## 🚨 Contraintes et gestion des cas limites
+- **Synchronisation TMDB + Admin** : chaque épisode doit correspondre au bon numéro et au bon lecteur.  
+- **Cas limites** :  
+  - Si un lecteur a moins d’épisodes que TMDB → afficher uniquement ceux disponibles.  
+  - Si une image ou description manque → fallback propre :  
+    - Image par défaut = poster de la saison.  
+    - Texte par défaut = “Description non disponible”.  
+- **Design** :  
+  - Responsive (mobile, tablette, desktop).  
+  - Sélecteurs élégants (dropdown ou tabs).  
+  - Images nettes, textes lisibles, interface fluide.  
+- **Performance** :  
+  - Chargement asynchrone des données (lazy loading).  
+  - Mise en cache des données TMDB pour éviter les appels répétés.  
+
+---
+
+## 🎨 But final
+Créer une **expérience de visionnage complète et intuitive** où l’utilisateur peut :  
+1. Choisir une saison.  
+2. Sélectionner un lecteur (ancien ou nouveau).  
+3. Voir les épisodes correspondants avec leurs infos officielles TMDB.  
+4. Lancer le lecteur vidéo associé.  
+
+Le tout doit être **synchronisé avec l’admin**, enrichi par TMDB, et fonctionner sans bug ni duplication.
+
+---
+
+👉 Voilà un prompt **maxi optimisé** : clair, détaillé, exhaustif, avec objectifs, comportements attendus, contraintes et UX.  
+
+Veux-tu que je te propose aussi une **structure technique (API calls + base de données)** pour que ce prompt soit directement exploitable côté backend/front ?

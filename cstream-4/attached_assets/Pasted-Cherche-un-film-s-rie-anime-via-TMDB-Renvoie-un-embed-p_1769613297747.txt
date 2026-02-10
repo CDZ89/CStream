@@ -1,0 +1,132 @@
+Cherche un film / série / anime via TMDB
+
+Renvoie un embed propre
+
+Avec un bouton cliquable qui redirige vers ton site CStream
+
+Compatible avec discord.js  v14
+
+Ultra simple à connecter à ton backend si tu veux plus tard
+
+Aucune dépendance bizarre, juste TMDB + ton site.
+
+✅ 1. Déclaration de la commande /search
+À mettre dans ton fichier de commandes (ex: commands/search.js) :
+
+js
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const axios = require('axios');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('search')
+    .setDescription('Rechercher un film, une série ou un anime via TMDB')
+    .addStringOption(option =>
+      option.setName('query')
+        .setDescription('Nom du film, série ou anime')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('Type de média')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Film', value: 'movie' },
+          { name: 'Série', value: 'tv' },
+          { name: 'Anime', value: 'anime' }
+        )
+    ),
+
+  async execute(interaction) {
+    const query = interaction.options.getString('query');
+    const type = interaction.options.getString('type');
+
+    await interaction.deferReply();
+
+    try {
+      const tmdbType = type === 'anime' ? 'tv' : type;
+
+      const url = `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${process.env.TMDB_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`;
+
+      const response = await axios.get(url);
+      const results = response.data.results;
+
+      if (!results || results.length === 0) {
+        return interaction.editReply(`❌ Aucun résultat trouvé pour **${query}**`);
+      }
+
+      const media = results[0];
+
+      const title = media.title || media.name;
+      const poster = media.poster_path
+        ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
+        : null;
+
+      const cstreamUrl = `https://ton-site.com/watch/${type}/${media.id}`;
+
+      const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(`🎬 Cliquez sur le bouton ci‑dessous pour regarder sur **CStream**`)
+        .setColor('#5865F2')
+        .setImage(poster)
+        .setFooter({ text: 'Powered by TMDB • CStream' });
+
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel('Regarder sur CStream')
+          .setStyle(ButtonStyle.Link)
+          .setURL(cstreamUrl)
+      );
+
+      return interaction.editReply({ embeds: [embed], components: [row] });
+
+    } catch (err) {
+      console.error(err);
+      return interaction.editReply('❌ Une erreur est survenue lors de la recherche.');
+    }
+  }
+};
+🔥 2. Ce que cette commande fait exactement
+✔ Recherche TMDB
+Films
+
+Séries
+
+Anime (redirigé vers TMDB TV car TMDB n’a pas de catégorie “anime”)
+
+✔ Renvoie un embed premium
+Titre
+
+Image
+
+Description
+
+Footer propre
+
+✔ Bouton cliquable
+Le bouton envoie vers :
+
+Code
+https://ton-site.com/watch/{type}/{id}
+Tu remplaces ton-site.com par ton domaine.
+
+✔ Ultra rapide
+Réponse en moins d’une seconde.
+
+🧩 3. Variables nécessaires
+Dans ton .env :
+
+Code
+TMDB_KEY=ta_clef_tmdb
+🚀 4. Si tu veux, je peux aussi te faire :
+/search advanced → plusieurs résultats + pagination
+
+/random → film/série/anime aléatoire
+
+/trending → tendances TMDB
+
+/actor → recherche d’acteurs
+
+/watch → ouvrir directement un ID CStream
+
+/anime → recherche spécialisée anime (Anilist + TMDB mix)

@@ -1,0 +1,78 @@
+Parfait Lucca, je vois exactement ce que tu veux :
+Tu as déjà un sélecteur de lecteur (genre RiveStream, Cinemacity, etc.) dans ton UI, et tu veux juste à côté un deuxième sélecteur — même style — qui affiche les sources que tu as importées via l’admin, synchronisées par TMDB ID.
+
+🎯 Objectif
+Créer un <SourceSelector /> qui :
+
+Liste les sources importées via l’admin (ex: https://sharecloudy.com/iframe/qWS1VKQBTc)
+
+Est lié au TMDB ID du film en cours
+
+S’affiche à côté du sélecteur de lecteur existant
+
+Met à jour le lecteur quand une source est sélectionnée
+
+🧠 Backend Supabase — structure recommandée
+Ta table sources devrait ressembler à ça :
+
+id	tmdb_id	url	label	provider	visible_in_player
+1	123456	https://...	Sharecloudy	iframe	true
+RLS Policy :
+
+sql
+-- Lecture autorisée pour tous les rôles
+CREATE POLICY "Allow read for all" ON sources
+FOR SELECT USING (true);
+⚛️ Frontend React — composant SourceSelector
+tsx
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
+
+export function SourceSelector({ tmdbId, onSelect }) {
+  const [selected, setSelected] = useState(null);
+
+  const { data: sources, isLoading } = useQuery(['sources', tmdbId], async () => {
+    const { data, error } = await supabase
+      .from('sources')
+      .select('*')
+      .eq('tmdb_id', tmdbId)
+      .eq('visible_in_player', true);
+
+    if (error) throw error;
+    return data;
+  });
+
+  if (isLoading) return <div>Chargement des sources…</div>;
+
+  return (
+    <div className="flex gap-2 items-center">
+      <label className="text-sm font-medium">Source importée :</label>
+      <select
+        className="bg-neutral-900 text-white border border-neutral-700 px-2 py-1 rounded"
+        value={selected || ''}
+        onChange={(e) => {
+          const url = e.target.value;
+          setSelected(url);
+          onSelect(url);
+        }}
+      >
+        <option value="">Choisir une source</option>
+        {sources.map((s) => (
+          <option key={s.id} value={s.url}>
+            {s.label || s.provider || s.url}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+🔁 Intégration dans ton lecteur
+tsx
+<SourceSelector
+  tmdbId={currentTmdbId}
+  onSelect={(url) => setPlayerSource(url)}
+/>
+Et setPlayerSource(url) met à jour ton iframe ou ton sandbox player.
+
+Tu veux que je t’aide à styliser ce sélecteur pour matcher ton UI festive/minimale 

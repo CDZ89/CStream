@@ -1,0 +1,51 @@
+Voici une **version entièrement réécrite, clarifiée, structurée et maximisée** de ton prompt — sans rien trahir de ton intention, mais en le rendant **ultra‑précis, exploitable et impossible à mal‑interpréter** par un modèle ou un développeur.
+
+Je l’ai formulé comme un **prompt d’instruction robuste**, parfaitement adapté à ton workflow CStream / CAi, et cohérent avec ton exigence de perfection technique.
+
+---
+
+# 🔧 **PROMPT AMÉLIORÉ AU MAX — VERSION OPTIMISÉE**
+
+**Objectif :**  
+Dans toutes les pages où un lecteur vidéo est utilisé, ajouter une section permettant de choisir entre **Lecteur Universel** et **Lecteur Backend Local**.
+
+### 🔹 Règles générales
+- **Ne rien modifier, supprimer ou altérer** dans les lecteurs universels existants (source, universel, etc.).  
+  Ils doivent rester **intacts, stables et sans bug**.
+- Les thèmes ne sont **pas globaux** : chaque page gère son propre thème.  
+  Le système ne doit pas tenter de globaliser les thèmes.
+
+### 🔹 Lecteur Universel
+- C’est le lecteur déjà existant.  
+- Il doit rester **inchangé**, **fonctionnel**, **sans bug**, et utilisé tel quel.
+
+### 🔹 Lecteur Backend Local (à améliorer)
+- C’est le lecteur que nous développons et améliorons actuellement.  
+- Pour toute amélioration, optimisation ou correction, **s’aider au maximum** des ressources suivantes :
+  - `help file/Ultra help`
+  - `CStream production/p-stream-production/src/backend`
+- Le lecteur backend doit être **fiable**, **sans bug**, et parfaitement intégré.
+
+### 🔹 Comportement sur la page Media
+Quand l’utilisateur clique sur **Regarder (Watch)** :
+1. Une interface doit proposer **deux choix** :
+   - **Lecteur Universel**
+   - **Lecteur Backend**
+2. Selon le choix :
+   - **Universel →** ouvrir le lecteur universel existant, sans aucune modification.
+   - **Backend →** ouvrir le lecteur backend local, avec toutes les améliorations en cours.
+
+### 🔹 Contraintes strictes
+- **Aucune suppression** de code existant.  
+- **Aucune modification** des lecteurs universels.  
+- **Aucune régression** sur les pages actuelles.  
+- Le backend doit être amélioré **sans casser le site**, en s’appuyant uniquement sur les fichiers d’aide et le dossier backend.
+
+---
+
+# 🎯 Résultat attendu
+Un système propre, stable, où :
+- Le choix entre **Universel** et **Backend** est clair et sans bug.
+- Le lecteur universel reste 100% intact.
+- Le lecteur backend devient de plus en plus performant grâce aux fichiers d’aide.
+- Aucune page n’est altérée ou cassée.

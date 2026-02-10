@@ -1,0 +1,57 @@
+Construis un slide/carrousel d’affiches ultra complet et fluide, avec logos et interactions :
+
+1. Structure générale
+   - Carrousel horizontal affichant plusieurs affiches de films/séries.
+   - Chaque slide contient :
+     - Affiche principale (poster haute résolution).
+     - Titre du média (style identique à l’affiche officielle).
+     - Logo du média ou de la plateforme (ex. Netflix, Disney).
+     - Score/notation visible (étoiles ou jauge circulaire).
+     - Boutons d’action (Regarder, Infos, Favoris, Watchlist).
+
+2. Navigation
+   - Flèches gauche/droite fixes pour parcourir les slides.
+   - Navigation par swipe sur mobile.
+   - Pagination par points ou barre de progression sous le carrousel.
+   - Scroll fluide avec animation.
+
+3. Design et style
+   - Affiches en ratio uniforme (ex. 2:3).
+   - Titre en texte HTML avec style typographique identique à l’affiche (exemple : "Zootopia 2").
+   - Logos placés en overlay discret sur l’affiche ou sous le titre.
+   - Espacements réguliers entre slides.
+   - Responsive : 5 affiches visibles sur desktop, 3 sur tablette, 1–2 sur mobile.
+
+4. Interactions
+   - Hover sur une affiche → zoom léger + affichage du synopsis court.
+   - Boutons d’action visibles au survol ou en overlay.
+   - Favoris, Watchlist, Likes persistants en base, jamais supprimés automatiquement.
+   - Feedback visuel immédiat (icône active, toast).
+
+5. Accessibilité
+   - Navigation clavier (flèches gauche/droite).
+   - ARIA labels pour chaque affiche et bouton.
+   - Contraste validé (WCAG 2.1 AA).
+   - Logos avec alt text descriptif.
+
+6. Performances
+   - Lazy load des affiches et logos.
+   - Minification CSS/JS.
+   - Cache navigateur pour images.
+   - CDN pour assets.
+   - Préchargement des données critiques (titre, affiche, logo).
+
+7. Comportements additionnels
+   - Flèche retour en haut (↑) apparaissant après scroll, position fixe en bas à droite.
+   - Indicateur circulaire de progression du carrousel :
+     - Cercle discret en bas à gauche.
+     - Remplissage dynamique selon la position dans le slide.
+   - Animation fluide lors du changement de slide.
+
+8. Tests et validation
+   - Affiches toujours visibles et lisibles.
+   - Titre affiché avec style identique à l’affiche.
+   - Logos correctement placés et visibles.
+   - Navigation fluide sur desktop, tablette, mobile.
+   - Aucun bug de scroll ou de masquage.
+   - Temps de chargement < 3s, interactions < 250ms.

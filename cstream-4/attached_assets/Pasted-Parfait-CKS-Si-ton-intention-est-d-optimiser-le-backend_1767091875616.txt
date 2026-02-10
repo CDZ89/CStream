@@ -1,0 +1,151 @@
+Parfait, CKS.  
+Si ton intention est **d’optimiser le backend au maximum**, je peux te fournir quelque chose de beaucoup plus puissant qu’un simple prompt : une **directive technique complète**, pensée pour guider un LLM ou un développeur à pousser ton backend CStream au niveau supérieur, sans casser le site, sans toucher aux lecteurs universels, et en exploitant *tout* ce que tu as construit dans `src/backend`.
+
+Voici une version **maximisée**, structurée, et prête à l’emploi.
+
+---
+
+# ⚡ **DIRECTIVE : Travailler sur le Backend au Maximum**
+
+## 🎯 Objectif global
+Améliorer le backend CStream **au maximum**, en utilisant toutes les ressources disponibles dans :
+
+- `src/backend/providers`
+- `src/backend/player`
+- `src/backend/metadata`
+- `src/backend/helpers`
+- `src/backend/extension`
+- `src/backend/accounts`
+
+Le tout **sans jamais modifier, casser ou altérer** :
+- le frontend existant,
+- les lecteurs universels,
+- les pages déjà stables.
+
+Le backend doit devenir :
+- plus rapide,  
+- plus stable,  
+- plus intelligent,  
+- plus compatible,  
+- plus modulaire,  
+- plus extensible.
+
+---
+
+# 🚀 **1. Optimisation des performances backend**
+### 🔹 Objectifs
+- Réduire les temps de réponse au strict minimum.
+- Précharger intelligemment les données.
+- Minimiser les appels externes.
+- Cacher tout ce qui peut l’être.
+
+### 🔹 Actions
+- Utiliser les helpers pour créer un **cache interne** (mémoire + disque si nécessaire).
+- Optimiser les providers pour éviter les requêtes redondantes.
+- Ajouter un système de **fallback provider** en cas d’erreur.
+- Améliorer la gestion des erreurs dans `player` pour éviter les crashs silencieux.
+
+---
+
+# 🎬 **2. Amélioration du lecteur Backend (Beta)**
+### 🔹 Objectifs
+- Le lecteur backend doit être **fluide**, **stable**, **sans bug**, et capable de lire toutes les sources backend.
+- Il doit être indépendant du lecteur universel.
+
+### 🔹 Actions
+- Utiliser `player/` pour améliorer :
+  - la gestion des sources,
+  - la détection de qualité,
+  - la récupération des liens,
+  - la gestion des erreurs,
+  - la compatibilité mobile/desktop.
+- Ajouter un système de logs internes pour diagnostiquer les erreurs backend.
+
+---
+
+# 🧠 **3. Exploitation maximale des fichiers d’aide**
+Tu dois systématiquement t’appuyer sur :
+
+### 📁 `providers/`
+- Améliorer la récupération des sources.
+- Ajouter des providers fallback.
+- Nettoyer les réponses.
+- Uniformiser les formats.
+
+### 📁 `metadata/`
+- Optimiser la récupération des infos (titre, synopsis, images).
+- Précharger les métadonnées pour accélérer l’ouverture des fiches.
+
+### 📁 `helpers/`
+- Centraliser toutes les fonctions répétitives.
+- Ajouter des outils de parsing, normalisation, logs, cache.
+
+### 📁 `extension/`
+- Ajouter des modules backend optionnels.
+- Étendre les capacités du lecteur backend.
+
+### 📁 `accounts/`
+- Gérer les préférences backend.
+- Stocker les choix utilisateur (ex : backend par défaut).
+
+---
+
+# ⚡ **4. Ajout du bouton Backend (Beta) partout**
+Sur **toutes les pages contenant un lecteur**, ajouter :
+
+### 🔘 **Backend (Beta)**
+- Ouvre le lecteur backend.
+- Utilise les providers backend.
+- Utilise les metadata backend.
+- Utilise les helpers backend.
+- Ne casse rien du lecteur universel.
+
+### 🔘 **Universel**
+- Reste intact.
+- Aucun changement.
+
+---
+
+# ⚡ **5. Accélération extrême des pages Media**
+### 🔹 Objectifs
+- Ouverture en **1 ms**.
+- Toutes les images déjà chargées.
+- Préchargement global.
+
+### 🔹 Actions
+- Précharger les metadata via backend avant le clic.
+- Précharger les images via un système de lazy‑preload.
+- Optimiser les requêtes backend pour qu’elles soient prêtes avant l’ouverture.
+
+---
+
+# 🧩 **6. Contraintes strictes**
+- **Ne rien supprimer.**
+- **Ne rien casser.**
+- **Ne pas toucher aux lecteurs universels.**
+- **Ne pas modifier le frontend existant.**
+- **Améliorer uniquement le backend.**
+- **Utiliser au maximum les fichiers backend.**
+
+---
+
+# 🎯 Résultat final attendu
+- Backend **ultra‑optimisé**.  
+- Lecteur Backend (Beta) **fluide, stable, rapide**.  
+- Page Media **instantanée**.  
+- Providers **plus robustes**.  
+- Metadata **chargées en avance**.  
+- Helpers **centralisés et puissants**.  
+- Extension **modulaire**.  
+- Accounts **gérant les préférences backend**.  
+- Aucun bug, aucune régression.
+
+---
+
+Si tu veux, je peux aussi te créer :
+- une **version encore plus technique** (niveau architecture),
+- une **version pour un LLM interne** (style "instruction set"),
+- une **version en anglais premium**,
+- une **version en JSON pour intégration directe**.
+
+Tu veux pousser encore plus loin ?

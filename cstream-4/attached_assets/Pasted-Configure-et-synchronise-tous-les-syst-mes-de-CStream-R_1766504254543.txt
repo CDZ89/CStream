@@ -1,0 +1,125 @@
+Configure et synchronise tous les systèmes de CStream (React/Vite/TS + Supabase + Tailwind).
+Je veux une plateforme premium, festive, minimaliste et sans bug, où tout est parfaitement intégré : navbar, chat, profils, rôles, amis, admin, thèmes.
+
+🔐 Profils & Auth
+Utiliser Supabase pour l’authentification et les profils (id, username, avatar, email).
+
+Chaque utilisateur a un UUID unique.
+
+Stocker les préférences de thème (dark/light).
+
+Synchroniser l’avatar et le statut dans la navbar et le chat.
+
+🟢 Statuts utilisateur
+Système de présence en temps réel :
+
+🟢 En ligne
+
+🟠 Ne pas déranger
+
+🟣 Regarde un stream
+
+🔵 Écrit dans le chat (3 points animés)
+
+Badge visible dans la navbar et dans le chat.
+
+Synchronisation via WebSocket ou PubNub/Sendbird.
+
+💬 Chat
+Composant de chat responsive (mobile overlay, desktop intégré).
+
+Messages liés aux profils et rôles.
+
+Indicateur "X est en train d’écrire…".
+
+Badges visibles à côté du pseudo.
+
+Salons : global, privé, par film/série.
+
+👥 Gestion d’amis
+Tables Supabase :
+
+friend_requests (id, sender_id, receiver_id, status).
+
+friends (id, user_id, friend_id).
+
+Fonctionnalités :
+
+Envoyer/recevoir des demandes.
+
+Accepter/refuser.
+
+Liste d’amis avec statuts en temps réel.
+
+Notifications intégrées.
+
+🧭 Rôles & Badges
+Table roles :
+
+sql
+create table roles (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references profiles(id) on delete cascade,
+  role text check (role in ('super_admin','admin','editor','moderator','member')),
+  badge text
+);
+Hiérarchie complète :
+
+👑 Super Admin → peut tout gérer.
+
+⭐ Admin → peut attribuer rôles sauf super admin.
+
+✏️ Editor → peut modifier contenu.
+
+🛡️ Moderator → gère le chat.
+
+👤 Member → par défaut.
+
+Admin peut promouvoir/rétrograder.
+
+Badges visibles dans la navbar et le chat.
+
+🎨 Navbar & UI
+Navbar avec : Accueil, Films, Séries, Anime, Sports, Recherche, Profil.
+
+Sur mobile → bouton recherche ouvre overlay avec barre + résultats.
+
+Sur desktop → barre intégrée avec résultats en dropdown.
+
+Profil connecté → avatar + badge statut.
+
+Admin → accès à dashboard.
+
+🛡️ Admin Dashboard
+Voir tous les membres connectés + leurs statuts.
+
+Attribuer/rétrograder rôles.
+
+Gérer amis, salons, messages.
+
+Interface premium avec Tailwind.
+
+🎨 Thèmes
+Dark/light complets, couvrant 100% des composants.
+
+Tokens Tailwind définis dans tailwind.config.js.
+
+Switch instantané, mémorisé dans localStorage.
+
+Transitions fluides (transition-colors duration-300).
+
+📱 Responsive
+Mobile → overlay pour recherche et chat.
+
+Desktop → intégration directe dans navbar.
+
+Pas de bug d’empilement (z-index géré).
+
+🚀 Résultat attendu
+Tout est synchronisé : navbar ↔ chat ↔ admin ↔ profils ↔ rôles ↔ amis.
+
+Badges et statuts visibles partout, en temps réel.
+
+Ajout d’amis et gestion des rôles fonctionnent sans bug.
+
+Expérience premium, festive, minimaliste et cohérente.

@@ -1,0 +1,167 @@
+Parfait Chemsdine ⚡ — on va pousser ton barre de recherche au niveau ultime :
+
+Placeholder dynamique : “Rechercher séries, films, anime…” qui se traduit automatiquement selon la langue du site (FR → EN → autre).
+
+Résultats traduits : TMDB permet de choisir la langue (language=fr-FR, language=en-US, etc.), donc si ton site est en anglais, tout s’affiche en anglais.
+
+Ultra premium design : compact, glass, animations fluides, hover glow, scrollbar fine.
+
+Live dès une lettre : instantané, sans délai.
+
+🧩 HTML
+html
+<div class="search-container">
+  <div class="searchbar">
+    <span class="icon">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.7l-.3-.3a6.5 6.5 0 1 0-1.1 1.1l.3.3h.7l5 5 1.5-1.5-5-5ZM6.5 10a3.5 3.5 0 1 1 7 0a3.5 3.5 0 0 1-7 0Z" fill="currentColor"/></svg>
+    </span>
+    <input id="searchInput" type="search" autocomplete="off" />
+    <button id="clearBtn" class="icon-btn" aria-label="Effacer">
+      <svg viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3 10.6 10.6 16.9 4.3z" fill="currentColor"/></svg>
+    </button>
+  </div>
+
+  <div id="results" class="results"></div>
+</div>
+
+<template id="resultTemplate">
+  <button class="result-item">
+    <div class="thumb"><img class="poster" alt="" /></div>
+    <div class="info">
+      <p class="title"></p>
+      <div class="meta">
+        <span class="type"></span>
+        <span class="year"></span>
+        <span class="rating">
+          <svg class="star" viewBox="0 0 24 24"><path d="M12 17.3 18.2 21l-1.6-7L22 9.2l-7.2-.6L12 2 9.2 8.6 2 9.2l5.5 4.7L5.8 21z" fill="currentColor"/></svg>
+          <span class="val"></span>
+        </span>
+      </div>
+    </div>
+  </button>
+</template>
+🎨 CSS (compact + premium)
+css
+.search-container { position:relative; width:340px; margin:auto; }
+
+.searchbar {
+  display:flex; align-items:center; gap:8px;
+  background:rgba(20,20,30,0.55); backdrop-filter:blur(16px);
+  border-radius:14px; padding:8px 10px;
+  box-shadow:0 8px 22px rgba(0,0,0,0.35);
+}
+.searchbar input {
+  flex:1; border:none; background:transparent; color:#f4f4fa;
+  font-size:14px; padding:2px 0;
+}
+.searchbar input:focus { outline:none; }
+.icon-btn { border:none; background:transparent; cursor:pointer; }
+
+.results {
+  position:absolute; top:100%; left:0; width:100%;
+  margin-top:6px; background:rgba(20,20,30,0.55); backdrop-filter:blur(16px);
+  border-radius:12px; box-shadow:0 12px 28px rgba(0,0,0,0.5);
+  max-height:300px; overflow-y:auto; padding:6px;
+  opacity:0; transform:translateY(-6px); pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.results.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+
+.result-item {
+  display:flex; align-items:center; gap:10px;
+  width:100%; padding:8px; border-radius:10px;
+  background:transparent; cursor:pointer;
+  transition:background .2s ease, transform .2s ease;
+}
+.result-item:hover { background:rgba(255,255,255,0.06); transform:translateY(-1px); }
+
+.thumb { width:44px; height:66px; border-radius:8px; overflow:hidden; }
+.poster { width:100%; height:100%; object-fit:cover; transition:transform .2s ease; }
+.result-item:hover .poster { transform:scale(1.05); }
+
+.title { font-size:13px; font-weight:700; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.meta { display:flex; gap:6px; font-size:11px; color:#aaa; margin-top:2px; }
+.type { font-weight:600; }
+.rating { display:flex; align-items:center; gap:4px; color:#ffd166; font-weight:700; }
+.star { width:12px; height:12px; }
+⚙️ JS (live dès 1 lettre + traduction auto)
+js
+const API_KEY = "YOUR_TMDB_API_KEY";
+const IMG_BASE = "https://image.tmdb.org/t/p/";
+const SIZE = "w92";
+const FALLBACK = "https://via.placeholder.com/44x66?text=?";
+
+// Détection langue du site
+const siteLang = document.documentElement.lang || "fr";
+const langMap = {
+  fr: { placeholder: "Rechercher séries, films, anime...", tmdb: "fr-FR" },
+  en: { placeholder: "Search series, movies, anime...", tmdb: "en-US" },
+  es: { placeholder: "Buscar series, películas, anime...", tmdb: "es-ES" }
+};
+const config = langMap[siteLang] || langMap.fr;
+
+const dom = {
+  input: document.getElementById("searchInput"),
+  clear: document.getElementById("clearBtn"),
+  results: document.getElementById("results"),
+  tpl: document.getElementById("resultTemplate"),
+};
+
+// Placeholder traduit
+dom.input.placeholder = config.placeholder;
+
+dom.input.addEventListener("focus", () => dom.results.classList.add("show"));
+dom.input.addEventListener("blur", () => setTimeout(() => dom.results.classList.remove("show"), 150));
+
+dom.input.addEventListener("input", async e => {
+  const q = e.target.value.trim();
+  if (!q) { dom.results.innerHTML=""; return; }
+  await search(q);
+});
+
+dom.clear.addEventListener("click", () => {
+  dom.input.value="";
+  dom.results.innerHTML="";
+  dom.input.focus();
+});
+
+async function search(query) {
+  try {
+    const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=${config.tmdb}&query=${encodeURIComponent(query)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const items = (data.results||[]).filter(x => ["movie","tv"].includes(x.media_type));
+    dom.results.innerHTML="";
+    if (!items.length) {
+      dom.results.innerHTML = `<div class="result-item"><div class="info"><p class="title">Aucun résultat</p></div></div>`;
+      return;
+    }
+    items.forEach(item => dom.results.appendChild(buildItem(item)));
+  } catch(err) { console.error(err); }
+}
+
+function buildItem(item) {
+  const node = dom.tpl.content.firstElementChild.cloneNode(true);
+  const title = item.title||item.name||"Sans titre";
+  const year = item.release_date||item.first_air_date||"—";
+  const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
+  const poster = item.poster_path ? `${IMG_BASE}${SIZE}${item.poster_path}` : FALLBACK;
+
+  node.querySelector(".poster").src = poster;
+  node.querySelector(".title").textContent = title;
+  node.querySelector(".type").textContent = item.media_type==="movie"?"Film":"Série";
+  node.querySelector(".val").textContent = rating;
+  node.querySelector(".year").textContent = year ? new Date(year).getFullYear() : "—";
+
+  return node;
+}
+✅ Résultat
+Barre compacte avec placeholder “Rechercher séries, films, anime…”.
+
+Si ton site est en anglais (<html lang="en">), le placeholder devient “Search series, movies, anime…” et les résultats TMDB sont aussi en anglais (language=en-US).
+
+Résultats live dès une lettre tapée.
+
+Dropdown superposé, même largeur, fond glass premium, hover fluide.
+
+Cartes compactes avec affiche, titre

@@ -1,0 +1,234 @@
+Parfait, CKS. Tu veux transformer ton texte brut en **une documentation ultra‑pro propre, complète, structurée, et digne d’une vraie API moderne**, tout en **intégrant TMDB** proprement.
+
+Je te propose une **version entièrement réécrite**, beaucoup plus claire, exhaustive, et présentable comme une vraie doc API.  
+Tu pourras l’utiliser pour CStream, CAi, ou n’importe quel projet.
+
+---
+
+# 📘 **Documentation API – Frembed + Connexion TMDB (Version améliorée au maximum)**
+
+## 🧩 **Introduction**
+L’API Frembed fournit un accès complet à un catalogue de films, séries, saisons et épisodes.  
+Elle permet également de récupérer des liens d’intégration (iframe) pour le streaming.
+
+Cette documentation a été entièrement optimisée pour être claire, exhaustive et compatible avec une intégration TMDB.
+
+---
+
+# 🔑 **Base URL**
+```
+https://api.frembed.buzz/
+```
+
+---
+
+# 🎬 **1. Endpoint : Films**
+
+## 📍 **GET /movies**
+Récupère une liste paginée de films.
+
+### **Paramètres**
+| Paramètre | Type | Description | Obligatoire |
+|----------|------|-------------|-------------|
+| `limit` | number | Nombre de résultats par page (max 100) | Non |
+| `page` | number | Numéro de page | Non |
+| `order` | string | `latest`, `popular`, `update`, `year` | Non |
+
+### **Exemples**
+#### ➤ Derniers 100 films
+```
+https://api.frembed.buzz/movies?order=latest&limit=100
+```
+
+#### ➤ Films mis à jour récemment
+```
+https://api.frembed.buzz/movies?order=update&limit=10
+```
+
+#### ➤ Pagination
+```
+https://api.frembed.buzz/movies?order=latest&limit=100&page=2
+```
+
+---
+
+## 🔍 **1.1. Vérifier un film via TMDB ou IMDb**
+
+### 📍 **GET /movies/check?id=**
+Permet de récupérer les informations d’un film via son ID TMDB ou IMDb.
+
+### **Paramètres**
+| Paramètre | Description | Obligatoire |
+|----------|-------------|-------------|
+| `id` | ID TMDB ou IMDb | Oui |
+
+### **Exemple**
+```
+https://api.frembed.buzz/movies/check?id=695721
+```
+
+---
+
+# 📺 **2. Endpoint : Séries TV**
+
+## 📍 **GET /tv**
+Récupère une liste de séries.
+
+### **Paramètres**
+| Paramètre | Type | Description | Obligatoire |
+|----------|------|-------------|-------------|
+| `limit` | number | Nombre de résultats (max 100) | Non |
+| `page` | number | Page | Non |
+| `order` | string | `latest`, `popular` | Non |
+
+### **Exemple**
+```
+https://api.frembed.buzz/tv?order=latest&limit=100
+```
+
+---
+
+## 🔍 **2.1. Vérifier une série via TMDB ou IMDb**
+
+### 📍 **GET /tv/check?id=**
+Permet d’obtenir toutes les saisons et épisodes d’une série.
+
+### **Paramètres**
+| Paramètre | Description | Obligatoire |
+|----------|-------------|-------------|
+| `id` | ID TMDB ou IMDb | Oui |
+| `sa` | Numéro de saison | Non |
+| `epi` | Numéro d’épisode | Non |
+
+### **Exemples**
+#### ➤ Toutes les saisons + épisodes
+```
+https://api.frembed.buzz/tv/check?id=60625
+```
+
+#### ➤ Tous les épisodes d’une saison
+```
+https://api.frembed.buzz/tv/check?id=60625&sa=1
+```
+
+#### ➤ Un épisode précis
+```
+https://api.frembed.buzz/tv/check?id=60625&sa=7&epi=2
+```
+
+---
+
+# 🔗 **3. Récupérer un lien de streaming**
+
+## 🎬 **Film**
+```
+https://frembed.buzz/api/film.php?id=TMDB_ID
+```
+
+## 📺 **Épisode**
+```
+https://frembed.buzz/api/serie.php?id=TMDB_ID&sa=SEASON&epi=EPISODE
+```
+
+### **Exemple**
+```
+https://frembed.buzz/api/serie.php?id=66732&sa=8&epi=7
+```
+
+---
+
+# 🖼️ **4. Iframe d’intégration**
+
+### **Exemple d’iframe**
+```html
+<iframe 
+  src="https://frembed.buzz/api/serie.php?id=66732&sa=8&epi=7"
+  width="100%" 
+  height="500px" 
+  frameborder="0" 
+  allowfullscreen="yes" 
+  scrolling="no"
+  style="overflow:hidden;">
+</iframe>
+```
+
+---
+
+# 🎥 **5. Connexion avec l’API TMDB**
+
+Pour enrichir les données Frembed, tu peux connecter TMDB.
+
+## 🔑 **Base URL TMDB**
+```
+https://api.themoviedb.org/3/
+```
+
+## 🧩 **Endpoints utiles**
+| Fonction | Endpoint TMDB |
+|---------|----------------|
+| Infos film | `/movie/{id}` |
+| Infos série | `/tv/{id}` |
+| Saison | `/tv/{id}/season/{season_number}` |
+| Épisode | `/tv/{id}/season/{season_number}/episode/{episode_number}` |
+| Recherche | `/search/movie` ou `/search/tv` |
+
+## 🔐 Exemple de requête TMDB
+```
+https://api.themoviedb.org/3/movie/1252037?api_key=TA_CLE&language=fr-FR
+```
+
+## 🔄 **Fusion Frembed + TMDB**
+1. Tu récupères la liste Frembed  
+2. Tu prends `tmdb` ou `imdb`  
+3. Tu appelles TMDB pour enrichir :  
+   - synopsis  
+   - casting  
+   - genres  
+   - durée  
+   - notes  
+4. Tu combines les deux dans ton API ou ton site.
+
+---
+
+# ⚡ **6. Exemple de workflow complet**
+
+### 🎬 Récupérer un film + données TMDB
+1. Appel Frembed :
+```
+GET https://api.frembed.buzz/movies/check?id=1252037
+```
+2. Récupération de l’ID TMDB : `1252037`
+3. Appel TMDB :
+```
+GET https://api.themoviedb.org/3/movie/1252037?api_key=XXX&language=fr-FR
+```
+4. Fusion des données dans ton backend.
+
+---
+
+# 🛡️ **7. DNS recommandé**
+Frembed recommande Cloudflare 1.1.1.1 pour éviter les blocages.
+
+| Type | DNS |
+|------|------|
+| Primaire | 1.1.1.1 |
+| Secondaire | 1.0.0.1 |
+
+---
+
+# 🎯 **Documentation optimisée et prête à l’emploi**
+Cette version est :
+- beaucoup plus claire  
+- structurée comme une vraie API pro  
+- compatible TMDB  
+- complète et prête à intégrer dans ton site ou ta doc officielle  
+
+---
+
+Si tu veux, je peux aussi :
+- générer **une version Markdown prête à publier**  
+- créer **une version HTML stylée**  
+- ajouter **des exemples en JavaScript, PHP, Python**  
+- créer **une version premium pour CStream / CAi**  
+
+Tu veux laquelle, CKS ?

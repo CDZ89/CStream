@@ -1,0 +1,72 @@
+Voici la **même description premium**, traduite proprement dans toutes les langues que tu as demandées.  
+Tu peux les afficher en sélection de langue ou en texte multi-langues sur ta page de contribution.
+
+---
+
+### 🇫🇷 Français
+
+Votre soutien permet d’améliorer CStream, d’optimiser ses performances et de le maintenir entièrement gratuit et sans publicité. Si l’objectif n’est pas atteint, quelques publicités légères seront nécessaires pour assurer la continuité du service. Chaque contribution est réinvestie pour offrir une expérience plus fluide, plus moderne et pensée pour vous.
+
+---
+
+### 🇬🇧 English
+
+Your support helps improve CStream, enhance its performance, and keep it completely free and ad‑free. If the goal isn’t reached, a few light ads will be required to maintain the service. Every contribution is reinvested to deliver a smoother, more modern experience designed for you.
+
+---
+
+### 🇯🇵 日本語 (Japonais)
+
+あなたの支援は、CStream を改善し、パフォーマンスを向上させ、完全に無料かつ広告なしの状態を維持することに役立ちます。目標額に達しない場合は、サービスを継続するために、いくつかの控えめな広告を導入する必要があります。すべての支援は、よりスムーズでモダンな体験を提供するために再投資されます。
+
+---
+
+### 🇸🇦 العربية (Arabe)
+
+دعمكم يساعد على تحسين CStream، وتعزيز أدائه، والحفاظ عليه مجانياً تماماً ومن دون إعلانات. إذا لم نصل إلى الهدف، فسيتعيّن إضافة بعض الإعلانات الخفيفة لضمان استمرار الخدمة. يتم إعادة استثمار كل مساهمة لتقديم تجربة أكثر سلاسة وحداثة ومصممة من أجلكم.
+
+---
+
+### 🇷🇺 Русский (Russe)
+
+Ваша поддержка помогает улучшать CStream, повышать его производительность и сохранять его полностью бесплатным и без рекламы. Если цель не будет достигнута, для поддержания сервиса придётся добавить немного ненавязчивой рекламы. Каждый вклад реинвестируется, чтобы сделать сервис более плавным, современным и ориентированным на вас.
+
+---
+
+### 🇮🇹 Italiano (Italien)
+
+Il tuo supporto aiuta a migliorare CStream, a potenziarne le prestazioni e a mantenerlo completamente gratuito e senza pubblicità. Se l’obiettivo non viene raggiunto, sarà necessario introdurre alcuni annunci leggeri per garantire la continuità del servizio. Ogni contributo viene reinvestito per offrire un’esperienza più fluida, più moderna e pensata per te.
+
+---
+
+### 🇪🇸 Español (Espagnol)
+
+Tu apoyo ayuda a mejorar CStream, a optimizar su rendimiento y a mantenerlo completamente gratuito y sin publicidad. Si no se alcanza el objetivo, será necesario añadir algunos anuncios ligeros para garantizar la continuidad del servicio. Cada contribución se reinvierte para ofrecer una experiencia más fluida, más moderna y pensada para ti.
+
+---
+
+### 🇩🇪 Deutsch (Allemand)
+
+Ihre Unterstützung hilft dabei, CStream zu verbessern, die Leistung zu optimieren und den Dienst vollständig kostenlos und werbefrei zu halten. Wenn das Ziel nicht erreicht wird, müssen einige dezente Anzeigen geschaltet werden, um den Betrieb aufrechtzuerhalten. Jeder Beitrag wird reinvestiert, um ein flüssigeres, moderneres und auf Sie zugeschnittenes Erlebnis zu bieten.
+
+---
+
+### 🇵🇹 Português (Portugais)
+
+O seu apoio ajuda a melhorar o CStream, a otimizar o seu desempenho e a mantê-lo totalmente gratuito e sem anúncios. Se a meta não for alcançada, será necessário adicionar alguns anúncios leves para garantir a continuidade do serviço. Cada contribuição é reinvestida para oferecer uma experiência mais fluida, mais moderna e pensada para você.
+
+---
+
+### 🇰🇷 한국어 (Coréen)
+
+여러분의 후원은 CStream을 개선하고 성능을 향상시키며, 서비스를 완전히 무료이자 광고 없는 상태로 유지하는 데 도움이 됩니다. 목표 금액에 도달하지 못할 경우, 서비스를 유지하기 위해 소규모의 가벼운 광고를 추가해야 할 수 있습니다. 모든 후원은 더 부드럽고 현대적인, 여러분을 위한 경험을 제공하기 위해 다시 투자됩니다.
+
+---
+
+### 🇨🇳 中文 (Chinois simplifié)
+
+您的支持有助于提升 CStream 的品质和性能，并让平台保持完全免费且无广告的状态。若未能达到目标，为了维持服务运行，将需要加入少量不干扰体验的广告。每一笔支持都会被重新投入，用于为您打造更流畅、更现代、更贴心的使用体验。
+
+---
+
+Si tu veux, je peux maintenant te générer la version **HTML prête à coller** avec balises `<p lang="...">` et une structure propre pour ton site.

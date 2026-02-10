@@ -1,0 +1,168 @@
+<div class="mx-3 md:mx-10">
+				
+				<!-- LIEN BANDE ANNONCE -->
+				<!--<script>$(document).ready(function(){$("#bandeannonce").attr("src", "https://www.youtube.com/embed/Wv3i6Z6vCzk");});</script>-->
+
+				<script>
+//templates panneaux
+function panneauAnime(nom, url){
+    if (nom.length > 30) document.write('<a href="'+url+'" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">'+nom+'</div></a>');
+    else document.write('<a href="'+url+'" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">'+nom+'</div></a>');
+}
+function panneauScan(nom, url){
+    if (nom.length > 30) document.write('<a href="'+url+'" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-gray-400 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 bg-cover h-18 grayscale" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">'+nom+'</div></a>');
+    else document.write('<a href="'+url+'" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-gray-400 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 bg-cover h-18 grayscale" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">'+nom+'</div></a>');
+}
+</script>
+
+<style>
+/* Layout 2 colonnes sur PC */
+@media (min-width: 1500px) {
+    .oeuvre-layout {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .oeuvre-left {
+        flex-shrink: 0;
+        width: 700px;
+    }
+    
+    .oeuvre-right {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 768px) {
+    #bandeannonce { height: 450px; }
+    #coverOeuvre { height: 450px; }
+}
+</style>
+
+
+<!-- Layout 2 colonnes sur PC uniquement -->
+<div class="oeuvre-layout">
+    
+    <!-- COLONNE GAUCHE : Image/Vidéo -->
+    <div class="oeuvre-left">
+        <h2 class="text-white text-xl font-bold uppercase border-b-2 mb-4 border-slate-800">Aperçu</h2>
+        <iframe id="bandeannonce" class="h-64 w-full" scrolling="no" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" style="display: none;"></iframe>
+        <img id="coverOeuvre" class="hidden w-full object-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg" alt="One Piece" style="display: block;">
+    </div>
+    
+    <!-- COLONNE DROITE : Informations -->
+    <div class="oeuvre-right">
+        <!-- Titre -->
+        <div class="my-2">
+            <h4 id="titreOeuvre" class="text-4xl lg:text-5xl uppercase text-white font-bold">One Piece</h4>
+            <h2 id="titreAlter" class="text-white text-sm lg:text-base italic uppercase opacity-80"></h2>
+        </div>
+        
+        <!-- Boutons Favoris, Watchlist, Vu -->
+        <div class="flex flex-row gap-1">
+            <button id="addFavoris" class="opacity-60 hover:opacity-100 mx-1 p-0.2 pr-2 text-xs justify-center items-center lg:text-sm text-white font-semibold bg-yellow-200 rounded-lg bg-opacity-50 flex transition-all duration-200">
+                <svg id="plusFavoris" class="w-5 h-5 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"></path></svg>
+                <svg id="checkedFavoris" class="hidden w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path></svg>
+                <svg class="h-5 w-5 my-1 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <p id="textFavoris">Favoris</p>
+            </button>
+
+            <button id="addWatchlist" class="opacity-60 hover:opacity-100 mx-1 p-0.2 pr-2 text-xs lg:text-sm text-white justify-center items-center font-semibold bg-blue-400 rounded-lg bg-opacity-50 flex transition-all duration-200">    
+                <svg id="plusWatchlist" class="w-5 h-5 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"></path></svg>
+                <svg id="checkedWatchlist" class="hidden w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path></svg>
+                <svg class="h-5 w-5 m-1 ml-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path></svg>
+                <p id="textWatchlist">Watchlist</p>
+            </button>
+
+            <button id="addVu" class="opacity-60 hover:opacity-100 mx-1 p-0.2 pr-2 text-xs lg:text-sm text-white justify-center items-center font-semibold bg-green-400 rounded-lg bg-opacity-50 flex transition-all duration-200">  
+                <svg id="plusVu" class="w-5 h-5 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"></path></svg>
+                <svg id="checkedVu" class="hidden w-5 h-5 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"></path></svg>
+                <svg class="h-5 w-5 mr-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9 1.5H5.625c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5zm6.61 10.936a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 14.47a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"></path><path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z"></path></svg>
+                <p id="textVu">Vu</p>
+            </button>
+        </div>
+        
+		<!-- Avancement & Correspondance -->
+		<div class="bg-slate-900 bg-opacity-40 p-2 mt-1 rounded">
+            <p class="text-white font-bold uppercase text-sm">Actualité : <span class="font-normal text-gray-300 normal-case text-sm">Aucune donnée.</span></p>
+            <p class="text-white font-bold uppercase text-sm mt-2">Correspondance (Anime/Manga) : <span class="font-normal text-gray-300 normal-case text-sm">Episode 1122 -&gt; Chapitre 1088</span></p>
+        </div>
+        
+        <!-- Synopsis -->
+        <div>
+            <h2 class="text-white text-xl font-bold uppercase border-b-2 mb-3 border-slate-700">Synopsis</h2>
+            <p class="text-sm text-gray-300 leading-relaxed">Il fut un temps où Gold Roger était le plus grand de tous les pirates, le "Roi des Pirates" était son surnom. A sa mort, son trésor d'une valeur inestimable connu sous le nom de "One Piece" fut caché quelque part sur "Grand Line". De nombreux pirates sont partis à la recherche de ce trésor mais tous sont morts avant même de l'atteindre. Monkey D. Luffy rêve de retrouver ce trésor légendaire et de devenir le nouveau "Roi des Pirates". Après avoir mangé un fruit du démon, il possède un pouvoir lui permettant de réaliser son rêve. Il lui faut maintenant trouver un équipage pour partir à l'aventure !</p>
+        </div>
+        
+        <!-- Genres -->
+        <div>
+            <h2 class="text-white text-xl font-bold uppercase border-b-2 mb-3 border-slate-700">Genres</h2>
+            <a class="text-sm text-gray-300">Action, Aventure, Comédie, Drame, Fantastique, Shônen, Kaï</a>
+        </div>
+		
+    </div>
+    
+</div>
+
+
+
+
+				<!-- ANIME -->
+				<h2 class="text-white text-xl font-bold uppercase border-b-2 mt-5 border-slate-500">Anime</h2>
+				<div class="flex flex-wrap overflow-y-hidden text-sm justify-start bg-slate-900 bg-opacity-70 rounded mt-2 h-auto">
+					<script>
+					/*panneauAnime("nom", "url"); -> on en met autant qu'on veut à la ligne*/
+					panneauAnime("Saga 1 (East Blue)", "saison1/vostfr");
+					panneauAnime("Saga 2 (Alabasta)", "saison2/vostfr");
+					panneauAnime("Saga 3 (Ile céleste)", "saison3/vostfr");
+					panneauAnime("Saga 4 (Water Seven)", "saison4/vostfr");
+					panneauAnime("Saga 5 (Thriller Bark)", "saison5/vostfr");
+					panneauAnime("Saga 6 (Guerre au Sommet)", "saison6/vostfr");
+					panneauAnime("Saga 7 (Ile des Hommes-Poissons)", "saison7/vostfr");
+					panneauAnime("Saga 8 (Dressrosa)", "saison8/vostfr");
+					panneauAnime("Saga 9 (Ile Tougato)", "saison9/vostfr");
+					panneauAnime("Saga 10 (Pays des Wa)", "saison10/vostfr");
+					panneauAnime("Saga 11 (Egghead)", "saison11/vostfr");
+					panneauAnime("Films", "film/vostfr");
+					panneauAnime("Fan Letter", "oav/vostfr");
+					panneauAnime("One Piece Log: Fish-Man Island Saga", "saison1hs/vostfr");
+					</script><a href="saison1/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 1 (East Blue)</div></a><a href="saison2/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 2 (Alabasta)</div></a><a href="saison3/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 3 (Ile céleste)</div></a><a href="saison4/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 4 (Water Seven)</div></a><a href="saison5/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 5 (Thriller Bark)</div></a><a href="saison6/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 6 (Guerre au Sommet)</div></a><a href="saison7/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">Saga 7 (Ile des Hommes-Poissons)</div></a><a href="saison8/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 8 (Dressrosa)</div></a><a href="saison9/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 9 (Ile Tougato)</div></a><a href="saison10/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 10 (Pays des Wa)</div></a><a href="saison11/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Saga 11 (Egghead)</div></a><a href="film/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Films</div></a><a href="oav/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Fan Letter</div></a><a href="saison1hs/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">One Piece Log: Fish-Man Island Saga</div></a>
+				</div>
+
+				<!-- KAI -->
+				<h2 class="text-white text-xl font-bold uppercase border-b-2 mt-5 border-slate-500">Anime Version Kai</h2>
+				<p class="text-gray-300 text-xs md:text-sm"><i>Kai</i> : recoupage des épisodes sous forme de films d'1 à 2 heures pour être plus fidèle à l'histoire originale en virant les hors séries, les génériques et les temps de pauses.</p>
+				<div class="flex flex-wrap overflow-y-hidden text-sm justify-start bg-slate-900 bg-opacity-70 rounded mt-2 h-auto">
+					<script>
+					/*panneauAnime("nom", "url"); -> on en met autant qu'on veut à la ligne*/
+					panneauAnime("Kai - Saga 1 (East Blue)", "kai/vostfr");
+					panneauAnime("Kai - Saga 2 (Alabasta)", "kai2/vostfr");
+					panneauAnime("Kai - Saga 3 (Ile céleste)", "kai3/vostfr");
+					panneauAnime("Kai - Saga 4 (Water Seven)", "kai4/vostfr");
+					panneauAnime("Kai - Saga 5 (Thriller Bark)", "kai5/vostfr");
+					panneauAnime("Kai - Saga 6 (Guerre au Sommet)", "kai6/vostfr");
+					panneauAnime("Kai - Saga 7 (Ile des Hommes-Poissons)", "kai7/vostfr");
+					panneauAnime("Kai - Saga 8 (Dressrosa)", "kai8/vostfr");
+					panneauAnime("Kai - Saga 9 (Quatre Empereurs)", "kai9/vostfr");
+					panneauAnime("Kai - Saga 10 (Pays des Wa)", "kai10/vostfr");
+					panneauAnime("Kai - Saga 11 (Egghead)", "kai11/vostfr");
+					</script><a href="kai/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 1 (East Blue)</div></a><a href="kai2/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 2 (Alabasta)</div></a><a href="kai3/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 3 (Ile céleste)</div></a><a href="kai4/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 4 (Water Seven)</div></a><a href="kai5/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 5 (Thriller Bark)</div></a><a href="kai6/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">Kai - Saga 6 (Guerre au Sommet)</div></a><a href="kai7/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">Kai - Saga 7 (Ile des Hommes-Poissons)</div></a><a href="kai8/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 8 (Dressrosa)</div></a><a href="kai9/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white text-xs font-bold text-center absolute w-28 h-18">Kai - Saga 9 (Quatre Empereurs)</div></a><a href="kai10/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 10 (Pays des Wa)</div></a><a href="kai11/vostfr" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-blue-500 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 h-18 bg-cover" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Kai - Saga 11 (Egghead)</div></a>
+				</div>
+
+				<!-- MANGA -->
+				<h2 class="text-white text-xl font-bold uppercase border-b-2 mt-5 border-slate-500">Manga</h2>
+				<div class="flex flex-wrap overflow-y-hidden justify-start bg-slate-900 bg-opacity-70 rounded mt-2 h-auto">
+					<script>
+					/*panneauScan("nom", "url"); -> on en met autant qu'on veut à la ligne*/
+					panneauScan("Scans (couleur)", "scan/vf");
+					panneauScan("Scans (noir et blanc)", "scan_noir-et-blanc/vf");
+					</script><a href="scan/vf" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-gray-400 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 bg-cover h-18 grayscale" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Scans (couleur)</div></a><a href="scan_noir-et-blanc/vf" class="shrink-0 grid items-center bg-zinc-900 hover:opacity-70 border-double border-4 border-gray-400 rounded-lg w-32 h-20 m-3 transition-all duration-200"><img id="imgOeuvre" class="opacity-40 bg-cover h-18 grayscale" src="https://cdn.statically.io/gh/Anime-Sama/IMG/img/contenu/one-piece.jpg"><div class="text-white font-bold text-center absolute w-28 h-18">Scans (noir et blanc)</div></a>
+				</div>
+
+				
+			</div>

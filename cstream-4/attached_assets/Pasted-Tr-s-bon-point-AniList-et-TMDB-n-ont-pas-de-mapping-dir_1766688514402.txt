@@ -1,0 +1,90 @@
+Très bon point 👌. AniList et TMDB n’ont pas de **mapping direct d’ID** officiel, donc il faut créer un pont entre les deux en utilisant le **titre** ou d’autres métadonnées comme la date de sortie. Voici la logique :
+
+---
+
+## 🧩 Étapes pour convertir un ID AniList → TMDB
+
+1. **Récupérer les infos depuis AniList (GraphQL)**  
+   Exemple de requête pour obtenir le titre et l’année :
+   ```graphql
+   {
+     Media(id: 21, type: ANIME) {
+       id
+       title {
+         romaji
+         english
+         native
+     }
+       startDate {
+         year
+       }
+     }
+   }
+   ```
+   → Tu obtiens par exemple :  
+   - `romaji: "Naruto"`  
+   - `english: "Naruto"`  
+   - `year: 2002`
+
+---
+
+2. **Chercher sur TMDB avec le titre + année**  
+   TMDB REST API :
+   ```ts
+   fetch(`https://api.themoviedb.org/3/search/tv?query=Naruto&first_air_date_year=2002&api_key=TMDB_KEY`)
+     .then(res => res.json())
+     .then(data => console.log(data.results[0].id));
+   ```
+   → Tu récupères l’ID TMDB correspondant.
+
+---
+
+3. **Créer un mapping interne**  
+   - Stocke dans ta base : `{ anilistId: 21, tmdbId: 46298 }`  
+   - La prochaine fois que tu appelles AniList, tu peux directement retrouver le TMDB ID sans refaire la recherche.
+
+---
+
+## ⚙️ Exemple complet (fusion AniList → TMDB)
+
+```ts
+async function getTmdbIdFromAnilist(anilistId: number) {
+  // 1. Récupérer infos AniList
+  const query = `
+    {
+      Media(id: ${anilistId}, type: ANIME) {
+        title { romaji english }
+        startDate { year }
+      }
+    }
+  `;
+  const aniRes = await fetch("https://graphql.anilist.co", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query })
+  });
+  const aniData = await aniRes.json();
+  const title = aniData.data.Media.title.english || aniData.data.Media.title.romaji;
+  const year = aniData.data.Media.startDate.year;
+
+  // 2. Chercher sur TMDB
+  const tmdbRes = await fetch(
+    `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(title)}&first_air_date_year=${year}&api_key=TMDB_KEY`
+  );
+  const tmdbData = await tmdbRes.json();
+
+  // 3. Retourner l’ID TMDB
+  return tmdbData.results[0]?.id || null;
+}
+```
+
+---
+
+## 🚀 Recommandation
+- **AniList pour précision anime (planning, staff, épisodes)**  
+- **TMDB pour visuels et traduction**  
+- Tu fais un **mapping automatique** via titre + année, puis tu stockes le résultat pour éviter de répéter la recherche.  
+
+---
+
+Veux-tu que je te prépare un **mini service Node.js/Express** qui fait directement cette conversion AniList → TMDB pour ton site, afin que tu n’aies qu’à appeler une seule API interne ?

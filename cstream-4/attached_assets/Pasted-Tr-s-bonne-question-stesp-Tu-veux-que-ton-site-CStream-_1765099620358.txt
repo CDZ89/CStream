@@ -1,0 +1,82 @@
+Très bonne question stesp 👌. Tu veux que ton site **CStream** garde en **historique** ce que l’utilisateur regarde via un `<iframe>` (Sibnet, Vodomly, etc.), et aussi mémorise **où il s’est arrêté** pour reprendre plus tard.  
+
+---
+
+## 🚫 Problème de base
+- Les `<iframe>` externes (Sibnet, Vodomly…) ne te donnent **pas directement** l’état de lecture (temps, pause, etc.), car tu n’as pas accès à leur player interne (bloqué par sécurité cross-domain).  
+- Résultat : impossible de savoir où l’utilisateur s’est arrêté **depuis l’iframe seul**.  
+
+---
+
+## ✅ Solutions possibles
+
+### 1. **Utiliser les APIs officielles des players**
+- YouTube, Vimeo, Dailymotion → fournissent des **Player APIs** qui permettent de récupérer :
+  - Temps actuel de lecture  
+  - État (lecture/pause)  
+  - Événements (fin, changement de vidéo)  
+- Exemple avec YouTube :
+```js
+var player;
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    events: {
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.PAUSED) {
+    const currentTime = player.getCurrentTime();
+    saveHistory(mediaId, currentTime);
+  }
+}
+```
+
+---
+
+### 2. **Fallback pour les players sans API (Sibnet, Vodomly)**
+- Comme tu n’as pas accès au temps exact, tu peux :
+  - **Enregistrer l’action "Regarder"** dès que l’utilisateur ouvre la page → ça ajoute au **historique**.  
+  - **Ajouter un bouton "J’ai arrêté ici"** → l’utilisateur clique et tu enregistres manuellement un timestamp (par exemple via un champ caché ou slider).  
+  - **Stocker la progression côté site** (ex. : 50% vu) si tu ne peux pas avoir le temps exact.  
+
+---
+
+### 3. **Base de données côté site**
+- Table `history` :
+  - `user_id`  
+  - `media_id`  
+  - `last_position` (temps en secondes ou % vu)  
+  - `date_viewed`  
+- Quand l’utilisateur revient sur la page → tu relis `last_position` et tu proposes **"Reprendre à 1h23"**.  
+
+---
+
+### 4. **Synchronisation automatique**
+- À chaque événement (pause, fermeture de page, clic sur bouton), tu envoies une requête AJAX vers ton backend :
+```js
+function saveHistory(mediaId, position) {
+  fetch('/api/user/history', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mediaId, position })
+  });
+}
+```
+
+---
+
+## ✨ Résultat attendu
+- **Historique** : chaque média regardé est enregistré automatiquement.  
+- **Reprise** : quand l’utilisateur revient, il retrouve son dernier point de lecture.  
+- **Sans bug** : tu relies uniquement ce que ton site contrôle (ou via API officielle). Pour les iframes bloqués → tu ajoutes un fallback (bouton ou estimation).  
+
+---
+
+👉 En résumé :  
+- Si le player a une **API officielle** → tu récupères le temps exact.  
+- Si pas d’API (Sibnet, Vodomly) → tu enregistres au moins l’ouverture + un bouton "Reprendre" pour que l’utilisateur choisisse où il s’est arrêté.  
+- Tu stockes tout ça dans ta **base historique** liée au profil utilisateur.  
+
+Veux-tu que je te prépare un **prompt backend complet (Node.js/Express + base SQL)** qui gère automatiquement l’historique et la reprise de lecture ?

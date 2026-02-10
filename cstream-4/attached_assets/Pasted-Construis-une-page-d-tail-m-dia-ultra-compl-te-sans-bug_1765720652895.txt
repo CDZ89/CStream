@@ -1,0 +1,74 @@
+Construis une page détail média ultra complète, sans bug, avec toutes les fonctionnalités et sections visibles sur les images de référence :
+
+1. Bloc principal
+   - Titre du média affiché en haut, indépendant de l’affiche :
+     - Police cinématographique, grande taille (48–64px desktop, 28–32px mobile).
+     - Espacement généreux, jamais masqué par l’affiche.
+     - Ombre légère ou contour pour lisibilité.
+   - Score/notation visible (moyenne + nombre de votes, avec étoiles ou jauge circulaire).
+   - Boutons d’action regroupés sous le titre :
+     - Regarder, Infos, Favoris, Watchlist, Noter, Partager.
+     - Icônes uniformes, labels clairs, feedback visuel immédiat.
+   - Affiche principale (poster haute résolution), placée à gauche ou en haut, sans cacher le titre.
+
+2. Métadonnées
+   - Date de sortie, durée, genres cliquables.
+   - Pays d’origine, langue originale, budget, box-office.
+   - Sociétés de production (logo + nom cliquable).
+   - Réalisateurs, créateurs, showrunners (portrait + nom + rôle).
+   - Disposition en colonnes ou blocs compacts, responsive.
+
+3. Sections de contenu
+   - Overview : synopsis complet, paragraphe lisible avec interligne suffisant.
+   - Galerie d’images/backdrops : mosaïque responsive, lazy loading, zoom au clic.
+   - Collection : autres titres liés avec affiche + année, navigation fluide.
+   - Reviews :
+     - Auteur + avatar.
+     - Note (ex. Rated: 8/9/7).
+     - Date relative (ex. 3 days ago).
+     - Extrait du texte + bouton “Lire plus”.
+   - Cast & Credits :
+     - Grille de portraits (taille uniforme).
+     - Nom + rôle (ex. Judy Hopps (voice)).
+     - Bouton “Show All” pour charger plus.
+   - Recommendations & Similar :
+     - Grille de suggestions avec affiche + titre.
+     - Hover → affiche résumé rapide.
+
+4. Interactions persistantes
+   - Favoris, Watchlist, Likes, Reviews, Commentaires enregistrés en base, jamais supprimés automatiquement.
+   - Synchronisation sur tous les appareils via compte connecté.
+   - Feedback visuel immédiat (toast, icône active).
+
+5. Navigation et fluidité
+   - Scroll fluide avec animation.
+   - Flèche de retour en haut (↑) apparaissant après 300px de scroll, position fixe en bas à droite.
+   - Indicateur circulaire de progression :
+     - Cercle discret en bas à gauche ou en overlay.
+     - Remplissage dynamique selon la position dans la page.
+     - Affiche “haut” ou “bas” selon scroll.
+   - Carrousels et galeries avec navigation par flèches et swipe mobile.
+
+6. Accessibilité et qualité
+   - Navigation clavier complète (tab order logique).
+   - ARIA labels pour boutons, modals, images.
+   - Modals accessibles (focus piégé, fermeture par ESC).
+   - Contraste et lisibilité validés (WCAG 2.1 AA).
+   - Texte lisible avec interligne suffisant et largeur max.
+
+7. Performances
+   - Minification CSS/JS.
+   - Cache navigateur pour images et scripts.
+   - CDN pour assets.
+   - Lazy load pour médias lourds.
+   - Préchargement des données critiques (titre, affiche, score).
+   - SEO optimisé : balises meta, structured data (schema.org Movie/TVSeries).
+
+8. Tests et validation
+   - Titre toujours visible et lisible, même sans affiche.
+   - Boutons toujours accessibles, jamais masqués.
+   - Flèche retour et indicateur circulaire fonctionnent sur tous les navigateurs.
+   - Responsive sur desktop, tablette, mobile.
+   - Temps de chargement < 3s, interactions < 250ms.
+   - Accessibilité validée (WCAG 2.1 AA).
+   - Données cohérentes : genres, production, cast reliés à API.

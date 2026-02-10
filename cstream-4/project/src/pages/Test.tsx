@@ -1,0 +1,218 @@
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Play, Zap, Users, Shield, Activity, Settings, RotateCw, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+export default function TestPage() {
+  const [showOverlay, setShowOverlay] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-[#0b0c10] text-white">
+      <Navbar />
+
+      <main className="container mx-auto px-4 pt-28 pb-12">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+            <Shield className="w-8 h-8 text-primary" />
+            Zone de Test <span className="text-primary">Admin</span>
+          </h1>
+          <p className="text-muted-foreground text-sm font-medium mt-2">
+            Dashboard technique pour valider les composants et fonctionnalités.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+
+          {/* Card 1: Animation Loader */}
+          <TestCard
+            title="Animation Loading"
+            desc="Logo Fullscreen v3"
+            icon={<Play className="w-6 h-6 text-purple-400" />}
+            onClick={() => setShowOverlay(true)}
+            color="purple"
+          />
+
+          {/* Card 2: Social System */}
+          <TestCard
+            title="Social / Amis"
+            desc="Test Ajout & Chat"
+            icon={<Users className="w-6 h-6 text-blue-400" />}
+            onClick={() => {
+              navigate('/profile');
+              toast.info("Redirection vers Profil pour test amis");
+            }}
+            color="blue"
+          />
+
+          {/* Card 3: Admin Panel */}
+          <TestCard
+            title="Panel Admin"
+            desc="Monitoring & Users"
+            icon={<Activity className="w-6 h-6 text-red-400" />}
+            onClick={() => navigate('/admin')}
+            color="red"
+          />
+
+          {/* Card 4: Toast Test */}
+          <TestCard
+            title="System Notifications"
+            desc="Test Toaster UI"
+            icon={<AlertTriangle className="w-6 h-6 text-yellow-400" />}
+            onClick={() => toast.success("Le système de notification fonctionne parfaitement !")}
+            color="yellow"
+          />
+
+          {/* Placeholder for future tests */}
+          <div className="border border-white/5 bg-white/[0.02] rounded-xl p-6 flex flex-col items-center justify-center text-center gap-3 opacity-50 border-dashed">
+            <Settings className="w-8 h-8 text-muted-foreground" />
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Emplacement Vide</span>
+          </div>
+          <div className="border border-white/5 bg-white/[0.02] rounded-xl p-6 flex flex-col items-center justify-center text-center gap-3 opacity-50 border-dashed">
+            <Settings className="w-8 h-8 text-muted-foreground" />
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Emplacement Vide</span>
+          </div>
+
+        </div>
+      </main>
+
+      {/* OVERLAY COMPONENT */}
+      <AnimatePresence>
+        {showOverlay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#111116]"
+            style={{
+              background: 'radial-gradient(circle at center, #1a1a20 0%, #000000 100%)'
+            }}
+          >
+            <Button
+              onClick={() => setShowOverlay(false)}
+              variant="outline"
+              className="absolute top-8 right-8 rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10 hover:scale-110 transition-all z-[10000]"
+            >
+              <X className="w-6 h-6 mr-2" /> Fermer
+            </Button>
+
+            {/* REPLICATED FROM INDEX.HTML */}
+            <div className="loader-content scale-125 md:scale-150">
+              <svg className="loader-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1600">
+                <g className="logo-group">
+                  <path className="logo-path" fill="#cecece" d="M 473.5,1022.5 C 466.432,1015.26 460.265,1007.26 455,998.5C 448.078,985.656 441.411,972.656 435,959.5C 430.381,948.84 429.047,937.84 431,926.5C 435.865,920.984 441.698,916.817 448.5,914C 493.508,903.67 532.508,882.67 565.5,851C 568.351,849.711 571.351,849.211 574.5,849.5C 575.092,846.309 576.259,843.309 578,840.5C 587,828.167 596,815.833 605,803.5C 611.524,792.452 617.524,781.118 623,769.5C 624.981,767.343 627.314,765.676 630,764.5C 647.842,722.298 673.009,685.132 705.5,653C 732.291,629.28 763.624,615.28 799.5,611C 818.59,607.338 837.59,607.671 856.5,612C 867.591,617.045 878.591,622.378 889.5,628C 905.475,635.702 922.308,640.202 940,641.5C 962.096,641.254 980.763,633.254 996,617.5C 999.291,607.514 999.291,597.514 996,587.5C 989.96,581.791 983.626,576.457 977,571.5C 976.025,568.24 974.858,565.073 973.5,562C 955.483,555.159 937.817,547.492 920.5,539C 905.387,535.074 890.387,530.74 875.5,526C 868.185,525.13 860.852,524.463 853.5,524C 852.167,523.333 850.833,522.667 849.5,522C 827.827,520.536 806.16,519.536 784.5,519C 783.415,521.172 782.081,523.172 780.5,525C 773.133,525.781 765.8,526.781 758.5,528C 743.343,532.941 728.009,537.274 712.5,541C 711.292,543.25 709.959,545.417 708.5,547.5C 679.31,559.504 653.81,576.837 632,599.5C 611.645,620.847 593.978,644.181 579,669.5C 562.079,700.341 545.412,731.341 529,762.5C 522.749,774.008 515.749,785.008 508,795.5C 488.121,816.857 463.621,826.69 434.5,825C 433.887,822.853 433.221,820.686 432.5,818.5C 420.433,813.929 413.267,805.263 411,792.5C 407.585,754.892 410.918,717.892 421,681.5C 429.976,651.236 441.309,621.902 455,593.5C 469.128,571.409 483.628,549.576 498.5,528C 500.9,527.814 503.234,527.314 505.5,526.5C 507.858,520.429 511.191,515.096 515.5,510.5C 514.914,512.84 513.914,515.007 512.5,517C 521.443,516.775 528.61,512.942 534,505.5C 538.644,499.355 543.477,493.355 548.5,487.5C 547.451,485.888 545.951,484.888 544,484.5C 540.675,486.34 537.508,488.34 534.5,490.5C 595.68,435.339 667.347,401.506 749.5,389C 760.786,387.471 772.12,386.471 783.5,386C 812.525,385.077 841.525,385.411 870.5,387C 907.801,394.323 943.801,405.657 978.5,421C 984.428,423.143 990.428,424.977 996.5,426.5C 996.192,428.924 996.526,431.257 997.5,433.5C 1043.38,451.681 1079.88,481.347 1107,522.5C 1109.67,527.833 1112.33,533.167 1115,538.5C 1115.17,542.211 1115.67,545.878 1116.5,549.5C 1121.21,551.73 1123.21,555.564 1122.5,561C 1120.32,605.034 1100.66,638.7 1063.5,662C 1052.94,668.448 1041.94,674.114 1030.5,679C 1025.72,680.98 1020.72,681.98 1015.5,682C 1014.5,685.667 1012.17,688 1008.5,689C 951.209,703.66 893.209,714.66 834.5,722C 789.226,728.534 746.893,743.201 707.5,766C 678.619,783.881 655.453,807.381 638,836.5C 630.746,849.341 623.746,862.341 617,875.5C 599.861,915.249 582.528,954.916 565,994.5C 556.583,1015.92 541.417,1030.08 519.5,1037C 506.216,1039.9 493.549,1038.23 481.5,1032C 478.223,1029.23 475.557,1026.07 473.5,1022.5 Z" />
+                  <path className="logo-path" fill="#c1c1c1" d="M 515.5,510.5 C 520.455,502.544 526.789,495.877 534.5,490.5C 537.508,488.34 540.675,486.34 544,484.5C 545.951,484.888 547.451,485.888 548.5,487.5C 543.477,493.355 538.644,499.355 534,505.5C 528.61,512.942 521.443,516.775 512.5,517C 513.914,515.007 514.914,512.84 515.5,510.5 Z" />
+                  <path className="logo-path" fill="#cdcdcd" d="M 963.5,836.5 C 1013.39,841.787 1063.39,846.287 1113.5,850C 1138.55,853.41 1160.38,863.576 1179,880.5C 1187.77,892.383 1190.77,905.717 1188,920.5C 1185.7,939.079 1180.36,956.745 1172,973.5C 1131.09,1048.75 1073.59,1107.91 999.5,1151C 980.865,1160.99 961.531,1169.32 941.5,1176C 934.994,1177.96 928.327,1178.96 921.5,1179C 920.204,1183.49 917.204,1185.82 912.5,1186C 876.937,1194.21 840.937,1199.04 804.5,1200.5C 780.194,1200.26 756.194,1197.43 732.5,1192C 673.894,1182.02 621.227,1159.02 574.5,1123C 568.239,1117.62 562.073,1112.12 556,1106.5C 555.503,1103.85 555.336,1101.19 555.5,1098.5C 582.452,1096.35 606.119,1086.52 626.5,1069C 635.735,1060.43 644.235,1051.27 652,1041.5C 668,1016.83 684,992.167 700,967.5C 723.458,933.708 751.958,904.875 785.5,881C 819.943,858.852 857.609,845.852 898.5,842C 920.314,840.08 941.981,838.246 963.5,836.5 Z M 1008.5,934.5 C 1021,933.908 1033.34,935.075 1045.5,938C 1054.94,940.289 1062.27,945.456 1067.5,953.5C 1063.55,968.398 1056.72,981.732 1047,993.5C 1013.08,1033.72 971.583,1063.56 922.5,1083C 896.345,1093.62 869.345,1101.29 841.5,1106C 826.184,1108.06 811.517,1105.89 797.5,1099.5C 796.337,1094.2 796.171,1088.86 797,1083.5C 813.332,1042.17 839.165,1008 874.5,981C 884.116,974.385 893.45,967.385 902.5,960C 919.138,951.01 936.804,945.01 955.5,942C 973.255,939.075 990.922,936.575 1008.5,934.5 Z" />
+                  <path className="logo-path" fill="#919191" d="M 473.5,1022.5 C 471.986,1019.31 470.32,1016.14 468.5,1013C 477.554,1016.12 485.721,1020.95 493,1027.5C 493.495,1029.47 493.662,1031.47 493.5,1033.5C 485.404,1032.4 478.737,1028.73 473.5,1022.5 Z" />
+                  <path className="logo-path" fill="#979797" d="M 637.5,1156.5 C 657.464,1159.08 676.464,1164.91 694.5,1174C 696.543,1175.71 698.21,1177.71 699.5,1180C 677.711,1177.68 657.377,1170.85 638.5,1159.5C 637.614,1158.68 637.281,1157.68 637.5,1156.5 Z" />
+                </g>
+              </svg>
+
+              {/* Progress Bar */}
+              <div className="loader-progress-wrapper">
+                <div className="loader-progress-bar"></div>
+              </div>
+            </div>
+
+            <style>{`
+              .loader-content {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+              }
+
+              .loader-progress-wrapper {
+                width: 200px;
+                height: 3px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 4px;
+                overflow: hidden;
+                position: relative;
+                margin-top: 40px;
+                z-index: 10;
+              }
+
+              .loader-progress-bar {
+                height: 100%;
+                background: #8B5CF6;
+                width: 0%;
+                animation: progressFill 3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+              }
+
+              .loader-svg {
+                width: 220px;
+                height: 220px;
+                z-index: 2;
+                filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.05));
+              }
+
+              .logo-path {
+                stroke: #d0d0d0;
+                stroke-width: 5;
+                stroke-dasharray: 4000;
+                stroke-dashoffset: 4000;
+                fill-opacity: 0;
+                
+                animation: 
+                  draw 2s ease-out forwards, 
+                  fadeInFill 1s ease-out 1.5s forwards;
+              }
+
+              @keyframes draw {
+                to { stroke-dashoffset: 0; }
+              }
+              @keyframes fadeInFill {
+                to { fill-opacity: 1; stroke-width: 0; }
+              }
+              @keyframes progressFill {
+                0% { width: 0%; }
+                100% { width: 100%; }
+              }
+            `}</style>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function TestCard({ title, desc, icon, onClick, color }: any) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`
+        relative p-6 rounded-2xl border text-left flex flex-col gap-4 overflow-hidden group
+        bg-white/[0.03] border-white/5 hover:bg-white/[0.05] hover:border-white/20 transition-all
+      `}
+    >
+      <div className={`
+        w-12 h-12 rounded-xl flex items-center justify-center
+        bg-${color}-500/10 border border-${color}-500/20 text-${color}-400
+        group-hover:scale-110 transition-transform duration-500
+      `}>
+        {icon}
+      </div>
+
+      <div>
+        <h3 className="font-bold text-sm uppercase tracking-wider text-white/90 group-hover:text-white transition-colors">
+          {title}
+        </h3>
+        <p className="text-xs text-muted-foreground mt-1 group-hover:text-white/60">
+          {desc}
+        </p>
+      </div>
+
+      <div className={`absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-10 transition-opacity`}>
+        {React.cloneElement(icon, { className: "w-24 h-24 rotate-12" })}
+      </div>
+    </motion.button>
+  );
+}

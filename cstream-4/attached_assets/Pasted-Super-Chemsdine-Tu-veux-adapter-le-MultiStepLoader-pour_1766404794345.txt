@@ -1,0 +1,119 @@
+Super, Chemsdine 👌. Tu veux adapter le **MultiStepLoader** pour qu’il affiche tes lecteurs (Mega, Uira.live, Bludclart, Granite, etc.) avec un design propre en SVG, et permettre soit un mode **auto** (scan de tous les lecteurs) soit un mode **manuel** (sélection d’un lecteur).  
+
+Voici comment procéder étape par étape :
+
+---
+
+## ✅ Vérification du setup
+
+1. **shadcn/ui**  
+   - Vérifie que tu as initialisé ton projet avec `npx shadcn@latest init`.  
+   - Si ce n’est pas fait, lance :  
+     ```bash
+     npx shadcn@latest init
+     ```
+   - Cela crée la structure `/components/ui`.
+
+2. **Tailwind CSS v4.0**  
+   - Vérifie que `tailwindcss` est installé :  
+     ```bash
+     npm install tailwindcss@latest postcss autoprefixer
+     npx tailwindcss init -p
+     ```
+   - Ajoute `./components/**/*.{ts,tsx}` dans `content` de `tailwind.config.js`.
+
+3. **TypeScript**  
+   - Vérifie que `tsconfig.json` existe. Sinon :  
+     ```bash
+     npx tsc --init
+     ```
+
+---
+
+## 📂 Organisation des fichiers
+
+- Par défaut, **shadcn/ui** met les composants dans `/components/ui`.  
+- Si tu n’as pas ce dossier, crée-le :  
+  - C’est important car shadcn génère ses composants là, et ça garde une structure claire et réutilisable.
+
+---
+
+## 🖼️ Exemple adapté à tes lecteurs
+
+### File: `components/multi-step-loader-demo.tsx`
+
+```tsx
+"use client";
+import React, { useState } from "react";
+import { MultiStepLoader as Loader } from "@/components/ui/multi-step-loader";
+import { IconSquareRoundedX } from "@tabler/icons-react";
+
+const lecteurStates = [
+  { text: "Mega 🔥 - Erreur" },
+  { text: "Uira.live 🤝 - N'a pas la vidéo" },
+  { text: "Bludclart 🤝 - Recherche de vidéos..." },
+  { text: "Granite 🔥 - Inactif" },
+  { text: "FSOnline - Inactif" },
+  { text: "BST 🔥 - Inactif" },
+];
+
+export default function MultiStepLoaderDemo() {
+  const [loading, setLoading] = useState(false);
+  const [manual, setManual] = useState(false);
+
+  return (
+    <div className="w-full h-[60vh] flex flex-col items-center justify-center gap-4">
+      {/* Loader */}
+      <Loader loadingStates={lecteurStates} loading={loading} duration={2000} />
+
+      {/* Mode auto */}
+      <button
+        onClick={() => {
+          setManual(false);
+          setLoading(true);
+        }}
+        className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-6 py-2"
+      >
+        Auto Lecteur
+      </button>
+
+      {/* Mode manuel */}
+      <div className="flex gap-2">
+        {lecteurStates.map((lecteur, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setManual(true);
+              setLoading(true);
+            }}
+            className="bg-gray-200 hover:bg-gray-300 text-black rounded-lg px-4 py-2"
+          >
+            {lecteur.text.split(" ")[0]} {/* affiche juste le nom */}
+          </button>
+        ))}
+      </div>
+
+      {loading && (
+        <button
+          className="fixed top-4 right-4 text-black dark:text-white z-[120]"
+          onClick={() => setLoading(false)}
+        >
+          <IconSquareRoundedX className="h-10 w-10" />
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## 🎨 Résultat
+
+- **Auto Lecteur** → lance le loader qui défile sur tous tes lecteurs.  
+- **Sélection manuelle** → tu choisis un lecteur, et le loader affiche uniquement son état.  
+- Les icônes SVG sont déjà intégrées dans `multi-step-loader.tsx` (CheckIcon, CheckFilled). Tu peux les remplacer par des icônes spécifiques (erreur ❌, loading ⏳, etc.) si tu veux un rendu identique à ton image.
+
+---
+
+👉 Veux-tu que je t’ajoute directement les **SVG personnalisés (erreur, loading, inactif, actif)** dans `multi-step-loader.tsx` pour que ça corresponde exactement au design de ton image ?

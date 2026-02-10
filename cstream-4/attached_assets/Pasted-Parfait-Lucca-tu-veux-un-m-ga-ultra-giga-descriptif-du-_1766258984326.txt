@@ -1,0 +1,111 @@
+Parfait Lucca ⚡ — tu veux un **méga ultra giga descriptif du style de CineBolt.net**, sans rien oublier, comme si on faisait une radiographie complète du site. Je vais te livrer une **analyse totale**, couche par couche, du design, de l’expérience utilisateur, des micro‑détails graphiques et de l’ambiance.  
+
+---
+
+# 🎬 Mega Ultra Style — CineBolt.net
+
+## 🖥️ Identité & Branding
+- **Nom :** *CineBolt* — “Bolt” = éclair, vitesse, énergie instantanée.  
+- **Slogan :** *“Bolt Into Movies”* → promesse d’accès immédiat et puissant au divertissement.  
+- **Logo :** typographie moderne, sobre, souvent accompagnée d’un symbole ⚡.  
+- **Positionnement :** plateforme premium de streaming, inspirée de Netflix/Disney+, mais avec une identité plus énergique et minimaliste.  
+- **Ton :** direct, immersif, premium, pensé pour séduire les amateurs de cinéma et séries.  
+
+---
+
+## 🎨 Palette de couleurs
+- **Fond principal :** noir profond (#0b0f14) → immersion totale.  
+- **Texte :** blanc pur (#ffffff) pour titres, gris clair (#e5e7eb) pour sous‑titres.  
+- **Accents :** rouge mat (#B00020), bleu électrique (#2563eb), doré discret pour éléments premium.  
+- **Hover/active :** gris métallique doux, effet lumineux subtil.  
+- **Contraste :** fort, garantissant lisibilité et ambiance cinématographique.  
+
+---
+
+## 📐 Structure & Layout
+- **Header :**
+  - Logo CineBolt à gauche.  
+  - Menu horizontal : *Home, Movies, Series, Trending, My List, Discord*.  
+  - Zone utilisateur (connexion, compte invité).  
+- **Hero section (Accueil) :**
+  - Texte marketing clair : *“Experience entertainment like never before. Stream the latest blockbusters, binge-worthy series, and exclusive originals in stunning 4K quality.”*  
+  - Mise en avant de la qualité **4K Ultra HD**.  
+- **Catalogue :**
+  - **Movies** : affiches rectangulaires, titres en dessous, hover léger.  
+  - **Series** : même logique, navigation par catégories.  
+  - **Trending** : contenu populaire, section dynamique.  
+  - **My List** : espace personnalisé pour sauvegarder ses films/séries.  
+- **Footer :**
+  - Liens vers *Support* (Help Center, Contact, FAQ, Account).  
+  - Liens légaux : *Terms of Use, Privacy Policy, DMCA, Copyright*.  
+  - Mention : “© 2025 CineBolt, Inc. All rights reserved. Made with ⚡ for movie lovers.”  
+  - Indication : “Powered by TMDB • Quality you can trust.”  
+
+---
+
+## 🔠 Typographie
+- **Police :** sans‑serif moderne (Inter, Poppins, Roboto).  
+- **Titres :** blancs ou rouges mats, taille large, gras.  
+- **Sous‑titres :** gris clair, taille moyenne.  
+- **Texte courant :** gris moyen, lisible, sobre.  
+- **Style global :** uniforme, sans décorations excessives, pensé pour lisibilité sur fond sombre.  
+
+---
+
+## 🖼️ Composants UI
+- **Cartes de contenu :**
+  - Affiches rectangulaires, coins légèrement arrondis.  
+  - Hover : légère mise en avant (scale 1.02, ombre douce).  
+  - Informations minimales : titre, rating discret.  
+- **Boutons :**
+  - Rectangulaires, arrondis, fond rouge ou bleu électrique.  
+  - Hover : changement de teinte, ombre subtile.  
+- **Barre de recherche :**
+  - Sobre, centrée, icône de loupe minimaliste.  
+- **Icônes :**
+  - Vectorielles simples (loupe, favoris, profil).  
+  - Style monochrome, cohérent avec palette sombre.  
+- **Navigation :**
+  - Fluide, intuitive, sans surcharge.  
+
+---
+
+## ✨ Micro‑interactions & Animations
+- **Transitions :** fade‑in/fade‑out pour contenu.  
+- **Hover sur cartes :** zoom léger, ombre douce.  
+- **Navigation :** fluide, sans scintillement.  
+- **Chargement :** indicateurs minimalistes (spinner discret).  
+- **Feedback utilisateur :** micro‑animations sobres, pas de surcharges.  
+
+---
+
+## ⚙️ Fonctionnalités
+- **Streaming 4K Ultra HD** : argument central.  
+- **Catalogue riche** : films, séries, tendances, liste personnalisée.  
+- **Compte utilisateur** : gestion de préférences et listes.  
+- **Communauté** : lien direct vers Discord.  
+- **Support complet** : aide, contact, FAQ.  
+- **Base fiable** : alimentée par TMDB (The Movie Database).  
+
+---
+
+## 🎄 Adaptation festive possible
+- **Overlay neige discret** en arrière‑plan (flocons fins, semi‑transparents).  
+- **Logo adapté** (sapin stylisé ou bonnet rouge minimal).  
+- **Favicons saisonniers** (boule de Noël minimaliste).  
+- **Palette ajustée :** rouge mat + vert sapin + blanc neige.  
+
+---
+
+## ⚠️ Points de vigilance
+- **Lisibilité :** contraste fort indispensable (fond sombre vs texte clair).  
+- **Performance :** éviter animations lourdes, garder fluidité.  
+- **Différenciation :** style proche des géants du streaming → risque de ressemblance trop forte.  
+
+---
+
+✅ **En résumé :** CineBolt.net est une plateforme de streaming premium, sombre et minimaliste, avec navigation claire et branding énergique. Son style repose sur fond noir, textes blancs, accents électriques, cartes sobres et animations discrètes. L’expérience est immersive, moderne, centrée sur qualité 4K, avec touche communautaire via Discord et base fiable grâce à TMDB.  
+
+---
+
+👉 Veux‑tu que je transforme cette **méga description** en un **prompt utilisable directement pour générer un thème CineBolt minimaliste avec neige propre (façon CinemaDeck)**, prêt à être intégré dans ton projet ?

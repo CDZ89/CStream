@@ -1,0 +1,82 @@
+Parfait, Lucca 👌 — tu veux **garder tout ton projet tel qu’il est**, mais améliorer au maximum ton script `serve` pour que ton déploiement passe les **health checks** (les tests automatiques envoyés sur `/`).  
+
+---
+
+## 🔎 Pourquoi ça échoue
+- L’hébergeur envoie une requête HTTP sur `/` dès le démarrage.  
+- Si ton app ne répond pas rapidement avec un **200 OK**, le health check échoue.  
+- Actuellement, ton script `serve` lance `cd project && npm run dev`, ce qui démarre un serveur de développement (lent, pas optimisé, et qui ne répond pas forcément sur `/`).  
+
+---
+
+## ✅ Solution : améliorer `serve` pour la production
+Tu gardes tout, mais tu ajoutes un vrai serveur Express qui :
+1. Sert ton build Vite (`dist/`).  
+2. Répond immédiatement sur `/` avec un **200 OK**.  
+3. Utilise `process.env.PORT` pour que l’hébergeur détecte le port.  
+
+---
+
+### Exemple amélioré de `server.js`
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ✅ Health check rapide
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ✅ Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+```
+
+---
+
+### Mise à jour du `package.json`
+Tu gardes tout, mais tu améliores ton script `serve` :
+
+```json
+"scripts": {
+  "dev": "concurrently \"npm run server\" \"npm run vite\"",
+  "vite": "vite",
+  "server": "node server.js",
+  "build": "vite build",
+  "build:dev": "vite build --mode development",
+  "lint": "eslint .",
+  "preview": "vite preview",
+  "start": "node server.js",
+  "serve": "npm run build && node server.js",
+  "prod": "npm run build && npm run serve"
+}
+```
+
+---
+
+## 🚀 Résultat
+- **Local** : tu continues avec `npm run dev`.  
+- **Production** : l’hébergeur utilise `npm run serve`.  
+  - Ça build ton projet (`vite build`).  
+  - Ça lance ton serveur Express (`server.js`).  
+  - Le health check sur `/` reçoit un **200 OK** instantané.  
+- Plus de blocage, ton déploiement passe ✅.  
+
+---
+
+👉 Veux‑tu que je te prépare un **workflow complet pour Vercel** (Build Command + Output Directory + Start Command) afin que ton projet `cstream` soit prêt à déployer sans aucune erreur ?

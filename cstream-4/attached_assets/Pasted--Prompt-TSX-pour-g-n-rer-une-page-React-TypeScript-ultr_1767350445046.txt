@@ -1,0 +1,58 @@
+// Prompt TSX pour générer une page React TypeScript ultra-premium
+// Objectif : créer une interface de chat IA "CAi" avec design liquid glass violet/bleu
+
+/*
+Crée une page TSX complète avec les caractéristiques suivantes :
+
+1. **Structure générale**
+   - Utiliser React + TypeScript (TSX).
+   - Composant principal `App`.
+   - Deux zones principales :
+     - **Sidebar** : historique des conversations (ouvrable/fermable).
+     - **Main** : écran d’accueil ou zone de chat.
+
+2. **Sidebar**
+   - Largeur ~260px, effet liquid glass (blur, transparence, violet/bleu).
+   - Liste des conversations avec possibilité de :
+     - Charger une conversation.
+     - Renommer (prompt).
+     - Supprimer.
+   - Bouton `+ Nouvelle conversation`.
+   - Transition fluide pour ouverture/fermeture.
+
+3. **Écran d’accueil**
+   - Centré au milieu de la page.
+   - Logo/texte premium : "Bienvenue dans CAi ✨".
+   - Champ d’entrée pour démarrer une nouvelle conversation.
+   - Design violet/bleu translucide.
+
+4. **Zone de chat**
+   - Scroll indépendant (seule la zone messages défile).
+   - Bulles de messages :
+     - `user` aligné à droite (bleu translucide).
+     - `ai` aligné à gauche (violet translucide).
+   - Chaque bulle affiche :
+     - Auteur ("Moi" ou "CAi").
+     - Heure + date.
+     - Texte du message.
+   - Effet fade-in + hover premium.
+   - Composer en bas avec input + bouton envoyer.
+
+5. **Fonctionnalités**
+   - `useState` pour gérer conversations, messages, sidebar.
+   - `newConvo`, `loadConvo`, `renameConvo`, `deleteConvo`.
+   - `addMessage` ajoute un message avec horodatage.
+   - Simuler une réponse IA après 1s.
+   - Sidebar toggle avec bouton ☰.
+
+6. **Design**
+   - Palette violet/bleu translucide (liquid glass).
+   - Aurora animé en arrière-plan.
+   - Blur intense, reflets subtils.
+   - Micro-animations (fade, hover, typing indicator).
+   - Responsive et ultra propre.
+
+7. **Export**
+   - Exporter le composant `App` par défaut.
+*/
+

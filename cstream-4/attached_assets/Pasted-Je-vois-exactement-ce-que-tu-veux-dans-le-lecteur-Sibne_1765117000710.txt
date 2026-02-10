@@ -1,0 +1,81 @@
+Je vois exactement ce que tu veux : dans le lecteur **Sibnet**, tu aimerais qu’un **widget “Regarder prochain épisode”** apparaisse automatiquement environ 4 minutes avant la fin, sans bug. Comme Sibnet est un lecteur externe en iframe, tu ne peux pas directement injecter du code dans son contenu (Same-Origin Policy). Mais tu peux contourner ça en **surveillant la durée et le temps de lecture** avec un lecteur custom (Video.js, Plyr) ou via un overlay synchronisé.
+
+---
+
+## 🚫 Limite avec Sibnet en iframe
+- Tu ne peux pas accéder directement au `currentTime` ou `duration` du lecteur Sibnet si tu l’intègres en iframe → le navigateur bloque l’accès.
+- Donc impossible de savoir “4 minutes avant la fin” depuis l’iframe lui-même.
+
+---
+
+## ✅ Solutions possibles
+
+### 1. Si tu as accès au flux vidéo (MP4/HLS)
+- Utilise un lecteur custom (Video.js, Plyr).
+- Tu peux alors écouter l’événement `timeupdate` et déclencher ton widget.
+
+```js
+var player = videojs('my-video');
+
+player.on('timeupdate', function() {
+  var duration = player.duration();
+  var current = player.currentTime();
+  if (duration - current <= 240) { // 240 secondes = 4 minutes
+    showNextEpisodeWidget();
+  }
+});
+
+function showNextEpisodeWidget() {
+  document.getElementById("next-episode").style.display = "block";
+}
+```
+
+👉 Ici tu as **100% de contrôle** : style, timing, bug-free.
+
+---
+
+### 2. Si tu es obligé d’utiliser Sibnet en iframe
+- Tu ne peux pas lire le temps restant.
+- Solution : **overlay basé sur un timer** :
+  - Tu connais la durée de l’épisode (via TMDB ou ta base).
+  - Tu déclenches un `setTimeout` pour afficher le widget 4 minutes avant la fin.
+
+```js
+function startEpisode(durationSeconds) {
+  // Monte l’iframe Sibnet
+  var iframe = document.getElementById("sibnet-player");
+  iframe.src = "https://video.sibnet.ru/...";
+
+  // Timer pour afficher le widget
+  var triggerTime = (durationSeconds - 240) * 1000;
+  setTimeout(showNextEpisodeWidget, triggerTime);
+}
+
+function showNextEpisodeWidget() {
+  document.getElementById("next-episode").style.display = "block";
+}
+```
+
+⚠️ Ici tu dois avoir la **durée exacte** de l’épisode (via TMDB ou ton backend). Sinon le widget risque de se déclencher trop tôt/trop tard.
+
+---
+
+### 3. Amélioration UX
+- Le widget peut contenir :
+  - Titre du prochain épisode.
+  - Bouton “Regarder maintenant”.
+  - Auto-redirection après X secondes (avec annulation possible).
+- Tu peux aussi afficher un **compte à rebours** pour rendre l’expérience plus fluide.
+
+---
+
+## 🎯 Conclusion
+- **Iframe Sibnet seul → pas de contrôle natif.**  
+- **Solution fiable → récupérer le flux vidéo et utiliser ton propre lecteur (Video.js/Plyr).**  
+- **Fallback → timer basé sur la durée connue de l’épisode.**
+
+---
+
+👉 Vu que ton projet CStream vise la qualité Netflix-like, je te conseille d’aller vers la **solution Video.js avec flux direct**. Tu auras un widget “Next Episode” propre, stylé, et sans bug.  
+
+Veux-tu que je te prépare un exemple complet de **widget Next Episode façon Netflix** (overlay + auto-redirection) que tu pourras brancher directement sur ton lecteur custom ?

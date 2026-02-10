@@ -1,0 +1,83 @@
+Parfait, je comprends mieux ton besoin Chems 🙌. Tu ne veux **pas afficher le titre en texte**, mais **l’image du titre officiel (logo typographique) fourni par TMDB**, exactement comme dans ton exemple avec :
+
+```html
+<img src="https://image.tmdb.org/t/p/original/olk64qLVBnCM0PNsXlT29Abbn0H.png" alt="Sisu : Le Chemin de la vengeance" />
+```
+
+---
+
+## 🎯 Comment récupérer et afficher automatiquement l’image du titre (logo TMDB)
+
+### 1. Utiliser l’API TMDB
+TMDB fournit les **logos officiels** via son API.  
+Exemple pour un film :
+
+```bash
+https://api.themoviedb.org/3/movie/{movie_id}/images?api_key=TON_API_KEY
+```
+
+Exemple pour une série :
+
+```bash
+https://api.themoviedb.org/3/tv/{tv_id}/images?api_key=TON_API_KEY
+```
+
+👉 Dans la réponse JSON, tu trouveras un tableau `logos` avec des objets contenant `file_path`.  
+Ce `file_path` est ce que tu mets derrière `https://image.tmdb.org/t/p/original/`.
+
+---
+
+### 2. Construire l’URL du logo
+Si l’API te renvoie par exemple :
+
+```json
+{
+  "logos": [
+    {
+      "file_path": "/olk64qLVBnCM0PNsXlT29Abbn0H.png",
+      "iso_639_1": "fr"
+    }
+  ]
+}
+```
+
+Alors l’URL finale est :
+
+```html
+<img src="https://image.tmdb.org/t/p/original/olk64qLVBnCM0PNsXlT29Abbn0H.png" alt="Titre officiel" />
+```
+
+---
+
+### 3. Intégrer dans ta slide
+Tu remplaces ton `<h1>` par ce `<img>` :
+
+```html
+<div class="absolute bottom-12 left-12">
+  <img src="https://image.tmdb.org/t/p/original/olk64qLVBnCM0PNsXlT29Abbn0H.png"
+       alt="Sisu : Le Chemin de la vengeance"
+       class="max-w-[14rem] md:max-w-[22rem] max-h-[20vh] object-contain drop-shadow-lg bg-transparent mb-6" />
+</div>
+```
+
+---
+
+### 4. Fallback (si pas de logo dispo)
+Parfois TMDB n’a pas de logo. Dans ce cas, tu peux afficher le titre en texte :
+
+```html
+<div class="absolute bottom-12 left-12">
+  <img src="{logoUrl}" alt="{title}" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<h1 class=\'text-5xl font-bold text-white drop-shadow-lg\'>{title}</h1>')" />
+</div>
+```
+
+---
+
+## 🚀 Résultat
+- Si TMDB fournit un **logo officiel**, ton site affiche l’image du titre (comme une affiche).
+- Si TMDB n’a pas de logo, ton site affiche un **titre texte stylisé** en fallback.
+- Tu obtiens un rendu premium, rapide et cohérent avec TMDB.
+
+---
+
+👉 Veux-tu que je te prépare un **snippet React/Tailwind** qui fait directement l’appel à l’API TMDB et gère automatiquement le logo ou le fallback texte ?

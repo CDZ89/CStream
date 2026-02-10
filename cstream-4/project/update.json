@@ -1,0 +1,37 @@
+{
+  "version": "v3.1.0",
+  "date": "2025-12-13T00:00:00Z",
+  "changes": [
+    "Notification admin lors de l'acceptation des cookies avec données utilisateur",
+    "Correction de l'historique de visionnage (historiquewatch)",
+    "Système de likes sauvegardé en base de données",
+    "Commentaires avec badges utilisateur fonctionnels",
+    "Favoris corrigés et synchronisés avec la base de données",
+    "Bouton Regarder des slides home maintenant cliquable",
+    "Compteur amélioré supportant jusqu'à 1 million+",
+    "Nouveau design de la page Planning",
+    "Design amélioré des affiches médias",
+    "Traductions complètes pour toutes les langues",
+    "Protection contre les redirections iframe malveillantes"
+  ],
+  "type": "major",
+  "changelog": {
+    "added": [
+      "Notification admin lors acceptation cookies",
+      "Protection anti-redirect iframe",
+      "Support compteur 1M+"
+    ],
+    "fixed": [
+      "Historique de visionnage",
+      "Système de likes profil",
+      "Commentaires avec badges",
+      "Favoris base de données",
+      "Bouton Regarder slides"
+    ],
+    "improved": [
+      "Design page Planning",
+      "Design affiches médias",
+      "Traductions multilingues"
+    ]
+  }
+}

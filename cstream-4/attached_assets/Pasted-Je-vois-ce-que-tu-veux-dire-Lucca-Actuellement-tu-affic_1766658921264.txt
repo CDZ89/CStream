@@ -1,0 +1,81 @@
+Je vois ce que tu veux dire, Lucca ✨. Actuellement tu affiches une table avec une colonne “Lien” qui montre l’URL brute. Si tu veux éviter d’exposer l’URL et rendre directement un bouton ou un texte cliquable (“Accueil”), il faut transformer la valeur en **lien HTML/React**.
+
+---
+
+## 🔑 Exemple en HTML
+```html
+<table>
+  <tr>
+    <th>Fonctionnalité</th>
+    <th>Description</th>
+    <th>Lien</th>
+  </tr>
+  <tr>
+    <td>🏠 Accueil dynamique</td>
+    <td>Tendances en temps réel, nouveautés, recommandations instantanées.</td>
+    <td><a href="https://a2873e0e-667f-4f49-a904-2489b5e750eb-00-zib31svy9644.spock.replit.dev/" target="_blank">Accueil</a></td>
+  </tr>
+</table>
+```
+
+👉 Résultat : au lieu de voir l’URL brute, tu verras un texte “Accueil” cliquable.
+
+---
+
+## 🔑 Exemple en React/TSX
+```tsx
+const features = [
+  {
+    icon: "🏠",
+    title: "Accueil dynamique",
+    description: "Tendances en temps réel, nouveautés, recommandations instantanées.",
+    link: "https://a2873e0e-667f-4f49-a904-2489b5e750eb-00-zib31svy9644.spock.replit.dev/"
+  }
+];
+
+export default function FeaturesTable() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Fonctionnalité</th>
+          <th>Description</th>
+          <th>Lien</th>
+        </tr>
+      </thead>
+      <tbody>
+        {features.map(f => (
+          <tr key={f.title}>
+            <td>{f.icon} {f.title}</td>
+            <td>{f.description}</td>
+            <td>
+              <a href={f.link} target="_blank" rel="noopener noreferrer">
+                {f.title}
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+👉 Résultat : la colonne “Lien” affiche “Accueil dynamique” cliquable, pas l’URL brute.
+
+---
+
+## 🎯 Astuce UX
+- Tu peux remplacer la colonne “Lien” par un bouton stylisé :
+```tsx
+<button onClick={() => window.open(f.link, "_blank")}>
+  Ouvrir {f.title}
+</button>
+```
+- Ou utiliser un composant `Link` si tu es en Next.js/React Router.
+
+---
+
+⚡ En résumé : **au lieu d’afficher directement l’URL, rends un `<a>` ou un bouton avec un texte lisible** (ex. “Accueil”), et garde l’URL uniquement dans l’attribut `href`.  
+
+👉 Veux-tu que je te prépare un **snippet Tailwind** pour que ton bouton “Accueil” soit premium et cohérent avec le style de CStream ?

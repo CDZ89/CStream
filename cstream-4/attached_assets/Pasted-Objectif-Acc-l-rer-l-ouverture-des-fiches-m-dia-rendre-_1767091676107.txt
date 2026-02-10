@@ -1,0 +1,76 @@
+Objectif :  
+Accélérer l’ouverture des fiches média, rendre le chargement instantané (≈1 ms), afficher immédiatement toutes les images, et ajouter un bouton Backend (Beta) sur toutes les pages lecteur — en utilisant au maximum les fichiers d’aide du backend.
+
+🚀 1. Optimisation du chargement des fiches
+Quand on clique sur une fiche :
+
+La page doit s’ouvrir instantanément, sans délai visible.
+
+Toutes les images doivent être déjà chargées (pré‑chargement global).
+
+Aucun écran blanc, aucun temps d’attente, aucune latence.
+
+Comportement attendu :  
+→ Dès le clic, la page média s’affiche en 1 ms, avec toutes les données déjà prêtes.
+
+🎬 2. Page Media : ouverture immédiate
+Sur la page Media :
+
+Le contenu doit apparaître instantanément, sans transition lente.
+
+Le système doit utiliser un pré‑fetch intelligent pour charger les données avant le clic.
+
+🎛️ 3. Ajout d’un bouton “Backend (Beta)” sur tous les lecteurs
+Sur toutes les pages contenant un lecteur, ajouter un bouton supplémentaire :
+
+🔘 Backend (Beta)
+Ce bouton ouvre le lecteur backend local.
+
+Ce lecteur est encore en développement, donc il doit être traité comme une source Beta.
+
+Il doit fonctionner sans bug, en s’appuyant au maximum sur les fichiers backend.
+
+🔘 Lecteur Universel (existant)
+Reste intact, sans modification.
+
+Aucun changement, aucune suppression.
+
+🧠 4. Amélioration du Backend en utilisant les fichiers d’aide
+Pour toute amélioration, correction ou optimisation du lecteur backend, utiliser au maximum les ressources suivantes :
+
+📁 Dossiers backend à exploiter :
+help file/Ultra help CStream production/p-stream-production/src/backend/providers
+
+help file/Ultra help CStream production/p-stream-production/src/backend/player
+
+help file/Ultra help CStream production/p-stream-production/src/backend/metadata
+
+help file/Ultra help CStream production/p-stream-production/src/backend/helpers
+
+help file/Ultra help CStream production/p-stream-production/src/backend/extension
+
+help file/Ultra help CStream production/p-stream-production/src/backend/accounts
+
+🎯 Règles :
+Ne rien casser du site existant.
+
+Ne rien supprimer.
+
+Ne pas toucher aux lecteurs universels.
+
+Améliorer uniquement le backend local.
+
+S’appuyer au maximum sur les fichiers d’aide pour éviter les erreurs.
+
+🧩 5. Résultat final attendu
+Les fiches s’ouvrent instantanément.
+
+Les images sont pré‑chargées sur tout le site.
+
+La page Media s’affiche en 1 ms.
+
+Tous les lecteurs ont un bouton Backend (Beta) fonctionnel.
+
+Le backend est amélioré proprement grâce aux fichiers d’aide.
+
+Aucun bug, aucune régression, aucune suppression.

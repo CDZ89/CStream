@@ -1,0 +1,30 @@
+Crée une interface utilisateur de chatbot futuriste nommée "CAI NEURAL LINK V4.0" avec un design ultra-premium, inspiré des standards Apple, Tesla et Netflix. Utilise un thème **dark élégant** avec des accents **violet électrique** et **bleu néon**, intégrant du **glassmorphism** (flou liquide, transparence, reflets doux), des **cartes arrondies compactes**, et des **icônes SVG minimalistes**.
+
+💡 **Prends tout en compte** :
+- **Typographie** : police moderne sans-serif, hiérarchie claire, italique pour les citations, gras pour les titres et noms de personnages.
+- **Markdown enrichi** : supporte `**gras**`, `*italique*`, `## titres`, listes à puces, et blocs de code.
+- **Micro-animations** : transitions douces au survol, apparition des messages avec fade-in ou slide-up.
+- **Historique élégant** : messages horodatés, avatars stylisés, métadonnées discrètes.
+- **Input field** : barre de saisie flottante avec effet de verre, placeholder stylé, icône d’envoi animée.
+- **Responsive** : adaptabilité parfaite sur desktop, tablette et mobile.
+- **Accessibilité** : contraste élevé, navigation clavier, support RTL et internationalisation.
+- **Interactions** : favoris persistants, hover sur les personnages pour mini-bio, clic sur les saisons pour résumé.
+- **Note et évaluation** : étoile stylisée avec animation au survol, score visible mais discret.
+
+🎨 **Style visuel** :
+- Fond dégradé sombre avec aurora violet/bleu.
+- Cartes semi-transparentes avec bordures floutées.
+- Icônes SVG intégrés dans les titres et boutons.
+- Effets de survol subtils (ombre portée, glow léger).
+
+📦 **Composants à inclure** :
+- Sidebar avec historique des chats (titres personnalisables).
+- Fenêtre principale avec markdown stylisé.
+- Barre de saisie avec raccourcis clavier (`Shift+Entrée` pour nouvelle ligne).
+- Système de notation intégré (étoile + score).
+- Boutons d’action (nouveau chat, favoris, paramètres) avec icônes animées.
+
+🧩 **Bonus** :
+- Ajoute un système de thème switcher (clair/sombre).
+- Intègre des drapeaux pour la langue avec nom natif.
+- Prévois une animation d’ouverture du chat (zoom + blur).

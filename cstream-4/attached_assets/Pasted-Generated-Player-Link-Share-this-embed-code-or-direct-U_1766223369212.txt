@@ -1,0 +1,379 @@
+Generated Player Link
+Share this embed code or direct URL
+
+Embed Code
+Copy
+<iframe src="https://player.vidify.top/embed/movie/1064213?autoplay=false&poster=true&chromecast=true&servericon=true&setting=true&pip=true&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=6f63ff&fontsize=20&opacity=0.5&hidenextbutton=true&hideposter=true&hidechromecast=true&hideepisodelist=true&hideservericon=true&hidepip=true&hideprimarycolor=true&hidesecondarycolor=true&hideiconcolor=true&hideprogresscontrol=true&hideiconset=true&hideautonext=true&hideautoplay=true&primarycolor=3b82f6&secondarycolor=1f2937&iconcolor=ffffff" frameborder="0" allowfullscreen></iframe>
+Direct URL
+Copy
+https://player.vidify.top/embed/movie/1064213?autoplay=false&poster=true&chromecast=true&servericon=true&setting=true&pip=true&logourl=https%3A%2F%2Fi.ibb.co%2F67wTJd9R%2Fpngimg-com-netflix-PNG11.png&font=Roboto&fontcolor=6f63ff&fontsize=20&opacity=0.5&hidenextbutton=true&hideposter=true&hidechromecast=true&hideepisodelist=true&hideservericon=true&hidepip=true&hideprimarycolor=true&hidesecondarycolor=true&hideiconcolor=true&hideprogresscontrol=true&hideiconset=true&hideautonext=true&hideautoplay=true&primarycolor=3b82f6&secondarycolor=1f2937&iconcolor=ffffff
+How to Use
+Use the embed code in your website or share the direct URL. Your custom player settings will be preserved for the best viewing experience.
+
+Copy embed code
+Share direct URL
+Customize settings
+Player Settings
+Primary
+
+#3b82f6
+Secondary
+
+#1f2937
+Icon
+
+#ffffff
+Autoplay
+Auto-play next content
+
+
+Auto Next Episode
+Skip to next episode automatically
+
+
+Show Next Button
+Display next episode button
+
+
+Show Poster
+Show movie poster in player
+
+
+Download
+Enable download option
+
+
+Chromecast
+Enable Chromecast support
+
+
+Episode List
+Show episode selection list
+
+
+Server
+Display server selection
+
+
+Setting
+Show player settings button
+
+
+PIP
+Enable Picture-in-Picture mode
+
+
+Logo URL
+https://i.ibb.co/67wTJd9R/pngimg-com-netflix-PNG11.png
+Enter the URL of your custom logo image
+
+Advanced Player Controls
+Customize your video player experience by hiding or showing specific controls and features. Toggle options to see the corresponding URL parameters.
+
+Hide Controls
+Control player interface visibility
+
+Hide Primary Color
+Hide primary color control
+
+
+hideprimaryColor=true
+Hide Secondary Color
+Hide secondary color control
+
+
+hidesecondaryColor=true
+Hide Icon Color
+Hide icon color control
+
+
+hideiconColor=true
+Hide Progress Control
+Hide progress control
+
+
+hideprogressControl=true
+Hide Icon Set
+Hide icon set control
+
+
+hideiconSet=true
+Hide Auto Next
+Hide auto next control
+
+
+hideautoNext=true
+Hide Autoplay
+Hide autoplay control
+
+
+hideautoplay=true
+Hide Controls
+Control player interface visibility
+
+Hide Next Button
+Hide next button control
+
+
+hidenextButton=true
+Hide Poster
+Hide poster control
+
+
+hideposter=true
+Hide Chromecast
+Hide chromecast control
+
+
+hidechromecast=true
+Hide Episode List
+Hide episode list control
+
+
+hideepisodeList=true
+Hide Server Icon
+Hide server icon control
+
+
+hideserverIcon=true
+Hide PIP
+Hide picture-in-picture control
+
+
+hidepip=true
+Font Settings
+Customize subtitle appearance
+
+Coming Soon
+Advanced font customization options for subtitles and player text will be available in a future update.
+
+API Documentation
+Comprehensive video streaming API documentation for embedding movies, TV shows, and anime content with customizable players.
+
+Embed Movies
+ID is required from The Movie Database API.
+
+Endpoint
+https://player.vidify.top/embed/movie/{tmdbId}
+Usage
+Replace {tmdbId} with your TMDB movie ID
+Copy URL
+Embed Shows
+Embed TV series with season and episode parameters.
+
+Endpoint
+https://player.vidify.top/embed/tv/{tmdbId}/{season}/{episode}
+Usage
+Replace {tmdbId}, {season}, {episode} with your values
+Copy URL
+Embed Anime
+Embed anime content using AniList ID with optional dub parameter.
+
+Endpoint
+https://player.vidify.top/embed/anime/{AnilistId}/{number}?dub=trueOrFalse
+Usage
+Replace {AnilistId}, {number} with your values
+Copy URL
+Player Options
+Configure your video player with these customizable options. Each option can be added to your embed URL as query parameters.
+
+primaryColor
+Main player color theme
+Main player color theme
+
+primarycolor=6f63ff
+Copy
+secondaryColor
+Secondary accent color
+Secondary accent color
+
+secondarycolor=9f94ff
+Copy
+iconColor
+Color of player icons
+Color of player icons
+
+iconcolor=6f63ff
+Copy
+autoplay
+Auto-play on load
+Auto-play on load
+
+autoplay=true
+Copy
+poster
+Show movie poster
+Show movie poster
+
+poster=true
+Copy
+chromecast
+Enable Chromecast support
+Enable Chromecast support
+
+chromecast=true
+Copy
+servericon
+Show server selection button
+Show server selection button
+
+servericon=true
+Copy
+setting
+Show player settings button
+Show player settings button
+
+setting=true
+Copy
+pip
+Enable Picture-in-Picture mode
+Enable Picture-in-Picture mode
+
+pip=true
+Copy
+font
+Subtitle font family
+Subtitle font family
+
+font=Roboto
+Copy
+fontcolor
+Subtitle text color
+Subtitle text color
+
+fontcolor=6f63ff
+Copy
+fontsize
+Subtitle font size in pixels
+Subtitle font size in pixels
+
+fontsize=20
+Copy
+opacity
+Subtitle opacity (0-1)
+Subtitle opacity (0-1)
+
+opacity=0.8
+Copy
+logourl
+Custom logo URL
+Custom logo URL
+
+logourl=https://example.com/logo.png
+Copy
+server
+Specifies the server name or server number to use for playback.
+Specifies the server name or server number to use for playback.
+
+server=hindi
+Copy
+Complete Example
+Combine multiple options in your embed URL
+
+https://player.vidify.top/embed/movie/12345?
+primarycolor=6f63ff&
+secondarycolor=9f94ff&
+fontcolor=6f63ff&
+autoplay=true&
+poster=true
+Copy URL
+Watch Progress
+Track your users' watch progress across movies and TV shows. This feature enables Continue Watching functionality on your website.
+Add Event Listener
+Place this inside your React or Next.js useEffect where the player iframe exists.
+
+Script
+Copy
+window.addEventListener('message', (event) => {
+  if (event.origin !== 'https://player.vidify.top') return;
+
+  if (event.data?.type === 'WATCH_PROGRESS') {
+    const { mediaId, currentTime, duration } = event.data.data;
+    localStorage.setItem(`progress_${mediaId}`, JSON.stringify({
+      currentTime, duration, lastWatched: Date.now()
+    }));
+  }
+});
+Stored Data Structure
+Progress data is stored in localStorage with this structure.
+
+Example Data Structure
+Copy
+{
+  "movie_12345": {
+    "currentTime": 1247.5,
+    "duration": 7200,
+    "lastWatched": 1703123456789,
+    "mediaType": "movie",
+    "title": "The Dark Knight",
+    "poster": "https://example.com/poster.jpg",
+    "watched_percentage": 17.3
+  },
+  "show_67890": {
+    "season": 1,
+    "episode": 5,
+    "currentTime": 2341.2,
+    "duration": 2640,
+    "lastWatched": 1703123456789,
+    "mediaType": "tv",
+    "title": "Breaking Bad",
+    "episodeTitle": "Gray Matter",
+    "poster": "https://example.com/poster.jpg",
+    "watched_percentage": 88.7
+  }
+}
+Available Events
+play
+Triggered when video starts playing
+pause
+Triggered when video is paused
+seeked
+Triggered when user seeks to a different timestamp
+ended
+Triggered when video playback ends
+timeupdate
+Triggered periodically during playback
+Implementation Example
+Complete Implementation
+Copy
+// Complete progress tracking implementation
+window.addEventListener('message', (event) => {
+  if (event.origin !== 'https://player.vidify.top') return;
+
+  if (event.data?.type === 'WATCH_PROGRESS') {
+    const { mediaId, eventType, currentTime, duration } = event.data.data;
+
+    // Handle the event
+    console.log('Watch Progress:', { mediaId, eventType, currentTime, duration });
+
+    // Store progress data
+    const progressData = {
+      currentTime,
+      duration,
+      lastWatched: Date.now(),
+      eventType
+    };
+
+    localStorage.setItem(\`progress_${mediaId}\`, JSON.stringify(progressData));
+
+    // Optional: Handle specific events
+    if (eventType === 'play') {
+      console.log('Video started playing');
+    } else if (eventType === 'pause') {
+      console.log('Video paused');
+    }
+  }
+});
+
+Overview
+Event Listener
+Data Structure
+Player Events
+Implementation
+Overview
+Progress Tracking is a lightweight event-driven system for monitoring playback progress in your custom video player. It stores watch data locally, providing persistent resume functionality across sessions.
+
+Smart resume and episode-specific tracking
+Real-time event monitoring (play, pause, seeked, etc.)
+Persistent local storage
+Simple API for analytics or resume points

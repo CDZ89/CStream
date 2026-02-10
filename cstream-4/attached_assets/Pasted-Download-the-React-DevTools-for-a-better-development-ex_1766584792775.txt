@@ -1,0 +1,109 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+settings:1  <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+fetch.ts:7   PATCH https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+useTheme.ts:196 [useTheme] Applied theme: dark-gray-primary {primary: '#9CA3AF', background: '#111827'}
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:427 [applyTheme] Applied theme: dark-indigo {primary: '#6366F1', background: '#0A0A18'}
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+useSiteLogo.ts:45   HEAD https://fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png net::ERR_ABORTED 400 (Bad Request)
+fetchLogo @ useSiteLogo.ts:45
+initializeSiteLogo @ useSiteLogo.ts:118
+(anonymous) @ Navbar.tsx:175
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserSettings.ts:156 user_settings table not available, using local storage only
+Settings.tsx:369 [Settings] Changing theme to: dark-slate
+themes.ts:427 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:373 [Settings] Theme changed to: Gris Sombre
+themes.ts:427 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:369 [Settings] Changing theme to: dark-gray-primary
+themes.ts:427 [applyTheme] Applied theme: dark-gray-primary {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:373 [Settings] Theme changed to: Gris Premium
+themes.ts:427 [applyTheme] Applied theme: dark-gray-primary {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-gray-primary {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-gray-primary {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: dark-gray-primary {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:369 [Settings] Changing theme to: theme-creator-exclusive
+themes.ts:427 [applyTheme] Applied theme: theme-creator-exclusive {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:373 [Settings] Theme changed to: ⭐ Créateur
+themes.ts:427 [applyTheme] Applied theme: theme-creator-exclusive {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: theme-creator-exclusive {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: theme-creator-exclusive {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:427 [applyTheme] Applied theme: theme-creator-exclusive {primary: '#8B5CF6', background: '#09090B'}

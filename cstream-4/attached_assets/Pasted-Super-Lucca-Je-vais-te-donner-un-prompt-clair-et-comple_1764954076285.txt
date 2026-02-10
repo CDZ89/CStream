@@ -1,0 +1,87 @@
+Super, Lucca 👌. Je vais te donner un **prompt clair et complet** que tu peux utiliser dans ton IA ou ton code pour que l’ajout d’un ami via Supabase fonctionne **sans bug**. L’idée est de guider ton IA ou ton backend à toujours vérifier que l’ID existe dans la table `users` avant d’insérer dans `friendships`.
+
+---
+
+## 🧠 Prompt IA (logique d’ajout d’ami)
+
+```text
+Tu es un assistant qui gère les relations d’amis dans une base Supabase.
+
+Règles :
+1. Vérifie que l’ID fourni correspond bien à un utilisateur existant dans la table `users`.
+2. Si l’ID n’existe pas, renvoie une erreur claire : "Utilisateur introuvable".
+3. Si l’ID existe, insère une ligne dans la table `friendships` avec :
+   - user_id = l’utilisateur connecté
+   - friend_id = l’ID fourni
+4. Empêche les doublons grâce à la contrainte UNIQUE (user_id, friend_id).
+5. Retourne un message JSON structuré :
+   {
+     "status": "success",
+     "message": "Ami ajouté avec succès",
+     "friend_id": "xxx"
+   }
+```
+
+---
+
+## ✅ Exemple SQL (tables propres)
+
+```sql
+CREATE TABLE users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  username text UNIQUE NOT NULL,
+  created_at timestamp DEFAULT now()
+);
+
+CREATE TABLE friendships (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  friend_id uuid NOT NULL,
+  created_at timestamp DEFAULT now(),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT unique_friendship UNIQUE (user_id, friend_id)
+);
+```
+
+---
+
+## ⚡ Exemple Supabase (JS)
+
+```js
+async function addFriend(currentUserId, friendId) {
+  // Vérifier que l'ami existe
+  const { data: friend, error: friendError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', friendId)
+    .single();
+
+  if (friendError || !friend) {
+    return { status: 'error', message: 'Utilisateur introuvable' };
+  }
+
+  // Ajouter l'amitié
+  const { data, error } = await supabase
+    .from('friendships')
+    .insert([{ user_id: currentUserId, friend_id: friendId }]);
+
+  if (error) {
+    return { status: 'error', message: error.message };
+  }
+
+  return { status: 'success', message: 'Ami ajouté avec succès', friend_id: friendId };
+}
+```
+
+---
+
+## 🚀 Résultat attendu
+- Si l’ID est valide → insertion réussie.  
+- Si l’ID n’existe pas → message clair “Utilisateur introuvable”.  
+- Pas de doublons grâce à la contrainte UNIQUE.  
+- Retour JSON propre pour ton frontend.  
+
+---
+
+👉 Veux-tu que je te prépare aussi les **policies RLS Supabase** (Row Level Security) pour sécuriser l’ajout d’amis, afin que seuls les utilisateurs connectés puissent insérer dans `friendships` ?

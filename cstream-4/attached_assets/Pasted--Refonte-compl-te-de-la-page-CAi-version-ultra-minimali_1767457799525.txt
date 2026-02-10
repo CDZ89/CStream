@@ -1,0 +1,66 @@
+🧠 Refonte complète de la page CAi – version ultra-minimaliste
+1. 📐 Réduction des tailles
+Titres trop gros → remplace text-4xl par text-2xl ou text-xl avec tracking-tight
+
+Sous-titres → text-sm text-white/60 au lieu de text-lg
+
+Boutons de fonctionnalités → text-xs font-medium, padding réduit py-2 px-3, icônes SVG à w-4 h-4
+
+2. 🧱 Grille des outils
+Actuellement trop espacée et trop grande. Solution :
+
+tsx
+<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-6 px-4">
+  {["IMAGE GEN", "VIDEO GEN", "AUDIO GEN", "PHOTO EDITOR", "EDUCATION"].map((tool) => (
+    <button className="bg-[#1f1f2f]/50 backdrop-blur-md rounded-md py-2 text-xs text-white hover:bg-[#2a2a3f]/70 transition">
+      {tool}
+    </button>
+  ))}
+</div>
+3. 🖊️ Champ de saisie
+Barre trop haute → réduire à py-2, arrondie mais fine
+
+Placeholder plus discret : "Transmission CAi..." en text-white/40
+
+Icône d’envoi : w-4 h-4, text-white/60, hover text-white
+
+tsx
+<footer className="fixed bottom-4 left-4 right-4">
+  <div className="bg-[#1f1f2f]/50 backdrop-blur-md rounded-full px-4 py-2 flex items-center text-sm text-white">
+    <input
+      type="text"
+      placeholder="Transmission CAi..."
+      className="bg-transparent w-full outline-none placeholder:text-white/40"
+    />
+    <svg className="w-4 h-4 text-white/60 hover:text-white transition" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
+  </div>
+</footer>
+4. 🧠 Hiérarchie visuelle
+Supprime les bordures inutiles
+
+Utilise text-white/80 pour les éléments principaux, text-white/60 pour les secondaires
+
+Espacement vertical réduit : mt-4, mb-2, gap-3 au lieu de gap-6
+
+5. 🎨 Ambiance visuelle
+Fond : bg-gradient-to-br from-[#0f0f1a] via-[#1a1a2e] to-[#2a2a3f]
+
+Cartes : rounded-md, bg-[#1f1f2f]/50, backdrop-blur-md, hover:scale-[1.02]
+
+Typo : Inter, Space Grotesk, Satoshi → fine, lisible, élégante
+
+6. 🧩 Interactions
+Ajoute une flèche discrète qui apparaît après réponse IA :
+
+tsx
+<button
+  className="fixed bottom-20 right-6 bg-[#2a2a3f] p-2 rounded-full shadow-md hover:bg-[#3a3a4f] transition"
+  onClick={() => document.getElementById('last-ai-message')?.scrollIntoView({ behavior: 'smooth' })}
+>
+  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+</button>
+Tu veux que je te livre tout ça en composants React + Tailwind v4 ultra propres ? Je peux te faire un starter avec ChatLayout, ToolGrid, InputBar, et ScrollToReply.

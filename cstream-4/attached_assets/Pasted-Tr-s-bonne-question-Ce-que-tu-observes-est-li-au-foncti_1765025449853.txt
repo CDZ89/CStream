@@ -1,0 +1,32 @@
+Très bonne question 👌. Ce que tu observes est lié au fonctionnement des **iframes** et aux **restrictions mises par le site source (sharecloudy.com)**.
+
+---
+
+### 🔎 Pourquoi ça marche sur Facebim mais pas sur ton site
+1. **Politique de sécurité (X-Frame-Options / CSP)**  
+   - Beaucoup de sites empêchent d’être intégrés dans une iframe sur des domaines externes.  
+   - Ils envoient une directive HTTP (`X-Frame-Options: SAMEORIGIN` ou une règle CSP) qui dit : *“Ce contenu ne peut être affiché qu’à partir de mon propre domaine.”*  
+   - Résultat : sur ton site, l’iframe est bloquée, mais sur Facebim (qui est autorisé ou héberge directement le contenu), ça fonctionne.
+
+2. **Référent / Authentification**  
+   - Certains hébergeurs vérifient l’origine de la requête.  
+   - Si tu viens de Facebim, l’accès est autorisé.  
+   - Si tu viens de ton propre site, le serveur refuse de charger la ressource.
+
+3. **Hotlink protection**  
+   - Les plateformes comme Sharecloudy protègent leurs vidéos/fichiers pour éviter qu’ils soient intégrés ailleurs sans contrôle.  
+   - Elles autorisent seulement certains domaines partenaires.
+
+---
+
+### ✅ Solutions possibles
+- **Utiliser le lecteur officiel** : si Sharecloudy fournit un code d’intégration (embed) spécifique, il faut utiliser celui-là.  
+- **Redirection via ton serveur** : tu pourrais créer une page proxy qui charge le contenu, mais attention aux aspects légaux et techniques.  
+- **Demander une API ou un widget** : certains hébergeurs proposent des solutions officielles pour intégrer leurs vidéos.  
+- **Alternative légale** : héberger toi-même le contenu ou utiliser une plateforme qui autorise l’intégration (YouTube, Vimeo, Dailymotion).
+
+---
+
+👉 En résumé : **l’iframe est bloquée par le serveur source** quand tu l’intègres sur ton site, car Sharecloudy limite l’affichage à certains domaines (comme Facebim). Ce n’est pas un bug de ton site, mais une restriction volontaire côté hébergeur.
+
+Veux-tu que je t’explique comment vérifier dans ton navigateur (via les outils développeur) si c’est bien un **X-Frame-Options** ou une **CSP** qui bloque ton iframe ?

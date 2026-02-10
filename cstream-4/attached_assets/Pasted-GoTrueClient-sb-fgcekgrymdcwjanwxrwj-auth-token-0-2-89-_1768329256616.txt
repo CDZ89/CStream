@@ -1,0 +1,87 @@
+GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.888Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}access_token: "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVXgiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2ZnY2VrZ3J5bWRjd2phbnd4cndqLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkZDQ5MjJjNC00NjkxLTRhMjktYjVhOC0yMWQ5N2E1NGY3NzkiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzY4MzMxOTE5LCJpYXQiOjE3NjgzMjgzMTksImVtYWlsIjoiY2hlbXNkaW5lLmthY2hpZEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIiwiZGlzY29yZCJdfSwidXNlcl9tZXRhZGF0YSI6eyJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy85ODc2NDY1ODY0Mjk1MDk2NDMvOTMxMzdmNzY0MDNlN2Q4ODc4YWIyMTBmNzdjMzFmY2YucG5nIiwiY3VzdG9tX2NsYWltcyI6eyJnbG9iYWxfbmFtZSI6IkNEWiJ9LCJlbWFpbCI6ImNoZW1zZGluZS5rYWNoaWRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZ1bGxfbmFtZSI6InlhbnVrbzM1OTIiLCJpc3MiOiJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsIm5hbWUiOiJ5YW51a28zNTkyIzAiLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInBpY3R1cmUiOiJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzk4NzY0NjU4NjQyOTUwOTY0My85MzEzN2Y3NjQwM2U3ZDg4NzhhYjIxMGY3N2MzMWZjZi5wbmciLCJwcm92aWRlcl9pZCI6Ijk4NzY0NjU4NjQyOTUwOTY0MyIsInN1YiI6Ijk4NzY0NjU4NjQyOTUwOTY0MyIsInVzZXJuYW1lIjoiY2R6In0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjgzMjgzMTl9XSwic2Vzc2lvbl9pZCI6IjQxOTNjZjkxLWEzMGEtNDhmNi05NGJkLTYzMGJjNDU5ODJjYSIsImlzX2Fub255bW91cyI6ZmFsc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ"expires_at: 1768331919expires_in: 3600refresh_token: "7xov5zxzwagf"token_type: "bearer"user: {id: 'dd4922c4-4691-4a29-b5a8-21d97a54f779', aud: 'authenticated', role: 'authenticated', email: 'chemsdine.kachid@gmail.com', email_confirmed_at: '2025-10-23T11:08:07.973342Z', …}weak_password: null[[Prototype]]: Object
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.888Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.888Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.888Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.888Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:33:58.889Z #_acquireLock end
+themes.ts:137 [ThemeEngine] Applied: premium-violet
+LiveTV.tsx:33 FETCHING FROM: /api/livetv/channels
+4GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.368Z #_acquireLock begin -1
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.407Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.407Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.407Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.407Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.407Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.408Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.408Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.408Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.408Z #_acquireLock end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.428Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.429Z #_acquireLock end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.432Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.432Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.432Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.432Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.434Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.434Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.434Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.434Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.434Z #_acquireLock end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.440Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.440Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.440Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:00.441Z #_acquireLock end
+LiveTV.tsx:49  Error fetching live TV channels: SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON
+fetchChannelsData @ LiveTV.tsx:49
+await in fetchChannelsData
+(anonymous) @ LiveTV.tsx:56
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+themes.ts:137 [ThemeEngine] Applied: premium-violet
+2GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.255Z #_acquireLock begin -1
+useUserSettings.ts:160 user_settings table not available, using local storage only
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.293Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.293Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.293Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.293Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.293Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.294Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.294Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.294Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.294Z #_acquireLock end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.323Z #_acquireLock lock acquired for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.323Z #_useSession begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.323Z #__loadSession() begin
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.324Z #getSession() session from storage {access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImtjYXQ3SDRqNjNyMW5LVX…sc2V9.AyKDAIAklSUR7wwMSC4_83hgeupWWJ-eb6oYgS90KdQ', token_type: 'bearer', expires_in: 3600, expires_at: 1768331919, refresh_token: '7xov5zxzwagf', …}
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.324Z #__loadSession() session has not expired expires_at 1768331919
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.324Z #__loadSession() end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.329Z #_useSession end
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.329Z #_acquireLock lock released for storage key sb-fgcekgrymdcwjanwxrwj-auth-token
+GoTrueClient.ts:432 GoTrueClient@sb-fgcekgrymdcwjanwxrwj-auth-token:0 (2.89.0) 2026-01-13T18:34:01.329Z #_acquireLock end
+useUserSettings.ts:160 user_settings table not available, using local storage only

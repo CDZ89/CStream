@@ -1,0 +1,63 @@
+Conçois une interface utilisateur complète pour une plateforme nommée **CAi**, avec un design ultra-premium, minimaliste, et émotionnellement immersif. L’esthétique doit s’inspirer des standards Apple, Tesla et Netflix, exclusivement en **dark mode**, avec une ambiance futuriste et fluide.
+
+🎨 **Style visuel global** :
+- Fond : dégradé sombre subtil (violet/bleu aurora) avec textures douces
+- Cartes : compactes, arrondies, semi-transparentes (glassmorphism), flou liquide, bordures douces
+- Icônes : SVG minimalistes, visibles mais discrets, intégrés dans les boutons et titres
+- Typographie : police moderne sans-serif (ex. Inter, Space Grotesk), hiérarchie claire
+  - `**gras**` pour les noms et titres
+  - `*italique*` pour les citations ou nuances
+  - Markdown enrichi : `## titres`, listes à puces, blocs de code
+
+🧭 **Sidebar gauche** :
+- Boutons : `New Chat`, `CAi Generator`, `Explore CAi`
+- Sections : `Recent`, `Last 7 Days`, `Last 30 Days` avec snippets tronqués automatiquement
+- Comportement :
+  - Scroll fluide (`overflow-y-auto`)
+  - Sans scrollbar visible (`scrollbar-hidden`)
+  - Icônes SVG visibles (corriger les SVG invisibles sans ajouter de bruit visuel)
+
+💬 **Fenêtre principale de chat** :
+- Header : `"Hello, I'm CAi"` + sous-titre `"How can I make things easier for you?"`
+- Grille d’outils (sous le champ de saisie) :
+  - Image Generator
+  - Video Generator
+  - Audio Generator
+  - Photo Editor
+  - Education Feedback
+  - Get Advice
+  - Code Generator
+  - Help me write
+  - Summarize text
+  - Problem solving
+- Bulles de messages :
+  - Arrondies, espacées, avec timestamps discrets
+  - Apparition animée (`fade-in` ou `slide-up`)
+  - Markdown supporté
+
+🖊️ **Champ de saisie** :
+- Barre flottante en bas :
+  - Effet verre (glassmorphism), `backdrop-blur`, `bg-[#1f1f2f]/60`
+  - Placeholder stylé `"Type your message..."`, texte blanc, icône d’envoi SVG animé
+- Flèche de scroll :
+  - Apparaît uniquement après réponse IA
+  - Position : `absolute right-4 bottom-16`
+  - Style : `bg-[#2a2a3f] rounded-full p-2 shadow-lg hover:bg-[#3a3a4f]`
+  - Action : `scrollIntoView({ behavior: 'smooth' })` vers le dernier message IA
+
+🧠 **Page Agent** :
+- Corriger la taille du contenu (actuellement trop gros)
+- Réduire pour une lecture fluide et élégante
+- Garder le style cohérent avec le reste de l’interface
+
+⚠️ **Composant "Change Log"** :
+- Ne rien modifier
+
+📱 **Responsive & accessibilité** :
+- Grille adaptative, sidebar collapsable sur mobile
+- Support RTL et internationalisation
+- Contraste élevé, navigation clavier, animations fluides
+
+🎯 **Objectif final** :
+Créer une interface **fluide, élégante, ultra-minimaliste**, où chaque élément est lisible, utile, et émotionnellement cohérent. Le tout doit être prêt pour une intégration React + Tailwind v4, avec composants modulaires, SVG visibles, scroll-to-reply intégré, et animations premium.
+

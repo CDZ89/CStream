@@ -1,0 +1,77 @@
+400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+Chat.tsx:477 [Chat] Pending requests: 0
+Chat.tsx:487 [Chat] Sent requests: 0
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 409 (Conflict)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useAuth.tsx:105  Error inserting user: {code: '23505', details: null, hint: null, message: 'duplicate key value violates unique constraint "users_email_key"'}
+syncUserToUsersTable @ useAuth.tsx:105
+await in syncUserToUsersTable
+checkUserProfile @ useAuth.tsx:194
+await in checkUserProfile
+(anonymous) @ useAuth.tsx:327
+(anonymous) @ GoTrueClient.ts:2744
+_notifyAllSubscribers @ GoTrueClient.ts:2742
+_recoverAndRefresh @ GoTrueClient.ts:2664
+await in _recoverAndRefresh
+(anonymous) @ GoTrueClient.ts:3055
+(anonymous) @ GoTrueClient.ts:1517
+(anonymous) @ locks.ts:144
+client:736   GET https://153e16da-3b34-4e11-a684-2d7d8de311fc-00-2pkj5418stby5.worf.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/friend_requests 409 (Conflict)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+friends.ts:17  [Friends Service] sendFriendRequest - insert: {code: '23503', details: 'Key is not present in table "users".', hint: null, message: 'insert or update on table "friend_requests" violat…n key constraint "friend_requests_sender_id_fkey"'}
+logFriendsError @ friends.ts:17
+sendFriendRequest @ friends.ts:253
+await in sendFriendRequest
+addFriendByProfile @ Chat.tsx:1185
+onClick @ Chat.tsx:2417
+callCallback2 @ react-dom.development.js:4164
+invokeGuardedCallbackDev @ react-dom.development.js:4213
+invokeGuardedCallback @ react-dom.development.js:4277
+invokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:4291
+executeDispatch @ react-dom.development.js:9041
+processDispatchQueueItemsInOrder @ react-dom.development.js:9073
+processDispatchQueue @ react-dom.development.js:9086
+dispatchEventsForPlugins @ react-dom.development.js:9097
+(anonymous) @ react-dom.development.js:9288
+batchedUpdates$1 @ react-dom.development.js:26179
+batchedUpdates @ react-dom.development.js:3991
+dispatchEventForPluginEventSystem @ react-dom.development.js:9287
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ react-dom.development.js:6465
+dispatchEvent @ react-dom.development.js:6457
+dispatchDiscreteEvent @ react-dom.development.js:6430
+friends.ts:260  [Friends] FK violation - receiver_id not in auth.users: {sender_id: 'dd4922c4-4691-4a29-b5a8-21d97a54f779', receiver_id: 'bbbbf0e4-3a24-41ae-94f6-174a53c7636a', error: 'insert or update on table "friend_requests" violat…n key constraint "friend_requests_sender_id_fkey"'}error: "insert or update on table \"friend_requests\" violates foreign key constraint \"friend_requests_sender_id_fkey\""receiver_id: "bbbbf0e4-3a24-41ae-94f6-174a53c7636a"sender_id: "dd4922c4-4691-4a29-b5a8-21d97a54f779"[[Prototype]]: Object
+sendFriendRequest @ friends.ts:260
+await in sendFriendRequest
+addFriendByProfile @ Chat.tsx:1185
+onClick @ Chat.tsx:2417
+callCallback2 @ react-dom.development.js:4164
+invokeGuardedCallbackDev @ react-dom.development.js:4213
+invokeGuardedCallback @ react-dom.development.js:4277
+invokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:4291
+executeDispatch @ react-dom.development.js:9041
+processDispatchQueueItemsInOrder @ react-dom.development.js:9073
+processDispatchQueue @ react-dom.development.js:9086
+dispatchEventsForPlugins @ react-dom.development.js:9097
+(anonymous) @ react-dom.development.js:9288
+batchedUpdates$1 @ react-dom.development.js:26179
+batchedUpdates @ react-dom.development.js:3991
+dispatchEventForPluginEventSystem @ react-dom.development.js:9287
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ react-dom.development.js:6465
+dispatchEvent @ react-dom.development.js:6457
+dispatchDiscreteEvent @ react-dom.development.js:6430
+fetch.ts:7   POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/friend_requests 409 (Conflict)

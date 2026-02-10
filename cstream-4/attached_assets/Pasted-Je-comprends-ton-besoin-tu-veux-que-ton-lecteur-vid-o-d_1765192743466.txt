@@ -1,0 +1,53 @@
+Je comprends ton besoin 👌 : tu veux que ton lecteur vidéo (dans ton site CStream) puisse **importer un nombre illimité d’URL** (films, séries, streams) sans bug ni blocage. En pratique, il y a plusieurs points techniques à gérer pour éviter les limites ou les erreurs :
+
+---
+
+## 🔎 Problèmes fréquents quand on importe des URL
+- **CORS (Cross‑Origin Resource Sharing)** : certains serveurs bloquent les requêtes venant d’un autre domaine.  
+- **Quota / rate‑limit** : certains hébergeurs limitent le nombre de requêtes ou la bande passante.  
+- **Formats incompatibles** : toutes les URLs ne sont pas en MP4/HLS/DASH lisibles par ton lecteur.  
+- **Timeouts / erreurs réseau** : si trop de flux sont chargés en même temps.  
+- **Stockage côté client** : si tu gardes trop d’URLs en mémoire, ça peut planter.  
+
+---
+
+## 🛠️ Solutions pour importer “illimité” sans blocage
+
+### 1. **Proxy / Backend intermédiaire**
+- Mets en place un **serveur proxy** (Node.js, Nginx, etc.) qui récupère les URLs et les renvoie à ton lecteur.  
+- Avantages :
+  - Tu contrôles les headers (CORS, cache).  
+  - Tu peux contourner les blocages côté navigateur.  
+  - Tu peux mettre en place un système anti‑limite (ex. file d’attente).  
+
+### 2. **Base de données centralisée**
+- Stocke toutes tes URLs dans une **DB** (Supabase, Neon, Firebase, etc.).  
+- Ton lecteur ne charge pas directement les URLs, mais les récupère via une API.  
+- Tu peux importer autant d’URLs que tu veux, sans surcharge côté client.  
+
+### 3. **Streaming adaptatif**
+- Utilise des formats comme **HLS (.m3u8)** ou **DASH (.mpd)**.  
+- Ces formats découpent la vidéo en petits segments → plus stable et scalable.  
+- Ton lecteur (Video.js, Plyr, Shaka Player) gère automatiquement la qualité et les erreurs.  
+
+### 4. **Gestion des erreurs**
+- Implémente un système de **retry** : si une URL échoue, ton lecteur essaie une autre.  
+- Ajoute un **timeout** pour éviter les blocages.  
+- Loggue les erreurs pour voir quelles sources posent problème.  
+
+### 5. **CDN / cache**
+- Si tu as beaucoup d’URLs externes, passe par un **CDN** (Cloudflare, Fastly).  
+- Le CDN réduit les risques de blocage et accélère le chargement.  
+
+---
+
+## 🎯 Résultat attendu
+Avec ce setup :
+- Tu peux importer autant d’URLs que tu veux.  
+- Ton lecteur ne plante pas car tu passes par un proxy/API.  
+- Les flux sont compatibles et optimisés (HLS/DASH).  
+- Tu évites les blocages CORS et les limites de bande passante.  
+
+---
+
+👉 Veux‑tu que je te prépare un **exemple concret de code Node.js** pour un petit **proxy vidéo** qui permet d’importer des URLs illimitées et les servir à ton lecteur sans bug ?

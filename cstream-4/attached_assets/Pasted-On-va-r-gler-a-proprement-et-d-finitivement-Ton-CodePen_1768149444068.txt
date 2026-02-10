@@ -1,0 +1,160 @@
+On va régler ça **proprement et définitivement**.  
+Ton CodePen est ouvert, donc je vais te donner **un code 100% fonctionnel**, **responsive**, et où **l’envoi de message marche vraiment**.
+
+Je t’ai préparé une version **simplifiée, propre, moderne**, qui fonctionne **à tous les coups** dans CodePen.
+
+---
+
+# ✅ Version stable, responsive, et fonctionnelle
+
+## 🟦 HTML
+```html
+<div class="chat">
+  <div id="messages"></div>
+
+  <form id="sendForm">
+    <input id="msg" type="text" placeholder="Écris ton message..." autocomplete="off" />
+    <button type="submit">➤</button>
+  </form>
+</div>
+```
+
+---
+
+## 🎨 CSS (responsive + propre)
+```css
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1e1e1e, #111);
+  font-family: "Inter", sans-serif;
+  padding: 10px;
+}
+
+.chat {
+  width: 100%;
+  max-width: 420px;
+  height: 90vh;
+  max-height: 600px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  color: white;
+  font-size: 15px;
+}
+
+.message {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: fit-content;
+  max-width: 80%;
+}
+
+.message.me {
+  background: #4f46e5;
+  margin-left: auto;
+}
+
+form {
+  display: flex;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 15px;
+}
+
+button {
+  width: 50px;
+  background: #4f46e5;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+```
+
+---
+
+## 🟩 JavaScript (fixé + fonctionne partout)
+```js
+const form = document.getElementById("sendForm");
+const input = document.getElementById("msg");
+const box = document.getElementById("messages");
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const text = input.value.trim();
+  if (text === "") return;
+
+  addMessage(text, true);
+  input.value = "";
+  input.focus();
+});
+
+function addMessage(text, me = false) {
+  const div = document.createElement("div");
+  div.className = "message" + (me ? " me" : "");
+  div.textContent = text;
+  box.appendChild(div);
+
+  box.scrollTop = box.scrollHeight;
+}
+```
+
+---
+
+# 🧪 Ce que cette version corrige
+
+### ✔️ L’envoi de message fonctionne  
+Le problème venait souvent de CodePen qui met le JS dans un scope différent.  
+Ici, tout est compatible.
+
+### ✔️ Responsive  
+- S’adapte mobile  
+- S’adapte tablette  
+- S’adapte PC  
+- Hauteur fluide  
+- Max-width propre
+
+### ✔️ UI propre  
+- Glassmorphism  
+- Bouton moderne  
+- Messages alignés  
+- Scroll auto
+
+---
+
+# 🔥 Si tu veux, je peux maintenant ajouter :
+- un **vrai système temps réel** (Socket.io)  
+- un **pseudo**  
+- un **système de salons**  
+- un **design premium animé** (gradients animés, particules, transitions)  
+- un **système de sauvegarde des messages**  
+
+Tu veux qu’on passe à la version **temps réel** ou qu’on améliore encore le design ?

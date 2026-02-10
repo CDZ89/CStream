@@ -1,0 +1,280 @@
+1) Créer un groupe admin — SQL safe (exécutable maintenant)
+Si tu veux que je crée le groupe admin dans public.groups et renvoie l'UUID généré, j'exécuterai cette requête en lecture/écriture. Voici la SQL exacte que j'exécuterai (transactionnel) :
+
+SQL à appliquer:
+
+SQL Query
+
+
+
+INSERT INTO public.groups (slug, name, creator_id)
+VALUES ('admin_group', 'Admin Group', NULL)
+ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name
+RETURNING id;
+
+ERROR: Failed to run sql query: ERROR: 42703: column "slug" of relation "groups" does not exist LINE 1: INSERT INTO public.groups (slug, name, creator_id) ^
+Résultat retournera la colonne id (UUID) que tu utiliseras comme ADMIN_GROUP_UUID.
+Si tu veux enregistrer aussi un creator_id (un user existant), fournis l'UUID du créateur; sinon on laisse NULL.
+Dis "CREATE_ADMIN_GROUP" pour que je lance cette commande.
+
+2) Vérifier / créer test user (auth.users) — notes et commandes
+Important : créer un user dans auth.users doit se faire via l'Admin API (service_role key) ou via supabase auth admin helpers. Je fournis deux options :
+
+A) Via Admin API (curl) — execute server-side with service_role:
+
+curl -X POST 
+"https://<project>.supabase.co/auth/v1/admin/users"
+ \
+  -H 
+"apikey: <SERVICE_ROLE_KEY>"
+ \
+  -H 
+"Authorization: Bearer <SERVICE_ROLE_KEY>"
+ \
+  -H 
+"Content-Type: application/json"
+ \
+  -d 
+'{
+    "email":"testb@example.com",
+    "password":"Str0ngP@ssw0rd!",
+    "email_confirm": true
+  }'
+
+B) If you prefer SQL to create a profile row only (requires actual auth.users entry already exists), use:
+
+SQL Query
+
+
+
+INSERT INTO public.profiles (id, username, full_name)
+VALUES ('<USER_UUID_FROM_AUTH>', 'testuserb', 'Test User B')
+ON CONFLICT (id) DO NOTHING;
+
+ERROR: Failed to run sql query: ERROR: 42703: column "full_name" of relation "profiles" does not exist LINE 1: INSERT INTO public.profiles (id, username, full_name) ^
+Tell me which you prefer. I will not run Admin API calls without "CONFIRM CREATE_TEST_USER".
+
+3) Ensure profiles.id matches auth.users.id
+Verification query (read-only):
+
+SQL Query
+
+
+
+SELECT u.id, u.email, p.id IS NOT DISTINCT FROM u.id AS ids_match, p.username
+FROM auth.users u
+LEFT JOIN public.profiles p ON p.id = u.id
+WHERE u.email IN ('testa@example.com','testb@example.com'); -- replace with the emails you use
+
+Success. No rows returned
+
+Run this to confirm profiles exist and IDs match. I can run this read-only check now if you want — reply "CHECK_PROFILES" and give the emails to check (or leave blank to list recent users).
+
+4) TypeScript changes to set ADMIN_GROUP_UUID and safe inserts
+Add this constant in your site code (replace the UUID with the group id returned when creating the group):
+
+export
+ 
+const
+ ADMIN_GROUP_UUID = 
+'<UUID_RETOURNE_PAR_DB>'
+;
+
+Group message insert (client side, after resolveIdsOrThrow):
+
+const
+ { 
+data
+: meRes } = 
+await
+ supabase.auth.getUser();
+const
+ senderId = meRes.user.id;
+await
+ supabase.from(
+'group_messages'
+).insert({
+  
+group_id
+: ADMIN_GROUP_UUID,
+  
+sender_id
+: senderId,
+  
+content
+: 
+'Message pour le groupe admin'
+
+});
+
+Direct DM / friendship inserts — ensure you use profiles.id (which equals auth.users.id):
+
+// friendship
+
+const
+ { 
+data
+: profile } = 
+await
+ supabase
+  .from(
+'profiles'
+)
+  .select(
+'id'
+)
+  .eq(
+'username'
+, friendUsername)
+  .single();
+if
+ (!profile?.id) 
+throw
+ 
+new
+ 
+Error
+(
+'Profil du destinataire non synchronisé'
+);
+await
+ supabase.from(
+'friendships'
+).insert({
+  
+user_id
+: senderId,
+  
+friend_id
+: profile.id
+});
+
+5) Preflight check function (resolveIdsOrThrow) — final version
+Use this in both flows:
+
+async
+ 
+function
+ 
+resolveIdsOrThrow
+(
+supabase, receiverUsername?: 
+string
+) 
+{
+  
+const
+ { 
+data
+: meRes, 
+error
+: meErr } = 
+await
+ supabase.auth.getUser();
+  
+if
+ (meErr || !meRes?.user?.id) 
+throw
+ 
+new
+ 
+Error
+(
+'Session invalide'
+);
+  
+const
+ senderId = meRes.user.id;
+  
+let
+ receiverId: 
+string
+ | 
+null
+ = 
+null
+;
+  
+if
+ (receiverUsername) {
+    
+const
+ { 
+data
+: profile, 
+error
+: profErr } = 
+await
+ supabase
+      .from(
+'profiles'
+)
+      .select(
+'id, username'
+)
+      .eq(
+'username'
+, receiverUsername)
+      .maybeSingle();
+    
+if
+ (profErr) 
+throw
+ 
+new
+ 
+Error
+(
+'Erreur lecture profil'
+);
+    
+if
+ (!profile?.id) 
+throw
+ 
+new
+ 
+Error
+(
+'Profil utilisateur non synchronisé'
+);
+    receiverId = profile.id;
+  }
+  
+return
+ { senderId, receiverId };
+}
+
+6) Quick verification steps you can run locally (or I can run read-only queries)
+Confirm admin group exists:
+SQL Query
+
+
+
+SELECT id FROM public.groups WHERE slug = 'admin_group';
+
+ERROR: Failed to run sql query: ERROR: 42703: column "slug" does not exist LINE 1: SELECT id FROM public.groups WHERE slug = 'admin_group'; ^
+Confirm profile exists for recipient:
+SQL Query
+
+
+
+SELECT id, username FROM public.profiles WHERE username = 'friendUsername';
+
+Success. No rows returned
+
+Confirm auth.users has that id:
+SQL Query
+
+
+
+SELECT id, email FROM auth.users WHERE id = '<PROFILE_ID>';
+
+ERROR: Failed to run sql query: ERROR: 22P02: invalid input syntax for type uuid: "<PROFILE_ID>" LINE 1: SELECT id, email FROM auth.users WHERE id = '<PROFILE_ID>'; ^
+Dis-moi maintenant précisément ce que tu veux que j'exécute :
+
+"CREATE_ADMIN_GROUP" — créer le groupe admin et me retourner l'UUID.
+"CHECK_PROFILES" — je vérifie read-only la correspondance auth.users ↔ public.profiles pour des emails ou usernames que tu fournis.
+"CREATE_TEST_USER" — je fournis la commande Admin API (ou je l'exécute si tu confirmes et fournis que je peux run with service_role).
+"RUN_SMOKE_TEST" — exécuter le test complet (création users, insert friendship/message, suppression) — nécessite confirmation explicite (destructif).
+"GENERATE_SNIPPETS" — te renvoyer un zip/text complet des snippets à coller.

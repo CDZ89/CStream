@@ -1,0 +1,35 @@
+Imagine un univers festif et immersif, conçu pour un site ou une application moderne, combinant deux atmosphères distinctes mais complémentaires : Noël et Nouvel An. Le design doit être riche, détaillé, chaleureux et spectaculaire, avec des éléments graphiques, des textures et des animations qui évoquent immédiatement la magie des fêtes.
+
+🎄 Thème Noël :
+- Palette de couleurs : rouge profond, vert sapin, doré scintillant, blanc neige, touches argentées.
+- Ambiance : chaleureuse, cosy, féérique, inspirée des chalets enneigés et des marchés de Noël.
+- Décorations : guirlandes lumineuses, boules de Noël brillantes, rubans rouges, cloches dorées, étoiles scintillantes, flocons de neige animés en arrière-plan.
+- Textures : bois naturel, laine tricotée, neige poudreuse, verre givré.
+- Éléments graphiques : sapins décorés, cadeaux emballés avec rubans, chaussettes suspendues, biscuits en pain d’épices, cannes en sucre.
+- Lumières : halos doux, reflets dorés, scintillements subtils, effet bokeh de guirlandes.
+- Typographie : élégante et festive, avec des titres en doré embossé et des sous‑titres en blanc neige.
+- Animation : chute lente de flocons, scintillement des guirlandes, effet de brillance sur les décorations.
+
+🥂 Thème Nouvel An :
+- Palette de couleurs : noir élégant, argent métallique, doré champagne, bleu nuit profond, touches de violet électrique.
+- Ambiance : glamour, moderne, énergique, inspirée des soirées de gala et des feux d’artifice.
+- Décorations : confettis dorés, ballons métallisés, horloges indiquant minuit, verres de champagne, feux d’artifice explosant en arrière-plan.
+- Textures : verre poli, métal brillant, satin noir, paillettes argentées.
+- Éléments graphiques : horloges stylisées, compte à rebours digital, feux d’artifice multicolores, bouteilles de champagne, chapeaux de fête.
+- Lumières : éclats vifs, reflets métalliques, explosions lumineuses, néons modernes.
+- Typographie : audacieuse et glamour, avec des titres en doré brillant et des sous‑titres argentés.
+- Animation : confettis tombant, feux d’artifice éclatant, compte à rebours animé vers minuit.
+
+✨ Fusion et cohérence :
+- Les deux thèmes doivent être interchangeables, avec une transition fluide entre Noël et Nouvel An.
+- Noël = chaleur, tradition, magie douce. Nouvel An = énergie, modernité, célébration éclatante.
+- Les deux doivent partager une base festive commune : lumières, éclats, ambiance joyeuse.
+- Intégrer des détails subtils comme des ombres douces, des reflets réalistes, des transitions animées entre les deux univers.
+
+🎨 Style global :
+- Ultra détaillé, immersif, riche en textures et en lumières.
+- Mélange de réalisme et de stylisation graphique moderne.
+- Interface pensée pour être festive mais lisible, avec des contrastes forts et des animations fluides.
+- Chaque élément doit respirer la fête, la joie, la magie et l’élégance.
+
+Résultat attendu : un design complet, spectaculaire et immersif, qui évoque immédiatement la magie de Noël et l’énergie du Nouvel An, prêt à être utilisé comme thème graphique pour une plateforme moderne.

@@ -1,0 +1,129 @@
+# Fix persistent “profil non synchronisé” and group messaging failures
+
+I get why you’re fed up. The errors are telling you one thing: you’re still sending invalid IDs into FKs. Let’s lock this down with a targeted hotfix and a clean design so it won’t regress.
+
+---
+
+## Immediate hotfixes
+
+### 1. Stop using placeholder UUIDs for admin/group
+- **Problem:** `00000000-0000-0000-0000-000000000000` isn’t in `auth.users`, so any insert into `messages.receiver_id` fails.
+- **Hotfix options (choose one and apply):**
+  - **Create a real “system/admin” user** in `auth.users` and use that UUID everywhere the app expects a user ID.
+    - Then set `ADMIN_USER_ID` in your app config and reference it for admin chat.
+  - **Better design:** separate direct messages from group messages so they don’t require a user receiver.
+
+### 2. Enforce preflight ID validation in the client
+Before any insert (friendship or message), resolve and validate IDs with a single guard:
+
+```ts
+async function resolveIdsOrThrow(supabase, receiverUsername?: string) {
+  const { data: meRes, error: meErr } = await supabase.auth.getUser();
+  if (meErr || !meRes?.user?.id) throw new Error('Session invalide');
+  const senderId = meRes.user.id;
+
+  let receiverId: string | null = null;
+
+  if (receiverUsername) {
+    const { data: profile, error: profErr } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .eq('username', receiverUsername)
+      .single();
+
+    if (profErr || !profile?.id) throw new Error('Profil utilisateur non synchronisé');
+    receiverId = profile.id;
+  }
+
+  return { senderId, receiverId };
+}
+```
+
+Use this guard in both friends and messages flows, and abort with a clear error if invalid.
+
+---
+
+## Clean architecture for messaging
+
+### Option A — Minimal change (keep one table)
+- **messages table:** keep `sender_id` FK to `auth.users(id)`. Make `receiver_id`:
+  - **Direct DM:** set to recipient’s `auth.users.id`.
+  - **Admin/system broadcast:** set to a real `ADMIN_USER_ID` (do NOT use a placeholder).
+- **Pros:** quickest fix.  
+- **Cons:** admin broadcasts are “to a user” not a group; semantics are weak.
+
+### Option B — Proper separation (recommended)
+Create a separate schema for groups so FKs are correct and intent is clear.
+
+- **groups table:** `id uuid pk`, `slug unique`, `name`.
+- **group_members table:** `group_id` FK → `groups(id)`, `user_id` FK → `auth.users(id)`.
+- **group_messages table:**  
+  - `id uuid pk`, `group_id` FK → `groups(id)`,  
+  - `sender_id` FK → `auth.users(id)`,  
+  - `content text`, `created_at timestamptz`,  
+  - no `receiver_id` at all.
+
+#### Example client usage
+```ts
+// Direct message
+const { senderId, receiverId } = await resolveIdsOrThrow(supabase, receiverUsername);
+await supabase.from('messages').insert({ sender_id: senderId, receiver_id: receiverId!, content });
+
+// Group message (admin or member)
+const groupId = currentGroupId; // UUID from groups
+const { senderId } = await resolveIdsOrThrow(supabase);
+await supabase.from('group_messages').insert({ group_id: groupId, sender_id: senderId, content });
+```
+
+#### Example RLS (general idea)
+- messages: `WITH CHECK (sender_id = auth.uid())`, `USING (sender_id = auth.uid() OR receiver_id = auth.uid())`
+- group_messages: `WITH CHECK (sender_id = auth.uid() AND EXISTS (SELECT 1 FROM group_members gm WHERE gm.group_id = group_messages.group_id AND gm.user_id = auth.uid()))`, `USING (EXISTS (...same membership...))`
+
+---
+
+## Friends flow: anti-regression guards
+
+- **Insert friendship only with valid UUIDs:**
+```ts
+const { senderId, receiverId } = await resolveIdsOrThrow(supabase, friendUsername);
+await supabase.from('friendships').insert({ user_id: senderId, friend_id: receiverId! });
+```
+
+- **Prevent duplicates and self-friends:**
+```ts
+if (receiverId === senderId) throw new Error('Impossible de s’ajouter soi-même');
+const { data: existing } = await supabase
+  .from('friendships')
+  .select('id')
+  .or(`and(user_id.eq.${senderId},friend_id.eq.${receiverId}),and(user_id.eq.${receiverId},friend_id.eq.${senderId})`)
+  .limit(1);
+if (existing?.length) throw new Error('Amitié déjà existante');
+```
+
+---
+
+## What to tell the supabase agent
+
+- **Create a real admin/system user** in `auth.users` and give me the UUID. I’ll set it as `ADMIN_USER_ID` in the app.
+- **If we go with proper groups:** create `groups`, `group_members`, `group_messages` with FKs to the correct tables and RLS that checks membership.
+- **Keep `messages` only for direct messages.** No more fake receiver IDs or nulls.
+
+---
+
+## What to change in the site agent
+
+- **Replace any hardcoded UUIDs** with real IDs from `auth.users` or `groups`.  
+- **Insert guards:** use `resolveIdsOrThrow` in friends and messages.  
+- **Log payloads before insert:** sender_id, receiver_id/group_id, content.  
+- **Map FK errors to UX:** “Profil utilisateur non synchronisé” only when the recipient profile lookup fails; otherwise show the raw error message for debugging.
+
+---
+
+## Quick checklist to end the pain
+
+- **No placeholder IDs:** every FK points to a real existing row.  
+- **Admin/group messages:** either use a real admin user, or switch to group_messages with `group_id`.  
+- **Preflight validation:** never insert without validating IDs.  
+- **RLS confirmed:** sender must be `auth.uid()`; for groups, user must be a member.
+
+If you want, I’ll generate the exact SQL for the group schema and the RLS policies, plus the TS snippets wired to your current components.

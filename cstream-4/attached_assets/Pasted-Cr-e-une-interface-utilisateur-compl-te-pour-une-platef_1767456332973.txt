@@ -1,0 +1,41 @@
+Crée une interface utilisateur complète pour une plateforme nommée **CAi**, avec un design ultra-premium, minimaliste, et futuriste. L’ambiance doit être sombre, élégante, fluide, et émotionnellement immersive. Le style visuel s’inspire des standards Apple, Tesla et Netflix.
+
+🎨 **Style global** :
+- Fond : dégradé sombre violet/bleu, ambiance galactique
+- Cartes : compactes, arrondies, semi-transparentes (glassmorphism), avec flou liquide et bordures douces
+- Typographie : moderne sans-serif (Inter, Space Grotesk), hiérarchie claire
+  - `**gras**` pour les noms et titres
+  - `*italique*` pour les nuances
+  - Markdown enrichi : `## titres`, listes, citations
+- Icônes : SVG minimalistes, visibles mais discrets, intégrés dans les boutons et titres
+- Transitions : micro-animations au survol, apparition des messages en `fade-in` ou `slide-up`
+
+📐 **Réduction des tailles** :
+- Titres : `text-xl font-semibold tracking-tight`
+- Sous-titres : `text-sm text-white/60`
+- Boutons : `text-xs py-2 px-3`, icônes SVG `w-4 h-4`
+- Espacement : `gap-3`, `mt-4`, `mb-2`, `px-4`
+
+🧱 **Grille des outils** :
+- Outils : `IMAGE GEN`, `VIDEO GEN`, `AUDIO GEN`, `PHOTO EDITOR`, `EDUCATION`, `ADVICE`, `CODE GEN`, `WRITING`, `SUMMARIZE`, `PROBLEM SOLVER`
+- Disposition : `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3`
+- Style : `bg-[#1f1f2f]/50 backdrop-blur-md rounded-md text-xs text-white hover:bg-[#2a2a3f]/70 transition`
+
+📥 **Champ de saisie** :
+- Barre flottante : `fixed bottom-4 left-4 right-4 bg-[#1f1f2f]/50 backdrop-blur-md rounded-full px-4 py-2 flex items-center`
+- Input : `bg-transparent w-full text-white placeholder:text-white/40 text-sm outline-none`
+- Icône d’envoi : `w-4 h-4 text-white/60 hover:text-white transition`
+
+🧠 **Comportement IA** :
+- Flèche de scroll vers dernière réponse IA :
+  - Apparaît après réponse
+  - `fixed bottom-20 right-6 bg-[#2a2a3f] p-2 rounded-full shadow-md hover:bg-[#3a3a4f]`
+  - Action : `scrollIntoView({ behavior: 'smooth' })`
+
+📱 **Responsive & accessibilité** :
+- Grille adaptative, sidebar collapsable sur mobile
+- Support RTL et internationalisation
+- Contraste élevé, navigation clavier
+
+🎯 **Objectif final** :
+Créer une interface **fluide, élégante, ultra-minimaliste**, où chaque élément est lisible, utile, et émotionnellement cohérent. Le tout doit être prêt pour une intégration React + Tailwind v4, avec composants modulaires, SVG visibles, scroll-to-reply intégré, et animations premium.

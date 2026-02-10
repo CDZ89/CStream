@@ -1,0 +1,192 @@
+### Optimisation globale de CStream avec Supabase auth déjà en place
+
+Tu as déjà l’auth avec Supabase. On optimise maintenant les imports, la lecture vidéo, la base de données, le réseau et le front pour obtenir un site très rapide et stable.
+
+---
+
+## Pipeline vidéo et importations stables
+
+- **Proxy vidéo contrôlé:**  
+  - Crée une API qui reçoit une URL et renvoie une source compatible.  
+  - Ajoute headers CORS, cache, et validation de format.  
+  - Évite les appels directs depuis le client pour réduire les blocages.
+
+- **Formats adaptatifs (priorité HLS/DASH):**  
+  - **HLS (.m3u8)** ou **DASH (.mpd)** pour résilience et bitrate adaptatif.  
+  - Fallback MP4 si nécessaire, mais limite les très gros fichiers.
+
+- **Validation et normalisation des URLs:**  
+  - Vérifie accessibilité (HEAD), type MIME, longueur du contenu.  
+  - Refuse les sources avec CORS strict ou exige passage par le proxy.
+
+- **File d’attente et retry côté API:**  
+  - **Timeout:** 10–20 s par source.  
+  - **Retry:** 2–3 tentatives avec backoff exponentiel.  
+  - **Fallback:** bascule sur source alternative si échec.
+
+---
+
+## Supabase: DB, storage et edge
+
+- **Indexation ciblée Postgres:**  
+  - Indexe les colonnes de filtre et de tri (ex: title, created_at, popularity).  
+  - Ajoute index composites pour les requêtes fréquentes (ex: category + created_at).
+
+- **Policies RLS minimales et rapides:**  
+  - Simplifie les règles à des checks concis (user_id = auth.uid()).  
+  - Pré-filtres côté RPC pour éviter surcoût de multiples tables.
+
+- **RPC (functions Postgres) pour requêtes complexes:**  
+  - Centralise le tri/pagination dans des fonctions SQL.  
+  - Réduit le nombre d’allers-retours client.
+
+- **Storage Supabase optimisé:**  
+  - Buckets publics pour images/miniatures avec cache long (immutable URLs).  
+  - Buckets privés pour vidéos, signés à la demande via Edge Functions.
+
+- **Edge Functions pour latence minimale:**  
+  - Génère des URLs signées (exp courte 1–5 min).  
+  - Place la logique d’accès au plus proche de l’utilisateur.
+
+---
+
+## Caching, CDN et réseau
+
+- **CDN devant les assets:**  
+  - Cloudflare ou équivalent pour JS/CSS/images.  
+  - Active Brotli + cache agressif sur assets versionnés.
+
+- **Cache API multi-niveau:**  
+  - **Client:** SWR/React Query avec stale-while-revalidate.  
+  - **Serveur:** Redis/KeyDB pour listes populaires et page d’accueil.  
+  - **HTTP:** ETag/Last-Modified pour GET idempotents.
+
+- **Rate limiting intelligent:**  
+  - Limite par IP + user pour endpoints “import”.  
+  - Protège contre bursts tout en autorisant pics contrôlés.
+
+- **CORS strict mais permissif pour ton domaine:**  
+  - Autorise uniquement ton domaine, méthodes GET/HEAD, et credentials si nécessaire.  
+  - Pré-vol (OPTIONS) cache long sur CDN.
+
+---
+
+## Front-end performance
+
+- **Chargement progressif:**  
+  - **Lazy loading** des listes (infinite scroll).  
+  - **Skeletons** pour perception de vitesse.  
+  - **Prefetch** des métadonnées de la prochaine page.
+
+- **Bundle léger:**  
+  - Code splitting + tree shaking.  
+  - Désactive polyfills inutiles, minifie CSS/JS, purge CSS.
+
+- **Lecteur vidéo robuste:**  
+  - Utilise Shaka Player ou Video.js avec HLS/DASH.  
+  - Active ABR, buffer ciblé (10–20 s), et reconnection auto.
+
+- **Préchargement ciblé:**  
+  - Preload uniquement les posters et les premières secondes des sources HLS.  
+  - Evite le préchargement des gros médias sur 3G/4G.
+
+---
+
+## OAuth et sessions rapides (avec Supabase auth)
+
+- **JWT courts + refresh silencieux:**  
+  - Access token 5–15 min, refresh 7–30 jours.  
+  - Renouvelle en arrière-plan sans bloquer l’UI.
+
+- **Session au bord (edge):**  
+  - Vérification des tokens via Edge Functions pour diminuer la latence.  
+  - Met en cache les claims de l’utilisateur 30–60 s.
+
+- **Limitation des redirections:**  
+  - Utilise PKCE/OIDC natif Supabase.  
+  - Evite recharges complètes de page, garde le flow SPA.
+
+---
+
+## Observabilité et résilience
+
+- **Monitoring complet:**  
+  - Sentry/LogRocket pour erreurs front.  
+  - Supabase logs + OpenTelemetry côté API.  
+  - Alertes sur latence, taux d’erreur, et débit.
+
+- **Health checks et circuit breaker:**  
+  - Coupe temporairement les endpoints instables pour protéger l’ensemble.  
+  - Fallback sur contenus mis en cache.
+
+- **Tests automatiques CI/CD:**  
+  - Unitaires (lecteur/adaptateurs), e2e (import → lecture).  
+  - Preview builds pour valider performance avant prod.
+
+---
+
+## Modèles d’implémentation rapides
+
+#### Proxy vidéo minimal (Node/Express)
+```js
+import express from 'express';
+import fetch from 'node-fetch';
+
+const app = express();
+
+app.get('/proxy', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'missing url' });
+
+  try {
+    const head = await fetch(url, { method: 'HEAD', timeout: 15000 });
+    if (!head.ok) return res.status(502).json({ error: 'source not reachable' });
+
+    const ct = head.headers.get('content-type') || '';
+    const hls = ct.includes('application/vnd.apple.mpegurl') || url.endsWith('.m3u8');
+    const dash = ct.includes('application/dash+xml') || url.endsWith('.mpd');
+    const mp4 = ct.includes('video/mp4') || url.endsWith('.mp4');
+
+    if (!(hls || dash || mp4)) return res.status(415).json({ error: 'unsupported format' });
+
+    res.set({
+      'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+      'Access-Control-Allow-Origin': 'https://ton-domaine.com'
+    });
+    res.json({ source: url, type: hls ? 'hls' : dash ? 'dash' : 'mp4' });
+  } catch (e) {
+    res.status(504).json({ error: 'timeout' });
+  }
+});
+
+app.listen(3001);
+```
+
+#### URLs signées Storage (Supabase Edge Function, Deno)
+```ts
+import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+export default async (req: Request) => {
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const { path } = await req.json();
+  const { data, error } = await supabase.storage.from('videos').createSignedUrl(path, 300);
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+  return new Response(JSON.stringify({ url: data.signedUrl }), { headers: { 'Content-Type': 'application/json' } });
+};
+```
+
+---
+
+## Checklist d’exécution
+
+- **DB Supabase:** index, RPC, RLS simples.  
+- **Storage:** buckets privés + URLs signées, images publiques cachées via CDN.  
+- **Edge Functions:** auth/permissions + génération d’URLs signées.  
+- **API proxy:** validation format, cache, retry/backoff.  
+- **CDN:** Brotli, cache long sur assets, CORS contrôlé.  
+- **Front:** lazy loading, ABR, minification, split bundles.  
+- **Auth:** refresh silencieux, vérif edge, pas de redirections lourdes.  
+- **Observabilité:** Sentry + logs supabase + alertes perf.  
+- **CI/CD:** tests, preview, monitoring post-déploiement.
+
+Si tu me dis ta stack front (React/Next/Vue) et ton hébergeur (Vercel/Netlify/Cloudflare), je te donne des réglages précis et des snippets supplémentaires pour gagner encore en latence et stabilité.

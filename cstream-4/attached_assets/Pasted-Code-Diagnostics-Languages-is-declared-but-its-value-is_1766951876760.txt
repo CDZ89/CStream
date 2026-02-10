@@ -1,0 +1,73 @@
+Code Diagnostics
+'Languages' is declared but its value is never read.
+(typescript)
+Ln 12, Col 73
+'LayoutGrid' is declared but its value is never read.
+(typescript)
+Ln 12, Col 189
+'Plus' is declared but its value is never read.
+(typescript)
+Ln 12, Col 207
+'X' is declared but its value is never read.
+(typescript)
+Ln 12, Col 213
+'Eye' is declared but its value is never read.
+(typescript)
+Ln 12, Col 216
+'AnimatePresence' is declared but its value is never read.
+(typescript)
+Ln 15, Col 18
+'CreatorTestPanel' is declared but its value is never read.
+(typescript)
+Ln 39, Col 7
+'isCreator' is declared but its value is never read.
+(typescript)
+Ln 39, Col 27
+'role' is declared but its value is never read.
+(typescript)
+Ln 189, Col 17
+'loadFont' is declared but its value is never read.
+(typescript)
+Ln 196, Col 59
+'customLanguages' is declared but its value is never read.
+(typescript)
+Ln 197, Col 9
+'betaMode' is declared but its value is never read.
+(typescript)
+Ln 198, Col 9
+'badgeStyle' is declared but its value is never read.
+(typescript)
+Ln 214, Col 9
+'await' has no effect on the type of this expression.
+(typescript)
+Ln 221, Col 5
+'handleBadgeStyleChange' is declared but its value is never read.
+(typescript)
+Ln 459, Col 9
+Argument of type '"settings.account"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 627, Col 22
+Argument of type '"settings.manageAccount"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 630, Col 22
+Argument of type '"settings.browser"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 647, Col 82
+Argument of type '"settings.theme"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 719, Col 76
+Argument of type '"settings.selectLanguage"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 899, Col 74
+Argument of type '"common.saving"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 1077, Col 22
+Argument of type '"settings.saveAllSettings"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 1082, Col 22
+Argument of type '"settings.deleteAccountWarning"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 1109, Col 18
+Argument of type '"settings.deleteAccountConfirm"' is not assignable to parameter of type 'TranslationKey'.
+(typescript)
+Ln 1114, Col 18

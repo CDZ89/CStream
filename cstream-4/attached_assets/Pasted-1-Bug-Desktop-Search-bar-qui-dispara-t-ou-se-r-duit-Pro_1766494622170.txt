@@ -1,0 +1,85 @@
+1. Bug Desktop : Search bar qui disparaît ou se réduit
+🔍 Problème :
+La barre de recherche devient trop petite ou invisible quand on tape.
+
+Probable conflit entre flex, overflow, ou une animation mal gérée.
+
+✅ Solution :
+Assure-toi que le composant de recherche a une largeur fixe ou responsive bien définie :
+
+tsx
+<input
+  type="text"
+  className="w-full max-w-md px-4 py-2 text-white bg-neutral-900 border border-neutral-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+/>
+🧠 Astuce :
+Évite overflow-hidden sur les parents.
+
+Vérifie que le parent de la search bar n’a pas de flex-shrink ou min-width: 0.
+
+📱 2. Résultats invisibles sur mobile
+🔍 Problème :
+Les résultats sont générés mais ne s’affichent pas.
+
+Souvent causé par z-index, position, ou overflow sur le conteneur.
+
+✅ Solution :
+Voici un wrapper pour les résultats :
+
+tsx
+<div className="absolute top-full left-0 w-full bg-neutral-800 z-50 max-h-[60vh] overflow-y-auto shadow-lg rounded-b-md">
+  {results.map((item) => (
+    <div key={item.id} className="p-4 border-b border-neutral-700 text-white hover:bg-neutral-700">
+      {item.title}
+    </div>
+  ))}
+</div>
+🧠 Astuce :
+Le parent de la search bar doit avoir relative.
+
+Le conteneur des résultats doit être absolute avec z-50 ou plus.
+
+Teste sur Safari mobile : parfois overflow-y-auto est ignoré sans -webkit-overflow-scrolling: touch.
+
+🎨 3. Thèmes dark et light complets
+✅ Tailwind Tokens dans tailwind.config.js :
+js
+theme: {
+  extend: {
+    colors: {
+      light: {
+        bg: '#f9f9f9',
+        text: '#1a1a1a',
+        card: '#ffffff',
+        border: '#e2e2e2',
+      },
+      dark: {
+        bg: '#0f0f0f',
+        text: '#f1f1f1',
+        card: '#1a1a1a',
+        border: '#333333',
+      },
+    },
+  },
+},
+✅ Composants avec switch de thème :
+tsx
+<div className={`${isDark ? 'bg-dark-bg text-dark-text' : 'bg-light-bg text-light-text'} transition-colors duration-300`}>
+  {/* contenu */}
+</div>
+🧠 Astuce :
+Utilise useEffect pour détecter prefers-color-scheme.
+
+Ajoute un toggle dans le header avec localStorage pour mémoriser le choix.
+
+🛡️ 4. Stabilité et anti-bug
+Checklist :
+✅ overflow-x-hidden sur body
+
+✅ min-w-0 sur tous les flex enfants
+
+✅ z-index bien hiérarchisé : navbar (z-40), modales (z-50), dropdowns (z-30)
+
+✅ transition-all + duration-300 pour éviter les flashs
+
+✅ scroll-behavior: smooth dans html

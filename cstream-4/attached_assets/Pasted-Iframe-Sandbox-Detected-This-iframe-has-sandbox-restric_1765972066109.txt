@@ -1,0 +1,31 @@
+Iframe Sandbox Detected This iframe has sandbox restrictions that prevent proper functionality. Technical Details: The iframe element has sandbox attribute restrictions that block script execution and form submissions. This prevents the video player from functioning correctly.
+Le message que tu vois est très clair : l’iframe que tu essaies de charger est protégée par l’attribut sandbox.
+
+🔒 Qu’est-ce que ça veut dire ?
+L’attribut sandbox dans une balise <iframe> impose des restrictions de sécurité.
+
+Ces restrictions peuvent bloquer l’exécution de scripts, empêcher les formulaires de fonctionner, ou interdire certaines actions comme l’ouverture de pop-ups.
+
+Résultat : le lecteur vidéo intégré ne peut pas fonctionner correctement, même si le contenu est disponible sur le site source.
+
+⚙️ Causes possibles
+Le site qui fournit l’iframe (ex. frembed.pro) a volontairement ajouté sandbox pour limiter les abus.
+
+Le site hôte (celui où tu consultes la vidéo) a configuré l’iframe avec sandbox pour des raisons de sécurité.
+
+Certains navigateurs ou extensions renforcent ces restrictions.
+
+🛠️ Solutions / pistes
+Accéder directement au site source (ouvrir la vidéo sur frembed.pro ou son miroir) plutôt que via l’iframe.
+
+Modifier le code de l’iframe (si tu es développeur du site) en ajustant l’attribut sandbox. Exemple :
+
+html
+<iframe src="https://frembed.pro/..." sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+Cela autorise les scripts, formulaires et contenu du même domaine.
+
+Tester dans un autre navigateur ou désactiver les extensions de sécurité pour vérifier si le problème vient d’un blocage local.
+
+👉 En résumé, ce n’est pas une erreur de ton navigateur mais une restriction volontaire. Si tu es simple utilisateur, tu ne peux pas contourner ça directement ; il faut passer par le site source. Si tu es développeur, tu peux ajuster l’attribut sandbox pour donner plus de permissions.
+
+Veux-tu que je t’explique quelles options exactes de sandbox existent et ce qu’elles permettent ou bloquent ?

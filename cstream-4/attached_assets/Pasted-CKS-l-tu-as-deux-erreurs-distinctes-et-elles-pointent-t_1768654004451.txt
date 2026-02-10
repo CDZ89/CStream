@@ -1,0 +1,155 @@
+CKS, là tu as **deux erreurs distinctes**, et elles pointent toutes vers **un seul problème majeur** dans ton fichier `Agent.tsx`.
+
+Je vais te l’expliquer clairement, sans tourner autour du pot.
+
+---
+
+# 🔥 **ERREUR 1 — “Unexpected token… Expected '</', got '<eof>'”**
+👉 Ça veut dire :  
+**Ton composant React n’est pas correctement fermé.**
+
+Concrètement :
+
+- soit tu as **oublié une `}`**
+- soit tu as **oublié un `</div>` ou `</main>`**
+- soit tu as **coupé ton JSX trop tôt**
+- soit tu as **du code après la fin du composant**
+
+L’erreur pointe ici :
+
+```
+722 │ }
+```
+
+Donc ton composant se termine, mais **React attend encore quelque chose** → ton JSX n’est pas complet.
+
+---
+
+# 🔥 **ERREUR 2 — “body { … } This is the expression part of an expression statement”**
+👉 Ça, c’est encore plus clair :
+
+Tu as mis **du CSS brut** dans ton fichier `.tsx` **en dehors d’un styled-component, d’un <style>, ou d’un string**.
+
+Exemple de ce qui cause l’erreur :
+
+```tsx
+body {
+  margin: 0;
+  background: #0a0a0f;
+}
+```
+
+Dans un fichier `.tsx`, ça provoque **100 % d’erreur**, car React ne comprend pas du CSS placé comme ça.
+
+Et Vite te le confirme :
+
+```
+id: '/src/pages/Agent.tsx?html-proxy&direct&index=0.css'
+```
+
+Ça veut dire que ton fichier `.tsx` contient **du CSS injecté n’importe où**.
+
+---
+
+# 🎯 **Conclusion : ton fichier Agent.tsx est cassé à cause de :**
+### ✔ du CSS placé au mauvais endroit  
+### ✔ une balise JSX ou une accolade manquante  
+### ✔ un composant qui ne se ferme pas correctement
+
+---
+
+# 🧠 **Ce que tu dois faire maintenant**
+Je te donne la checklist exacte pour réparer :
+
+---
+
+## ✅ 1. Trouve le CSS mal placé
+Dans `Agent.tsx`, cherche un bloc comme :
+
+```tsx
+body {
+  ...
+}
+```
+
+ou :
+
+```tsx
+.initial-loader {
+  ...
+}
+```
+
+ou :
+
+```tsx
+@keyframes spin {
+  ...
+}
+```
+
+➡️ **Supprime-le**  
+OU  
+➡️ **Déplace-le dans un fichier `.css`**  
+OU  
+➡️ **Mets-le dans un template string :**
+
+```tsx
+<style>
+  body {
+    margin: 0;
+  }
+</style>
+```
+
+---
+
+## ✅ 2. Vérifie la fin du composant
+Ton composant doit se terminer comme ceci :
+
+```tsx
+return (
+  <div>
+    ...
+  </div>
+);
+}
+
+export default Agent;
+```
+
+Si tu as un truc comme :
+
+```tsx
+return (
+  <div>
+    ...
+```
+
+➡️ Il manque `</div>` ou `);`
+
+---
+
+## ✅ 3. Vérifie les blocs JSX
+Un simple oubli comme :
+
+```tsx
+{condition && (
+  <div>
+    <span>Test</span>
+```
+
+➡️ manque `</div>)`
+
+---
+
+# 🧨 **Tu veux que je te répare le fichier automatiquement ?**
+Envoie-moi **le contenu complet de `Agent.tsx`**, je te :
+
+- détecte l’erreur exacte  
+- corrige tout  
+- nettoie le CSS  
+- restructure proprement  
+- te renvoie un fichier **100 % fonctionnel, propre, optimisé, sans erreur Vite/React**
+
+Tu vas gagner 30 minutes minimum.

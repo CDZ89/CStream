@@ -1,0 +1,57 @@
+Introduction
+The AnimeSchedule API is a RESTful API that can programatically allow a developer to access or change data at specific URLs called endpoints. By reading this documentation you will, hopefully, have a better understanding of how to utilize the API.
+
+It is mandatory that you have an existing AnimeSchedule.net account and have created an Application in your account setting's API tab.
+
+It is recommended that you have a base knowledge of how a RESTful API works and what JSON and data types are.
+
+You will notice that there are other tabs on this page that you can go to. Some of them are for the endpoints you may want to access (e.g. Anime.) In them, in addition to the endpoints themselves, you will also see OBJ fields. They represent the objects an endpoint may return or require and should be consulted whenever needed for extra information.
+
+To see what the rate limits are and how they work, please check the Rate Limits tab.
+
+Endpoints
+There are two types of endpoints: public and private.
+
+Public endpoints are for internal use only and as such are not documented in any way, have a far less forgiving rate limit and may have very different behavior or responses than the private endpoints.
+
+Private endpoints, on the other hand, are the ones for whom this documentation applies. They are always linked to an application that you've created in your AnimeSchedule account settings. You should be using the private endpoints pretty much always.
+
+The way to separate between public and private endpoints is quite simple: whether your request contains a header Authorization Bearer token. You get this token when you create your AnimeSchedule application and/or from an OAuth2 authorized user. It is unique for every application/user. You must use that in every request you make to the API.
+
+Responses and Requests
+Nearly all responses will return a JSON response. The JSON field names will nearly always be in the lower camelCase format (e.g. "exampleField".) In a lot of the cases if the value is null, the entire field will be ommited. However this is not guaranteed (as is the case with datetime objects) so validation on your end is recommended.
+
+The response format for datetime objects is always in the ISO 8601 international standard. The null value is 0001-01-01T00:00:00Z. The times are always in UTC by default.
+
+Sometimes you will have a field named ImageVersionRoute. This field represents the URL slug of an image in the AnimeSchedule CDN of the target object (e.g. an Anime.)
+
+The base URL for that is "https://img.animeschedule.net/production/assets/public/img/". You can append the ImageVersionRoute to the end of this URL to get the full functional image link.
+
+In GET requests you may have optional parameters for extra granularity. These are always URL query values.
+
+In POST/PUT requests the values you send should be in the JSON format unless otherwise stated in the endpoint's documentation.
+
+OAuth2
+Endpoints which access and change user data require the user to give his consent. This happens through the use of OAuth2 where after the user has given his consent you will receive a token and a refresh token for that user specifically.
+
+The only flow supported is the authorization code flow. PKCE is supported and strongly recommended for security reasons.
+
+Ensure that when you created your application that you have specified a valid redirect URI and scopes.
+
+OAuth2 tokens only work with OAuth2 endpoints. For non-OAuth2 endpoints use an application token.
+
+How to do an OAuth2 flow is outside of the scope of this documentation.
+
+https://animeschedule.net/api/v3/oauth2/authorize to get an authorize token. The state parameter is mandatory.
+https://animeschedule.net/api/v3/oauth2/token to exchange an authorize token for an access and refresh token.
+https://animeschedule.net/api/v3/oauth2/revoke to revoke an access token.
+API Versions
+The API is separated into multiple versions. They are indicated by the letter 'v' following a number. Example: v3.
+
+Each version has significant differences. This is to the point that there are breaking changes in their behavior or underlying logic.
+
+V1 and v2 are the initial undocumented internal API versions which are not meant for public developer use. Only starting v3 has the API available to developers.
+
+v1 - Discontinued
+v2 - Discontinued
+v3 - Active Stable

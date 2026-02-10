@@ -1,0 +1,68 @@
+Je comprends très bien ton souci, Chems : tu veux garder ton architecture telle quelle (ne pas toucher au `sandbox`), mais éviter que certains lecteurs embarqués renvoient vers des pages de pub ou des redirections intempestives.  
+
+👉 La clé, c’est que tu ne peux pas contrôler directement ce qui se passe **à l’intérieur** de l’iframe (c’est isolé par design). Par contre, tu peux intercepter et bloquer les comportements **autour** de l’iframe.
+
+---
+
+### 🛡️ Stratégies pour bloquer les pubs/redirections sans toucher au `sandbox`
+
+1. **Intercepter les ouvertures de nouvelles fenêtres**  
+   - Beaucoup de players essaient de lancer `window.open` ou des redirections via liens.  
+   - Tu peux neutraliser ça côté parent :
+     ```js
+     // Bloque toute tentative d'ouverture de popup
+     window.open = function() {
+       console.warn("Popup bloquée");
+       return null;
+     };
+     ```
+
+2. **Utiliser l’attribut `referrerpolicy` et `rel="noopener noreferrer"`**  
+   - Si tu as des liens autour du player, ajoute :
+     ```html
+     <a href="..." target="_blank" rel="noopener noreferrer">Lien</a>
+     ```
+   - Ça empêche la page cible de manipuler ton contexte.
+
+3. **Content Security Policy (CSP)** côté serveur  
+   - Tu peux définir une CSP qui bloque les scripts ou redirections externes non désirées :
+     ```http
+     Content-Security-Policy: default-src 'self'; frame-src trustedplayers.com; script-src 'self'
+     ```
+   - Ça limite ce que ton propre site accepte comme ressources.
+
+4. **Overlay anti‑clickjacking**  
+   - Mets un calque transparent au-dessus du player qui capture les clics et ne laisse passer que ceux que tu veux :
+     ```css
+     .iframe-wrapper {
+       position: relative;
+     }
+     .iframe-overlay {
+       position: absolute;
+       top:0; left:0; right:0; bottom:0;
+       background: transparent;
+     }
+     ```
+   - Tu peux ensuite activer/désactiver l’overlay selon l’action (ex. bouton “Lire”).
+
+5. **Proxy / wrapper côté serveur**  
+   - Tu peux servir le flux vidéo via ton propre backend (proxy) et filtrer les redirections/publicités avant de les renvoyer au client.  
+   - Attention : ça demande de gérer les droits et la sécurité.
+
+---
+
+### ⚠️ Ce que tu ne peux pas bloquer
+- Si le lecteur distant est conçu pour forcer une redirection (pub obligatoire), tu ne peux pas l’empêcher depuis ton iframe.  
+- Les headers comme `X-Frame-Options` ou `CSP frame-ancestors` sont imposés par le serveur distant et restent bloquants.
+
+---
+
+### 🎯 Recommandation pour ton multi‑lecteur
+- **Ne touche pas au sandbox** si tu veux le garder.  
+- **Ajoute une couche de protection parent** (overlay, interception de `window.open`, CSP).  
+- **Priorise les sources fiables** (Videasy, VidKing) qui ne balancent pas de pubs forcées.  
+- **Logge les comportements suspects** (tentatives de redirection) pour blacklister les sources trop agressives.
+
+---
+
+Tu veux que je te prépare un **snippet complet SafeIframeWrapper** qui intègre directement ces protections (overlay anti‑pub + interception des popups/redirections) pour que tu puisses le brancher dans ton architecture multi‑sources ?

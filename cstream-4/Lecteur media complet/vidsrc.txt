@@ -1,0 +1,136 @@
+vidsrc 
+Discord
+⚡
+Premium Streaming API
+Video Streaming API
+With MINIMAL Ads
+We offer free streaming links for movies and episodes that can be
+effortlessly integrated into your website through our embed links, API
+
+99.9%
+Uptime
+4 APIs
+Available
+Fast
+Streaming
+Try It Live
+Test our streaming APIs with real-time examples
+
+533535
+https://vidsrc.wtf/api/1/movie/?id=533535&color=e01621
+
+Select API & Type
+Choose your preferred streaming configuration
+
+API 1
+MULTI SERVER
+
+Movie
+
+TV Series
+API 2
+MULTI LANGUAGE
+
+Movie
+
+TV Series
+API 3
+MULTI EMBEDS
+
+Movie
+
+TV Series
+API 4
+PREMIUM EMBEDS
+
+Movie
+
+TV Series
+Deliver an optimized User Experience
+There are plenty of essential features optimized to provide the best user experience.
+
+Auto Update
+Links are automatically updated with new or better quality as soon as they are available online.
+Responsive
+The player is responsive and can work on every Desktop, Mobile, Tablet without problem.
+High Quality
+The quality of the links is the latest available, mostly are 1080p.
+Fast Streaming Servers
+The player includes a list of fastest streaming servers, users can easily optional.
+API Documentation
+Detailed representation of the API endpoints for Vidsrc includes comprehensive information regarding the available methods, request formats, required parameters and optional parameters.
+NOTE: ONLY TMDB ID WILL WORK
+https://vidsrc.wtf/api/1/movie/?id={tmdb_id}&color={hexcolor}
+https://vidsrc.wtf/api/1/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}
+https://vidsrc.wtf/api/2/movie/?id={tmdb_id}&color={hexcolor}
+https://vidsrc.wtf/api/2/tv/?id={tmdb_id}&s={season_number}&e={episode_number}&color={hexcolor}
+https://vidsrc.wtf/api/3/movie/?id={tmdb_id}
+https://vidsrc.wtf/api/3/tv/?id={tmdb_id}&s={season_number}&e={episode_number}
+https://vidsrc.wtf/api/4/movie/?id={tmdb_id}
+https://vidsrc.wtf/api/4/tv/?id={tmdb_id}&s={season_number}&e={episode_number}
+Watch Progress Documentation
+Track your users' watch progress across movies and TV shows. This feature enables "Continue Watching" functionality on your website.
+1. Add Event Listener
+Add this script where your iframe is located. For React/Next.js applications, place it in a useEffect hook.
+
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== "https://www.vidsrc.wtf") return;
+  if (event.data?.type === "MEDIA_DATA") {
+    const mediaData = event.data.data;
+    localStorage.setItem("vidsrcwtf-Progress", JSON.stringify(mediaData));
+  }
+});
+          
+2. Stored Data Structure
+The data is stored in localStorage and contains:
+
+Movie show details (title, poster, etc.)
+Watch progress (time watched, duration)
+Last watched episode for TV shows
+Episode-specific progress for shows
+
+{
+  "597": {
+    "id": "597",
+    "type": "movie",
+    "title": "Titanic",
+    "poster_path": "/sCzcYW9h55WcesOqA12cgEr9Exw.jpg",
+    "backdrop_path": "/sCzcYW9h55WcesOqA12cgEr9Exw.jpg",
+    "progress": {
+      "watched": 3706.89533,
+      "duration": 11689.66699999998
+    },
+    "last_updated": 1744442389334
+  },
+  "1399": {
+    "id": "1399",
+    "type": "tv",
+    "title": "Game of Thrones",
+    "poster_path": "/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
+    "backdrop_path": "/zZqpAXxVSBtxV9qPBcscfXBcL2w.jpg",
+    "progress": {
+      "watched": 948.146701,
+      "duration": 3376.211996999974
+    },
+    "last_updated": 1744443112702,
+    "number_of_episodes": 73,
+    "number_of_seasons": 8,
+    "last_season_watched": "1",
+    "last_episode_watched": "9",
+    "show_progress": {
+      "s1e1": {
+        "season": "1",
+        "episode": "1",
+        "progress": {
+          "watched": 0.584535,
+          "duration": 3696.145999999995
+        },
+        "last_updated": 1744442564248
+      }
+    }
+  }
+}
+          
+© 2025 VidSrc.wtf All rights reserved.
+contact@vidsrc.wtf

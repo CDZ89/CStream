@@ -1,0 +1,85 @@
+Voilà, Lucca — ton build est réussi ✅ mais ton déploiement échoue encore parce que **aucun port n’est ouvert rapidement**. L’hébergeur attend que ton application démarre un serveur HTTP sur le port qu’il fournit (via `process.env.PORT`), et ton script `serve` ne le fait pas correctement.
+
+---
+
+## 🔎 Pourquoi ça bloque
+- `vite preview` ou ton script actuel ne démarre pas sur le port imposé par Replit/Vercel/Render.  
+- Le health check attend une réponse sur `/` → rien n’arrive → déploiement échoue.  
+- Ton `start`/`serve` doit lancer un serveur qui écoute **`process.env.PORT`** et renvoie un **200 OK** sur `/`.
+
+---
+
+## ✅ Solution robuste
+
+### 1. Corrige ton `server.js`
+Assure‑toi qu’il ressemble à ça :
+
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Health check rapide
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+```
+
+---
+
+### 2. Mets à jour tes scripts dans `package.json`
+Tu gardes tout, mais tu ajoutes/ajustes :
+
+```json
+"scripts": {
+  "build": "cd project && vite build",
+  "build:dev": "cd project && vite build --mode development",
+  "preview": "cd project && vite preview",
+  "serve": "cd project && node server.js",
+  "prod": "npm run build && npm run serve"
+}
+```
+
+---
+
+### 3. Vérifie `.replit`
+Ton `.replit` doit lancer la commande qui ouvre le port :
+
+```
+run = "npm run serve"
+```
+
+---
+
+### 4. Workflow de déploiement
+- **Build command** → `npm run build`  
+- **Start command** → `npm run serve`  
+- Ton serveur Express démarre sur `process.env.PORT` et répond immédiatement sur `/`.  
+- Le health check passe ✅.
+
+---
+
+👉 En résumé :  
+- Le problème n’est pas le build, mais le **port non ouvert**.  
+- La solution est de lancer un **serveur Express** qui écoute `process.env.PORT` et renvoie un 200 sur `/`.  
+- Configure `.replit` ou ton hébergeur pour utiliser `npm run serve` (pas `dev`, pas `preview`).  
+
+Veux‑tu que je te prépare un **diff exact** (avant/après) de ton `package.json` et `.replit` pour que tu puisses copier‑coller directement et corriger ça sans rien casser ?

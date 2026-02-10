@@ -1,0 +1,894 @@
+# Ultra prompt: build a premium MangaDex viewer (HTML/CSS/JS), local and CodePen-ready
+
+You want a single, self-contained, premium viewer that actually works online (CodePen) and locally. Below you’ll get:
+
+- A clear, human explanation that cuts through noise.
+- Two complete code sets:
+  - Local (no proxy; best performance and reliability).
+  - CodePen-ready (CORS proxy included; works in the browser sandbox).
+- Polished UI with minimalism, depth, and glass-like panels.
+- Robust fetch helpers, quality toggle, language filter, and pagination.
+
+You’re creating an experience, not a demo. Let’s make it feel clean, intentional, and alive.
+
+---
+
+## What blocks CodePen and how we bypass it
+
+- CodePen is a sandbox; MangaDex may refuse cross-origin requests (CORS).
+- Local hosting avoids this; CodePen needs a CORS proxy.
+- We’ll provide both paths, with the exact same UI and logic.
+
+---
+
+## Quick instructions
+
+- If you run locally:
+  - Put files in a folder: index.html, style.css, script.js.
+  - Start a server: `npx serve` or `python -m http.server 8080`.
+- If you run on CodePen:
+  - Use the “CodePen version” (second code set) in a single HTML pane.
+  - Replace the `CORS_PROXY` with your own if needed (public proxies can rate-limit).
+
+---
+
+## Local version (no proxy, best UX)
+
+### index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MangaDex Viewer — Pure HTML/CSS/JS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://api.mangadex.org" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <span>MangaDex Viewer</span>
+    </div>
+    <div class="search">
+      <input id="query" type="text" placeholder="Search manga (e.g., one piece, berserk, black clover)" />
+      <select id="lang">
+        <option value="en">en</option>
+        <option value="fr">fr</option>
+        <option value="es">es</option>
+        <option value="de">de</option>
+        <option value="it">it</option>
+      </select>
+      <button id="searchBtn">Search</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" id="mangaPanel">
+      <div class="panel-head">
+        <h2>Manga results</h2>
+        <div class="panel-actions">
+          <button id="prevManga">Prev</button>
+          <button id="nextManga">Next</button>
+        </div>
+      </div>
+      <div class="status" id="mangaStatus">Type a query and press Search.</div>
+      <div class="list" id="mangaList"></div>
+    </section>
+
+    <section class="panel" id="chapterPanel">
+      <div class="panel-head">
+        <h2>Chapters</h2>
+        <div class="panel-actions">
+          <button id="prevChapter">Prev</button>
+          <button id="nextChapter">Next</button>
+        </div>
+      </div>
+      <div class="row">
+        <span id="selectedMangaName">No manga selected</span>
+      </div>
+      <div class="status" id="chapterStatus">Select a manga to list chapters.</div>
+      <div class="list" id="chapterList"></div>
+    </section>
+  </main>
+
+  <section class="panel viewer-panel">
+    <div class="panel-head">
+      <h2>Viewer</h2>
+      <div class="panel-actions">
+        <button id="qualityToggle" data-mode="full">Quality: Full</button>
+      </div>
+    </div>
+    <div class="row">
+      <span id="selectedChapterName">No chapter selected</span>
+    </div>
+    <div class="viewer">
+      <div class="pages" id="pages"></div>
+      <div class="empty" id="empty">Select a chapter to load pages.</div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>Powered by MangaDex public API — client-side demo</div>
+    <div class="tips">Tip: Serve via localhost for best reliability.</div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+```
+
+### style.css
+
+```css
+:root {
+  --bg: #0b0c10;
+  --bg2: #0f1115;
+  --panel: rgba(255,255,255,0.06);
+  --panel2: rgba(255,255,255,0.03);
+  --text: #eaeef3;
+  --muted: #98a2b3;
+  --accent: #66fcf1;
+  --accent2: #22d3ee;
+  --border: rgba(255,255,255,0.12);
+  --red: #ef4444;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: radial-gradient(1200px 1200px at 15% 0%, #0c1117 0%, #0b0c10 35%, #0f1115 100%);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+}
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: grid; gap: 12px; grid-template-columns: 1fr auto;
+  padding: 12px 16px;
+  backdrop-filter: blur(12px);
+  background: rgba(11,12,16,0.65);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); }
+.brand .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--accent), var(--accent2));
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.search { display: flex; gap: 8px; align-items: center; }
+.search input, .search select {
+  padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel); color: var(--text); outline: none;
+}
+.search button {
+  padding: 10px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: #11161d;
+  color: var(--accent); font-weight: 600; cursor: pointer;
+}
+.search button:hover { border-color: var(--accent); }
+
+.layout {
+  display: grid; grid-template-columns: 360px 1fr; gap: 16px;
+  padding: 16px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+}
+
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  background: var(--panel2);
+}
+.panel-head h2 { margin: 0; font-size: 14px; color: var(--muted); font-weight: 600; }
+.panel-actions { display: flex; gap: 8px; }
+.panel-actions button {
+  padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border);
+  background: #0f141b; color: var(--muted); font-weight: 600; cursor: pointer;
+}
+.panel-actions button:hover { border-color: var(--accent); color: var(--accent); }
+
+.row {
+  display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border);
+}
+.row > span { color: var(--muted); font-size: 12px; }
+
+.status {
+  padding: 8px 12px; color: var(--muted); font-size: 12px;
+}
+
+.list {
+  padding: 8px;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+}
+
+.item {
+  padding: 10px 12px; border-radius: 12px; border: 1px solid transparent;
+  cursor: pointer; transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.item:hover {
+  border-color: var(--border);
+  background: rgba(255,255,255,0.05);
+  transform: translateY(-1px);
+}
+.item strong { display: block; font-size: 14px; }
+.item small { color: var(--muted); display: block; margin-top: 4px; }
+
+.viewer-panel { margin: 0 16px 16px; }
+
+.viewer { padding: 12px; }
+.pages {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.pages img {
+  width: min(100%, 980px);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0f1115;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
+.empty { padding: 24px; color: var(--muted); text-align: center; }
+
+.foot {
+  padding: 12px 16px; border-top: 1px solid var(--border); color: var(--muted);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.tips { font-size: 12px; }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .viewer-panel { margin: 16px; }
+}
+```
+
+### script.js
+
+```javascript
+const el = (id) => document.getElementById(id);
+
+const state = {
+  query: '',
+  lang: 'en',
+  mangaOffset: 0,
+  chapterOffset: 0,
+  selectedManga: null,
+  selectedMangaTitle: '',
+  selectedChapter: null,
+  qualityMode: 'full',
+};
+
+const api = {
+  async searchManga(title, offset = 0) {
+    const url = new URL('https://api.mangadex.org/manga');
+    url.searchParams.set('title', title);
+    url.searchParams.set('limit', '12');
+    url.searchParams.set('offset', String(offset));
+    url.searchParams.set('order[relevance]', 'desc');
+    url.searchParams.set('contentRating[]', 'safe');
+    url.searchParams.set('contentRating[]', 'suggestive');
+    url.searchParams.set('contentRating[]', 'erotica');
+    const res = await fetch(url.toString(), { mode: 'cors', cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+    return res.json();
+  },
+
+  async listChapters(mangaId, lang = 'en', offset = 0) {
+    const url = new URL('https://api.mangadex.org/chapter');
+    url.searchParams.set('manga', mangaId);
+    url.searchParams.set('limit', '50');
+    url.searchParams.set('offset', String(offset));
+    url.searchParams.set('order[chapter]', 'asc');
+    url.searchParams.set('translatedLanguage[]', lang);
+    url.searchParams.set('includeEmptyPages', '0');
+    const res = await fetch(url.toString(), { mode: 'cors', cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`Chapter list failed: ${res.status}`);
+    return res.json();
+  },
+
+  async chapterInfo(chapterId) {
+    const res = await fetch(`https://api.mangadex.org/chapter/${chapterId}`, { mode: 'cors', cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`Chapter info failed: ${res.status}`);
+    return res.json();
+  },
+
+  async atHome(chapterId) {
+    const res = await fetch(`https://api.mangadex.org/at-home/server/${chapterId}`, { mode: 'cors', cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`At-Home failed: ${res.status}`);
+    return res.json();
+  },
+};
+
+function sanitize(str) {
+  return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function renderMangaResults(data) {
+  const list = el('mangaList');
+  list.innerHTML = '';
+  const results = data.data || [];
+  el('mangaStatus').textContent = results.length ? `Found ${results.length} result(s)` : 'No results';
+  results.forEach((manga) => {
+    const titles = manga.attributes?.title || {};
+    const title = titles.en || titles[Object.keys(titles)[0]] || 'Untitled';
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.innerHTML = `<strong>${sanitize(title)}</strong><small>${manga.id}</small>`;
+    item.addEventListener('click', () => selectManga(manga, title));
+    list.appendChild(item);
+  });
+}
+
+async function selectManga(manga, title) {
+  state.selectedManga = manga;
+  state.selectedMangaTitle = title;
+  state.chapterOffset = 0;
+  el('selectedMangaName').textContent = `Selected manga: ${title}`;
+  el('chapterList').innerHTML = '';
+  el('chapterStatus').textContent = 'Loading chapters...';
+  try {
+    const chapters = await api.listChapters(manga.id, state.lang, state.chapterOffset);
+    renderChapters(chapters);
+  } catch (e) {
+    el('chapterStatus').textContent = `Failed to load chapters — ${e.message}`;
+  }
+}
+
+function renderChapters(chapters) {
+  const list = el('chapterList');
+  list.innerHTML = '';
+  const data = chapters.data || [];
+  el('chapterStatus').textContent = data.length ? `Found ${data.length} chapter(s)` : 'No chapters for this language. Try another.';
+  data.forEach((ch) => {
+    const num = ch.attributes?.chapter || ch.attributes?.title || '?';
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.innerHTML = `<strong>Chapter ${sanitize(num)}</strong><small>${ch.id}</small>`;
+    item.addEventListener('click', () => loadChapter(ch));
+    list.appendChild(item);
+  });
+}
+
+async function loadChapter(ch) {
+  state.selectedChapter = ch;
+  const num = ch.attributes?.chapter || ch.attributes?.title || ch.id;
+  el('selectedChapterName').textContent = `Selected chapter: ${num}`;
+  el('empty').style.display = 'none';
+  el('pages').innerHTML = 'Loading pages...';
+
+  try {
+    const atHome = await api.atHome(ch.id);
+    const baseUrl = atHome.baseUrl;
+    const info = await api.chapterInfo(ch.id);
+    const hash = info.data?.attributes?.hash;
+    const filesFull = info.data?.attributes?.data || [];
+    const filesSaver = info.data?.attributes?.dataSaver || [];
+    const files = state.qualityMode === 'full' && filesFull.length ? filesFull : filesSaver;
+    const images = files.map((filename) => ({ url: `${baseUrl}/data/${hash}/${filename}`, name: filename }));
+    renderPages(images);
+  } catch (e) {
+    el('pages').innerHTML = '';
+    el('empty').style.display = 'block';
+    el('empty').textContent = `Failed to load pages — ${e.message}`;
+  }
+}
+
+function renderPages(images) {
+  const container = el('pages');
+  container.innerHTML = '';
+  if (!images.length) {
+    el('empty').style.display = 'block';
+    el('empty').textContent = 'No pages available.';
+    return;
+  }
+  images.forEach((img, idx) => {
+    const image = document.createElement('img');
+    image.loading = 'lazy';
+    image.alt = `Page ${idx + 1}`;
+    image.src = img.url;
+    container.appendChild(image);
+  });
+}
+
+async function onSearch() {
+  const q = el('query').value.trim();
+  const lang = el('lang').value;
+  if (!q) return;
+  state.query = q;
+  state.lang = lang;
+  state.mangaOffset = 0;
+  state.selectedManga = null;
+  state.selectedChapter = null;
+
+  el('mangaStatus').textContent = 'Searching...';
+  el('mangaList').innerHTML = '';
+  el('selectedMangaName').textContent = 'No manga selected';
+  el('chapterStatus').textContent = 'Select a manga to list chapters.';
+  el('chapterList').innerHTML = '';
+  el('pages').innerHTML = '';
+  el('empty').style.display = 'block';
+  el('empty').textContent = 'Select a chapter to load pages.';
+
+  try {
+    const res = await api.searchManga(q, state.mangaOffset);
+    renderMangaResults(res);
+  } catch (e) {
+    el('mangaStatus').textContent = `Search failed — ${e.message}`;
+  }
+}
+
+async function nextMangaPage() {
+  if (!state.query) return;
+  state.mangaOffset += 12;
+  el('mangaStatus').textContent = 'Loading more...';
+  try {
+    const res = await api.searchManga(state.query, state.mangaOffset);
+    renderMangaResults(res);
+  } catch (e) {
+    el('mangaStatus').textContent = `Failed — ${e.message}`;
+  }
+}
+
+async function prevMangaPage() {
+  if (!state.query) return;
+  state.mangaOffset = Math.max(0, state.mangaOffset - 12);
+  el('mangaStatus').textContent = 'Loading previous...';
+  try {
+    const res = await api.searchManga(state.query, state.mangaOffset);
+    renderMangaResults(res);
+  } catch (e) {
+    el('mangaStatus').textContent = `Failed — ${e.message}`;
+  }
+}
+
+async function nextChapterPage() {
+  if (!state.selectedManga) return;
+  state.chapterOffset += 50;
+  el('chapterStatus').textContent = 'Loading more chapters...';
+  try {
+    const chapters = await api.listChapters(state.selectedManga.id, state.lang, state.chapterOffset);
+    renderChapters(chapters);
+  } catch (e) {
+    el('chapterStatus').textContent = `Failed — ${e.message}`;
+  }
+}
+
+async function prevChapterPage() {
+  if (!state.selectedManga) return;
+  state.chapterOffset = Math.max(0, state.chapterOffset - 50);
+  el('chapterStatus').textContent = 'Loading previous chapters...';
+  try {
+    const chapters = await api.listChapters(state.selectedManga.id, state.lang, state.chapterOffset);
+    renderChapters(chapters);
+  } catch (e) {
+    el('chapterStatus').textContent = `Failed — ${e.message}`;
+  }
+}
+
+function toggleQuality() {
+  state.qualityMode = state.qualityMode === 'full' ? 'saver' : 'full';
+  el('qualityToggle').textContent = `Quality: ${state.qualityMode === 'full' ? 'Full' : 'Saver'}`;
+  if (state.selectedChapter) loadChapter(state.selectedChapter);
+}
+
+el('searchBtn').addEventListener('click', onSearch);
+el('query').addEventListener('keydown', (e) => { if (e.key === 'Enter') onSearch(); });
+el('nextManga').addEventListener('click', nextMangaPage);
+el('prevManga').addEventListener('click', prevMangaPage);
+el('nextChapter').addEventListener('click', nextChapterPage);
+el('prevChapter').addEventListener('click', prevChapterPage);
+el('qualityToggle').addEventListener('click', toggleQuality);
+```
+
+---
+
+## CodePen version (CORS proxy included)
+
+Use this when you want it to work inside CodePen. If the public proxy rate-limits, replace `CORS_PROXY` with your own (you can use a simple Cloudflare Worker or small Node server that forwards requests and adds `Access-Control-Allow-Origin: *`).
+
+### Single HTML (paste in CodePen HTML pane)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MangaDex Viewer — CodePen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#0b0c10; --bg2:#0f1115; --panel:rgba(255,255,255,0.06); --panel2:rgba(255,255,255,0.03); --text:#eaeef3; --muted:#98a2b3; --accent:#66fcf1; --accent2:#22d3ee; --border:rgba(255,255,255,0.12); --red:#ef4444; }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 1200px at 15% 0%, #0c1117 0%, #0b0c10 35%, #0f1115 100%); color:var(--text); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    .topbar{position:sticky;top:0;z-index:20;display:grid;gap:12px;grid-template-columns:1fr auto;padding:12px 16px;background:rgba(11,12,16,0.65);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--muted)}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 30% 30%, var(--accent), var(--accent2));box-shadow:0 0 12px var(--accent)}
+    .search{display:flex;gap:8px;align-items:center}
+    .search input,.search select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none}
+    .search button{padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:#11161d;color:var(--accent);font-weight:600;cursor:pointer}
+    .search button:hover{border-color:var(--accent)}
+    .layout{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.25)}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--panel2)}
+    .panel-head h2{margin:0;font-size:14px;color:var(--muted);font-weight:600}
+    .panel-actions{display:flex;gap:8px}
+    .panel-actions button{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#0f141b;color:var(--muted);font-weight:600;cursor:pointer}
+    .panel-actions button:hover{border-color:var(--accent);color:var(--accent)}
+    .row{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border)}
+    .row>span{color:var(--muted);font-size:12px}
+    .status{padding:8px 12px;color:var(--muted);font-size:12px}
+    .list{padding:8px;max-height:calc(100vh - 220px);overflow:auto}
+    .item{padding:10px 12px;border-radius:12px;border:1px solid transparent;cursor:pointer;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+    .item:hover{border-color:var(--border);background:rgba(255,255,255,0.05);transform:translateY(-1px)}
+    .item strong{display:block;font-size:14px}
+    .item small{color:var(--muted);display:block;margin-top:4px}
+    .viewer-panel{margin:0 16px 16px}
+    .viewer{padding:12px}
+    .pages{display:flex;flex-direction:column;align-items:center;gap:16px}
+    .pages img{width:min(100%,980px);border-radius:12px;border:1px solid var(--border);background:#0f1115;box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+    .empty{padding:24px;color:var(--muted);text-align:center}
+    .foot{padding:12px 16px;border-top:1px solid var(--border);color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    .tips{font-size:12px}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.viewer-panel{margin:16px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <span>MangaDex Viewer</span>
+    </div>
+    <div class="search">
+      <input id="query" type="text" placeholder="Search manga (e.g., one piece, berserk, black clover)" />
+      <select id="lang">
+        <option value="en">en</option>
+        <option value="fr">fr</option>
+        <option value="es">es</option>
+        <option value="de">de</option>
+        <option value="it">it</option>
+      </select>
+      <button id="searchBtn">Search</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" id="mangaPanel">
+      <div class="panel-head">
+        <h2>Manga results</h2>
+        <div class="panel-actions">
+          <button id="prevManga">Prev</button>
+          <button id="nextManga">Next</button>
+        </div>
+      </div>
+      <div class="status" id="mangaStatus">Type a query and press Search.</div>
+      <div class="list" id="mangaList"></div>
+    </section>
+
+    <section class="panel" id="chapterPanel">
+      <div class="panel-head">
+        <h2>Chapters</h2>
+        <div class="panel-actions">
+          <button id="prevChapter">Prev</button>
+          <button id="nextChapter">Next</button>
+        </div>
+      </div>
+      <div class="row">
+        <span id="selectedMangaName">No manga selected</span>
+      </div>
+      <div class="status" id="chapterStatus">Select a manga to list chapters.</div>
+      <div class="list" id="chapterList"></div>
+    </section>
+  </main>
+
+  <section class="panel viewer-panel">
+    <div class="panel-head">
+      <h2>Viewer</h2>
+      <div class="panel-actions">
+        <button id="qualityToggle" data-mode="full">Quality: Full</button>
+      </div>
+    </div>
+    <div class="row">
+      <span id="selectedChapterName">No chapter selected</span>
+    </div>
+    <div class="viewer">
+      <div class="pages" id="pages"></div>
+      <div class="empty" id="empty">Select a chapter to load pages.</div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div>Powered by MangaDex public API — client-side demo</div>
+    <div class="tips">CodePen uses a sandbox; we use a CORS proxy to fetch data.</div>
+  </footer>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+
+    // Replace with your own proxy if needed (Cloudflare Worker, Netlify function, etc.)
+    // Example public proxy (may require activation and can rate-limit):
+    // const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+    // Alternative demo proxy (community; might be unstable):
+    // const CORS_PROXY = "https://proxy.cors.sh/";
+    // Safer approach: set up your own proxy endpoint.
+    const CORS_PROXY = "https://proxy.cors.sh/";
+
+    function prox(url) {
+      return CORS_PROXY + url;
+    }
+
+    const state = {
+      query: '',
+      lang: 'en',
+      mangaOffset: 0,
+      chapterOffset: 0,
+      selectedManga: null,
+      selectedMangaTitle: '',
+      selectedChapter: null,
+      qualityMode: 'full',
+    };
+
+    const api = {
+      async searchManga(title, offset = 0) {
+        const url = new URL('https://api.mangadex.org/manga');
+        url.searchParams.set('title', title);
+        url.searchParams.set('limit', '12');
+        url.searchParams.set('offset', String(offset));
+        url.searchParams.set('order[relevance]', 'desc');
+        url.searchParams.set('contentRating[]', 'safe');
+        url.searchParams.set('contentRating[]', 'suggestive');
+        url.searchParams.set('contentRating[]', 'erotica');
+        const res = await fetch(prox(url.toString()), {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json', 'x-cors-api-key': 'temporary-demo-key' }
+        });
+        if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+        return res.json();
+      },
+
+      async listChapters(mangaId, lang = 'en', offset = 0) {
+        const url = new URL('https://api.mangadex.org/chapter');
+        url.searchParams.set('manga', mangaId);
+        url.searchParams.set('limit', '50');
+        url.searchParams.set('offset', String(offset));
+        url.searchParams.set('order[chapter]', 'asc');
+        url.searchParams.set('translatedLanguage[]', lang);
+        url.searchParams.set('includeEmptyPages', '0');
+        const res = await fetch(prox(url.toString()), {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json', 'x-cors-api-key': 'temporary-demo-key' }
+        });
+        if (!res.ok) throw new Error(`Chapter list failed: ${res.status}`);
+        return res.json();
+      },
+
+      async chapterInfo(chapterId) {
+        const res = await fetch(prox(`https://api.mangadex.org/chapter/${chapterId}`), {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json', 'x-cors-api-key': 'temporary-demo-key' }
+        });
+        if (!res.ok) throw new Error(`Chapter info failed: ${res.status}`);
+        return res.json();
+      },
+
+      async atHome(chapterId) {
+        const res = await fetch(prox(`https://api.mangadex.org/at-home/server/${chapterId}`), {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          headers: { 'Accept': 'application/json', 'x-cors-api-key': 'temporary-demo-key' }
+        });
+        if (!res.ok) throw new Error(`At-Home failed: ${res.status}`);
+        return res.json();
+      },
+    };
+
+    function sanitize(str) {
+      return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+
+    function renderMangaResults(data) {
+      const list = el('mangaList');
+      list.innerHTML = '';
+      const results = data.data || [];
+      el('mangaStatus').textContent = results.length ? `Found ${results.length} result(s)` : 'No results';
+      results.forEach((manga) => {
+        const titles = manga.attributes?.title || {};
+        const title = titles.en || titles[Object.keys(titles)[0]] || 'Untitled';
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `<strong>${sanitize(title)}</strong><small>${manga.id}</small>`;
+        item.addEventListener('click', () => selectManga(manga, title));
+        list.appendChild(item);
+      });
+    }
+
+    async function selectManga(manga, title) {
+      state.selectedManga = manga;
+      state.selectedMangaTitle = title;
+      state.chapterOffset = 0;
+      el('selectedMangaName').textContent = `Selected manga: ${title}`;
+      el('chapterList').innerHTML = '';
+      el('chapterStatus').textContent = 'Loading chapters...';
+      try {
+        const chapters = await api.listChapters(manga.id, state.lang, state.chapterOffset);
+        renderChapters(chapters);
+      } catch (e) {
+        el('chapterStatus').textContent = `Failed to load chapters — ${e.message}`;
+      }
+    }
+
+    function renderChapters(chapters) {
+      const list = el('chapterList');
+      list.innerHTML = '';
+      const data = chapters.data || [];
+      el('chapterStatus').textContent = data.length ? `Found ${data.length} chapter(s)` : 'No chapters for this language. Try another.';
+      data.forEach((ch) => {
+        const num = ch.attributes?.chapter || ch.attributes?.title || '?';
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `<strong>Chapter ${sanitize(num)}</strong><small>${ch.id}</small>`;
+        item.addEventListener('click', () => loadChapter(ch));
+        list.appendChild(item);
+      });
+    }
+
+    async function loadChapter(ch) {
+      state.selectedChapter = ch;
+      const num = ch.attributes?.chapter || ch.attributes?.title || ch.id;
+      el('selectedChapterName').textContent = `Selected chapter: ${num}`;
+      el('empty').style.display = 'none';
+      el('pages').innerHTML = 'Loading pages...';
+      try {
+        const atHome = await api.atHome(ch.id);
+        const baseUrl = atHome.baseUrl;
+        const info = await api.chapterInfo(ch.id);
+        const hash = info.data?.attributes?.hash;
+        const filesFull = info.data?.attributes?.data || [];
+        const filesSaver = info.data?.attributes?.dataSaver || [];
+        const files = state.qualityMode === 'full' && filesFull.length ? filesFull : filesSaver;
+        const images = files.map((filename) => ({ url: `${baseUrl}/data/${hash}/${filename}`, name: filename }));
+        renderPages(images);
+      } catch (e) {
+        el('pages').innerHTML = '';
+        el('empty').style.display = 'block';
+        el('empty').textContent = `Failed to load pages — ${e.message}`;
+      }
+    }
+
+    function renderPages(images) {
+      const container = el('pages');
+      container.innerHTML = '';
+      if (!images.length) {
+        el('empty').style.display = 'block';
+        el('empty').textContent = 'No pages available.';
+        return;
+      }
+      images.forEach((img, idx) => {
+        const image = document.createElement('img');
+        image.loading = 'lazy';
+        image.alt = `Page ${idx + 1}`;
+        image.src = img.url;
+        container.appendChild(image);
+      });
+    }
+
+    async function onSearch() {
+      const q = el('query').value.trim();
+      const lang = el('lang').value;
+      if (!q) return;
+      state.query = q;
+      state.lang = lang;
+      state.mangaOffset = 0;
+      state.selectedManga = null;
+      state.selectedChapter = null;
+
+      el('mangaStatus').textContent = 'Searching...';
+      el('mangaList').innerHTML = '';
+      el('selectedMangaName').textContent = 'No manga selected';
+      el('chapterStatus').textContent = 'Select a manga to list chapters.';
+      el('chapterList').innerHTML = '';
+      el('pages').innerHTML = '';
+      el('empty').style.display = 'block';
+      el('empty').textContent = 'Select a chapter to load pages.';
+
+      try {
+        const res = await api.searchManga(q, state.mangaOffset);
+        renderMangaResults(res);
+      } catch (e) {
+        el('mangaStatus').textContent = `Search failed — ${e.message}`;
+      }
+    }
+
+    async function nextMangaPage() {
+      if (!state.query) return;
+      state.mangaOffset += 12;
+      el('mangaStatus').textContent = 'Loading more...';
+      try {
+        const res = await api.searchManga(state.query, state.mangaOffset);
+        renderMangaResults(res);
+      } catch (e) {
+        el('mangaStatus').textContent = `Failed — ${e.message}`;
+      }
+    }
+
+    async function prevMangaPage() {
+      if (!state.query) return;
+      state.mangaOffset = Math.max(0, state.mangaOffset - 12);
+      el('mangaStatus').textContent = 'Loading previous...';
+      try {
+        const res = await api.searchManga(state.query, state.mangaOffset);
+        renderMangaResults(res);
+      } catch (e) {
+        el('mangaStatus').textContent = `Failed — ${e.message}`;
+      }
+    }
+
+    async function nextChapterPage() {
+      if (!state.selectedManga) return;
+      state.chapterOffset += 50;
+      el('chapterStatus').textContent = 'Loading more chapters...';
+      try {
+        const chapters = await api.listChapters(state.selectedManga.id, state.lang, state.chapterOffset);
+        renderChapters(chapters);
+      } catch (e) {
+        el('chapterStatus').textContent = `Failed — ${e.message}`;
+      }
+    }
+
+    async function prevChapterPage() {
+      if (!state.selectedManga) return;
+      state.chapterOffset = Math.max(0, state.chapterOffset - 50);
+      el('chapterStatus').textContent = 'Loading previous chapters...';
+      try {
+        const chapters = await api.listChapters(state.selectedManga.id, state.lang, state.chapterOffset);
+        renderChapters(chapters);
+      } catch (e) {
+        el('chapterStatus').textContent = `Failed — ${e.message}`;
+      }
+    }
+
+    function toggleQuality() {
+      state.qualityMode = state.qualityMode === 'full' ? 'saver' : 'full';
+      el('qualityToggle').textContent = `Quality: ${state.qualityMode === 'full' ? 'Full' : 'Saver'}`;
+      if (state.selectedChapter) loadChapter(state.selectedChapter);
+    }
+
+    el('searchBtn').addEventListener('click', onSearch);
+    el('query').addEventListener('keydown', (e) => { if (e.key === 'Enter') onSearch(); });
+    el('nextManga').addEventListener('click', nextMangaPage);
+    el('prevManga').addEventListener('click', prevMangaPage);
+    el('nextChapter').addEventListener('click', nextChapterPage);
+    el('prevChapter').addEventListener('click', prevChapterPage);
+    el('qualityToggle').addEventListener('click', toggleQuality);
+  </script>
+</body>
+</html>
+```
+
+---
+
+## Optional enhancements (quick add-ons)
+
+- Keyboard navigation: ArrowLeft/ArrowRight to switch pages; PgUp/PgDn for chapters.
+- Prefetch next image: create an Image() for page i+1 when displaying page i.
+- Persist language and query in localStorage.
+- Add “Next/Prev chapter” buttons in the viewer header using the current chapter index.
+
+If you want me to layer those in (without clutter, keeping your premium minimal vibe), say the word and I’ll extend the exact version you’re using.

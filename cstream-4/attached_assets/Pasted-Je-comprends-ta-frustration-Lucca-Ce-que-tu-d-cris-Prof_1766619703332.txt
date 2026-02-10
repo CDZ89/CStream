@@ -1,0 +1,77 @@
+Je comprends ta frustration, Lucca 😤. Ce que tu décris — *“Profil utilisateur non synchronisé”* et l’impossibilité d’envoyer des messages dans les groupes/admin — indique que côté **site/app**, tes flux ne récupèrent pas les bons IDs ou que la synchro entre `profiles` et `auth.users` n’est pas respectée.
+
+---
+
+## 🔎 Pourquoi ça bloque
+- **Ajout d’ami** :  
+  - Ton code utilise probablement `profiles.id` ou un champ local qui n’est pas aligné avec `auth.users.id`.  
+  - Résultat : quand tu insères dans `friendships`, la FK échoue ou ton front détecte que le profil n’est pas synchronisé.
+
+- **Messages dans les groupes/admin** :  
+  - Même problème : `receiver_id` ou `group_id` n’est pas un UUID valide de `auth.users`.  
+  - Ou bien tes policies RLS bloquent car `sender_id ≠ auth.uid()`.
+
+---
+
+## ✅ Ce que tu dois corriger côté **site**
+1. **Toujours utiliser `auth.getUser().user.id` pour l’utilisateur connecté.**  
+   - C’est ton `sender_id` ou `user_id`.
+
+2. **Toujours utiliser `profiles.id` comme identifiant du destinataire.**  
+   - `profiles.id` = `auth.users.id`.  
+   - Ne pas utiliser un champ `user_id` inexistant ou un ID local.
+
+3. **Ajout d’ami (frontend)** :
+   ```ts
+   const { data: meRes } = await supabase.auth.getUser();
+   const senderId = meRes.user.id;
+
+   const { data: profile } = await supabase
+     .from('profiles')
+     .select('id')
+     .eq('username', friendUsername)
+     .single();
+
+   if (!profile?.id) throw new Error('Profil non synchronisé');
+
+   await supabase.from('friendships').insert({
+     user_id: senderId,
+     friend_id: profile.id
+   });
+   ```
+
+4. **Envoi de message (frontend)** :
+   ```ts
+   const { data: meRes } = await supabase.auth.getUser();
+   const senderId = meRes.user.id;
+
+   const { data: profile } = await supabase
+     .from('profiles')
+     .select('id')
+     .eq('username', receiverUsername)
+     .single();
+
+   if (!profile?.id) throw new Error('Profil non synchronisé');
+
+   await supabase.from('messages').insert({
+     sender_id: senderId,
+     receiver_id: profile.id,
+     content: 'Hello group!'
+   });
+   ```
+
+5. **Groupes/admin** :  
+   - Vérifie que tes tables `groups` ou `group_messages` utilisent bien des FKs vers `auth.users(id)` pour les membres/admins.  
+   - Vérifie que tes policies RLS autorisent l’INSERT si `sender_id = auth.uid()`.
+
+---
+
+## 🚀 Plan d’action immédiat
+- **Étape 1** : logge les IDs que tu envoies (`sender_id`, `receiver_id`, `friend_id`) → vérifie qu’ils existent dans `auth.users`.  
+- **Étape 2** : corrige ton code pour utiliser `profiles.id` comme destinataire.  
+- **Étape 3** : teste avec deux comptes réels → ajout d’ami et message doivent passer.  
+- **Étape 4** : si le groupe bloque, inspecte la table `group_messages` et ses policies RLS.
+
+---
+
+👉 Dis-moi : veux-tu que je t’écrive un **snippet complet pour les groupes/admin** (avec la bonne résolution d’IDs et les policies RLS adaptées), comme je l’ai fait pour amis/messages privés ?

@@ -1,0 +1,54 @@
+Je comprends ton souci : tu veux que ton lecteur ou ton iframe **ne soit pas bloqué**, et surtout qu’il **ne force pas l’ouverture dans un nouvel onglet** ni qu’il affiche un “sandbox box” qui limite les actions. Voici les points clés pour éviter ce blocage :
+
+---
+
+## 🔑 1. Supprimer ou configurer correctement `sandbox`
+- Si tu utilises une balise `<iframe>` avec `sandbox`, par défaut elle bloque scripts, formulaires, popups, navigation.
+- **Solution simple** : retirer complètement l’attribut `sandbox` si le contenu est sûr et vient de ton domaine.
+```html
+<iframe src="lecteur.html" width="800" height="600" allow="autoplay; fullscreen"></iframe>
+```
+- **Solution sécurisée** : garder `sandbox` mais ajouter les permissions nécessaires :
+```html
+<iframe 
+  src="lecteur.html" 
+  width="800" 
+  height="600" 
+  sandbox="allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation"
+  allow="autoplay; fullscreen">
+</iframe>
+```
+
+---
+
+## 🔑 2. Éviter l’ouverture dans un nouvel onglet
+- Vérifie que tes liens ou scripts n’utilisent pas `target="_blank"`.
+- Si ton lecteur ou script externe essaie d’ouvrir une pub ou une redirection :
+  - Ajoute `allow-popups-to-escape-sandbox` si tu veux autoriser les popups contrôlés.
+  - Sinon, bloque les appels `window.open` en les neutralisant :
+```js
+window.open = function() {
+  console.warn("Ouverture bloquée");
+  return null;
+};
+```
+
+---
+
+## 🔑 3. Vérifier les en-têtes serveur
+Même sans sandbox, ton iframe peut être bloqué par des en-têtes HTTP :
+- **X-Frame-Options** : ne doit pas être `DENY` ou `SAMEORIGIN` si tu intègres depuis un autre domaine.
+- **Content-Security-Policy (CSP)** : ajoute `frame-ancestors 'self'` pour autoriser ton site à intégrer le lecteur.
+
+---
+
+## 🔑 4. Résultat attendu
+- Ton lecteur s’affiche directement dans la page, **sans boîte sandbox** et **sans ouverture forcée dans un nouvel onglet**.
+- Les actions (lecture, fullscreen, navigation interne) fonctionnent normalement.
+- Tu gardes la sécurité si tu ajoutes uniquement les permissions nécessaires.
+
+---
+
+👉 En résumé : **retire `sandbox` ou configure-le avec les bons flags**, supprime `target="_blank"`, et vérifie les en-têtes serveur. Ainsi ton lecteur ne sera plus bloqué et restera dans la même page.  
+
+Veux-tu que je te prépare un **exemple complet d’iframe configuré pour un lecteur vidéo** (avec autoplay, fullscreen, sans sandbox box ni nouvel onglet) que tu pourras coller directement dans ton code ?

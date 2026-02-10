@@ -1,0 +1,171 @@
+2025-12-20T10:50:34Z info: Deployment: fd87ffc3-65f1-42fa-ac68-cb6e09b9bd6e
+2025-12-20T10:50:34Z info: Build: 65b3a605-f376-41f4-ac40-96681c9e0b82
+2025-12-20T10:50:34Z info: Connecting to builder
+2025-12-20T10:50:34Z info: Builder connected
+2025-12-20T10:50:35Z info: Installing packages
+--> npm install
+
+
+up to date, audited 289 packages in 2s
+
+123 packages are looking for funding
+  run `npm fund` for details
+
+
+found 0 vulnerabilities
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
+
+2025-12-20T10:50:37Z info: Starting Build
+
+> workspace@1.0.0 build
+> cd project && npm run build
+
+
+
+> vite_react_shadcn_ts@0.0.0 build
+> vite build
+
+
+vite v5.4.21 building for production...
+
+transforming...
+
+warn - The class `duration-[8s]` is ambiguous and matches multiple utilities.
+
+warn - If this is content and not a class, replace it with `duration-&lsqb;8s&rsqb;` to silence this warning.
+
+✓ 3435 modules transformed.
+
+rendering chunks...
+
+computing gzip size...
+
+dist/index.html                                5.65 kB │ gzip:   1.91 kB
+
+dist/assets/Home-BZ0AdHTX.css                  0.27 kB │ gzip:   0.14 kB
+
+dist/assets/ContinueWatching-BR3-1lD9.css      6.07 kB │ gzip:   1.48 kB
+
+dist/assets/index-Bd92CG7P.css               285.11 kB │ gzip:  39.18 kB
+
+dist/assets/NotFound-qxS7eLdf.js               0.67 kB │ gzip:   0.40 kB
+dist/assets/badge-b2KTulKg.js                  0.75 kB │ gzip:   0.40 kB
+dist/assets/useMediaLogo-BbTN40nf.js           0.86 kB │ gzip:   0.50 kB
+dist/assets/label-C9xFE5_F.js                  0.95 kB │ gzip:   0.58 kB
+dist/assets/card-C1wC4c4_.js                   1.07 kB │ gzip:   0.42 kB
+dist/assets/separator-DTJw8MDy.js              1.10 kB │ gzip:   0.62 kB
+dist/assets/useCustomLanguages-BRn7CQPt.js     1.61 kB │ gzip:   0.68 kB
+
+dist/assets/Pagination-DvfB4DRs.js             2.27 kB │ gzip:   0.90 kB
+
+dist/assets/Actors-uFZIGr0P.js                 2.92 kB │ gzip:   1.34 kB
+
+dist/assets/useNotifications-CmILhaaO.js       3.18 kB │ gzip:   1.25 kB
+
+dist/assets/tabs-D7wxpbRv.js                   3.30 kB │ gzip:   1.39 kB
+
+dist/assets/ScoreCircle-BQC0L78d.js            3.63 kB │ gzip:   1.62 kB
+
+dist/assets/PersonDetail-BpdGiLPo.js           4.02 kB │ gzip:   1.49 kB
+
+dist/assets/index-BJZ9yYeR.js                  4.15 kB │ gzip:   1.90 kB
+
+dist/assets/PlayerWarningWidget-eH20CRsj.js    5.52 kB │ gzip:   2.28 kB
+dist/assets/friends-B97Lzo3s.js                5.67 kB │ gzip:   1.62 kB
+dist/assets/useWatchHistory-Bnekolas.js        6.67 kB │ gzip:   2.43 kB
+dist/assets/Dashboard-DyMPVqj2.js              6.97 kB │ gzip:   2.19 kB
+dist/assets/Trending-DNGftpH7.js               7.25 kB │ gzip:   2.44 kB
+dist/assets/slider-JUbPwIy5.js                 8.30 kB │ gzip:   3.37 kB
+dist/assets/Contact-DTbu0KVX.js                8.86 kB │ gzip:   3.43 kB
+dist/assets/hostDetector-CZ2yYV16.js           8.99 kB │ gzip:   2.12 kB
+dist/assets/Movies-BEy9Er1M.js                 9.12 kB │ gzip:   2.93 kB
+dist/assets/TV-Bs2_GWZE.js                     9.15 kB │ gzip:   2.95 kB
+
+dist/assets/Anime-C-AE55nE.js                  9.42 kB │ gzip:   3.03 kB
+dist/assets/AddFriend-Dib2mgk8.js              9.74 kB │ gzip:   3.15 kB
+dist/assets/Beta-DFH7qkfJ.js                  10.39 kB │ gzip:   3.20 kB
+dist/assets/Auth-DiOy_jc1.js                  10.60 kB │ gzip:   2.98 kB
+dist/assets/Stats-CJtMO3p9.js                 11.33 kB │ gzip:   3.72 kB
+dist/assets/FAQ-BAdV8mcI.js                   11.66 kB │ gzip:   4.72 kB
+
+dist/assets/scroll-area-CtL2grD7.js           12.55 kB │ gzip:   3.98 kB
+
+dist/assets/MediaGrid---zkyRyW.js             12.72 kB │ gzip:   4.03 kB
+
+dist/assets/Footer-wfJwHYAw.js                14.79 kB │ gzip:   4.73 kB
+
+dist/assets/Creator-BytGIihB.js               14.82 kB │ gzip:   4.60 kB
+
+dist/assets/Sports-BGWG0whX.js                17.53 kB │ gzip:   4.85 kB
+dist/assets/select-DwvTyY-l.js                22.14 kB │ gzip:   7.73 kB
+
+dist/assets/vendor-query-Dk7_7mxx.js          24.00 kB │ gzip:   7.22 kB
+
+dist/assets/Planning-E7jSBb-7.js              25.34 kB │ gzip:   7.05 kB
+dist/assets/WatchPage-Cvpe5OuA.js             25.35 kB │ gzip:   7.14 kB
+
+dist/assets/Profile-CEIA4gQw.js               31.01 kB │ gzip:   7.76 kB
+dist/assets/UniversalPlayer-CMGYHXHy.js       33.11 kB │ gzip:   9.57 kB
+
+dist/assets/dialog-Ce4yIyCw.js                34.56 kB │ gzip:  12.29 kB
+
+dist/assets/Settings-CUVrLDFP.js              36.95 kB │ gzip:   9.00 kB
+
+dist/assets/Agent-CpZaV55_.js                 41.15 kB │ gzip:  11.79 kB
+
+dist/assets/Home-kEKH2BgO.js                  47.98 kB │ gzip:  13.67 kB
+dist/assets/Chat-B4GNy-Dx.js                  49.73 kB │ gzip:  13.54 kB
+dist/assets/MovieDetail-Dkqu-yOP.js           51.59 kB │ gzip:  11.99 kB
+dist/assets/TVDetail-Rk4BqlPb.js              77.11 kB │ gzip:  19.51 kB
+
+dist/assets/Navbar-Y8n_LmO2.js               109.00 kB │ gzip:  37.49 kB
+dist/assets/ContinueWatching-Cr_wR2Q_.js     111.16 kB │ gzip:  32.92 kB
+
+dist/assets/vendor-ui-dicPGWJg.js            149.66 kB │ gzip:  49.53 kB
+
+dist/assets/vendor-markdown-MWyaKfEt.js      156.42 kB │ gzip:  47.06 kB
+
+dist/assets/vendor-react-8FQasqUz.js         162.12 kB │ gzip:  53.03 kB
+dist/assets/vendor-supabase-B22S24K6.js      188.68 kB │ gzip:  49.38 kB
+
+dist/assets/Admin-C1kzjFTI.js                196.32 kB │ gzip:  46.83 kB
+dist/assets/index-mDuk3qR1.js                244.72 kB │ gzip:  78.74 kB
+dist/assets/PieChart-DTZbQl14.js             398.12 kB │ gzip: 107.40 kB
+
+✓ built in 29.26s
+
+2025-12-20T10:51:13Z info: Pushing pid1 binary layer...
+2025-12-20T10:51:14Z info: Pushing hosting layer...
+2025-12-20T10:51:14Z info: Pushing Repl layer...
+2025-12-20T10:51:14Z info: Nix layers for this Repl are uncached.
+2025-12-20T10:51:14Z info: Pushing nix-0 layer...
+2025-12-20T10:51:14Z info: Created hosting layer
+2025-12-20T10:51:15Z info: Created pid1 binary layer
+2025-12-20T10:51:18Z info: Created nix-0 layer
+2025-12-20T10:51:18Z info: uploading image for cached layer
+2025-12-20T10:51:19Z info: pushed cache image manifest
+2025-12-20T10:51:20Z info: pushed cache soci index manifest
+2025-12-20T10:51:20Z info: uploading cached layer
+2025-12-20T10:51:20Z info: successfully uploaded cached layer
+2025-12-20T10:51:58Z info: Created Repl layer
+2025-12-20T10:52:00Z info: Pushed image manifest
+2025-12-20T10:52:01Z info: Pushed soci index manifest
+2025-12-20T10:52:57Z info: Creating Autoscale service
+command finished with error [sh -c npm run serve]: exit status 1
+npm error Missing script: "serve"
+npm error To see a list of scripts, run:
+npm error Missing script: "serve"
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-12-20T10_54_29_297Z-debug-0.log
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-12-20T10_54_30_250Z-debug-0.log
+npm error   npm run
+command finished with error [sh -c npm run serve]: exit status 1
+npm error   npm run
+command finished with error [sh -c npm run serve]: exit status 1
+npm error
+npm error Missing script: "serve"
+crash loop detected

@@ -1,0 +1,426 @@
+# Scraper and tmdb sync for facebim
+
+You want something that just works: scrape all categories on Facebim, dedupe cleanly, match/sync with TMDB, and give you an admin-only place to fix URLs and merge duplicates. The Facebim structure is consistent: home lists new items and links to genre pages; each genre has pagination and item links to individual titles. Below is a robust, production-ready design you can drop into CStream.
+
+> Quick note: treat scraping as metadata-only and avoid ingesting infringing streams. Use TMDB for posters, backdrops, and credits. That keeps you safer while still delivering a complete catalog.
+
+---
+
+## Data model in supabase
+
+Use normalized keys for dedupe and explicit admin override.
+
+```sql
+-- media: one per movie/stand-up/doc
+create table media (
+  id uuid primary key default gen_random_uuid(),
+  tmdb_id int unique,
+  title text not null,
+  original_title text,
+  year int,
+  slug text unique,
+  overview text,
+  runtime int,
+  poster_url text,
+  backdrop_url text,
+  genres text[],          -- ["Action","Comedie",...]
+  source_tags text[],      -- ["facebim"]
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- sources: many per media; track Facebim URLs and status
+create table media_sources (
+  id uuid primary key default gen_random_uuid(),
+  media_id uuid references media(id) on delete cascade,
+  origin text not null,             -- "facebim"
+  url text not null,
+  quality text,                     -- e.g., "HD"
+  language text,                    -- e.g., "FR"
+  is_active boolean default true,
+  last_checked timestamptz,
+  unique (origin, url)
+);
+
+-- admin overrides: lock fields against auto-sync
+create table admin_overrides (
+  id uuid primary key default gen_random_uuid(),
+  media_id uuid references media(id) on delete cascade,
+  field text not null,              -- e.g., "title", "tmdb_id", "poster_url"
+  value text not null,
+  created_at timestamptz default now()
+);
+
+-- jobs: scraper runs with checkpoints
+create table jobs (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  status text,                      -- "queued","running","done","error"
+  started_at timestamptz,
+  finished_at timestamptz,
+  meta jsonb
+);
+
+-- dedupe map: merge multiple media into a canonical one
+create table media_merges (
+  id uuid primary key default gen_random_uuid(),
+  canonical_media_id uuid references media(id) on delete cascade,
+  duplicate_media_id uuid references media(id) on delete cascade,
+  reason text,
+  created_at timestamptz default now(),
+  unique (canonical_media_id, duplicate_media_id)
+);
+```
+
+---
+
+## Scraper design and extraction
+
+#### Targets and pagination
+
+- **Entry points:** Home for “Derniers ajouts” and genre pages for full coverage.
+- **Genres:** À l’affiche, Animation, Action, Aventure, Comedie, Drame, Fantastique, Horreur, Policier, Science-Fiction, Thriller, Documentaire, Spectacle.
+- **Pagination:** Genre pages use numeric suffixes like /c/facebim/29/0 then /1, /2… Iterate until no items returned.
+
+> Sources: 
+
+#### Node scraper (axios + cheerio + rate-limit + retry)
+
+```ts
+// src/scraper/facebim.ts
+import axios from "axios";
+import * as cheerio from "cheerio";
+import pLimit from "p-limit";
+
+const BASE = "https://facebim.com/2jkls8eyekn4";
+const GENRES = [
+  { name: "À l'affiche", path: "/c/facebim/29" },
+  { name: "Animation", path: "/c/facebim/2" },
+  { name: "Action", path: "/c/facebim/1" },
+  { name: "Aventure", path: "/c/facebim/4" },
+  { name: "Comedie", path: "/c/facebim/6" },
+  { name: "Drame", path: "/c/facebim/7" },
+  { name: "Fantastique", path: "/c/facebim/8" },
+  { name: "Horreur", path: "/c/facebim/9" },
+  { name: "Policier", path: "/c/facebim/10" },
+  { name: "Science-Fiction", path: "/c/facebim/11" },
+  { name: "Thriller", path: "/c/facebim/12" },
+  { name: "Spectacle", path: "/c/facebim/3" },
+  { name: "Documentaire", path: "/c/facebim/26" },
+];
+
+type RawItem = {
+  title: string;
+  year?: number;
+  url: string;
+  quality?: string;
+  genre: string;
+};
+
+async function fetchPage(url: string) {
+  const res = await axios.get(url, { timeout: 15000, headers: { "User-Agent": "CStreamBot/1.0" } });
+  return cheerio.load(res.data);
+}
+
+function parseItems($: cheerio.CheerioAPI, genre: string): RawItem[] {
+  const items: RawItem[] = [];
+  $("a[href*='/b/facebim/']").each((_, el) => {
+    const href = $(el).attr("href")!;
+    const text = $(el).text().trim(); // e.g., "Badh (2025)   *HD *"
+    const titleMatch = text.match(/^(.+?)\s*\((\d{4})\)/) || text.match(/^(.+?)\s*$/);
+    const title = titleMatch ? titleMatch[1].replace(/\s+\*HD\s*\*$/i, "").trim() : text;
+    const year = titleMatch && titleMatch[2] ? Number(titleMatch[2]) : undefined;
+    const quality = /\*HD\*/i.test(text) ? "HD" : undefined;
+    items.push({ title, year, url: href.startsWith("http") ? href : `${BASE}${href.replace(BASE, "")}`, quality, genre });
+  });
+  return items;
+}
+
+async function crawlGenre(genre: { name: string; path: string }, maxPages = 40) {
+  const found: RawItem[] = [];
+  for (let page = 0; page < maxPages; page++) {
+    const url = `${BASE}${genre.path}/${page}`;
+    try {
+      const $ = await fetchPage(url);
+      const items = parseItems($, genre.name);
+      if (items.length === 0) break; // stop on empty page
+      found.push(...items);
+    } catch (e) {
+      // soft fail: continue to next page
+      continue;
+    }
+  }
+  return found;
+}
+
+export async function crawlAll() {
+  const limit = pLimit(3);
+  const batches = await Promise.all(GENRES.map(g => limit(() => crawlGenre(g))));
+  return batches.flat();
+}
+```
+
+- **Resilience:** Per-page try/catch, gentle rate limiting, and stopping on first empty page keeps it fast and stable.
+- **Extraction:** Title, optional year, quality tag, and item URL captured consistently across genres.
+
+> Sources: 
+
+---
+
+## tmdb matching and sync
+
+#### Matching strategy
+
+- **Primary key:** TMDB ID.
+- **Lookup:** Search by normalized title + year; fallback to fuzzy match with country and runtime if needed.
+- **Overrides:** If admin sets tmdb_id in overrides, skip auto-matching for that media.
+
+```ts
+// src/sync/tmdb.ts
+import axios from "axios";
+const TMDB_KEY = process.env.TMDB_KEY;
+
+export type TMDBMovie = {
+  id: number; title: string; original_title: string; release_date?: string;
+  overview?: string; runtime?: number;
+  poster_path?: string; backdrop_path?: string;
+};
+
+function normalizeTitle(t: string) {
+  return t.toLowerCase().replace(/[:!?'’.,]/g, "").replace(/\s+/g, " ").trim();
+}
+
+export async function tmdbSearch(title: string, year?: number): Promise<TMDBMovie | null> {
+  const q = normalizeTitle(title);
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(q)}${year ? `&year=${year}` : ""}&language=fr-FR`;
+  const res = await axios.get(url, { timeout: 10000 });
+  const hit = res.data.results?.[0];
+  if (!hit) return null;
+  // Optionally fetch details for runtime/genres
+  const det = await axios.get(`https://api.themoviedb.org/3/movie/${hit.id}?api_key=${TMDB_KEY}&language=fr-FR`);
+  return det.data;
+}
+
+export function applyTmdbToMedia(m: TMDBMovie) {
+  return {
+    tmdb_id: m.id,
+    title: m.title || m.original_title,
+    original_title: m.original_title,
+    year: m.release_date ? Number(m.release_date.slice(0, 4)) : null,
+    overview: m.overview,
+    runtime: m.runtime || null,
+    poster_url: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
+    backdrop_url: m.backdrop_path ? `https://image.tmdb.org/t/p/w780${m.backdrop_path}` : null,
+  };
+}
+```
+
+#### Dedupe and upsert flow
+
+```ts
+// src/sync/upsert.ts
+import { createClient } from "@supabase/supabase-js";
+import { tmdbSearch, applyTmdbToMedia } from "./tmdb";
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
+
+function mediaKey(title: string, year?: number) {
+  return `${title.toLowerCase().trim()}::${year || ""}`;
+}
+
+export async function upsertFromFacebim(raw: { title: string; year?: number; url: string; quality?: string; genre: string }) {
+  // Check overrides for tmdb_id
+  const { data: overrideMedia } = await supabase
+    .from("media")
+    .select("id, tmdb_id")
+    .eq("title", raw.title)
+    .eq("year", raw.year || null)
+    .limit(1)
+    .maybeSingle();
+
+  let tmdb = null;
+  if (!overrideMedia?.tmdb_id) {
+    tmdb = await tmdbSearch(raw.title, raw.year);
+  } else {
+    // fetch tmdb details by id for refreshed artwork
+    tmdb = await fetchTmdbById(overrideMedia.tmdb_id);
+  }
+
+  // Upsert media
+  const payload = tmdb ? applyTmdbToMedia(tmdb) : {
+    tmdb_id: null,
+    title: raw.title,
+    original_title: null,
+    year: raw.year || null,
+    overview: null,
+    runtime: null,
+    poster_url: null,
+    backdrop_url: null,
+  };
+
+  const { data: mediaRow } = await supabase
+    .from("media")
+    .upsert({ ...payload, source_tags: ["facebim"] }, { onConflict: "tmdb_id" })
+    .select("*")
+    .maybeSingle();
+
+  // Upsert source
+  await supabase
+    .from("media_sources")
+    .upsert({
+      media_id: mediaRow.id,
+      origin: "facebim",
+      url: raw.url,
+      quality: raw.quality || null,
+      language: "FR",
+      is_active: true,
+      last_checked: new Date().toISOString(),
+    }, { onConflict: "origin,url" });
+
+  // Assign genre label
+  const genres = new Set([...(mediaRow.genres || []), raw.genre]);
+  await supabase.from("media").update({ genres: Array.from(genres) }).eq("id", mediaRow.id);
+
+  return mediaRow;
+}
+
+async function fetchTmdbById(id: number) {
+  const res = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMDB_KEY}&language=fr-FR`);
+  return res.data;
+}
+```
+
+- **Deduping:** Conflict on tmdb_id ensures one canonical media per TMDB title.
+- **Fallback dedupe:** If no TMDB, use title+year key; admin can later merge duplicates via media_merges.
+
+---
+
+## Admin-only controls without double entries
+
+#### Express endpoints with role gating
+
+```ts
+// src/admin/routes.ts
+import express from "express";
+import { createClient } from "@supabase/supabase-js";
+const router = express.Router();
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE!);
+
+// simple middleware: only admins
+router.use(async (req, res, next) => {
+  const userId = req.headers["x-user-id"];
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if (profile?.role !== "admin") return res.status(403).json({ error: "Forbidden" });
+  next();
+});
+
+// edit source URL (replace broken)
+router.post("/sources/:id/replace", async (req, res) => {
+  const { newUrl } = req.body;
+  const id = req.params.id;
+  await supabase.from("media_sources").update({ url: newUrl, last_checked: new Date().toISOString() }).eq("id", id);
+  res.json({ ok: true });
+});
+
+// mark source broken
+router.post("/sources/:id/disable", async (req, res) => {
+  const id = req.params.id;
+  await supabase.from("media_sources").update({ is_active: false, last_checked: new Date().toISOString() }).eq("id", id);
+  res.json({ ok: true });
+});
+
+// admin override tmdb_id
+router.post("/media/:id/override/tmdb", async (req, res) => {
+  const { tmdb_id } = req.body;
+  const id = req.params.id;
+  await supabase.from("admin_overrides").insert({ media_id: id, field: "tmdb_id", value: String(tmdb_id) });
+  res.json({ ok: true });
+});
+
+// merge duplicates
+router.post("/media/merge", async (req, res) => {
+  const { canonical_id, duplicate_id } = req.body;
+  // reattach sources
+  await supabase.from("media_sources").update({ media_id: canonical_id }).eq("media_id", duplicate_id);
+  await supabase.from("media_merges").insert({ canonical_media_id: canonical_id, duplicate_media_id: duplicate_id, reason: "duplicate" });
+  await supabase.from("media").delete().eq("id", duplicate_id);
+  res.json({ ok: true });
+});
+
+export default router;
+```
+
+#### React admin panel snippet (URL fixes + dedupe)
+
+```tsx
+// AdminSourceEditor.tsx
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(import.meta.env.VITE_SUPABASE_URL!, import.meta.env.VITE_SUPABASE_KEY!);
+
+export function AdminSourceEditor({ mediaId }: { mediaId: string }) {
+  const [sources, setSources] = useState<any[]>([]);
+  useEffect(() => {
+    supabase.from("media_sources").select("*").eq("media_id", mediaId).then(({ data }) => setSources(data || []));
+  }, [mediaId]);
+
+  return (
+    <div className="card">
+      <h3>Sources Facebim</h3>
+      {sources.map(s => (
+        <div key={s.id} className="row">
+          <input defaultValue={s.url} onBlur={async (e) => {
+            const newUrl = e.target.value;
+            await fetch(`/admin/sources/${s.id}/replace`, { method: "POST", headers: { "Content-Type":"application/json" }, body: JSON.stringify({ newUrl }) });
+          }} />
+          <button onClick={async () => {
+            await fetch(`/admin/sources/${s.id}/disable`, { method: "POST" });
+            setSources(prev => prev.map(p => p.id === s.id ? { ...p, is_active: false } : p));
+          }}>
+            Disable
+          </button>
+          <span>{s.is_active ? "Active" : "Disabled"}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+- **No double entries:** Upsert by (origin,url) prevents duplicates. Merges consolidate any prior duplicates into one canonical record.
+- **Bug containment:** Admin overrides freeze fields from being auto-updated, keeping your manual fixes intact.
+
+---
+
+## Orchestration and ops
+
+- **Job runner:** Nightly full crawl + hourly “new items” crawl from home page.
+- **Queue:** Process items through TMDB matching and DB upsert with concurrency 5; backoff on TMDB limits.
+- **Health:** Log job status to jobs table; send Discord webhook on errors or high duplicate rates.
+- **Monitoring:** Track source last_checked and auto-disable after repeated 404s.
+
+```ts
+// src/cron/run.ts
+import { crawlAll } from "../scraper/facebim";
+import { upsertFromFacebim } from "../sync/upsert";
+
+async function run() {
+  const items = await crawlAll();
+  const chunks = Array.from({ length: Math.ceil(items.length / 50) }, (_, i) => items.slice(i*50, (i+1)*50));
+  for (const chunk of chunks) {
+    await Promise.all(chunk.map(i => upsertFromFacebim(i)));
+  }
+}
+run().catch(console.error);
+```
+
+---
+
+## Final touches that make it feel complete
+
+- **Genre mapping:** Normalize French labels to your internal taxonomy (e.g., “Science-Fiction” → “Science Fiction”) during upsert.
+- **Slugs:** Generate stable slugs from TMDB ID or normalized title-year to avoid collisions.
+- **Images:** Always prefer TMDB posters/backdrops; do not hotlink Facebim assets.
+- **Instant search:** Index titles, original titles, and genres in Supabase full-text; refresh after each job.
+- **Admin safety:** Gate admin routes behind role checks and server role key; add audit logs for edits.
+
+If you want, I’ll adapt these modules to your CStream repo structure and wire in your Discord webhooks and dark-themed admin UI.

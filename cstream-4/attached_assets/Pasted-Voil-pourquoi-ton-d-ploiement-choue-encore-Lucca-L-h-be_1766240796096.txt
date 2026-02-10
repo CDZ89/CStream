@@ -1,0 +1,89 @@
+Voilà pourquoi ton déploiement échoue encore, Lucca :  
+
+- L’hébergeur lance bien ton build (`cd project && npm run build:dev` puis `npm run preview`), mais ensuite il fait un **health check sur `/`**.  
+- Ton app ne répond pas rapidement avec un **200 OK** sur `/`, donc le check échoue.  
+- `vite preview` sert ton build, mais il ne garantit pas une réponse immédiate sur `/` (et parfois le port attendu n’est pas ouvert assez vite).  
+
+---
+
+## ✅ Solution robuste
+
+### 1. Ajoute un vrai serveur Express pour la prod
+Dans `project/server.js` :
+
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ✅ Health check rapide
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ✅ Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+```
+
+---
+
+### 2. Mets à jour tes scripts dans `package.json`
+Tu gardes tout, mais tu ajoutes :
+
+```json
+"scripts": {
+  "build": "cd project && vite build",
+  "build:dev": "cd project && vite build --mode development",
+  "preview": "cd project && vite preview",
+  "serve": "cd project && node server.js",
+  "prod": "npm run build && npm run serve"
+}
+```
+
+---
+
+### 3. Configure ton hébergeur
+- **Build command** → `npm run build`  
+- **Start command** → `npm run serve` (ou `npm run prod`)  
+- **Port** → ton serveur écoute sur `process.env.PORT` (l’hébergeur le fournit automatiquement).  
+
+---
+
+### 4. Vérifie vite.config.js
+Dans `project/vite.config.js` :
+
+```js
+export default {
+  build: {
+    outDir: "dist"
+  }
+};
+```
+
+Ainsi, ton build sort bien dans `project/dist`.
+
+---
+
+## 🚀 Résultat
+- Le health check sur `/` reçoit immédiatement un **200 OK**.  
+- Ton app est servie depuis `dist`.  
+- Tu gardes tous tes scripts existants, mais tu as maintenant un chemin clair pour la prod (`serve` ou `prod`).  
+
+---
+
+👉 Veux‑tu que je te prépare un **diff exact** (avant/après) de ton `package.json` et `server.js` pour que tu puisses copier‑coller sans rien casser ?

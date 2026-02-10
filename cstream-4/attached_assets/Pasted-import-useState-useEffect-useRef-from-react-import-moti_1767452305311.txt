@@ -1,0 +1,1684 @@
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Sparkles, Palette, Zap, Bug, Star, History, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useI18n } from '@/lib/i18n';
+
+interface ChangelogItem {
+  version: string;
+  date: string;
+  isNew?: boolean;
+  changes: {
+    type: 'feature' | 'fix' | 'improvement' | 'ui';
+    title: Record<string, string>;
+    description?: Record<string, string>;
+  }[];
+}
+
+const changelog: ChangelogItem[] = [
+  {
+    version: 'v3.9',
+    date: '27 Décembre 2025',
+    isNew: true,
+    changes: [
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Bouton de mise à jour redessiné',
+          en: 'Update button redesigned',
+          es: 'Botón de actualización rediseñado',
+          de: 'Update-Button neu gestaltet',
+          it: 'Pulsante aggiornamento riprogettato',
+          pt: 'Botão de atualização redesenhado',
+          ar: 'تم إعادة تصميم زر التحديث',
+          ko: '업데이트 버튼 재설계',
+          ja: '更新ボタンを再設計',
+          ru: 'Переработана кнопка обновления'
+        },
+  {
+    version: 'v0.2 beta',
+    date: '4 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: {
+          fr: 'Chat IA avec CAi',
+          en: 'AI Chat with CAi',
+          es: 'Chat IA con CAi',
+          de: 'KI-Chat mit CAi',
+          it: 'Chat IA con CAi',
+          pt: 'Chat IA com CAi',
+          ar: 'دردشة الذكاء الاصطناعي مع CAi',
+          ko: 'CAi와 AI 채팅',
+          ja: 'CAiとのAIチャット',
+          ru: 'ИИ-чат с CAi'
+        }, 
+        description: {
+          fr: 'Assistant IA intégré avec streaming',
+          en: 'Integrated AI assistant with streaming',
+          es: 'Asistente IA integrado con streaming',
+          de: 'Integrierter KI-Assistent mit Streaming',
+          it: 'Assistente IA integrato con streaming',
+          pt: 'Assistente IA integrado com streaming',
+          ar: 'مساعد ذكاء اصطناعي مدمج مع البث',
+          ko: '스트리밍이 포함된 통합 AI 어시스턴트',
+          ja: 'ストリーミング対応の統合AIアシスタント',
+          ru: 'Интегрированный ИИ-ассистент со стримингом'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: {
+          fr: 'Import groupé d\'épisodes',
+          en: 'Bulk episode import',
+          es: 'Importación masiva de episodios',
+          de: 'Massen-Episodenimport',
+          it: 'Importazione episodi in blocco',
+          pt: 'Importação em massa de episódios',
+          ar: 'استيراد الحلقات بالجملة',
+          ko: '에피소드 일괄 가져오기',
+          ja: 'エピソードの一括インポート',
+          ru: 'Массовый импорт эпизодов'
+        }, 
+        description: {
+          fr: 'Import en masse pour les admins',
+          en: 'Bulk import for admins',
+          es: 'Importación masiva para admins',
+          de: 'Massenimport für Admins',
+          it: 'Importazione in blocco per admin',
+          pt: 'Importação em massa para admins',
+          ar: 'استيراد بالجملة للمشرفين',
+          ko: '관리자용 일괄 가져오기',
+          ja: '管理者向け一括インポート',
+          ru: 'Массовый импорт для администраторов'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: {
+          fr: 'i18n - 10 langues',
+          en: 'i18n - 10 languages',
+          es: 'i18n - 10 idiomas',
+          de: 'i18n - 10 Sprachen',
+          it: 'i18n - 10 lingue',
+          pt: 'i18n - 10 idiomas',
+          ar: 'i18n - 10 لغات',
+          ko: 'i18n - 10개 언어',
+          ja: 'i18n - 10言語',
+          ru: 'i18n - 10 языков'
+        }, 
+        description: {
+          fr: 'Internationalisation complète',
+          en: 'Full internationalization',
+          es: 'Internacionalización completa',
+          de: 'Vollständige Internationalisierung',
+          it: 'Internazionalizzazione completa',
+          pt: 'Internacionalização completa',
+          ar: 'التدويل الكامل',
+          ko: '완전한 국제화',
+          ja: '完全な国際化',
+          ru: 'Полная интернационализация'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v0.1 beta',
+    date: '3 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: {
+          fr: 'Lancement de CStream',
+          en: 'CStream launch',
+          es: 'Lanzamiento de CStream',
+          de: 'CStream-Start',
+          it: 'Lancio di CStream',
+          pt: 'Lançamento do CStream',
+          ar: 'إطلاق CStream',
+          ko: 'CStream 출시',
+          ja: 'CStreamローンチ',
+          ru: 'Запуск CStream'
+        }, 
+        description: {
+          fr: 'Première version beta publique',
+          en: 'First public beta version',
+          es: 'Primera versión beta pública',
+          de: 'Erste öffentliche Beta-Version',
+          it: 'Prima versione beta pubblica',
+          pt: 'Primeira versão beta pública',
+          ar: 'أول إصدار تجريبي عام',
+          ko: '첫 번째 공개 베타 버전',
+          ja: '初の公開ベータ版',
+          ru: 'Первая публичная бета-версия'
+        }
+      },
+    ]
+  }
+];
+
+const typeIcons = {
+  feature: Sparkles,
+  fix: Bug,
+  improvement: Zap,
+  ui: Palette,
+};
+
+const typeColors = {
+  feature: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
+  fix: 'text-red-400 bg-red-500/20 border-red-500/30',
+  improvement: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
+  ui: 'text-pink-400 bg-pink-500/20 border-pink-500/30',
+};
+
+const typeLabelsTranslated: Record<string, Record<string, string>> = {
+  feature: {
+    fr: 'Nouveau', en: 'New', es: 'Nuevo', de: 'Neu', it: 'Nuovo',
+    pt: 'Novo', ar: 'جديد', ko: '신규', ja: '新機能', ru: 'Новое'
+  },
+  fix: {
+    fr: 'Fix', en: 'Fix', es: 'Fix', de: 'Fix', it: 'Fix',
+    pt: 'Fix', ar: 'إصلاح', ko: '수정', ja: '修正', ru: 'Фикс'
+  },
+  improvement: {
+    fr: 'Amélio.', en: 'Improved', es: 'Mejora', de: 'Verbess.', it: 'Miglio.',
+    pt: 'Melhoria', ar: 'تحسين', ko: '개선', ja: '改善', ru: 'Улучш.'
+  },
+  ui: {
+    fr: 'UI', en: 'UI', es: 'UI', de: 'UI', it: 'UI',
+    pt: 'UI', ar: 'UI', ko: 'UI', ja: 'UI', ru: 'UI'
+  },
+};
+
+const widgetTranslations: Record<string, Record<string, string>> = {
+  title: {
+    fr: 'Nouveautés', en: 'What\'s New', es: 'Novedades', de: 'Neuigkeiten',
+    it: 'Novità', pt: 'Novidades', ar: 'الجديد', ko: '새 소식', ja: '新着情報', ru: 'Новое'
+  },
+  showMore: {
+    fr: 'Voir plus', en: 'Show more', es: 'Ver más',
+    de: 'Mehr anzeigen', it: 'Mostra altro', pt: 'Ver mais',
+    ar: 'عرض المزيد', ko: '더 보기', ja: 'もっと見る', ru: 'Показать ещё'
+  },
+  showLess: {
+    fr: 'Voir moins', en: 'Show less', es: 'Ver menos',
+    de: 'Weniger', it: 'Mostra meno', pt: 'Ver menos',
+    ar: 'عرض أقل', ko: '접기', ja: '閉じる', ru: 'Скрыть'
+  },
+};
+
+interface ChangelogWidgetProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export const ChangelogWidget = ({ open, onClose }: ChangelogWidgetProps) => {
+  const { language } = useI18n();
+  const [showAllHistory, setShowAllHistory] = useState(false);
+  const widgetRef = useRef<HTMLDivElement>(null);
+  const lang = language || 'fr';
+  
+  const getText = (translations: Record<string, string>) => translations[lang] || translations['fr'] || translations['en'];
+  
+  const displayedChangelog = showAllHistory ? changelog : changelog.slice(0, 2);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [open, onClose]);
+
+  return (
+    <AnimatePresence mode="wait">
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
+            onClick={onClose}
+          />
+          <motion.div
+            ref={widgetRef}
+            initial={{ opacity: 0, y: 40, scale: 0.95, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: 30, scale: 0.98, filter: 'blur(5px)' }}
+            transition={{ 
+              type: 'spring',
+              stiffness: 350,
+              damping: 30,
+              mass: 1
+            }}
+            className="fixed bottom-6 right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-[450px] max-h-[85vh] bg-gradient-to-br from-[#0a0b14]/95 via-[#0d0e18]/95 to-[#0a0b14]/95 backdrop-blur-3xl border border-white/10 rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.05)_inset] z-[101] overflow-hidden flex flex-col"
+          >
+            {/* Glossy Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            
+            {/* Header */}
+            <div className="relative p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-b from-white/[0.07] to-transparent">
+              <div className="flex items-center gap-4">
+                <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+                  <Zap className="w-6 h-6 text-primary relative z-10 drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)]" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text">{getText(widgetTranslations.title)}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-primary font-black uppercase tracking-widest px-2.5 py-1 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full border border-primary/30 shadow-[0_0_10px_rgba(var(--primary-rgb),0.2)]">
+                      {changelog[0]?.version}
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-white/30" />
+                    <span className="text-[10px] text-gray-400 font-medium tracking-wide">Janvier 2026</span>
+                  </div>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onClose} 
+                className="h-10 w-10 rounded-2xl hover:bg-white/10 transition-all duration-300 hover:rotate-90 hover:scale-110 group"
+              >
+                <X className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+              </Button>
+            </div>
+
+            {/* Scrollable Content */}
+            <ScrollArea className="flex-1 max-h-[calc(85vh-140px)]">
+              <div className="p-6 space-y-8">
+                {displayedChangelog.map((release, releaseIdx) => (
+                  <div key={release.version} className="relative pl-8 border-l-2 border-white/10 pb-2">
+                    <div className="absolute left-[-7px] top-0 w-3.5 h-3.5 rounded-full bg-gradient-to-br from-primary to-primary/70 border-2 border-[#0a0b14] shadow-[0_0_16px_rgba(var(--primary-rgb),0.9)]" />
+                    
+                    <div className="flex items-center gap-3 mb-5">
+                      <span className="text-xl font-black text-white italic tracking-tight">{release.version}</span>
+                      <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                        {release.date}
+                      </span>
+                      {release.isNew && (
+                        <span className="px-2.5 py-1 text-[9px] font-black bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg animate-pulse shadow-[0_0_12px_rgba(239,68,68,0.6)]">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      {release.changes.map((change, changeIdx) => {
+                        const Icon = typeIcons[change.type];
+                        return (
+                          <motion.div
+                            key={changeIdx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: releaseIdx * 0.1 + changeIdx * 0.05 }}
+                            className="group flex gap-4 p-4 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.03] hover:from-white/10 hover:to-white/[0.05] border border-white/5 hover:border-white/10 transition-all duration-300 backdrop-blur-sm"
+                          >
+                            <div className={`mt-0.5 p-2.5 rounded-xl border ${typeColors[change.type]} transition-all duration-300 group-hover:scale-110 shadow-lg backdrop-blur-sm`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-bold text-white group-hover:text-primary transition-colors leading-snug">
+                                {getText(change.title)}
+                              </h4>
+                              {change.description && (
+                                <p className="text-xs text-gray-400 mt-1.5 leading-relaxed line-clamp-2 group-hover:text-gray-300 transition-colors">
+                                  {getText(change.description)}
+                                </p>
+                              )}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {changelog.length > 2 && (
+                  <button
+                    onClick={() => setShowAllHistory(!showAllHistory)}
+                    className="w-full py-4 rounded-2xl bg-gradient-to-br from-white/5 to-white/[0.02] hover:from-white/10 hover:to-white/[0.05] border border-dashed border-white/10 hover:border-white/20 text-xs font-bold text-gray-400 hover:text-white transition-all duration-300 flex items-center justify-center gap-2 group"
+                  >
+                    <History className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                    {showAllHistory ? getText(widgetTranslations.showLess) : getText(widgetTranslations.showMore)}
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showAllHistory ? 'rotate-180' : ''}`} />
+                  </button>
+                )}
+              </div>
+            </ScrollArea>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-white/5 bg-gradient-to-t from-black/40 to-transparent text-center backdrop-blur-sm">
+              <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                CStream Premium Experience • 2026
+              </p>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export const ChangelogBadge = ({ onClick }: { onClick: () => void }) => {
+  const [hasNew, setHasNew] = useState(false);
+
+  useEffect(() => {
+    const lastSeen = localStorage.getItem('changelog-last-seen');
+    const latestVersion = changelog[0]?.version;
+    if (lastSeen !== latestVersion) {
+      setHasNew(true);
+    }
+  }, []);
+
+  const handleClick = () => {
+    localStorage.setItem('changelog-last-seen', changelog[0]?.version || '');
+    setHasNew(false);
+    onClick();
+  };
+
+  return (
+    <motion.div 
+      whileHover={{ scale: 1.1, rotate: 5 }} 
+      whileTap={{ scale: 0.9 }}
+      className="relative"
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleClick}
+        className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#0a0b14]/60 to-[#0a0b14]/40 hover:from-primary/20 hover:to-primary/10 border border-white/10 hover:border-primary/40 transition-all duration-300 group overflow-hidden shadow-lg"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Zap className="w-5 h-5 text-primary group-hover:text-primary group-hover:drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.8)] animate-pulse relative z-10 transition-all" />
+        {hasNew && (
+          <>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-br from-red-500 to-pink-500 rounded-full border-2 border-[#0a0b14] shadow-[0_0_12px_rgba(239,68,68,0.8)] animate-pulse" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+          </>
+        )}
+      </Button>
+    </motion.div>
+  );
+};
+  {
+    version: 'v0.3 beta',
+    date: '5 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Ajout de liens par admins/éditeurs',
+          en: 'Link addition by admins/editors',
+          es: 'Adición de enlaces por admins/editores',
+          de: 'Link-Hinzufügung durch Admins/Editoren',
+          it: 'Aggiunta link da admin/editor',
+          pt: 'Adição de links por admins/editores',
+          ar: 'إضافة روابط من قبل المشرفين',
+          ko: '관리자/편집자의 링크 추가',
+          ja: '管理者/編集者によるリンク追加',
+          ru: 'Добавление ссылок администраторами'
+        }, 
+        description: {
+          fr: 'Les admins peuvent ajouter des sources directement sur les pages média',
+          en: 'Admins can add sources directly on media pages',
+          es: 'Los admins pueden agregar fuentes directamente en las páginas de medios',
+          de: 'Admins können Quellen direkt auf Medienseiten hinzufügen',
+          it: 'Gli admin possono aggiungere fonti direttamente sulle pagine media',
+          pt: 'Admins podem adicionar fontes diretamente nas páginas de mídia',
+          ar: 'يمكن للمشرفين إضافة مصادر مباشرة على صفحات الوسائط',
+          ko: '관리자는 미디어 페이지에서 직접 소스를 추가할 수 있습니다',
+          ja: '管理者はメディアページで直接ソースを追加できます',
+          ru: 'Администраторы могут добавлять источники прямо на страницах медиа'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: {
+          fr: 'Messages vocaux',
+          en: 'Voice messages',
+          es: 'Mensajes de voz',
+          de: 'Sprachnachrichten',
+          it: 'Messaggi vocali',
+          pt: 'Mensagens de voz',
+          ar: 'الرسائل الصوتية',
+          ko: '음성 메시지',
+          ja: '音声メッセージ',
+          ru: 'Голосовые сообщения'
+        }, 
+        description: {
+          fr: 'Enregistrement et envoi de messages vocaux dans le chat',
+          en: 'Record and send voice messages in chat',
+          es: 'Grabar y enviar mensajes de voz en el chat',
+          de: 'Sprachnachrichten im Chat aufnehmen und senden',
+          it: 'Registra e invia messaggi vocali nella chat',
+          pt: 'Grave e envie mensagens de voz no chat',
+          ar: 'تسجيل وإرسال الرسائل الصوتية في الدردشة',
+          ko: '채팅에서 음성 메시지 녹음 및 전송',
+          ja: 'チャットで音声メッセージを録音して送信',
+          ru: 'Запись и отправка голосовых сообщений в чате'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: {
+          fr: 'Notifications améliorées',
+          en: 'Improved notifications',
+          es: 'Notificaciones mejoradas',
+          de: 'Verbesserte Benachrichtigungen',
+          it: 'Notifiche migliorate',
+          pt: 'Notificações melhoradas',
+          ar: 'إشعارات محسنة',
+          ko: '개선된 알림',
+          ja: '改善された通知',
+          ru: 'Улучшенные уведомления'
+        }, 
+        description: {
+          fr: 'Système de notifications plus fiable',
+          en: 'More reliable notification system',
+          es: 'Sistema de notificaciones más fiable',
+          de: 'Zuverlässigeres Benachrichtigungssystem',
+          it: 'Sistema di notifiche più affidabile',
+          pt: 'Sistema de notificações mais confiável',
+          ar: 'نظام إشعارات أكثر موثوقية',
+          ko: '더 신뢰할 수 있는 알림 시스템',
+          ja: 'より信頼性の高い通知システム',
+          ru: 'Более надежная система уведомлений'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: {
+          fr: 'Correction système d\'amis',
+          en: 'Friend system fix',
+          es: 'Corrección del sistema de amigos',
+          de: 'Freundschaftssystem-Korrektur',
+          it: 'Correzione sistema amici',
+          pt: 'Correção do sistema de amigos',
+          ar: 'إصلاح نظام الأصدقاء',
+          ko: '친구 시스템 수정',
+          ja: 'フレンドシステムの修正',
+          ru: 'Исправление системы друзей'
+        }, 
+        description: {
+          fr: 'Résolu le problème de clé étrangère',
+          en: 'Fixed foreign key issue',
+          es: 'Resuelto el problema de clave foránea',
+          de: 'Fremdschlüsselproblem behoben',
+          it: 'Risolto il problema della chiave esterna',
+          pt: 'Resolvido o problema de chave estrangeira',
+          ar: 'تم حل مشكلة المفتاح الخارجي',
+          ko: '외래 키 문제 해결',
+          ja: '外部キーの問題を修正',
+          ru: 'Исправлена проблема внешнего ключа'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v1.3 beta',
+    date: '6 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Boutons Regarder fonctionnels',
+          en: 'Functional Watch buttons',
+          es: 'Botones Ver funcionales',
+          de: 'Funktionale Ansehen-Buttons',
+          it: 'Pulsanti Guarda funzionali',
+          pt: 'Botões Assistir funcionais',
+          ar: 'أزرار المشاهدة تعمل',
+          ko: '시청 버튼 기능 작동',
+          ja: '視聴ボタンが機能',
+          ru: 'Рабочие кнопки просмотра'
+        }, 
+        description: {
+          fr: 'Les boutons Regarder pour films et séries sont maintenant synchronisés avec le statut admin',
+          en: 'Watch buttons for movies and TV shows are now synced with admin status',
+          es: 'Los botones Ver para películas y series ahora están sincronizados con el estado de admin',
+          de: 'Ansehen-Buttons für Filme und Serien sind jetzt mit dem Admin-Status synchronisiert',
+          it: 'I pulsanti Guarda per film e serie sono ora sincronizzati con lo stato admin',
+          pt: 'Os botões Assistir para filmes e séries agora estão sincronizados com o status de admin',
+          ar: 'أزرار المشاهدة للأفلام والمسلسلات متزامنة الآن مع حالة المشرف',
+          ko: '영화 및 TV 프로그램의 시청 버튼이 이제 관리자 상태와 동기화됩니다',
+          ja: '映画とテレビ番組の視聴ボタンが管理者ステータスと同期されるようになりました',
+          ru: 'Кнопки просмотра для фильмов и сериалов теперь синхронизированы со статусом администратора'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: {
+          fr: 'Barre de recherche agrandie',
+          en: 'Enlarged search bar',
+          es: 'Barra de búsqueda ampliada',
+          de: 'Vergrößerte Suchleiste',
+          it: 'Barra di ricerca ingrandita',
+          pt: 'Barra de pesquisa ampliada',
+          ar: 'شريط بحث موسع',
+          ko: '확대된 검색 창',
+          ja: '拡大された検索バー',
+          ru: 'Увеличенная строка поиска'
+        }, 
+        description: {
+          fr: 'La barre de recherche est maintenant plus grande et plus visible',
+          en: 'Search bar is now larger and more visible',
+          es: 'La barra de búsqueda ahora es más grande y visible',
+          de: 'Die Suchleiste ist jetzt größer und sichtbarer',
+          it: 'La barra di ricerca è ora più grande e visibile',
+          pt: 'A barra de pesquisa agora é maior e mais visível',
+          ar: 'شريط البحث أصبح الآن أكبر وأكثر وضوحًا',
+          ko: '검색 창이 이제 더 크고 잘 보입니다',
+          ja: '検索バーが大きくなり、見やすくなりました',
+          ru: 'Строка поиска теперь больше и заметнее'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v1.5',
+    date: '7 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Logo personnalisé global',
+          en: 'Global custom logo',
+          es: 'Logo personalizado global',
+          de: 'Globales benutzerdefiniertes Logo',
+          it: 'Logo personalizzato globale',
+          pt: 'Logo personalizado global',
+          ar: 'شعار مخصص عالمي',
+          ko: '글로벌 커스텀 로고',
+          ja: 'グローバルカスタムロゴ',
+          ru: 'Глобальный пользовательский логотип'
+        }, 
+        description: {
+          fr: 'Le logo personnalisé est maintenant stocké dans Supabase Storage et visible par tous',
+          en: 'Custom logo is now stored in Supabase Storage and visible to everyone',
+          es: 'El logo personalizado ahora se almacena en Supabase Storage y es visible para todos',
+          de: 'Das benutzerdefinierte Logo wird jetzt im Supabase Storage gespeichert und ist für alle sichtbar',
+          it: 'Il logo personalizzato è ora memorizzato in Supabase Storage e visibile a tutti',
+          pt: 'O logo personalizado agora é armazenado no Supabase Storage e visível para todos',
+          ar: 'الشعار المخصص مخزن الآن في Supabase Storage ومرئي للجميع',
+          ko: '커스텀 로고가 이제 Supabase Storage에 저장되어 모든 사용자에게 표시됩니다',
+          ja: 'カスタムロゴがSupabase Storageに保存され、全員に表示されるようになりました',
+          ru: 'Пользовательский логотип теперь хранится в Supabase Storage и виден всем'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: {
+          fr: 'Planning avec heures',
+          en: 'Planning with times',
+          es: 'Planificación con horarios',
+          de: 'Planung mit Uhrzeiten',
+          it: 'Pianificazione con orari',
+          pt: 'Planejamento com horários',
+          ar: 'التخطيط مع الأوقات',
+          ko: '시간이 포함된 일정',
+          ja: '時間付きプランニング',
+          ru: 'Планирование со временем'
+        }, 
+        description: {
+          fr: 'Affichage des heures exactes de sortie dans le planning',
+          en: 'Display of exact release times in the planning',
+          es: 'Visualización de las horas exactas de lanzamiento en la planificación',
+          de: 'Anzeige der genauen Erscheinungszeiten in der Planung',
+          it: 'Visualizzazione degli orari esatti di uscita nella pianificazione',
+          pt: 'Exibição dos horários exatos de lançamento no planejamento',
+          ar: 'عرض أوقات الإصدار الدقيقة في التخطيط',
+          ko: '일정에서 정확한 출시 시간 표시',
+          ja: 'プランニングでの正確なリリース時間の表示',
+          ru: 'Отображение точного времени выхода в планировании'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: {
+          fr: 'Plus de tendances',
+          en: 'More trending content',
+          es: 'Más contenido en tendencias',
+          de: 'Mehr Trending-Inhalte',
+          it: 'Più contenuti in tendenza',
+          pt: 'Mais conteúdo em tendências',
+          ar: 'المزيد من المحتوى الرائج',
+          ko: '더 많은 트렌딩 콘텐츠',
+          ja: 'より多くのトレンドコンテンツ',
+          ru: 'Больше трендового контента'
+        }, 
+        description: {
+          fr: 'Augmentation du nombre de médias affichés dans les tendances',
+          en: 'Increased number of media displayed in trending',
+          es: 'Mayor número de medios mostrados en tendencias',
+          de: 'Erhöhte Anzahl der angezeigten Medien im Trending',
+          it: 'Aumento del numero di media visualizzati nelle tendenze',
+          pt: 'Aumento do número de mídias exibidas nas tendências',
+          ar: 'زيادة عدد الوسائط المعروضة في الاتجاهات',
+          ko: '트렌딩에 표시되는 미디어 수 증가',
+          ja: 'トレンドに表示されるメディア数の増加',
+          ru: 'Увеличено количество медиа в трендах'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: {
+          fr: 'Boutons améliorés',
+          en: 'Improved buttons',
+          es: 'Botones mejorados',
+          de: 'Verbesserte Buttons',
+          it: 'Pulsanti migliorati',
+          pt: 'Botões melhorados',
+          ar: 'أزرار محسنة',
+          ko: '개선된 버튼',
+          ja: '改善されたボタン',
+          ru: 'Улучшенные кнопки'
+        }, 
+        description: {
+          fr: 'Styles des boutons améliorés sur toutes les pages',
+          en: 'Button styles improved across all pages',
+          es: 'Estilos de botones mejorados en todas las páginas',
+          de: 'Button-Stile auf allen Seiten verbessert',
+          it: 'Stili dei pulsanti migliorati su tutte le pagine',
+          pt: 'Estilos de botões melhorados em todas as páginas',
+          ar: 'تحسين أنماط الأزرار في جميع الصفحات',
+          ko: '모든 페이지에서 버튼 스타일 개선',
+          ja: 'すべてのページでボタンスタイルが改善',
+          ru: 'Улучшены стили кнопок на всех страницах'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v1.9',
+    date: '7 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Agent CStream automatisé',
+          en: 'Automated CStream Agent',
+          es: 'Agente CStream automatizado',
+          de: 'Automatisierter CStream Agent',
+          it: 'Agente CStream automatizzato',
+          pt: 'Agente CStream automatizado',
+          ar: 'وكيل CStream الآلي',
+          ko: 'CStream 자동화 에이전트',
+          ja: 'CStream自動エージェント',
+          ru: 'Автоматизированный агент CStream'
+        }, 
+        description: {
+          fr: 'Tableau de bord de surveillance système avec interface de monitoring',
+          en: 'System monitoring dashboard with health check interface',
+          es: 'Panel de control de monitoreo del sistema con interfaz de verificación',
+          de: 'System-Überwachungs-Dashboard mit Gesundheitscheck-Oberfläche',
+          it: 'Dashboard di monitoraggio del sistema con interfaccia di controllo',
+          pt: 'Painel de monitoramento do sistema com interface de verificação',
+          ar: 'لوحة مراقبة النظام مع واجهة فحص الصحة',
+          ko: '상태 확인 인터페이스가 있는 시스템 모니터링 대시보드',
+          ja: 'ヘルスチェックインターフェース付きシステム監視ダッシュボード',
+          ru: 'Панель мониторинга системы с интерфейсом проверки состояния'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Correction des suppressions admin',
+          en: 'Admin deletion fix',
+          es: 'Corrección de eliminaciones de admin',
+          de: 'Admin-Löschungs-Fix',
+          it: 'Correzione eliminazioni admin',
+          pt: 'Correção de exclusões de admin',
+          ar: 'إصلاح حذف المشرف',
+          ko: '관리자 삭제 수정',
+          ja: '管理者削除の修正',
+          ru: 'Исправление удаления администратором'
+        }, 
+        description: {
+          fr: 'Amélioration de la gestion des erreurs lors de la suppression de sources',
+          en: 'Improved error handling when deleting sources',
+          es: 'Mejora del manejo de errores al eliminar fuentes',
+          de: 'Verbesserte Fehlerbehandlung beim Löschen von Quellen',
+          it: 'Miglioramento della gestione degli errori durante l\'eliminazione delle fonti',
+          pt: 'Melhoria no tratamento de erros ao excluir fontes',
+          ar: 'تحسين معالجة الأخطاء عند حذف المصادر',
+          ko: '소스 삭제 시 오류 처리 개선',
+          ja: 'ソース削除時のエラー処理の改善',
+          ru: 'Улучшена обработка ошибок при удалении источников'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Historique des versions',
+          en: 'Version history',
+          es: 'Historial de versiones',
+          de: 'Versionsverlauf',
+          it: 'Cronologia versioni',
+          pt: 'Histórico de versões',
+          ar: 'سجل الإصدارات',
+          ko: '버전 기록',
+          ja: 'バージョン履歴',
+          ru: 'История версий'
+        }, 
+        description: {
+          fr: 'Widget de mise à jour avec changelog complet accessible depuis l\'agent',
+          en: 'Update widget with complete changelog accessible from the agent',
+          es: 'Widget de actualización con registro de cambios completo accesible desde el agente',
+          de: 'Update-Widget mit vollständigem Changelog, zugänglich vom Agenten',
+          it: 'Widget di aggiornamento con changelog completo accessibile dall\'agente',
+          pt: 'Widget de atualização com changelog completo acessível pelo agente',
+          ar: 'أداة التحديث مع سجل التغييرات الكامل يمكن الوصول إليها من الوكيل',
+          ko: '에이전트에서 접근 가능한 전체 변경 로그가 있는 업데이트 위젯',
+          ja: 'エージェントからアクセス可能な完全な変更ログ付きの更新ウィジェット',
+          ru: 'Виджет обновления с полным журналом изменений, доступный из агента'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v2.00',
+    date: '9 Décembre 2025',
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Version BETA terminée',
+          en: 'BETA FINISHED',
+          es: 'BETA FINALIZADA',
+          de: 'BETA ABGESCHLOSSEN',
+          it: 'BETA COMPLETATA',
+          pt: 'BETA FINALIZADA',
+          ar: 'الإصدار التجريبي مكتمل',
+          ko: 'BETA 완료',
+          ja: 'BETAが完了',
+          ru: 'BETA ЗАВЕРШЕНА'
+        }, 
+        description: {
+          fr: 'CStream 2.00 est maintenant stable et prêt pour la production',
+          en: 'CStream 2.00 is now stable and production-ready',
+          es: 'CStream 2.00 ahora es estable y listo para producción',
+          de: 'CStream 2.00 ist jetzt stabil und produktionsbereit',
+          it: 'CStream 2.00 è ora stabile e pronto per la produzione',
+          pt: 'CStream 2.00 agora é estável e pronto para produção',
+          ar: 'CStream 2.00 مستقر الآن وجاهز للإنتاج',
+          ko: 'CStream 2.00이 안정화되어 프로덕션 준비가 완료되었습니다',
+          ja: 'CStream 2.00が安定し、本番環境に対応しました',
+          ru: 'CStream 2.00 теперь стабилен и готов к продакшену'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Lecteur vidéo amélioré',
+          en: 'Enhanced video player',
+          es: 'Reproductor de video mejorado',
+          de: 'Verbesserter Video-Player',
+          it: 'Lettore video migliorato',
+          pt: 'Reprodutor de vídeo melhorado',
+          ar: 'مشغل الفيديو المحسن',
+          ko: '향상된 비디오 플레이어',
+          ja: '強化されたビデオプレーヤー',
+          ru: 'Улучшенный видеоплеер'
+        }, 
+        description: {
+          fr: 'Interface de lecture repensée avec contrôles optimisés et navigation fluide entre épisodes',
+          en: 'Redesigned playback interface with optimized controls and smooth episode navigation',
+          es: 'Interfaz de reproducción rediseñada con controles optimizados y navegación fluida entre episodios',
+          de: 'Neu gestaltete Wiedergabeoberfläche mit optimierten Steuerungen und flüssiger Episoden-Navigation',
+          it: 'Interfaccia di riproduzione ridisegnata con controlli ottimizzati e navigazione fluida tra episodi',
+          pt: 'Interface de reprodução redesenhada com controles otimizados e navegação suave entre episódios',
+          ar: 'واجهة تشغيل معاد تصميمها مع عناصر تحكم محسنة وتنقل سلس بين الحلقات',
+          ko: '최적화된 컨트롤과 부드러운 에피소드 탐색이 가능한 재설계된 재생 인터페이스',
+          ja: '最適化されたコントロールとスムーズなエピソードナビゲーションを備えた再設計された再生インターフェース',
+          ru: 'Переработанный интерфейс воспроизведения с оптимизированным управлением и плавной навигацией между эпизодами'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Design professionnel',
+          en: 'Professional design',
+          es: 'Diseño profesional',
+          de: 'Professionelles Design',
+          it: 'Design professionale',
+          pt: 'Design profissional',
+          ar: 'تصميم احترافي',
+          ko: '전문적인 디자인',
+          ja: 'プロフェッショナルなデザイン',
+          ru: 'Профессиональный дизайн'
+        }, 
+        description: {
+          fr: 'Révision complète des textes, de la typographie et de la cohérence visuelle',
+          en: 'Complete revision of texts, typography and visual consistency',
+          es: 'Revisión completa de textos, tipografía y coherencia visual',
+          de: 'Vollständige Überarbeitung von Texten, Typografie und visueller Konsistenz',
+          it: 'Revisione completa di testi, tipografia e coerenza visiva',
+          pt: 'Revisão completa de textos, tipografia e consistência visual',
+          ar: 'مراجعة كاملة للنصوص والطباعة والتناسق البصري',
+          ko: '텍스트, 타이포그래피 및 시각적 일관성의 완전한 검토',
+          ja: 'テキスト、タイポグラフィ、視覚的一貫性の完全な改訂',
+          ru: 'Полный пересмотр текстов, типографики и визуальной согласованности'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Corrections orthographiques',
+          en: 'Spelling corrections',
+          es: 'Correcciones ortográficas',
+          de: 'Rechtschreibkorrekturen',
+          it: 'Correzioni ortografiche',
+          pt: 'Correções ortográficas',
+          ar: 'تصحيحات إملائية',
+          ko: '맞춤법 수정',
+          ja: 'スペルの修正',
+          ru: 'Исправления орфографии'
+        }, 
+        description: {
+          fr: 'Vérification et correction de tous les textes du site',
+          en: 'Review and correction of all website texts',
+          es: 'Revisión y corrección de todos los textos del sitio',
+          de: 'Überprüfung und Korrektur aller Website-Texte',
+          it: 'Revisione e correzione di tutti i testi del sito',
+          pt: 'Revisão e correção de todos os textos do site',
+          ar: 'مراجعة وتصحيح جميع نصوص الموقع',
+          ko: '모든 웹사이트 텍스트 검토 및 수정',
+          ja: 'ウェブサイトのすべてのテキストの確認と修正',
+          ru: 'Проверка и исправление всех текстов сайта'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v3.00',
+    date: '13 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Traductions complètes',
+          en: 'Complete translations',
+          es: 'Traducciones completas',
+          de: 'Vollständige Übersetzungen',
+          it: 'Traduzioni complete',
+          pt: 'Traduções completas',
+          ar: 'ترجمات كاملة',
+          ko: '전체 번역',
+          ja: '完全な翻訳',
+          ru: 'Полные переводы'
+        }, 
+        description: {
+          fr: 'Tous les textes de navigation et paramètres sont maintenant traduits dans les 10 langues',
+          en: 'All navigation and settings texts are now translated in all 10 languages',
+          es: 'Todos los textos de navegación y configuración ahora están traducidos en los 10 idiomas',
+          de: 'Alle Navigations- und Einstellungstexte sind jetzt in allen 10 Sprachen übersetzt',
+          it: 'Tutti i testi di navigazione e impostazioni sono ora tradotti in tutte le 10 lingue',
+          pt: 'Todos os textos de navegação e configurações agora estão traduzidos nos 10 idiomas',
+          ar: 'جميع نصوص التنقل والإعدادات مترجمة الآن بجميع اللغات العشر',
+          ko: '모든 탐색 및 설정 텍스트가 이제 10개 언어로 번역되었습니다',
+          ja: 'すべてのナビゲーションと設定テキストが10言語すべてで翻訳されました',
+          ru: 'Все тексты навигации и настроек теперь переведены на все 10 языков'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Thèmes améliorés',
+          en: 'Enhanced themes',
+          es: 'Temas mejorados',
+          de: 'Verbesserte Themen',
+          it: 'Temi migliorati',
+          pt: 'Temas aprimorados',
+          ar: 'سمات محسنة',
+          ko: '향상된 테마',
+          ja: '強化されたテーマ',
+          ru: 'Улучшенные темы'
+        }, 
+        description: {
+          fr: 'Nouveaux thèmes sombres et clairs avec variables CSS optimisées',
+          en: 'New dark and light themes with optimized CSS variables',
+          es: 'Nuevos temas oscuros y claros con variables CSS optimizadas',
+          de: 'Neue dunkle und helle Themen mit optimierten CSS-Variablen',
+          it: 'Nuovi temi scuri e chiari con variabili CSS ottimizzate',
+          pt: 'Novos temas escuros e claros com variáveis CSS otimizadas',
+          ar: 'سمات داكنة وفاتحة جديدة مع متغيرات CSS محسنة',
+          ko: '최적화된 CSS 변수가 있는 새로운 다크 및 라이트 테마',
+          ja: '最適化されたCSS変数を備えた新しいダークテーマとライトテーマ',
+          ru: 'Новые темные и светлые темы с оптимизированными CSS переменными'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Textes hardcodés corrigés',
+          en: 'Hardcoded texts fixed',
+          es: 'Textos fijos corregidos',
+          de: 'Hartkodierte Texte korrigiert',
+          it: 'Testi hardcoded corretti',
+          pt: 'Textos hardcoded corrigidos',
+          ar: 'تم إصلاح النصوص المشفرة',
+          ko: '하드코딩된 텍스트 수정',
+          ja: 'ハードコードされたテキストを修正',
+          ru: 'Исправлены жестко закодированные тексты'
+        }, 
+        description: {
+          fr: 'Tous les textes de la navbar et des paramètres utilisent maintenant le système i18n',
+          en: 'All navbar and settings texts now use the i18n system',
+          es: 'Todos los textos de la barra de navegación y configuración ahora usan el sistema i18n',
+          de: 'Alle Navbar- und Einstellungstexte verwenden jetzt das i18n-System',
+          it: 'Tutti i testi della navbar e delle impostazioni ora usano il sistema i18n',
+          pt: 'Todos os textos da navbar e configurações agora usam o sistema i18n',
+          ar: 'جميع نصوص شريط التنقل والإعدادات تستخدم الآن نظام i18n',
+          ko: '모든 네비바 및 설정 텍스트가 이제 i18n 시스템을 사용합니다',
+          ja: 'すべてのナビバーと設定テキストがi18nシステムを使用するようになりました',
+          ru: 'Все тексты навбара и настроек теперь используют систему i18n'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v2.01',
+    date: '13 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Navigation améliorée',
+          en: 'Improved navigation',
+          es: 'Navegación mejorada',
+          de: 'Verbesserte Navigation',
+          it: 'Navigazione migliorata',
+          pt: 'Navegação melhorada',
+          ar: 'تحسين التنقل',
+          ko: '향상된 탐색',
+          ja: 'ナビゲーションの改善',
+          ru: 'Улучшенная навигация'
+        }, 
+        description: {
+          fr: 'Chat et Contact accessibles depuis le menu profil pour une navigation simplifiée',
+          en: 'Chat and Contact accessible from profile menu for simplified navigation',
+          es: 'Chat y Contacto accesibles desde el menú de perfil para una navegación simplificada',
+          de: 'Chat und Kontakt über das Profilmenü für vereinfachte Navigation erreichbar',
+          it: 'Chat e Contatto accessibili dal menu profilo per una navigazione semplificata',
+          pt: 'Chat e Contato acessíveis pelo menu de perfil para navegação simplificada',
+          ar: 'الدردشة والاتصال متاحان من قائمة الملف الشخصي لتبسيط التنقل',
+          ko: '간소화된 탐색을 위해 프로필 메뉴에서 채팅 및 연락처에 접근 가능',
+          ja: 'プロファイルメニューからチャットと連絡先にアクセス可能で、ナビゲーションが簡素化',
+          ru: 'Чат и контакт доступны из меню профиля для упрощенной навигации'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Page d\'accueil améliorée',
+          en: 'Improved home page',
+          es: 'Página de inicio mejorada',
+          de: 'Verbesserte Startseite',
+          it: 'Pagina iniziale migliorata',
+          pt: 'Página inicial melhorada',
+          ar: 'الصفحة الرئيسية محسنة',
+          ko: '개선된 홈페이지',
+          ja: '改善されたホームページ',
+          ru: 'Улучшенная главная страница'
+        }, 
+        description: {
+          fr: 'Nouveau design plus moderne et réactif avec animations fluides',
+          en: 'New more modern and responsive design with smooth animations',
+          es: 'Nuevo diseño más moderno y responsivo con animaciones fluidas',
+          de: 'Neues moderneres und reaktionsfähigeres Design mit flüssigen Animationen',
+          it: 'Nuovo design più moderno e reattivo con animazioni fluide',
+          pt: 'Novo design mais moderno e responsivo com animações suaves',
+          ar: 'تصميم جديد أكثر حداثة واستجابة مع رسوم متحركة سلسة',
+          ko: '부드러운 애니메이션이 있는 더 현대적이고 반응형인 새로운 디자인',
+          ja: 'スムーズなアニメーションを備えたより現代的でレスポンシブな新しいデザイン',
+          ru: 'Новый более современный и отзывчивый дизайн с плавными анимациями'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Corrections de bugs',
+          en: 'Bug fixes',
+          es: 'Correcciones de errores',
+          de: 'Fehlerbehebungen',
+          it: 'Correzioni di bug',
+          pt: 'Correções de bugs',
+          ar: 'إصلاح الأخطاء',
+          ko: '버그 수정',
+          ja: 'バグ修正',
+          ru: 'Исправления ошибок'
+        }, 
+        description: {
+          fr: 'Corrections diverses pour une meilleure stabilité et performance',
+          en: 'Various fixes for better stability and performance',
+          es: 'Varias correcciones para mayor estabilidad y rendimiento',
+          de: 'Verschiedene Korrekturen für bessere Stabilität und Leistung',
+          it: 'Varie correzioni per una migliore stabilità e prestazioni',
+          pt: 'Várias correções para melhor estabilidade e desempenho',
+          ar: 'إصلاحات متنوعة لتحسين الاستقرار والأداء',
+          ko: '더 나은 안정성과 성능을 위한 다양한 수정',
+          ja: '安定性とパフォーマンス向上のためのさまざまな修正',
+          ru: 'Различные исправления для лучшей стабильности и производительности'
+        }
+      },
+    ]
+  }, 
+        description: {
+          fr: 'SVG minimaliste élégant pour le widget de mise à jour',
+          en: 'Elegant minimalist SVG for the update widget',
+          es: 'SVG minimalista elegante para el widget de actualización',
+          de: 'Elegantes minimalistisches SVG für das Update-Widget',
+          it: 'SVG minimalista elegante per il widget di aggiornamento',
+          pt: 'SVG minimalista elegante para o widget de atualização',
+          ar: 'SVG بسيط وأنيق لعنصر واجهة التحديث',
+          ko: '업데이트 위젯을 위한 우아한 미니멀 SVG',
+          ja: '更新ウィジェット用のエレガントなミニマル SVG',
+          ru: 'Элегантный минималистичный SVG для виджета обновления'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Radio (BETA) en développement',
+          en: 'Radio (BETA) in development',
+          es: 'Radio (BETA) en desarrollo',
+          de: 'Radio (BETA) in Entwicklung',
+          it: 'Radio (BETA) in sviluppo',
+          pt: 'Rádio (BETA) em desenvolvimento',
+          ar: 'راديو (بيتا) قيد التطوير',
+          ko: '라디오 (베타) 개발 중',
+          ja: 'ラジオ (ベータ) 開発中',
+          ru: 'Радио (бета) в разработке'
+        }, 
+        description: {
+          fr: 'Nouvelle section radio live - pas encore publié, en cours de développement',
+          en: 'New live radio section - not yet published, under development',
+          es: 'Nueva sección de radio en vivo - aún no publicada, en desarrollo',
+          de: 'Neuer Live-Radio-Bereich - noch nicht veröffentlicht, in Entwicklung',
+          it: 'Nuova sezione radio dal vivo - non ancora pubblicata, in sviluppo',
+          pt: 'Nova seção de rádio ao vivo - ainda não publicada, em desenvolvimento',
+          ar: 'قسم الراديو المباشر الجديد - لم ينشر بعد، قيد التطوير',
+          ko: '새로운 라이브 라디오 섹션 - 아직 게시되지 않음, 개발 중',
+          ja: '新しいライブラジオセクション - まだ公開されていません、開発中',
+          ru: 'Новый раздел живого радио - еще не опубликован, в разработке'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Correction du système d\'inscription',
+          en: 'Registration system fixed',
+          es: 'Sistema de registro corregido',
+          de: 'Registrierungssystem behoben',
+          it: 'Sistema di registrazione corretto',
+          pt: 'Sistema de registro corrigido',
+          ar: 'نظام التسجيل مصحح',
+          ko: '등록 시스템 수정됨',
+          ja: '登録システムを修正',
+          ru: 'Система регистрации исправлена'
+        }, 
+        description: {
+          fr: 'Bugs d\'inscription résolus - authentification plus fiable',
+          en: 'Registration bugs fixed - more reliable authentication',
+          es: 'Errores de registro corregidos - autenticación más confiable',
+          de: 'Registrierungsfehler behoben - zuverlässigere Authentifizierung',
+          it: 'Bug di registrazione corretti - autenticazione più affidabile',
+          pt: 'Bugs de registro corrigidos - autenticação mais confiável',
+          ar: 'تم إصلاح أخطاء التسجيل - مصادقة أكثر موثوقية',
+          ko: '등록 버그 수정됨 - 더 신뢰할 수 있는 인증',
+          ja: '登録バグを修正 - より信頼性の高い認証',
+          ru: 'Ошибки регистрации исправлены - более надежная аутентификация'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Carrousel hero amélioré',
+          en: 'Hero carousel enhanced',
+          es: 'Carrusel hero mejorado',
+          de: 'Hero-Karussell verbessert',
+          it: 'Carousel hero migliorato',
+          pt: 'Carrossel hero aprimorado',
+          ar: 'كاروسيل البطل محسّن',
+          ko: '영웅 캐러셀 향상됨',
+          ja: 'ヒーローカルーセル強化',
+          ru: 'Улучшена каруселей героя'
+        }, 
+        description: {
+          fr: 'Animations fluides et transitions optimisées pour meilleure expérience',
+          en: 'Smooth animations and optimized transitions for better experience',
+          es: 'Animaciones fluidas y transiciones optimizadas para mejor experiencia',
+          de: 'Flüssige Animationen und optimierte Übergänge für besseres Erlebnis',
+          it: 'Animazioni fluide e transizioni ottimizzate per una migliore esperienza',
+          pt: 'Animações suaves e transições otimizadas para melhor experiência',
+          ar: 'رسوم متحركة سلسة وانتقالات محسنة لتجربة أفضل',
+          ko: '부드러운 애니메이션 및 최적화된 전환으로 더 나은 경험',
+          ja: 'スムーズなアニメーションと最適化されたトランジション',
+          ru: 'Плавные анимации и оптимизированные переходы для лучшего впечатления'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Page lecteur optimisée',
+          en: 'Player page optimized',
+          es: 'Página del reproductor optimizada',
+          de: 'Spielerseite optimiert',
+          it: 'Pagina del lettore ottimizzata',
+          pt: 'Página do player otimizada',
+          ar: 'صفحة اللاعب محسّنة',
+          ko: '플레이어 페이지 최적화됨',
+          ja: 'プレイヤーページの最適化',
+          ru: 'Страница плеера оптимизирована'
+        }, 
+        description: {
+          fr: 'Interface de lecteur revue - chargement plus rapide et ergonomie améliorée',
+          en: 'Player interface reviewed - faster loading and improved ergonomics',
+          es: 'Interfaz del reproductor revisada - carga más rápida y ergonomía mejorada',
+          de: 'Spielerschnittstelle überprüft - schnelleres Laden und verbesserte Ergonomie',
+          it: 'Interfaccia del lettore revisionata - caricamento più veloce e ergonomia migliorata',
+          pt: 'Interface do player revisada - carregamento mais rápido e ergonomia melhorada',
+          ar: 'تم مراجعة واجهة اللاعب - تحميل أسرع وتحسين بيئة العمل',
+          ko: '플레이어 인터페이스 검토됨 - 더 빠른 로딩 및 개선된 인체공학',
+          ja: 'プレイヤーインターフェイスが改定 - 高速読み込みと改善されたエルゴノミクス',
+          ru: 'Интерфейс плеера переработан - более быстрая загрузка и улучшенная эргономика'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Blocage des pubs (EN COURS)',
+          en: 'Ad blocking (IN PROGRESS)',
+          es: 'Bloqueo de anuncios (EN PROGRESO)',
+          de: 'Anzeigenblockierung (IN BEARBEITUNG)',
+          it: 'Blocco annunci (IN CORSO)',
+          pt: 'Bloqueio de anúncios (EM PROGRESSO)',
+          ar: 'حجب الإعلانات (قيد الإنجاز)',
+          ko: '광고 차단 (진행 중)',
+          ja: '広告ブロック (進行中)',
+          ru: 'Блокировка объявлений (В ПРОЦЕССЕ)'
+        }, 
+        description: {
+          fr: 'Système anti-pub avancé en développement - redirection d\'URL intelligente',
+          en: 'Advanced anti-ad system in development - smart URL redirection',
+          es: 'Sistema anti-anuncios avanzado en desarrollo - redirección inteligente de URL',
+          de: 'Fortgeschrittenes Anti-Anzeigen-System in Entwicklung - intelligente URL-Umleitung',
+          it: 'Sistema anti-annunci avanzato in sviluppo - reindirizzamento URL intelligente',
+          pt: 'Sistema anti-anúncios avançado em desenvolvimento - redirecionamento inteligente de URL',
+          ar: 'نظام مضاد للإعلانات متقدم قيد التطوير - إعادة توجيه URL ذكية',
+          ko: '고급 광고 차단 시스템 개발 중 - 스마트 URL 리다이렉션',
+          ja: '高度な広告対策システム開発中 - スマートURL リダイレクト',
+          ru: 'Продвинутая система блокировки объявлений в разработке - умное перенаправление URL'
+        }
+      },
+    ]
+  },
+  {
+    version: "v3.0",
+    date: '14 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Nouveaux lecteurs AutoEmbed & Frembed',
+          en: 'New AutoEmbed & Frembed players',
+          es: 'Nuevos reproductores AutoEmbed y Frembed',
+          de: 'Neue AutoEmbed & Frembed Player',
+          it: 'Nuovi lettori AutoEmbed e Frembed',
+          pt: 'Novos players AutoEmbed e Frembed',
+          ar: 'مشغلات AutoEmbed و Frembed الجديدة',
+          ko: '새로운 AutoEmbed 및 Frembed 플레이어',
+          ja: '新しいAutoEmbedとFrembedプレーヤー',
+          ru: 'Новые плееры AutoEmbed и Frembed'
+        }, 
+        description: {
+          fr: 'AutoEmbed multi-sources HD et Frembed pour les contenus VF/VOSTFR',
+          en: 'AutoEmbed multi-source HD and Frembed for French dubbed/subbed content',
+          es: 'AutoEmbed multi-fuente HD y Frembed para contenido francés',
+          de: 'AutoEmbed Multi-Source HD und Frembed für französische Inhalte',
+          it: 'AutoEmbed multi-sorgente HD e Frembed per contenuti francesi',
+          pt: 'AutoEmbed multi-fonte HD e Frembed para conteúdo francês',
+          ar: 'AutoEmbed متعدد المصادر HD و Frembed للمحتوى الفرنسي',
+          ko: 'AutoEmbed 다중 소스 HD 및 프랑스어 콘텐츠용 Frembed',
+          ja: 'AutoEmbedマルチソースHDとフランス語コンテンツ用Frembed',
+          ru: 'AutoEmbed мульти-источник HD и Frembed для французского контента'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Lecteur universel amélioré',
+          en: 'Enhanced universal player',
+          es: 'Reproductor universal mejorado',
+          de: 'Verbesserter universeller Player',
+          it: 'Lettore universale migliorato',
+          pt: 'Player universal aprimorado',
+          ar: 'مشغل عالمي محسن',
+          ko: '향상된 범용 플레이어',
+          ja: '改良されたユニバーサルプレーヤー',
+          ru: 'Улучшенный универсальный плеер'
+        }, 
+        description: {
+          fr: '10 sources de streaming disponibles avec changement automatique en cas d\'erreur',
+          en: '10 streaming sources available with automatic switching on error',
+          es: '10 fuentes de streaming disponibles con cambio automático en caso de error',
+          de: '10 Streaming-Quellen verfügbar mit automatischem Wechsel bei Fehler',
+          it: '10 fonti di streaming disponibili con cambio automatico in caso di errore',
+          pt: '10 fontes de streaming disponíveis com troca automática em caso de erro',
+          ar: '10 مصادر بث متاحة مع التبديل التلقائي عند الخطأ',
+          ko: '오류 시 자동 전환이 가능한 10개 스트리밍 소스',
+          ja: 'エラー時の自動切り替えが可能な10のストリーミングソース',
+          ru: '10 источников стриминга с автоматическим переключением при ошибке'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Correction des lecteurs dédiés',
+          en: 'Dedicated players fixed',
+          es: 'Reproductores dedicados corregidos',
+          de: 'Dedizierte Player behoben',
+          it: 'Lettori dedicati corretti',
+          pt: 'Players dedicados corrigidos',
+          ar: 'إصلاح المشغلات المخصصة',
+          ko: '전용 플레이어 수정',
+          ja: '専用プレーヤーの修正',
+          ru: 'Исправлены выделенные плееры'
+        }, 
+        description: {
+          fr: 'Tous les lecteurs fonctionnent maintenant correctement avec les bonnes permissions iframe',
+          en: 'All players now work correctly with proper iframe permissions',
+          es: 'Todos los reproductores ahora funcionan correctamente con permisos iframe adecuados',
+          de: 'Alle Player funktionieren jetzt korrekt mit richtigen iframe-Berechtigungen',
+          it: 'Tutti i lettori ora funzionano correttamente con le autorizzazioni iframe corrette',
+          pt: 'Todos os players agora funcionam corretamente com permissões de iframe adequadas',
+          ar: 'جميع المشغلات تعمل الآن بشكل صحيح مع أذونات iframe المناسبة',
+          ko: '모든 플레이어가 이제 적절한 iframe 권한으로 올바르게 작동합니다',
+          ja: 'すべてのプレーヤーが適切なiframe権限で正しく動作するようになりました',
+          ru: 'Все плееры теперь работают корректно с правильными разрешениями iframe'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Design du site amélioré',
+          en: 'Improved site design',
+          es: 'Diseño del sitio mejorado',
+          de: 'Verbessertes Website-Design',
+          it: 'Design del sito migliorato',
+          pt: 'Design do site aprimorado',
+          ar: 'تصميم الموقع المحسن',
+          ko: '개선된 사이트 디자인',
+          ja: 'サイトデザインの改善',
+          ru: 'Улучшенный дизайн сайта'
+        }, 
+        description: {
+          fr: 'Interface plus propre et minimale avec affichage optimisé des sources',
+          en: 'Cleaner and minimal interface with optimized source display',
+          es: 'Interfaz más limpia y minimalista con visualización de fuentes optimizada',
+          de: 'Sauberere und minimale Oberfläche mit optimierter Quellenanzeige',
+          it: 'Interfaccia più pulita e minimale con visualizzazione delle fonti ottimizzata',
+          pt: 'Interface mais limpa e minimalista com exibição de fontes otimizada',
+          ar: 'واجهة أنظف وبسيطة مع عرض محسن للمصادر',
+          ko: '최적화된 소스 표시가 있는 깔끔하고 미니멀한 인터페이스',
+          ja: '最適化されたソース表示を備えたよりクリーンでミニマルなインターフェース',
+          ru: 'Более чистый и минималистичный интерфейс с оптимизированным отображением источников'
+        }
+      },
+    ]
+  },
+  {
+    version: 'v3.8',
+    date: '20 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Thèmes globaux avancés',
+          en: 'Advanced global themes',
+          es: 'Temas globales avanzados',
+          de: 'Erweiterte globale Themen',
+          it: 'Temi globali avanzati',
+          pt: 'Temas globais avançados',
+          ar: 'مواضيع عالمية متقدمة',
+          ko: '고급 글로벌 테마',
+          ja: '高度なグローバルテーマ',
+          ru: 'Продвинутые глобальные темы'
+        }, 
+        description: {
+          fr: '9 nouveaux thèmes appliqués à tout le site avec personnalisation complète',
+          en: '9 new themes applied site-wide with full customization',
+          es: '9 nuevos temas aplicados en todo el sitio',
+          de: '9 neue Themen auf der gesamten Website angewendet',
+          it: '9 nuovi temi applicati in tutto il sito',
+          pt: '9 novos temas aplicados em todo o site',
+          ar: '9 مواضيع جديدة مطبقة في جميع أنحاء الموقع',
+          ko: '사이트 전체에 적용되는 9개의 새로운 테마',
+          ja: 'サイト全体に適用される9つの新しいテーマ',
+          ru: '9 новых тем, применяемых на всем сайте'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Système de recommandations',
+          en: 'Recommendation system',
+          es: 'Sistema de recomendaciones',
+          de: 'Empfehlungssystem',
+          it: 'Sistema di raccomandazioni',
+          pt: 'Sistema de recomendações',
+          ar: 'نظام التوصيات',
+          ko: '추천 시스템',
+          ja: '推奨システム',
+          ru: 'Система рекомендаций'
+        }, 
+        description: {
+          fr: 'Boutons de recommandation fonctionnels avec sauvegarde en base de données',
+          en: 'Working recommendation buttons with database save',
+          es: 'Botones de recomendación funcionales',
+          de: 'Funktionsfähige Empfehlungsschaltflächen',
+          it: 'Pulsanti di raccomandazione funzionanti',
+          pt: 'Botões de recomendação funcionais',
+          ar: 'أزرار التوصيات الفعالة',
+          ko: '작동하는 추천 버튼',
+          ja: '動作する推奨ボタン',
+          ru: 'Работающие кнопки рекомендаций'
+        }
+      },
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Historique de lecture persistant',
+          en: 'Persistent watch history',
+          es: 'Historial de visualización persistente',
+          de: 'Persistente Anschauverlauf',
+          it: 'Cronologia visualizzazione persistente',
+          pt: 'Histórico de exibição persistente',
+          ar: 'سجل المشاهدة المستمر',
+          ko: '지속적인 시청 기록',
+          ja: '永続的な視聴履歴',
+          ru: 'Постоянная история просмотров'
+        }, 
+        description: {
+          fr: 'L\'historique de lecture est maintenant lié au profil utilisateur',
+          en: 'Watch history now tied to user profile',
+          es: 'El historial de visualización está vinculado al perfil de usuario',
+          de: 'Anschauverlauf ist nun mit dem Benutzerprofil verknüpft',
+          it: 'La cronologia visualizzazione è ora collegata al profilo utente',
+          pt: 'O histórico de visualização agora está vinculado ao perfil do usuário',
+          ar: 'سجل المشاهدة الآن مرتبط بملف المستخدم',
+          ko: '시청 기록이 이제 사용자 프로필에 연결되었습니다',
+          ja: '視聴履歴がユーザープロフィールにリンクされました',
+          ru: 'История просмотров теперь связана с профилем пользователя'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Stats améliorées au maximum',
+          en: 'Maximum enhanced stats',
+          es: 'Estadísticas mejoradas al máximo',
+          de: 'Maximal verbesserte Statistiken',
+          it: 'Statistiche migliorate al massimo',
+          pt: 'Estatísticas melhoradas ao máximo',
+          ar: 'إحصائيات محسنة بالحد الأقصى',
+          ko: '최대 향상된 통계',
+          ja: '最大限に強化された統計',
+          ru: 'Максимально улучшенная статистика'
+        }, 
+        description: {
+          fr: 'Système de stats complet avec reviews et recommandations',
+          en: 'Complete stats system with reviews and recommendations',
+          es: 'Sistema de estadísticas completo',
+          de: 'Vollständiges Statistiksystem',
+          it: 'Sistema di statistiche completo',
+          pt: 'Sistema de estatísticas completo',
+          ar: 'نظام إحصائي كامل',
+          ko: '완전한 통계 시스템',
+          ja: '完全な統計システム',
+          ru: 'Полная система статистики'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Affichage des cards amélioré',
+          en: 'Improved card display',
+          es: 'Visualización de tarjetas mejorada',
+          de: 'Verbesserte Kartendarstellung',
+          it: 'Visualizzazione scheda migliorata',
+          pt: 'Exibição de cartão aprimorada',
+          ar: 'عرض البطاقة المحسن',
+          ko: '향상된 카드 디스플레이',
+          ja: '改善されたカード表示',
+          ru: 'Улучшенное отображение карточек'
+        }, 
+        description: {
+          fr: 'UI des cards optimisée pour meilleure lisibilité',
+          en: 'Cards UI optimized for better readability',
+          es: 'UI de tarjetas optimizada',
+          de: 'Karten-UI optimiert',
+          it: 'UI scheda ottimizzata',
+          pt: 'UI de cartão otimizado',
+          ar: 'واجهة المستخدم للبطاقة محسنة',
+          ko: '카드 UI 최적화',
+          ja: 'カード UI が最適化されました',
+          ru: 'Оптимизирован пользовательский интерфейс карточек'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Barre de recherche agrandie',
+          en: 'Enlarged search bar',
+          es: 'Barra de búsqueda ampliada',
+          de: 'Vergrößertes Suchfeld',
+          it: 'Barra di ricerca allargata',
+          pt: 'Barra de pesquisa ampliada',
+          ar: 'شريط البحث الموسع',
+          ko: '확대된 검색 표시줄',
+          ja: '拡大された検索バー',
+          ru: 'Увеличенная строка поиска'
+        }, 
+        description: {
+          fr: 'Barre de recherche plus grande pour meilleure UX',
+          en: 'Larger search bar for better UX',
+          es: 'Barra de búsqueda más grande',
+          de: 'Größeres Suchfeld',
+          it: 'Barra di ricerca più grande',
+          pt: 'Barra de pesquisa maior',
+          ar: 'شريط بحث أكبر',
+          ko: '더 큰 검색 표시줄',
+          ja: 'より大きな検索バー',
+          ru: 'Большая строка поиска'
+        }
+      }
+    ]
+  },
+  {
+    version: 'v3.7',
+    date: '18 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Lecteur recommandé Videasy',
+          en: 'Recommended Videasy player',
+          es: 'Reproductor Videasy recomendado',
+          de: 'Empfohlener Videasy-Player',
+          it: 'Lettore Videasy consigliato',
+          pt: 'Player Videasy recomendado',
+          ar: 'مشغل Videasy الموصى به',
+          ko: '권장 Videasy 플레이어',
+          ja: '推奨Videasyプレーヤー',
+          ru: 'Рекомендуемый плеер Videasy'
+        }, 
+        description: {
+          fr: 'Videasy ajouté comme lecteur léger et recommandé pour tous les utilisateurs',
+          en: 'Videasy added as recommended lightweight player for all users',
+          es: 'Videasy agregado como reproductor ligero recomendado',
+          de: 'Videasy als empfohlener leichter Player hinzugefügt',
+          it: 'Videasy aggiunto come lettore leggero consigliato',
+          pt: 'Videasy adicionado como player leve recomendado',
+          ar: 'تم إضافة Videasy كمشغل خفيف الوزن موصى به',
+          ko: '권장 경량 플레이어로 Videasy 추가',
+          ja: '推奨軽量プレーヤーとしてVideasyを追加',
+          ru: 'Videasy добавлен как рекомендуемый легкий плеер'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Carousel amélioré',
+          en: 'Improved carousel',
+          es: 'Carrusel mejorado',
+          de: 'Verbessertes Karussell',
+          it: 'Carousel migliorato',
+          pt: 'Carrossel aprimorado',
+          ar: 'كاروسيل محسن',
+          ko: '개선된 캐러셀',
+          ja: '改善されたカルーセル',
+          ru: 'Улучшенный карусель'
+        }, 
+        description: {
+          fr: 'Lecteurs mieux organisés dans la barre de navigation',
+          en: 'Players better organized in navigation bar',
+          es: 'Reproductores mejor organizados en la barra de navegación',
+          de: 'Spieler besser in der Navigationsleiste organisiert',
+          it: 'Lettori meglio organizzati nella barra di navigazione',
+          pt: 'Players melhor organizados na barra de navegação',
+          ar: 'تنظيم أفضل للمشغلات في شريط التنقل',
+          ko: '네비게이션 바에서 더 나은 플레이어 구성',
+          ja: 'ナビゲーションバーでより良く整理されたプレーヤー',
+          ru: 'Лучшая организация плееров в навигационной панели'
+        }
+      },
+      { 
+        type: 'ui', 
+        title: { 
+          fr: 'Guide utilisateur dans le lecteur',
+          en: 'User guide in player',
+          es: 'Guía de usuario en el reproductor',
+          de: 'Benutzerhandbuch im Player',
+          it: 'Guida utente nel lettore',
+          pt: 'Guia do usuário no player',
+          ar: 'دليل المستخدم في المشغل',
+          ko: '플레이어의 사용자 가이드',
+          ja: 'プレーヤーのユーザーガイド',
+          ru: 'Руководство пользователя в плеере'
+        }, 
+        description: {
+          fr: 'Info button remplacé par guide complet DNS pour tous les appareils',
+          en: 'Info button replaced with complete DNS guide for all devices',
+          es: 'Botón de información reemplazado con guía DNS completa',
+          de: 'Info-Schaltfläche durch vollständiges DNS-Handbuch ersetzt',
+          it: 'Pulsante info sostituito con guida DNS completa',
+          pt: 'Botão info substituído por guia DNS completo',
+          ar: 'تم استبدال زر المعلومات برليل DNS شامل',
+          ko: '정보 버튼을 전체 DNS 가이드로 교체',
+          ja: '情報ボタンを完全なDNSガイドに置き換え',
+          ru: 'Кнопка инфо заменена на полное руководство DNS'
+        }
+      }
+    ]
+  },
+  {
+    version: 'v3.3',
+    date: '16 Décembre 2025',
+    isNew: false,
+    changes: [
+      { 
+        type: 'feature', 
+        title: { 
+          fr: 'Lecteur Frembed par défaut pour la France',
+          en: 'Frembed player default for France',
+          es: 'Reproductor Frembed predeterminado para Francia',
+          de: 'Frembed-Player Standard für Frankreich',
+          it: 'Lettore Frembed predefinito per la Francia',
+          pt: 'Player Frembed padrão para França',
+          ar: 'مشغل Frembed الافتراضي لفرنسا',
+          ko: '프랑스용 기본 Frembed 플레이어',
+          ja: 'フランス向けFrembedプレーヤーデフォルト',
+          ru: 'Плеер Frembed по умолчанию для Франции'
+        }, 
+        description: {
+          fr: 'Les utilisateurs français ont automatiquement le lecteur Frembed pour les contenus VF/VOSTFR',
+          en: 'French users automatically get Frembed player for VF/VOSTFR content',
+          es: 'Los usuarios franceses obtienen automáticamente el reproductor Frembed',
+          de: 'Französische Benutzer erhalten automatisch den Frembed-Player',
+          it: 'Gli utenti francesi ottengono automaticamente il lettore Frembed',
+          pt: 'Usuários franceses recebem automaticamente o player Frembed',
+          ar: 'يحصل المستخدمون الفرنسيون تلقائيًا على مشغل Frembed',
+          ko: '프랑스 사용자는 자동으로 Frembed 플레이어를 받습니다',
+          ja: 'フランスのユーザーは自動的にFrembedプレーヤーを取得',
+          ru: 'Французские пользователи автоматически получают плеер Frembed'
+        }
+      },
+      { 
+        type: 'improvement', 
+        title: { 
+          fr: 'Page d\'accueil améliorée',
+          en: 'Improved home page',
+          es: 'Página de inicio mejorada',
+          de: 'Verbesserte Startseite',
+          it: 'Home page migliorata',
+          pt: 'Página inicial aprimorada',
+          ar: 'الصفحة الرئيسية المحسنة',
+          ko: '개선된 홈 페이지',
+          ja: '改善されたホームページ',
+          ru: 'Улучшенная главная страница'
+        }, 
+        description: {
+          fr: 'Historique de visionnage et widget de bienvenue corrigés',
+          en: 'Watch history and welcome widget fixed',
+          es: 'Historial de visualización y widget de bienvenida corregidos',
+          de: 'Verlauf und Willkommens-Widget behoben',
+          it: 'Cronologia e widget di benvenuto corretti',
+          pt: 'Histórico e widget de boas-vindas corrigidos',
+          ar: 'إصلاح سجل المشاهدة وويدجت الترحيب',
+          ko: '시청 기록 및 환영 위젯 수정',
+          ja: '視聴履歴とウェルカムウィジェットを修正',
+          ru: 'Исправлена история просмотров и виджет приветствия'
+        }
+      },
+      { 
+        type: 'fix', 
+        title: { 
+          fr: 'Gestion des rôles admin corrigée',
+          en: 'Admin role management fixed',
+          es: 'Gestión de roles de administrador corregida',
+          de: 'Admin-Rollenverwaltung behoben',
+          it: 'Gestione ruoli admin corretta',
+          pt: 'Gerenciamento de funções admin corrigido',
+          ar: 'إصلاح إدارة أدوار المشرف',
+          ko: '관리자 역할 관리 수정',
+          ja: '管理者ロール管理を修正',
+          ru: 'Исправлено управление ролями администратора'
+        },

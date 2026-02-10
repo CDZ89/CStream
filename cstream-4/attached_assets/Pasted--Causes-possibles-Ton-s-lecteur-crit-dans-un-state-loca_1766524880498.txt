@@ -1,0 +1,93 @@
+🔍 Causes possibles
+Ton sélecteur écrit dans un state local mais pas dans le provider global  
+→ Le changement reste isolé et ne se propage pas.
+
+Ton provider de thème (ex: ThemeProvider ou Tailwind class switcher) n’écoute pas la valeur  
+→ Le className ou le context n’est pas mis à jour.
+
+Tu stockes le thème en DB ou localStorage mais tu ne recharges pas le state  
+→ Le sélecteur change la valeur mais l’UI ne se re-render pas.
+
+⚛️ Exemple robuste avec React + Tailwind
+1. Créer un ThemeContext
+tsx
+import { createContext, useContext, useState, useEffect } from 'react';
+
+const ThemeContext = createContext();
+
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+
+  // Charger depuis localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) setTheme(saved);
+  }, []);
+
+  // Appliquer sur <html>
+  useEffect(() => {
+    document.documentElement.className = theme;
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  return useContext(ThemeContext);
+}
+2. Ton sélecteur dans Settings
+tsx
+import { useTheme } from '@/context/ThemeProvider';
+
+export function ThemeSelector() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div className="flex gap-2 items-center">
+      <label className="text-sm">Thème :</label>
+      <select
+        className="bg-neutral-900 text-white border px-2 py-1 rounded"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+      >
+        <option value="light">Clair</option>
+        <option value="dark">Sombre</option>
+        <option value="festive">Festif 🎄</option>
+        <option value="premium">Premium ✨</option>
+      </select>
+    </div>
+  );
+}
+3. Tailwind config pour thèmes
+Dans tailwind.config.js :
+
+js
+module.exports = {
+  darkMode: 'class',
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        festive: '#c0392b',
+        premium: '#2c3e50',
+      },
+    },
+  },
+};
+Et tu peux définir des classes comme :
+
+css
+html.festive {
+  --bg: #c0392b;
+  --text: #fff;
+}
+html.premium {
+  --bg: #2c3e50;
+  --text: #f1c40f;
+}
+👉 Résultat : quand tu cliques sur ton sélecteur, setTheme met à jour le ThemeContext, ça applique la classe sur <html>, et ton UI change instantanément.

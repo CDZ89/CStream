@@ -1,0 +1,195 @@
+# Multilingue pour la page de chat
+
+Tu veux 10 langues, avec arabe, coréen, japonais et russe inclus. Voici comment rendre ta page de chat propre, fonctionnelle et multilingue, avec gestion du RTL, du choix de langue par utilisateur, et traduction des labels (dont badge admin), sans bug.
+
+---
+
+## Langues et codes à supporter
+
+- **Langues:** Français, Anglais, Espagnol, Allemand, Italien, Portugais, Arabe, Coréen, Japonais, Russe
+- **Codes:** fr, en, es, de, it, pt, ar, ko, ja, ru
+
+> Astuce: utilise ISO 639-1 pour la cohérence.
+
+---
+
+## Structure i18n côté front
+
+### Fichiers de traduction
+Crée un répertoire `locales/` avec un fichier par langue (JSON):
+
+```json
+// locales/en.json
+{
+  "chat.title": "Chat",
+  "chat.input.placeholder": "Type a message...",
+  "chat.send": "Send",
+  "chat.new.group": "New group",
+  "chat.add.friend": "Add friend",
+  "chat.admin.badge": "ADMIN",
+  "chat.online": "Online",
+  "chat.offline": "Offline"
+}
+```
+
+```json
+// locales/ar.json
+{
+  "chat.title": "دردشة",
+  "chat.input.placeholder": "اكتب رسالة...",
+  "chat.send": "إرسال",
+  "chat.new.group": "مجموعة جديدة",
+  "chat.add.friend": "إضافة صديق",
+  "chat.admin.badge": "مشرف",
+  "chat.online": "متصل",
+  "chat.offline": "غير متصل"
+}
+```
+
+Fais de même pour `fr.json`, `es.json`, `de.json`, `it.json`, `pt.json`, `ko.json`, `ja.json`, `ru.json`.
+
+### Sélecteur de langue et chargement
+```jsx
+// i18n.js (React simple)
+import { useEffect, useState } from "react";
+
+export function useI18n(defaultLang = "fr") {
+  const [lang, setLang] = useState(localStorage.getItem("lang") || defaultLang);
+  const [t, setT] = useState({});
+
+  useEffect(() => {
+    fetch(`/locales/${lang}.json`)
+      .then(res => res.json())
+      .then(setT);
+    localStorage.setItem("lang", lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = ["ar"].includes(lang) ? "rtl" : "ltr";
+  }, [lang]);
+
+  const translate = (key) => t[key] || key;
+  return { lang, setLang, t: translate };
+}
+```
+
+### Utilisation dans la page chat
+```jsx
+function ChatHeader({ currentChat, userRole }) {
+  const { t } = useI18n();
+  return (
+    <header className="chat-header">
+      <h1>{t("chat.title")}</h1>
+      {userRole === "admin" && <span className="badge">{t("chat.admin.badge")}</span>}
+      <div className="chat-meta">{currentChat?.name}</div>
+    </header>
+  );
+}
+
+function ChatInput({ onSend }) {
+  const { t } = useI18n();
+  const [value, setValue] = useState("");
+  return (
+    <div className="chat-input">
+      <input
+        placeholder={t("chat.input.placeholder")}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <button onClick={() => { onSend(value); setValue(""); }}>
+        {t("chat.send")}
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+## Gestion du RTL, police et layout
+
+- **Direction du texte:** règle `dir="rtl"` pour `ar`, sinon `ltr`. Déjà géré dans `useI18n`.
+- **Polices adaptées:**
+  - **Arabe:** “Noto Naskh Arabic” ou “Noto Sans Arabic”
+  - **Coréen:** “Noto Sans KR”
+  - **Japonais:** “Noto Sans JP”
+  - **Russe:** “Noto Sans”
+- **CSS global:**
+```css
+html[dir="rtl"] body {
+  direction: rtl;
+}
+html[dir="rtl"] .message {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+html[dir="rtl"] .chat-input {
+  flex-direction: row-reverse;
+}
+.badge {
+  background: #d32f2f;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+```
+
+- **Alignement des bulles:**
+  - **Messages envoyés:** alignés à droite en LTR, à gauche en RTL si tu inverses la logique pour cohérence visuelle; ou garde une règle simple: l’auteur local est aligné côté opposé à l’avatar.
+
+---
+
+## Stockage et API pour la langue
+
+- **Profil utilisateur:** ajoute `preferred_language` dans `users`.
+  - **Exemples:** fr, en, es, de, it, pt, ar, ko, ja, ru.
+- **Endpoint profil:**
+  - **GET /api/me** → renvoie `preferred_language`.
+  - **PATCH /api/me** → met à jour `preferred_language`.
+
+```sql
+ALTER TABLE users ADD COLUMN preferred_language VARCHAR(5) DEFAULT 'fr';
+```
+
+```js
+// PATCH /api/me
+app.patch("/api/me", async (req, res) => {
+  const { preferred_language } = req.body;
+  const allowed = ["fr","en","es","de","it","pt","ar","ko","ja","ru"];
+  if (!allowed.includes(preferred_language)) return res.status(400).json({ error: "Invalid language" });
+  await db.users.update(req.user.id, { preferred_language });
+  res.json({ success: true });
+});
+```
+
+Au login, applique la langue:
+```js
+// Après authentification
+const user = await db.users.findById(userId);
+res.json({ user, lang: user.preferred_language });
+```
+
+---
+
+## Traduction des contenus dynamiques et labels
+
+- **Labels UI:** tous passent par i18n (boutons, titres, placeholders, menus).
+- **Contenu utilisateur (messages):** ne pas traduire automatiquement. Affiche tel quel.
+- **Badges et statuts:**
+  - **Badge admin:** traduit via `chat.admin.badge`.
+  - **Statuts:** `chat.online`, `chat.offline`.
+- **Erreurs et notifications:** crée des clés (ex: `errors.network`, `errors.upload.tooLarge`) pour traduire proprement.
+
+---
+
+## Contrôles qualité et anti-bug
+
+- **Validation des langues:** liste blanche côté backend et front.
+- **Fallback propre:** si une clé manque, affiche la clé pour détecter rapidement ou charge `en` en fallback.
+- **Chargement asynchrone:** affiche un petit skeleton pendant `fetch` des locales.
+- **Tests visuels RTL:** vérifie l’alignement des avatars, bulles, input et header en arabe.
+- **Encodage:** sers tes JSON en UTF-8 et définis `<meta charset="utf-8">`.
+
+---
+
+Si tu veux, je peux te fournir les 10 fichiers JSON de base déjà remplis pour tes labels de chat et un snippet complet React pour la page unique “Chat” que tu pourras coller dans ton projet.

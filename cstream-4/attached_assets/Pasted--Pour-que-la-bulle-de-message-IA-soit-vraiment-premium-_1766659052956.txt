@@ -1,0 +1,63 @@
+ Pour que la bulle de message IA soit vraiment premium, clean et hyper fluide (sans effet “bloc”), il faut jouer sur forme, fluidité, micro‑animations et typographie. Voici une recette complète :
+
+🎨 1. Forme et style de la bulle
+Arrondis doux : rounded-2xl ou rounded-3xl pour un look moderne.
+
+Fond dégradé subtil : bg-gradient-to-r from-indigo-50 to-white.
+
+Ombre légère et diffuse : shadow-md shadow-indigo-100 pour donner de la profondeur sans lourdeur.
+
+Padding généreux : px-4 py-3 pour respirer.
+
+tsx
+<div className="inline-block max-w-xl rounded-2xl bg-gradient-to-r from-indigo-50 to-white shadow-md shadow-indigo-100 px-4 py-3 text-neutral-800 leading-relaxed">
+  {message}
+</div>
+✨ 2. Fluidité et animations
+Fade‑in + slide : la bulle apparaît en douceur.
+
+Micro‑interaction au hover : légère élévation (hover:scale-[1.01] hover:shadow-lg).
+
+Transition fluide : transition-all duration-300 ease-out.
+
+tsx
+<div className="transition-all duration-300 ease-out hover:scale-[1.01] hover:shadow-lg animate-fade-in">
+  ...
+</div>
+🧠 3. Typographie premium
+Font light : font-light pour un rendu élégant.
+
+Line height fluide : leading-relaxed.
+
+Couleur douce : text-neutral-800 ou text-slate-700.
+
+🪄 4. Curseur animé (IA qui écrit)
+Ajoute un curseur animé pour renforcer l’effet machine à écrire :
+
+tsx
+<span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse ml-1 rounded-sm" />
+📱 5. Responsive et adaptatif
+Largeur max contrôlée : max-w-xl pour éviter les blocs trop larges.
+
+Wrap naturel : whitespace-pre-wrap break-words.
+
+Safe‑area mobile : pb-[env(safe-area-inset-bottom)].
+
+🧩 Exemple complet (React + Tailwind)
+tsx
+export default function PremiumBubble({ message }: { message: string }) {
+  return (
+    <div className="inline-block max-w-xl rounded-3xl bg-gradient-to-r from-indigo-50 to-white shadow-md shadow-indigo-100 px-4 py-3 text-neutral-800 leading-relaxed font-light whitespace-pre-wrap break-words transition-all duration-300 ease-out hover:scale-[1.01] hover:shadow-lg animate-fade-in">
+      {message}
+      <span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse ml-1 rounded-sm" />
+    </div>
+  );
+}
+🚀 Résultat attendu
+Premium : dégradé subtil, ombre douce, arrondis élégants.
+
+Clean : typo légère, spacing généreux.
+
+Hyper fluide : fade‑in, hover micro‑interaction, curseur animé.
+
+Pas de bloc : largeur max contrôlée, texte qui respire.

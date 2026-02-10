@@ -1,0 +1,84 @@
+Oui exactement Chemsdine 👌 — Supabase gère très bien l’OAuth2 Discord, et ça t’évite de coder tout le flux manuellement. Voici comment configurer ton site `cstream--trte11.replit.app` avec **Supabase Auth + Discord** sans bug :
+
+---
+
+## ⚙️ Étapes de configuration
+
+### 1. Crée ton application Discord
+- Va sur [Discord Developer Portal](https://discord.com/developers/applications).  
+- Crée une nouvelle application (ex. `CStream Verify`).  
+- Récupère ton **Client ID** et **Client Secret**.  
+- Dans **OAuth2 → Redirects**, ajoute :  
+  ```
+  https://<ton-projet>.supabase.co/auth/v1/callback
+  ```
+  (Supabase fournit cette URL automatiquement, tu l’as déjà dans ton dashboard).  
+- Tu peux aussi ajouter ton domaine Replit si tu veux gérer toi-même le callback :  
+  ```
+  https://cstream--trte11.replit.app/api/auth/discord/callback
+  ```
+
+---
+
+### 2. Configurer Supabase
+Dans ton projet Supabase :
+- Va dans **Authentication → Providers → Discord**.  
+- Active Discord.  
+- Renseigne :
+  - **Client ID** (depuis Discord Developer Portal).  
+  - **Client Secret**.  
+- Vérifie que l’URL de redirection est bien celle que tu as mise dans Discord Developer Portal.
+
+---
+
+### 3. Utiliser Supabase côté front
+Dans ton code React/Next.js :
+
+```tsx
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export const loginWithDiscord = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "discord",
+    options: {
+      redirectTo: "https://cstream--trte11.replit.app/verify", // après login
+    },
+  });
+  if (error) console.error(error);
+};
+```
+
+---
+
+### 4. Récupérer l’ID Discord
+- Supabase stocke automatiquement les infos du provider dans `user.identities`.  
+- Tu peux récupérer l’ID Discord de l’utilisateur via :  
+
+```ts
+const user = supabase.auth.getUser();
+console.log(user.identities); // contient l’ID Discord
+```
+
+---
+
+### 5. Synchroniser avec ton bot
+- Quand un utilisateur est vérifié, tu envoies son `Discord ID` à ton bot via une API ou webhook.  
+- Le bot attribue le rôle `Vérifié` dans ton serveur.  
+- Dans ton site, tu affiches « Comptes liés → Discord ✅ ».
+
+---
+
+## 🔒 Points critiques
+- **Redirect URI** : doit être identique dans Discord Developer Portal et Supabase.  
+- **Scopes** : Supabase utilise `identify` par défaut, tu peux ajouter `email` si besoin.  
+- **Permissions bot** : ton bot doit avoir `Manage Roles`.  
+- **Profil lié** : Supabase garde la liaison, donc pas de bug de synchro.
+
+---
+
+👉 Veux‑tu que je te prépare un **exemple complet Replit + Supabase + Discord Bot** avec `/verify` qui envoie l’embed et gère automatiquement la liaison du compte ?

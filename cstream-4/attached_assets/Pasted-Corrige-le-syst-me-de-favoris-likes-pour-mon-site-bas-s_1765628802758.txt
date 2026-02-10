@@ -1,0 +1,50 @@
+Corrige le système de favoris/likes pour mon site basé sur TMDB :
+
+Objectif :
+- Quand un utilisateur clique sur "favoris" ou "like" dans la page d’un média (film, série, etc.), l’action doit être persistée en base de données et visible dans son profil et son historique.
+
+Exigences :
+1. **Persistance fiable**
+   - Créer une table `user_actions` (ou équivalent) avec colonnes :
+     - id (UUID)
+     - user_id (référence vers table users)
+     - media_id (référence vers table medias)
+     - action_type (enum: "favorite", "like")
+     - created_at (timestamp)
+   - Chaque clic enregistre une ligne unique (empêcher doublons avec contrainte UNIQUE sur `(user_id, media_id, action_type)`).
+
+2. **API / Backend**
+   - Endpoint `POST /users/{id}/actions` pour ajouter une action (favoris/like).
+   - Endpoint `GET /users/{id}/actions` pour récupérer toutes les actions (favoris/likes).
+   - Endpoint `DELETE /users/{id}/actions/{media_id}?type=favorite` pour retirer une action.
+   - Validation : vérifier que l’utilisateur est authentifié et que le media existe.
+
+3. **Frontend**
+   - Sur la page média :
+     - Bouton "Favoris" / "Like" déclenche appel API `POST`.
+     - Changement d’état visuel (icône remplie).
+   - Sur la page profil :
+     - Section "Mes favoris" → requête `GET /users/{id}/actions?type=favorite`.
+     - Section "Mes likes" → requête `GET /users/{id}/actions?type=like`.
+   - Sur la page historique :
+     - Afficher toutes les actions triées par `created_at DESC`.
+
+4. **Synchronisation temps réel**
+   - Utiliser WebSocket ou SSE pour mettre à jour le profil/historique en direct quand une action est ajoutée.
+   - Fallback : refresh manuel toutes les 30s si WS indisponible.
+
+5. **Tests**
+   - Ajouter un média en favoris → apparaît dans profil.
+   - Ajouter un like → apparaît dans profil.
+   - Supprimer un favoris → disparaît du profil.
+   - Historique affiche toutes les actions dans l’ordre chronologique.
+   - Empêcher doublons (un même film ne peut pas être ajouté deux fois en favoris par le même utilisateur).
+
+6. **Qualité**
+   - Messages d’erreur clairs si l’action échoue.
+   - Audit log : enregistrer chaque ajout/suppression avec user_id, media_id, action_type, timestamp.
+   - Optimiser requêtes avec index sur `(user_id, action_type)`.
+
+Résultat attendu :
+- Les favoris et likes apparaissent immédiatement dans le profil et l’historique après action.
+- Les données sont persistées sans bug et cohérentes même après refresh ou reconnexion.

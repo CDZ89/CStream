@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "esModuleInterop": true,
+    "declaration": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./scripts/types"
+    ],
+    "allowJs": true
+  },
+  "include": ["scripts/**/*"],
+  "exclude": ["node_modules"]
+}

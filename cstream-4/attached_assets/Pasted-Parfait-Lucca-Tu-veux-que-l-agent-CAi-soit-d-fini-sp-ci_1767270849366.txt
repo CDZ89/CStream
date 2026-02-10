@@ -1,0 +1,109 @@
+Parfait, Lucca ⚡️. Tu veux que **l’agent CAi** soit défini spécifiquement pour la **page Agent** : il doit comprendre que son rôle est de **corriger et améliorer cette page**, en prenant en compte le **design premium sombre minimaliste** et les **capacités TMDB** que tu as décrites.  
+
+Voici le **prompt spécial Agent** que tu peux donner à ton IA Groq pour qu’elle sache exactement quoi faire sur cette page :
+
+---
+
+# 🧠 Prompt Agent — Page Agent (CStream/CAi)
+
+Tu es **l’Agent CAi**.  
+Ton rôle est de **corriger et améliorer la page Agent** de CStream.  
+Tu dois prendre en compte :  
+- Le **design premium minimaliste sombre** (style Apple/Grok/CStream).  
+- L’intégration **TMDB** (cartes médias premium, tableaux, recherche).  
+- La présentation claire des **capacités de l’IA**.  
+- La séparation **public/backend** (public → présentation élégante, backend → logs/tests).  
+
+---
+
+## 🎨 Design attendu
+- Fond sombre premium (`#0a0a0a`), texte blanc, accents bleu/violet.  
+- Carte centrale présentant l’Agent : rôle, statut, contexte.  
+- Tableau premium listant les capacités (TMDB, code, UI/UX, multilingue, analyse).  
+- Boutons minimalistes pour actions rapides (Recherche TMDB, Générer UI, Analyser bug).  
+- Footer discret avec liens (À propos, Contact, API TMDB).  
+
+---
+
+## 📊 Exemple de rendu attendu
+
+```
+🤖 Agent CAi
+🧠 Rôle : Assistant IA avancé
+📌 Contexte : Développement, UI/UX, TMDB, analyse
+⚡ Statut : Actif
+```
+
+| Domaine       | Description                           |
+|---------------|---------------------------------------|
+| 🎬 TMDB       | Recherche films/séries, cartes médias |
+| 🧩 Code       | Génération JS/TS/React/CSS/SQL        |
+| 🎨 UI/UX      | Composants premium minimalistes        |
+| 🌍 Multi-langues | FR, EN, JP, AR, etc.               |
+| 🔍 Analyse    | Bugs, workflows, optimisations         |
+
+Boutons :  
+[ ⚡ Lancer une requête ] [ 🎬 Recherche TMDB ] [ 🧱 Générer UI ] [ 🔍 Analyser un bug ]
+
+---
+
+## 🧩 Exemple de code React/Tailwind
+
+```tsx
+export default function AgentPage() {
+  return (
+    <div className="min-h-screen bg-neutral-950 text-white flex flex-col">
+      <header className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">🤖 Agent CAi</h1>
+        <nav className="flex gap-4 text-neutral-400">
+          <a href="/">Accueil</a>
+          <a href="/agents">Agents</a>
+          <a href="/settings">Paramètres</a>
+        </nav>
+      </header>
+      <main className="flex-1 flex flex-col items-center justify-center p-8 gap-6">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 max-w-md w-full shadow-lg">
+          <h2 className="text-lg font-bold mb-2">Assistant IA avancé</h2>
+          <p className="text-neutral-300 mb-4">
+            Rôle : Développement, UI/UX, TMDB, analyse
+          </p>
+          <p className="text-green-400 font-medium">⚡ Statut : Actif</p>
+        </div>
+        <table className="w-full max-w-2xl text-sm border-collapse border border-neutral-800">
+          <thead>
+            <tr className="bg-neutral-800 text-neutral-300">
+              <th className="p-2 border border-neutral-700">Domaine</th>
+              <th className="p-2 border border-neutral-700">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td className="p-2 border border-neutral-700">🎬 TMDB</td><td className="p-2 border border-neutral-700">Recherche films/séries, cartes médias</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🧩 Code</td><td className="p-2 border border-neutral-700">Génération JS/TS/React/CSS/SQL</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🎨 UI/UX</td><td className="p-2 border border-neutral-700">Composants premium minimalistes</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🌍 Multi-langues</td><td className="p-2 border border-neutral-700">FR, EN, JP, AR, etc.</td></tr>
+            <tr><td className="p-2 border border-neutral-700">🔍 Analyse</td><td className="p-2 border border-neutral-700">Bugs, workflows, optimisations</td></tr>
+          </tbody>
+        </table>
+        <div className="flex gap-3 mt-4">
+          <button className="px-3 py-2 bg-white text-black rounded-md">⚡ Lancer une requête</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md">🎬 Recherche TMDB</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md">🧱 Générer UI</button>
+          <button className="px-3 py-2 bg-neutral-800 text-white rounded-md">🔍 Analyser un bug</button>
+        </div>
+      </main>
+      <footer className="px-6 py-4 border-t border-neutral-800 text-neutral-500 text-sm">
+        © 2026 CStream · Powered by CAi
+      </footer>
+    </div>
+  );
+}
+```
+
+---
+
+👉 Avec ce prompt et ce design, ton **agent Groq** saura que la **page Agent** doit être corrigée et améliorée en respectant :  
+- **Design premium sombre minimaliste**  
+- **Présentation claire des capacités**  
+- **Intégration TMDB**  
+
+Veux-tu que je te prépare aussi la **version backend privée** de la page Agent (où l’IA affiche ses logs et tests TMDB) ?

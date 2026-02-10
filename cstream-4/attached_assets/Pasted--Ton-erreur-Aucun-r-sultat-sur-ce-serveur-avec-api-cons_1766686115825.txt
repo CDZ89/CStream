@@ -1,0 +1,63 @@
+**Ton erreur "Aucun résultat sur ce serveur" avec `api.consumet.org` peut venir d’un endpoint mal formé, d’un contenu introuvable, ou d’un problème de proxy/CORS. Il faut vérifier l’URL, les paramètres, et la disponibilité du contenu demandé.**
+
+---
+
+### 🔍 Étapes de diagnostic pour `api.consumet.org`
+
+Voici les causes les plus fréquentes et comment les corriger :
+
+#### 1. **Endpoint incorrect ou mal formé**
+- Vérifie que tu utilises bien un endpoint valide comme :
+  ```
+  https://api.consumet.org/meta/anilist/{query}
+  https://api.consumet.org/movies/{provider}/{query}
+  ```
+- Exemple correct :
+  ```ts
+  fetch("https://api.consumet.org/meta/anilist/one piece")
+  ```
+
+#### 2. **Contenu introuvable**
+- Si tu cherches un titre qui n’existe pas ou mal orthographié, l’API retourne souvent un message comme "Aucun résultat".
+- Teste avec des titres populaires pour valider :
+  ```ts
+  fetch("https://api.consumet.org/meta/anilist/naruto")
+  ```
+
+#### 3. **Problème de proxy ou CORS**
+- Si tu fais des requêtes directement depuis le navigateur (React), tu peux avoir des erreurs CORS.
+- Solution : utilise un proxy comme [AllOrigins](https://allorigins.win) ou ton propre backend.
+
+```ts
+fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent("https://api.consumet.org/meta/anilist/naruto")}`)
+```
+
+#### 4. **API temporairement indisponible**
+- Vérifie sur [GitHub Consumet](https://github.com/consumet/consumet.ts) ou [status page](https://status.consumet.org) s’il y a des interruptions.
+
+---
+
+### 🧪 Test rapide avec Postman ou curl
+
+```bash
+curl https://api.consumet.org/meta/anilist/naruto
+```
+
+Si ça marche ici mais pas dans ton app, c’est probablement un souci de CORS ou de frontend.
+
+---
+
+### 🛠️ Conseils pour React
+
+```ts
+useEffect(() => {
+  fetch("https://api.consumet.org/meta/anilist/naruto")
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error("Erreur API:", err));
+}, []);
+```
+
+---
+
+Tu veux que je t’aide à créer un proxy ultra léger pour contourner CORS ou à intégrer ça proprement dans ton app avec gestion d’erreurs et fallback ?

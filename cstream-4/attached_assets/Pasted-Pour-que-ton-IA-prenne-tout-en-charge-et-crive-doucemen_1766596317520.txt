@@ -1,0 +1,109 @@
+Pour que ton IA **prenne tout en charge** et écrive **doucement, avec effet flou → net**, en respectant **Markdown complet (titres, listes, tableaux, code)**, voilà le cahier technique que tu dois implémenter :
+
+---
+
+## 🎨 Effet d’écriture live
+- **Streaming token par token** : chaque caractère arrive séparément.
+- **Effet flou → net** : chaque token est inséré avec une classe `.token-blur`, puis devient net après 200–300ms.
+  ```css
+  .token-blur {
+    filter: blur(2.6px);
+    opacity: 0.85;
+    transition: filter .28s ease, opacity .28s ease;
+  }
+  .token-blur.done {
+    filter: blur(0px);
+    opacity: 1;
+  }
+  ```
+- **Vitesse contrôlée** : ajoute un petit délai par token pour simuler une frappe humaine.
+
+---
+
+## 📝 Markdown complet
+- Utilise **Marked.js** + **DOMPurify** pour parser et sécuriser le Markdown.
+- Active les options :
+  - Titres (`#`, `##`, `###`)
+  - Listes (`-`, `1.`)
+  - Tableaux (`| Col1 | Col2 |`)
+  - Blockquotes (`> citation`)
+  - Code inline et blocs (`\`` et ```lang```)
+
+---
+
+## 💻 Blocs de code premium
+- **Highlight.js** pour la coloration syntaxique.
+- Ajoute un **badge du langage** en haut du bloc.
+- Bouton **Copier** :
+  ```js
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copier';
+  btn.onclick = async () => {
+    await navigator.clipboard.writeText(block.textContent);
+    btn.textContent = 'Copié ✅';
+    setTimeout(() => btn.textContent = 'Copier', 1200);
+  };
+  pre.appendChild(btn);
+  ```
+
+---
+
+## 🔗 Liens enrichis
+- Toujours écrire `[Titre du lien](URL)`.
+- Après rendu, ajoute une **carte enrichie** :
+  - Favicon (`url.origin + '/favicon.ico'`)
+  - Titre du lien
+  - Domaine
+- Exemple :
+  ```html
+  <div class="link-card">
+    <img src="favicon.ico" class="favicon">
+    <div class="meta">
+      <div class="title">Titre du lien</div>
+      <div class="url">domaine.com</div>
+    </div>
+  </div>
+  ```
+
+---
+
+## 📊 Tableaux
+- Style premium :
+  ```css
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.6em 0;
+  }
+  th, td {
+    border: 1px solid #1b2433;
+    padding: 8px;
+    text-align: left;
+  }
+  ```
+
+---
+
+## ⚡️ Pipeline de rendu
+1. **Buffer texte** → accumule les tokens.
+2. **Renderer** :
+   - Ajoute chaque token avec `.token-blur`.
+   - Tous les ~150 caractères, re-render Markdown complet pour appliquer styles.
+3. **Finalisation** → re-render Markdown complet une fois la réponse terminée.
+
+---
+
+## 🗂️ Résumé des features
+- ✅ Écriture douce, flou → net
+- ✅ Markdown complet (titres, listes, tableaux, blockquotes)
+- ✅ Code premium (highlight, badge, copier)
+- ✅ Liens enrichis (favicon, titre, domaine)
+- ✅ Tableaux stylés
+- ✅ Historique persistant
+- ✅ Widgets (météo, plan/todo)
+
+---
+
+👉 En clair : ton IA doit **imiter un humain qui tape doucement**, tout en donnant un rendu **premium et interactif**.  
+Tu veux que je te livre un **snippet complet de renderer** (JS) qui gère à la fois le flou token par token ET le re-render Markdown (titres, tableaux, code, liens enrichis) ?

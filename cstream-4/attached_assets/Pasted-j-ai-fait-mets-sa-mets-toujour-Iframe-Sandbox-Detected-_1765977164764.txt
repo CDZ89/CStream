@@ -1,0 +1,46 @@
+j'ai fait mets sa mets toujour : Iframe Sandbox Detected This iframe has sandbox restrictions that prevent proper functionality. Technical Details: The iframe element has sandbox attribute restrictions that block script execution and form submissions. This prevents the video player from functioning correctly.
+Ok Chems, je comprends bien ton problème : même après avoir “tout donné” dans l’attribut sandbox, tu tombes toujours sur le message Iframe Sandbox Detected. Ça veut dire que ton lecteur est vraiment exécuté dans un contexte sandboxé, et donc ses scripts/formulaires sont bloqués.
+
+👉 Point clé : si ton iframe contient l’attribut sandbox sans allow-scripts et allow-same-origin, le navigateur bloque l’exécution du player. Mais même avec ces flags, certains lecteurs refusent de fonctionner dans un sandbox, car ils ont besoin d’un vrai contexte non restreint.
+
+🚨 Ce qu’il faut vérifier
+Ton code HTML :
+
+Si tu as quelque chose comme :
+
+html
+<iframe src="..." sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"></iframe>
+→ Ça autorise beaucoup, mais reste un sandbox. Certains players détectent juste la présence de sandbox et se bloquent.
+
+Solution radicale :
+
+Supprime complètement l’attribut sandbox :
+
+html
+<iframe src="..." allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+→ Là, tu n’es plus dans un contexte sandbox, donc le player ne devrait plus afficher ce message.
+
+Headers serveur :
+
+Si le site distant envoie X-Frame-Options: DENY ou Content-Security-Policy: frame-ancestors 'none', alors même sans sandbox, ça bloquera. Dans ce cas, tu ne peux rien forcer côté client.
+
+🛠️ Stratégie pour ton multi-lecteur
+Détecter si l’iframe est sandboxée (par exemple, via un flag dans ta config).
+
+Ne pas mettre sandbox par défaut. Mets-le uniquement si tu as une source interne qui l’exige.
+
+Fallback : si une source refuse de marcher sans sandbox, affiche un message clair et propose d’ouvrir dans un nouvel onglet.
+
+Exemple ultra permissif (à tester)
+html
+<iframe 
+  src="https://player.example.com" 
+  allow="autoplay; fullscreen; picture-in-picture; encrypted-media" 
+  allowfullscreen
+  referrerpolicy="strict-origin-when-cross-origin"
+  loading="lazy"
+  style="border:0;width:100%;height:100%;">
+</iframe>
+⚡ En résumé : le simple fait d’avoir sandbox dans ton iframe déclenche ce blocage. Si tu veux “obliger” le player à marcher, il faut retirer complètement l’attribut sandbox. Sinon, tu seras toujours limité.
+
+Tu veux que je t’aide à refactoriser ton composant multi-sources pour qu’il n’ajoute jamais sandbox par défaut et qu’il gère automatiquement les cas où une source l’impose ?

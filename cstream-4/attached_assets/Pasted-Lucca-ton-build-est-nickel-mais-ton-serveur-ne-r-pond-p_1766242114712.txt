@@ -1,0 +1,72 @@
+Lucca, ton build est nickel ✅ mais ton **serveur ne répond pas au health check** car il n’ouvre pas le port attendu par la plateforme. C’est exactement ce que disent les logs : *“a port configuration was specified but the required port was never opened”*.  
+
+---
+
+## 🔎 Pourquoi ça bloque
+- Sur Replit/Render/Vercel, l’hébergeur définit une variable d’environnement `PORT` (ex. 5000).  
+- Ton `server.js` doit écouter **sur `process.env.PORT`** et répondre immédiatement sur `/`.  
+- Si tu utilises un port fixe (3000) ou si `/` ne renvoie rien, le health check échoue.
+
+---
+
+## ✅ Correction immédiate
+
+### 1. Mets à jour ton `server.js`
+```js
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// ✅ Health check rapide
+app.get("/", (req, res) => {
+  res.status(200).send("✅ CStream is alive and healthy!");
+});
+
+// ✅ Servir le build Vite
+app.use(express.static(path.join(__dirname, "dist")));
+
+// ✅ Catch-all pour React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+});
+```
+
+---
+
+### 2. Mets à jour tes scripts dans `package.json`
+```json
+"scripts": {
+  "build": "cd project && vite build",
+  "serve": "cd project && node server.js",
+  "prod": "npm run build && npm run serve"
+}
+```
+
+---
+
+### 3. Vérifie `.replit`
+Ton `.replit` doit lancer la commande qui ouvre le port :
+```
+run = "npm run serve"
+```
+
+---
+
+## 🚀 Résultat
+- Le serveur démarre **vite** sur `process.env.PORT`.  
+- Le health check sur `/` reçoit un **200 OK** instantané.  
+- Ton déploiement passe enfin la validation.  
+
+---
+
+👉 Si tu veux, je peux te donner le **diff exact** (avant/après) de ton `server.js` et `package.json` pour que tu puisses copier‑coller sans rien casser. Veux‑tu que je te prépare ça ?

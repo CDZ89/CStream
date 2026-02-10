@@ -1,0 +1,85 @@
+Améliore la page film pour qu’elle soit ultra complète, stable, performante et sans bug, avec une mise en page et une typographie optimisées :
+
+1. Bloc principal du film
+   - Titre du film en grand (H1), centré ou aligné à gauche selon design :
+     - Police personnalisée (cinématographique, élégante, lisible).
+     - Taille dominante (ex. 48–64px desktop, 28–32px mobile).
+     - Espacement généreux au-dessus et en dessous pour isoler le titre.
+     - Option d’ombre portée ou contour léger pour donner du relief.
+   - Affiche principale (poster haute résolution) placée à gauche ou en haut, mais le titre reste indépendant et lisible même sans affiche.
+   - Score/notation visible (moyenne + nombre de votes, avec étoiles ou jauge circulaire).
+   - Actions utilisateur regroupées sous le titre :
+     - Favoris, Watchlist, Noter, Partager.
+     - Icônes uniformes, labels clairs.
+     - Feedback visuel (état actif/inactif).
+   - État non connecté → modal “Login Required!” avec options Close / Proceed to Login, redirection après connexion.
+
+2. Métadonnées
+   - Date de sortie (jour, mois, année, pays).
+   - Durée formatée (ex. 1h 47m).
+   - Genres cliquables (boutons ou tags).
+   - Sociétés de production (logo + nom cliquable).
+   - Réalisateurs (portrait + nom + rôle).
+   - Pays d’origine, langue originale, budget et box-office si disponibles.
+   - Disposition en grille ou colonnes pour éviter surcharge.
+
+3. Sections de contenu
+   - Overview : synopsis complet du film, paragraphe lisible avec interligne suffisant.
+   - Galerie d’images/backdrops : mosaïque responsive avec lazy loading, zoom au clic.
+   - Collection : liste des autres films de la saga avec affiche + année, navigation fluide.
+   - Reviews :
+     - Auteur + avatar.
+     - Note (ex. Rated: 8/9/7).
+     - Date relative (ex. 17 days ago).
+     - Extrait du texte + bouton “Lire plus”.
+   - Cast & Credits :
+     - Grille de portraits (taille uniforme).
+     - Nom + rôle (ex. Judy Hopps (voice)).
+     - Bouton “Show All” pour charger plus.
+   - Recommendations & Similar :
+     - Grille de films suggérés avec affiche + titre.
+     - Hover → affiche résumé rapide.
+
+4. Disposition et hiérarchie visuelle
+   - **Titre** : premier élément visible, police forte, isolé.
+   - **Affiche** : secondaire, placée à gauche ou en haut, mais ne masque jamais le titre.
+   - **Score et actions** : regroupés sous le titre pour cohérence.
+   - **Métadonnées** : disposées en colonnes ou blocs compacts sous les actions.
+   - **Sections** : chaque section démarre par un titre clair (Overview, Reviews, Cast, Recommendations).
+   - **Grilles** : responsive, 2–6 colonnes selon écran.
+   - **Espacements** : marges régulières entre sections pour respirer.
+
+5. Interactions et comportements
+   - Favoris/Watchlist persistants en base, visibles dans profil/historique.
+   - Notation enregistrée et affichée dans le score global.
+   - Genres/Production cliquables → recherche filtrée.
+   - Modal login déclenché si action protégée.
+   - Lazy loading pour images et cast.
+   - Responsive : grille fluide, sections empilées sur mobile.
+   - Infinite scroll ou pagination pour longues listes (reviews, cast).
+   - Notifications discrètes (toast) pour succès/erreur.
+
+6. Accessibilité et qualité
+   - Navigation clavier complète (tab order logique).
+   - ARIA labels pour boutons, modals, images.
+   - Texte lisible avec interligne suffisant et largeur max.
+   - Contraste respectant WCAG 2.1 AA.
+   - Feedback visuel pour focus et hover.
+   - Modals accessibles (focus piégé, fermeture par ESC).
+
+7. Performances
+   - Minification CSS/JS.
+   - Cache navigateur pour images et scripts.
+   - CDN pour assets.
+   - Lazy load pour médias lourds.
+   - Préchargement des données critiques (titre, affiche, score).
+   - Optimisation SEO : balises meta, structured data (schema.org Movie).
+
+8. Tests et critères d’acceptation
+   - Affichage complet : overview, collection, reviews, cast, recommendations.
+   - Actions persistantes : favoris/watchlist/notation restent après refresh.
+   - Modal login : apparaît correctement et redirige après connexion.
+   - Responsive : page lisible sur desktop, tablette, mobile.
+   - Performance : temps de chargement < 3s, interactions < 250ms.
+   - Accessibilité : navigation clavier, ARIA labels, contrastes validés.
+   - Données cohérentes : genres, production, cast reliés à API.

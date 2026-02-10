@@ -1,0 +1,44 @@
+Créer un site web moderne et minimaliste inspiré du style de CinemaDeck (section Movies). Le design doit être épuré, professionnel et immersif, avec une ambiance hivernale subtile (neige propre, atmosphère festive discrète) tout en restant centré sur le contenu multimédia.
+
+🎨 Palette de couleurs :
+- Fond principal : noir profond (#0b0f14) ou gris anthracite
+- Texte : blanc pur (#ffffff) et gris clair (#e5e7eb)
+- Accents : rouge mat (#B00020) et vert sapin (#0F5132) pour rappeler Noël
+- Hover/active : gris métallique doux, doré discret
+
+📐 Mise en page :
+- Grille responsive avec cartes de films alignées
+- Sections aérées, marges généreuses
+- Navigation horizontale simple en haut (logo + menu minimaliste)
+- Barre de recherche centrée, sobre et fonctionnelle
+- Cartes de films avec affiches rectangulaires, titres en dessous, rating discret
+
+🖼️ Style visuel :
+- Minimalisme moderne, sans scintillement ni effets tape-à-l’œil
+- Fond sombre avec overlay neige discret (texture légère, semi-transparente)
+- Cartes de films avec coins légèrement arrondis
+- Icônes vectorielles simples (loupe, favoris, profil)
+- Effet hover sobre : légère mise en avant de la carte (scale 1.02, ombre douce)
+
+🔠 Typographie :
+- Police sans-serif moderne (ex. Inter, Poppins, Roboto)
+- Titres en blanc ou rouge mat
+- Sous-titres en gris clair
+- Corps de texte en gris moyen
+- Style uniforme, lisible, sans décorations excessives
+
+🎄 Ambiance Noël minimaliste :
+- Overlay neige propre en arrière-plan (flocons fins, semi-transparents, chute lente)
+- Logo adapté avec une touche festive (sapin stylisé ou bonnet rouge minimal)
+- Favicons saisonniers (icône de sapin ou boule de Noël minimaliste)
+- Pas de scintillement, pas d’animations lourdes
+- Atmosphère calme et élégante, inspirée du design scandinave
+
+✨ Expérience utilisateur :
+- Navigation fluide et intuitive
+- Chargement rapide des cartes de films
+- Transitions discrètes (fade-in/fade-out)
+- Accessibilité respectée (contrastes forts, textes lisibles)
+
+🎁 Résultat attendu :
+Un site web moderne, minimaliste et immersif, inspiré du style CinemaDeck Movies, avec une ambiance hivernale subtile et propre. Le design doit être centré sur les films, sobre et élégant, avec une touche festive discrète (neige, couleurs de Noël), parfaitement adapté à une plateforme multimédia.

@@ -1,0 +1,65 @@
+Créer un site web moderne, premium et minimaliste, inspiré des grandes plateformes de streaming (Netflix, CineBolt, CinemaDeck), avec une ambiance festive hivernale élégante. Le design doit être sobre, immersif et parfaitement cohérent, centré sur l’expérience utilisateur et la qualité visuelle.
+
+🎨 Palette de couleurs :
+- Fond principal : noir profond (#0b0f14) ou gris anthracite
+- Texte : blanc pur (#ffffff), gris clair (#e5e7eb)
+- Accents : rouge mat (#B00020), vert sapin (#0F5132), doré discret (#d4af37)
+- Hover/active : gris métallique doux, effet lumineux subtil
+- Contraste fort pour lisibilité optimale
+
+📐 Structure & Layout :
+- Header fixe avec logo minimaliste à gauche et menu horizontal clair (Home, Movies, Series, Trending, My List, Contact)
+- Hero section immersive avec slogan fort et mise en avant de la qualité (ex. “Stream in 4K Ultra HD”)
+- Catalogue en grille responsive avec cartes rectangulaires (affiches de films/séries)
+- Hover sur cartes : zoom léger (scale 1.02), ombre douce, titre mis en avant
+- Footer complet avec liens support (FAQ, Contact, Account), légaux (Terms, Privacy, DMCA), et mention “Powered by TMDB”
+
+🔠 Typographie :
+- Police sans-serif moderne (Inter, Poppins, Roboto)
+- Titres : blancs ou rouges mats, gras, taille large
+- Sous-titres : gris clair, taille moyenne
+- Texte courant : gris moyen, lisible, sobre
+- Style uniforme, pensé pour lisibilité sur fond sombre
+
+🖼️ Composants UI :
+- Cartes de contenu : affiches rectangulaires, coins arrondis, hover subtil
+- Boutons : rectangulaires, arrondis, fond rouge ou vert sapin, hover avec teinte plus claire et ombre discrète
+- Barre de recherche : centrée, sobre, icône de loupe minimaliste
+- Icônes vectorielles simples (loupe, favoris, profil), monochromes, cohérentes avec la palette sombre
+- Navigation fluide et intuitive, sans surcharge
+
+✨ Micro-interactions & Animations :
+- Transitions discrètes (fade-in/fade-out) pour le contenu
+- Hover states subtils (zoom léger, ombre douce)
+- Chargement avec skeletons élégants au lieu de spinner seul
+- Feedback utilisateur sobre et élégant
+
+🎄 Ambiance festive :
+- Overlay neige discret en arrière-plan (flocons fins, semi-transparents, chute lente)
+- Logo adapté avec touche festive (sapin stylisé ou bonnet rouge minimal)
+- Favicons saisonniers (boule de Noël minimaliste)
+- Palette ajustée : rouge mat + vert sapin + blanc neige
+- Atmosphère chaleureuse et élégante, inspirée du design scandinave
+
+⚙️ Fonctionnalités :
+- Streaming en qualité 4K Ultra HD
+- Catalogue riche : films, séries, tendances, liste personnalisée
+- Compte utilisateur avec gestion de préférences et favoris
+- Communauté intégrée (ex. lien Discord)
+- Support complet : aide, contact, FAQ
+- Base fiable alimentée par TMDB
+
+♿ Accessibilité :
+- Contraste WCAG AA minimum
+- Navigation clavier fluide avec focus-visible
+- ARIA labels pour cartes et boutons
+- Alt text descriptif pour affiches
+
+🚀 Performance :
+- Lazy-load des images avec `loading="lazy"`
+- Skeletons pour affichage instantané
+- Prefetch des pages de détails au hover
+- Build optimisé avec Vite et tree-shaking
+
+🎁 Résultat attendu :
+Un site web premium, minimaliste et immersif, avec une ambiance festive élégante. Le design doit être centré sur l’expérience utilisateur, sobre et moderne, avec une touche hivernale discrète (neige, couleurs de Noël). Chaque élément doit être cohérent, épuré et parfaitement intégré dans une interface moderne et responsive.

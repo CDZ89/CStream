@@ -1,0 +1,68 @@
+1. Erreur ADMIN_GROUP_UUID is not defined
+Ton code essaie d’envoyer un message dans le groupe admin en utilisant une constante ADMIN_GROUP_UUID… mais elle n’existe pas.
+
+Solution immédiate :
+
+Crée un vrai enregistrement dans ta table groups (par ex. admin_group).
+
+Récupère son id (UUID généré par Supabase).
+
+Définis une constante dans ton code :
+
+ts
+export const ADMIN_GROUP_UUID = '<uuid réel du groupe admin>';
+Utilise ce group_id pour insérer dans group_messages au lieu d’un receiver_id fictif.
+
+2. Erreur ajout d’ami : “Profil du destinataire n’a pas pu être synchronisé”
+Cela veut dire que tu passes un friend_id qui n’existe pas dans auth.users.
+
+Solution immédiate :
+
+Le destinataire doit avoir un compte créé via Supabase Auth → donc une ligne dans auth.users.
+
+Vérifie avec :
+
+sql
+SELECT id, email FROM auth.users WHERE email = 'destinataire@example.com';
+Si rien n’est retourné → crée un deuxième compte de test (signup via ton app ou via Supabase Auth API).
+
+Ensuite, assure-toi que profiles.id = auth.users.id pour ce compte.
+
+Ton insert doit utiliser ce profiles.id comme friend_id.
+
+3. Correctifs côté code
+Ajout d’ami
+ts
+const { data: meRes } = await supabase.auth.getUser();
+const senderId = meRes.user.id;
+
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('id')
+  .eq('username', friendUsername)
+  .single();
+
+if (!profile?.id) throw new Error('Profil du destinataire non synchronisé');
+
+await supabase.from('friendships').insert({
+  user_id: senderId,
+  friend_id: profile.id
+});
+Message dans groupe admin
+ts
+const { data: meRes } = await supabase.auth.getUser();
+const senderId = meRes.user.id;
+
+await supabase.from('group_messages').insert({
+  group_id: ADMIN_GROUP_UUID, // défini avec l’UUID réel du groupe
+  sender_id: senderId,
+  content: 'Message pour le groupe admin'
+});
+🎯 Plan d’action
+Créer un vrai groupe admin dans ta table groups et récupérer son UUID → définir ADMIN_GROUP_UUID.
+
+Créer un deuxième compte de test via Supabase Auth pour que friend_id existe dans auth.users.
+
+Toujours utiliser profiles.id (qui = auth.users.id) pour friend_id et receiver_id.
+
+Retester : ajout d’ami et envoi de message doivent passer sans FK error.

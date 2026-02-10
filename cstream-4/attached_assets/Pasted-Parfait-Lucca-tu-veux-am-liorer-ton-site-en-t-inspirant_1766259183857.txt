@@ -1,0 +1,122 @@
+Parfait Lucca ⚡ — tu veux améliorer ton site en t’inspirant du style de **CineBolt.net**. Je vais te livrer une **analyse ultra‑complète du style**, avec des recommandations concrètes pour que tu puisses adapter ton projet (React + Vite + TypeScript + CSS) et obtenir un rendu premium, minimaliste et immersif.  
+
+---
+
+# 🎬 Style complet de CineBolt.net — et comment l’adapter
+
+## 🖥️ Identité & Branding
+- **Nom & énergie :** CineBolt joue sur l’idée de vitesse et de puissance (⚡).  
+- **Slogan :** *“Bolt Into Movies”* → accès immédiat au divertissement.  
+- **À appliquer chez toi :**
+  - Choisis un **mot‑clé fort** (énergie, instantanéité, immersion).  
+  - Ajoute un **symbole simple** (éclair, flèche, cercle) dans ton logo.  
+  - Garde un ton premium et direct dans tes slogans.  
+
+---
+
+## 🎨 Palette de couleurs
+- **Fond :** noir profond (#0b0f14) → immersion totale.  
+- **Texte :** blanc pur (#ffffff), gris clair (#e5e7eb).  
+- **Accents :** rouge mat (#B00020), bleu électrique (#2563eb), doré discret.  
+- **À appliquer chez toi :**
+  - Mets ton **fond en noir/gris anthracite** pour un effet cinéma.  
+  - Utilise **blanc/gris clair** pour la lisibilité.  
+  - Ajoute une **couleur accent unique** (rouge ou vert sapin pour Noël).  
+
+---
+
+## 📐 Structure & Layout
+- **Header :**
+  - Logo à gauche, menu horizontal clair (*Home, Movies, Series, Trending, My List*).  
+  - Zone utilisateur à droite (profil, connexion).  
+- **Hero section :**
+  - Texte marketing fort, centré sur la qualité (ex. *“Stream in 4K Ultra HD”*).  
+- **Catalogue :**
+  - Grille responsive de cartes (affiches rectangulaires).  
+  - Hover : zoom léger + ombre douce.  
+- **Footer :**
+  - Liens support (FAQ, Contact).  
+  - Liens légaux (Terms, Privacy, DMCA).  
+  - Mention “Powered by TMDB”.  
+- **À appliquer chez toi :**
+  - Structure ton site en **header / hero / catalogue / footer**.  
+  - Garde une **navigation horizontale simple**.  
+  - Mets en avant un **argument clé** (qualité, rapidité, exclusivité).  
+
+---
+
+## 🔠 Typographie
+- **Police :** sans‑serif moderne (Inter, Poppins, Roboto).  
+- **Titres :** blancs ou rouges mats, gras.  
+- **Sous‑titres :** gris clair.  
+- **Texte courant :** gris moyen.  
+- **À appliquer chez toi :**
+  - Choisis une **police sobre et moderne** (Inter ou Poppins).  
+  - Garde un **contraste fort** (titres blancs sur fond noir).  
+  - Uniformise les tailles pour la lisibilité.  
+
+---
+
+## 🖼️ Composants UI
+- **Cartes de films/séries :**
+  - Affiches rectangulaires, coins arrondis.  
+  - Hover : zoom léger, ombre douce.  
+- **Boutons :**
+  - Rectangulaires, arrondis, fond rouge ou bleu.  
+  - Hover : teinte plus claire, ombre subtile.  
+- **Barre de recherche :**
+  - Sobre, centrée, icône de loupe minimaliste.  
+- **À appliquer chez toi :**
+  - Crée des **cards uniformes** pour tes contenus.  
+  - Ajoute des **hover states subtils**.  
+  - Garde des **boutons minimalistes** avec une couleur accent.  
+
+---
+
+## ✨ Micro‑interactions & Animations
+- **Transitions :** fade‑in/fade‑out pour le contenu.  
+- **Hover :** zoom léger sur cartes.  
+- **Chargement :** spinner discret.  
+- **À appliquer chez toi :**
+  - Utilise des **animations CSS légères** (opacity, transform).  
+  - Évite les scintillements ou effets lourds.  
+  - Mets des **feedbacks sobres** (hover, focus).  
+
+---
+
+## ⚙️ Fonctionnalités
+- **Streaming 4K Ultra HD** → argument central.  
+- **Catalogue riche** → films, séries, tendances, liste personnalisée.  
+- **Compte utilisateur** → gestion de préférences.  
+- **Communauté** → lien Discord.  
+- **À appliquer chez toi :**
+  - Mets en avant ton **argument clé** (rapidité, qualité, exclusivité).  
+  - Ajoute une **section “Trending”** pour dynamiser ton contenu.  
+  - Propose une **liste personnalisée** (favoris).  
+
+---
+
+## 🎄 Adaptation festive
+- **Overlay neige discret** (flocons fins, semi‑transparents).  
+- **Logo adapté** (sapin stylisé ou bonnet rouge minimal).  
+- **Favicons saisonniers** (boule de Noël minimaliste).  
+- **Palette ajustée :** rouge mat + vert sapin + blanc neige.  
+- **À appliquer chez toi :**
+  - Ajoute un **overlay CSS neige** léger.  
+  - Mets une **version festive de ton logo**.  
+  - Change tes **tokens de couleurs** pour Noël.  
+
+---
+
+## ✅ Résumé pour ton site
+- **Fond sombre + texte clair** → immersion cinéma.  
+- **Navigation simple** → header minimaliste.  
+- **Catalogue en cartes** → affiches rectangulaires, hover subtil.  
+- **Typographie moderne** → Inter/Poppins, titres blancs, sous‑titres gris.  
+- **Animations sobres** → fade‑in, zoom léger.  
+- **Branding fort** → logo + slogan énergique.  
+- **Festif minimaliste** → neige discrète, palette rouge/vert/blanc.  
+
+---
+
+👉 Veux‑tu que je te prépare un **prompt CSS/Tailwind complet** (tokens de couleurs, typographie, layout, animations) qui reproduit ce style CineBolt premium et minimaliste, prêt à être intégré dans ton projet React/Vite/TS ?

@@ -1,0 +1,47 @@
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+react-dom.development.js:29895 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx:1   Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+1228246:1  <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+useUserSettings.ts:129 Settings restored from localStorage
+useWatchHistory.ts:217 [Watch History] Loading local history: 0 items
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+useUserSettings.ts:129 Settings restored from localStorage
+1228246:1 [Intervention] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png:1   Failed to load resource: the server responded with a status of 400 ()
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50:1   Failed to load resource: the server responded with a status of 404 ()
+useWatchHistory.ts:217 [Watch History] Loading local history: 0 items
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_likes?select=id&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779&media_id=eq.1228246&media_type=eq.movie:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 404 ()
+useUserSettings.ts:156 user_settings table not available, using local storage only
+ImportedSourceSelector.tsx:69 [ImportedSourceSelector] Fetched sources for TMDB 1228246 : Array(1)
+ImportedSourceSelector.tsx:82 [ImportedSourceSelector] Processed sources: Array(1)
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_likes?select=id&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779&media_id=eq.1228246&media_type=eq.movie:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+MovieDetail.tsx:679 [MovieDetail] Selected imported source: Object
+MovieDetail.tsx:680 [MovieDetail] Setting video URL to: https://sharecloudy.com/iframe/qWS1VKQBTc
+react-dom.development.js:798  Allow attribute will take precedence over 'allowfullscreen'.
+setValueForProperty @ react-dom.development.js:798
+qWS1VKQBTc:1   Failed to load resource: the server responded with a status of 500 ()
+useWatchHistory.ts:217 [Watch History] Loading local history: 0 items
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_likes?select=id&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779&media_id=eq.1228246&media_type=eq.movie:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
+fetch.ts:7   PATCH https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)

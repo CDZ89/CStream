@@ -1,0 +1,126 @@
+# Resolution for foreign key violation on messages_receiver_id_fkey
+
+Tu veux que ça marche, point. Voici comment corriger rapidement et définitivement l’erreur “insert or update on table messages violates foreign key constraint messages_receiver_id_fkey”.
+
+---
+
+## Quick verdict
+
+- **Cause:** Tu insères un `receiver_id` qui n’existe pas dans `auth.users(id)` ou qui n’est pas le bon type d’ID (profil/legacy au lieu de l’UUID `auth.users`).  
+- **Fix immédiat:** Avant l’INSERT, résous le `receiver_id` en prenant l’UUID depuis `auth.users` (via le profil qui référence `auth.users`) et vérifie qu’il existe. Si l’utilisateur n’existe pas dans `auth.users`, crée-le, puis insère le message.
+
+---
+
+## Diagnostic minimal côté base
+
+Exécute ces requêtes pour confirmer l’état des FKs et des IDs.
+
+```sql
+-- A) Confirmer la cible de la contrainte receiver_id (doit être auth.users)
+SELECT con.conname,
+       con.confrelid::regclass AS referenced_table,
+       pg_get_constraintdef(con.oid) AS constraint_def
+FROM pg_constraint con
+JOIN pg_class rel ON rel.oid = con.conrelid
+WHERE rel.relname = 'messages' AND con.contype = 'f'
+  AND con.conname = 'messages_receiver_id_fkey';
+
+-- B) Vérifier que l'UUID utilisé pour receiver_id existe dans auth.users
+-- Remplace :receiver_uuid par l'UUID réel que ton app envoie
+SELECT id FROM auth.users WHERE id = 'REPLACE-RECEIVER-UUID';
+```
+
+- **Si B ne retourne rien:** l’utilisateur n’existe pas dans `auth.users`. Tu dois le créer (via signup côté app) ou corriger ton mapping d’ID.  
+- **Si A montre public.users:** ta FK n’est pas migrée. Réapplique la migration vers `auth.users(id)`.
+
+---
+
+## Patch côté application (assure l’UUID correct)
+
+Assure-toi que tu utilises bien l’UUID `auth.users` du destinataire. Si tu pars d’un profil, récupère le `user_id` du profil, pas son `id` local.
+
+```ts
+// 1) Récupérer mon UUID auth (sender)
+const { data: meRes } = await supabase.auth.getUser();
+const senderId = meRes.user?.id; // UUID de auth.users
+
+// 2) À partir d'un identifiant de profil (username, slug, etc.), récupérer l'UUID auth du destinataire
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('user_id') // IMPORTANT: user_id doit référencer auth.users(id)
+  .eq('username', receiverUsername)
+  .single();
+
+if (!profile?.user_id) throw new Error('Profil destinataire introuvable ou sans user_id');
+
+const receiverId = profile.user_id; // UUID auth.users
+
+// 3) Insérer le message avec des UUID auth.users valides
+const { error } = await supabase
+  .from('messages')
+  .insert({
+    sender_id: senderId,          // doit === auth.uid() via RLS
+    receiver_id: receiverId,      // doit exister dans auth.users
+    content: 'Hello!'
+  });
+
+if (error) console.error('Insert message error', error);
+```
+
+- **Label clé:**  
+  - **sender_id:** l’UUID retourné par `supabase.auth.getUser()`  
+  - **receiver_id:** l’UUID `profiles.user_id` (qui doit pointer vers `auth.users(id)`)
+
+---
+
+## Si l’utilisateur destinataire n’existe pas encore
+
+- **Côté produit (recommandé):** crée le compte via Supabase Auth (signup du destinataire) avant d’essayer de l’ajouter en ami ou de lui envoyer un message.  
+- **Côté admin/staging:** crée un stub utilisateur de test et un profil qui référence ce nouvel UUID, puis réessaie.
+
+```sql
+-- ADMIN seulement (service role) pour tests
+INSERT INTO auth.users (id, email, created_at)
+VALUES (gen_random_uuid(), 'receiver.test@example.com', now())
+RETURNING id;
+
+-- Créer le profil qui référence auth.users(id)
+INSERT INTO public.profiles (user_id, username)
+VALUES ('PASTE-RETURNED-UUID', 'receiver_test');
+```
+
+---
+
+## Vérifications RLS essentielles
+
+Tes policies doivent permettre l’INSERT quand `sender_id = auth.uid()`.
+
+```sql
+-- INSERT: l'utilisateur ne peut insérer que pour lui-même
+CREATE POLICY messages_insert_own
+ON public.messages FOR INSERT TO authenticated
+WITH CHECK (sender_id = auth.uid());
+
+-- SELECT: visible si sender ou receiver
+CREATE POLICY messages_select_owner_or_recipient
+ON public.messages FOR SELECT TO authenticated
+USING (sender_id = auth.uid() OR receiver_id = auth.uid());
+```
+
+- **Si l’INSERT échoue malgré les bons UUID:** c’est probablement une policy RLS trop stricte. Assure-toi que le `WITH CHECK` correspond exactement à `sender_id = auth.uid()` et que le client est bien authentifié.
+
+---
+
+## Check-list finale
+
+- **IDs côté app:**  
+  - **Sender:** `supabase.auth.getUser().user.id`  
+  - **Receiver:** `profiles.user_id` qui pointe vers `auth.users(id)`  
+- **FK messages.receiver_id:** référence `auth.users(id)`  
+- **Receiver existe dans auth.users:** vérifié via SQL  
+- **RLS INSERT:** `WITH CHECK (sender_id = auth.uid())`  
+- **Test end-to-end:** ajout d’ami et envoi de message avec deux comptes réels
+
+---
+
+Si tu m’envoies l’UUID exact que ton app utilise pour `receiver_id` au moment de l’erreur, je te dis immédiatement s’il existe dans `auth.users` et où corriger dans ton flux.

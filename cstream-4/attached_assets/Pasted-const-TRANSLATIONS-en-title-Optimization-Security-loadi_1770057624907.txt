@@ -1,0 +1,446 @@
+const TRANSLATIONS = {
+  en: {
+    title: "Optimization & Security",
+    loading: "Images may take a few seconds to load. For the best performance and to avoid ads or unwanted redirects, use multiple ad blockers and a low-latency VPN. Click on the tools below to enable full protection.",
+    tools: "Recommended Tools",
+    protection: "Full Protection Recommended",
+  },
+  fr: {
+    title: "Optimisation & Sécurité",
+    loading: "Les images peuvent mettre quelques secondes à s’afficher. Pour des performances optimales et éviter les publicités ou redirections indésirables, utilisez plusieurs bloqueurs de pubs ainsi qu’un VPN performant. Cliquez sur les outils ci-dessous pour une protection complète.",
+    tools: "Outils Recommandés",
+    protection: "Protection Complète Recommandée",
+  },
+  ar: {
+    title: "التحسين والأمان",
+    loading: "قد يستغرق تحميل الصور بضع ثوانٍ. للحصول على أفضل أداء وتجنب الإعلانات أو عمليات إعادة التوجيه المزعجة، استخدم عدة أدوات لحظر الإعلانات مع VPN منخفض الكمون. اضغط على الأدوات أدناه لتفعيل الحماية الكاملة.",
+    tools: "أدوات موصى بها",
+    protection: "يوصى بحماية كاملة",
+  },
+  ko: {
+    title: "최적화 및 보안",
+    loading: "이미지가 표시되기까지 몇 초가 걸릴 수 있습니다. 최상의 성능과 광고/원치 않는 리디렉션을 방지하려면 여러 광고 차단기와 지연이 낮은 VPN을 함께 사용하세요. 아래 도구를 클릭하면 전체 보호가 활성화됩니다.",
+    tools: "추천 도구",
+    protection: "전체 보호 권장",
+  },
+  es: {
+    title: "Optimización y Seguridad",
+    loading: "Las imágenes pueden tardar unos segundos en mostrarse. Para obtener el mejor rendimiento y evitar anuncios o redirecciones no deseadas, utilice varios bloqueadores de anuncios junto con una VPN de baja latencia. Haga clic en las herramientas de abajo para la protección completa.",
+    tools: "Herramientas Recomendadas",
+    protection: "Protección Completa Recomendada",
+  },
+};
+
+const LiveTV = () => {
+  const [channels, setChannels] = useState<any[]>([]);
+  const [schedule, setSchedule] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedChannel, setSelectedChannel] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Toutes");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [language, setLanguage] = useState("en");
+  const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [activeApi, setActiveApi] = useState("base");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        setLoading(true);
+        const [channelsRes, scheduleRes] = await Promise.all([
+          fetch(`/api/livetv/channels?t=${Date.now()}`),
+          fetch(`/api/livetv/schedule?t=${Date.now()}`),
+        ]);
+
+        const channelsData = await channelsRes.json();
+        const scheduleData = await scheduleRes.json();
+
+        if (Array.isArray(channelsData) && channelsData.length > 0) {
+          setChannels(channelsData);
+          setSelectedChannel(channelsData[0]);
+        } else {
+          setChannels(channelsData);
+        }
+
+        if (scheduleData && scheduleData.success) {
+          setSchedule(scheduleData.data);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const toggleFavorite = (id: string) => {
+    setFavorites((prev) => {
+      const isFav = prev.includes(id);
+      return isFav ? prev.filter((f) => f !== id) : [...prev, id];
+    });
+  };
+
+  const filteredChannels = useMemo(() => {
+    return channels.filter((channel) => {
+      const name = channel.name || "";
+      const matchesSearch = name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "Toutes" ||
+        (selectedCategory === "Favoris" && favorites.includes(channel.id)) ||
+        (channel.category &&
+          channel.category.toLowerCase() === selectedCategory.toLowerCase());
+      return matchesSearch && matchesCategory;
+    });
+  }, [channels, searchQuery, selectedCategory, favorites]);
+
+  const currentLang = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <Tv className="w-12 h-12 text-purple-500" />
+        </motion.div>
+        <p className="text-[10px] font-black tracking-[0.4em] uppercase text-white/40">
+          Connexion DaddyHD Engine v5.1...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <Navbar />
+      <main className="container mx-auto px-4 pt-24 pb-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 space-y-4">
+            {/* Bannière minimaliste avec sélecteur de langue */}
+            <div className="bg-neutral-900/80 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-2xl overflow-hidden relative">
+              <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+              
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-xl shrink-0">
+                      <Shield className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="text-sm font-black uppercase tracking-wider text-white">
+                      {currentLang.title}
+                    </h3>
+                  </div>
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowLangDropdown(!showLangDropdown)}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-xl text-[10px] font-bold text-white transition-all border border-white/10"
+                    >
+                      <Globe className="w-3.5 h-3.5 text-primary" />
+                      {language.toUpperCase()}
+                      <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", showLangDropdown && "rotate-180")} />
+                    </button>
+                    <AnimatePresence>
+                      {showLangDropdown && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          className="absolute top-full mt-2 right-0 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100] min-w-[140px]"
+                        >
+                          {Object.keys(TRANSLATIONS).map((lang) => (
+                            <button
+                              key={lang}
+                              onClick={() => {
+                                setLanguage(lang);
+                                setShowLangDropdown(false);
+                              }}
+                              className={cn(
+                                "w-full px-4 py-2.5 text-[10px] font-bold text-left hover:bg-white/5 transition-colors border-b border-white/5 last:border-0",
+                                language === lang ? "text-primary bg-primary/5" : "text-white/60"
+                              )}
+                            >
+                              {lang.toUpperCase()} - {
+                                lang === "en" ? "English" : 
+                                lang === "fr" ? "Français" : 
+                                lang === "ar" ? "العربية" : 
+                                lang === "ko" ? "한국어" : "Español"
+                              }
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-white/70 leading-relaxed font-medium">
+                  {currentLang.loading}
+                </p>
+
+                  <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-white/5">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setActiveApi("base")}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border",
+                          activeApi === "base" 
+                            ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.3)]" 
+                            : "bg-white/5 text-white/40 border-white/10 hover:bg-white/10"
+                        )}
+                      >
+                        Lecteur Media Complet
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3 ml-auto">
+                      <a
+                        href="https://chromewebstore.google.com/detail/adblock-%E2%80%94-block-ads-acros/gighmmpiobklfepjocnamgkkbiglidom"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10"
+                      >
+                        <img
+                          src="https://lh3.googleusercontent.com/mgNKV-3VMXD556WVUiWSbcukQQN-il4Zlqq03efTjG2B5j9YP7Fxr3idTQ_G0JFD7E6o4TMwvTQTleDn_8UdFLf5VQ=s120"
+                          alt="AdBlock"
+                          className="w-5 h-5 rounded shadow-sm"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">AdBlock</span>
+                      </a>
+                      <a
+                        href="https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-all border border-white/10"
+                      >
+                        <img
+                          src="https://lh3.googleusercontent.com/lsanoOfx5N_t-7gh5Qg9FGIirVEjdCqalZXyLZYRd5d7Fydm83FQhu4Oq0JmlRyMtyF_LfwuQQZyKRTHs6emnFirsA=s120"
+                          alt="uBlock"
+                          className="w-5 h-5 rounded shadow-sm"
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-white">uBlock</span>
+                      </a>
+                    </div>
+                  </div>
+              </div>
+            </div>

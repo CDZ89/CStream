@@ -1,0 +1,171 @@
+Exemple CSS (LanguageSelector.css)
+css
+.lang-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-btn {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(200%);
+  border: 1px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.55);
+  overflow: hidden;
+  min-width: 90px;
+  animation: glassAppear 0.5s ease forwards;
+}
+.lang-btn:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.05);
+}
+.lang-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  filter: blur(12px);
+  z-index: 0;
+  transition: opacity 0.3s;
+}
+.lang-btn span { position: relative; z-index: 1; }
+.lang-btn .flag { font-size: 20px; }
+.lang-btn .code { font-weight: 600; font-size: 13px; }
+.lang-btn .native { font-size: 12px; opacity: 0.9; }
+
+.lang-menu {
+  position: absolute;
+  top: 130%;
+  left: 0;
+  background: rgba(25,25,25,0.85);
+  backdrop-filter: blur(22px) saturate(220%);
+  border-radius: 14px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.65);
+  min-width: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+  animation: glassAppear 0.4s ease forwards;
+}
+.lang-menu::-webkit-scrollbar { width: 6px; }
+.lang-menu::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+}
+
+.lang-menu button {
+  position: relative;
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+}
+.lang-menu button:hover {
+  transform: translateX(3px) scale(1.02);
+  background: rgba(255,255,255,0.12);
+}
+.lang-menu button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  filter: blur(10px);
+  z-index: 0;
+  transition: opacity 0.3s;
+}
+.lang-menu button:hover::before { opacity: 0.4; }
+.lang-menu button span { position: relative; z-index: 1; }
+
+.flag { font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.native { font-weight: 600; }
+.english { font-size: 11px; opacity: 0.8; }
+
+@keyframes glassAppear {
+  from { opacity: 0; transform: scale(0.9) translateY(-8px); filter: blur(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+/* Fonds drapeaux */
+.lang-btn[data-bg="FR"]::before,
+.lang-menu button[data-lang="FR"]::before {
+  background-image: linear-gradient(90deg,#0055A4 33%,#fff 33%,#fff 66%,#EF4135 66%);
+}
+.lang-btn[data-bg="EN"]::before,
+.lang-menu button[data-lang="EN"]::before {
+  background-image: linear-gradient(135deg,#00247d 50%,#cf142b 50%);
+}
+.lang-btn[data-bg="ES"]::before,
+.lang-menu button[data-lang="ES"]::before {
+  background-image: linear-gradient(180deg,#aa151b 33%,#f1bf00 33%,#f1bf00 66%,#aa151b 66%);
+}
+.lang-btn[data-bg="DE"]::before,
+.lang-menu button[data-lang="DE"]::before {
+  background-image: linear-gradient(180deg,black 33%,red 33%,red 66%,gold 66%);
+}
+.lang-btn[data-bg="IT"]::before
+contniue
+Parfait Chemsdine 👌 — je termine le fichier TSX + CSS que nous étions en train de construire pour ton sélecteur de langues liquid glass premium. Voici la suite du CSS avec les fonds drapeaux restants et la fermeture du fichier :
+
+🎨 Suite du CSS (LanguageSelector.css)
+css
+.lang-btn[data-bg="IT"]::before,
+.lang-menu button[data-lang="IT"]::before {
+  background-image: linear-gradient(90deg,#009246 33%,#fff 33%,#fff 66%,#ce2b37 66%);
+}
+.lang-btn[data-bg="PT"]::before,
+.lang-menu button[data-lang="PT"]::before {
+  background-image: linear-gradient(90deg,#006600 50%,#ff0000 50%);
+}
+.lang-btn[data-bg="AR"]::before,
+.lang-menu button[data-lang="AR"]::before {
+  background-image: linear-gradient(180deg,#007a3d 33%,#fff 33%,#fff 66%,#000 66%);
+}
+.lang-btn[data-bg="KR"]::before,
+.lang-menu button[data-lang="KR"]::before {
+  background-image: linear-gradient(180deg,#fff 100%,#fff 100%);
+}
+.lang-btn[data-bg="JP"]::before,
+.lang-menu button[data-lang="JP"]::before {
+  background-image: radial-gradient(circle,#bc002d 25%,transparent 25%);
+}
+.lang-btn[data-bg="RU"]::before,
+.lang-menu button[data-lang="RU"]::before {
+  background-image: linear-gradient(180deg,#fff 33%,#0039a6 33%,#0039a6 66%,#d52b1e 66%);
+}
+✨ Résultat final
+Bouton principal compact : affiche le drapeau, le code langue (FR, AR, etc.), et le nom natif (Français, العربية, etc.).
+
+Fond blur premium derrière le bouton et derrière chaque option du menu.
+
+Menu scrollable compact : arrondis plus petits, animation fluide avec effet flou.
+
+Interaction fluide : clic en dehors ferme le menu, sélection met à jour instantanément sans bug.
+
+TypeScript + React (TSX) : propre, typé, prêt à intégrer dans ton projet Next.js  ou React.

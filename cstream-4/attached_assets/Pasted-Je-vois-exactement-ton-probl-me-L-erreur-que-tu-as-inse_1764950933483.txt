@@ -1,0 +1,116 @@
+Je vois exactement ton problème 👀. L’erreur que tu as :  
+
+```
+insert or update on table "friendships" violates foreign key constraint "friendships_user_id_fkey"
+```
+
+signifie que tu essaies d’insérer une ligne dans la table `friendships` avec un `user_id` (ou `friend_id`) qui **n’existe pas dans la table `users`**. En clair : ta contrainte de clé étrangère bloque l’ajout car l’ID n’est pas valide.
+
+---
+
+## 🔎 Pourquoi ça arrive
+- Tu as une table `friendships` avec une contrainte :
+  ```sql
+  FOREIGN KEY (user_id) REFERENCES users(id)
+  ```
+- Quand tu fais un `INSERT`, Supabase vérifie que `user_id` existe dans `users.id`.  
+- Si tu passes un mauvais ID (ou un ID qui n’existe pas encore), ça plante.
+
+---
+
+## ✅ Solution : refaire une base propre
+
+### 1. Table `users`
+On définit une table claire pour les profils :
+
+```sql
+CREATE TABLE users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  username text UNIQUE NOT NULL,
+  created_at timestamp DEFAULT now()
+);
+```
+
+👉 Ici, chaque utilisateur a un vrai `id` généré automatiquement (`uuid`).
+
+---
+
+### 2. Table `friendships`
+On crée une table pour gérer les relations d’amitié :
+
+```sql
+CREATE TABLE friendships (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  friend_id uuid NOT NULL,
+  created_at timestamp DEFAULT now(),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT unique_friendship UNIQUE (user_id, friend_id)
+);
+```
+
+👉 Points importants :
+- Les deux colonnes (`user_id` et `friend_id`) pointent vers `users.id`.
+- `ON DELETE CASCADE` supprime les amitiés si un utilisateur est supprimé.
+- `UNIQUE (user_id, friend_id)` évite les doublons.
+
+---
+
+### 3. Exemple d’insertion
+Avant d’ajouter une amitié, il faut que les deux utilisateurs existent :
+
+```sql
+INSERT INTO users (username) VALUES ('Alice');
+INSERT INTO users (username) VALUES ('Bob');
+
+-- Récupère les IDs
+SELECT * FROM users;
+
+-- Ajoute l’amitié
+INSERT INTO friendships (user_id, friend_id)
+VALUES ('id_de_Alice', 'id_de_Bob');
+```
+
+---
+
+### 4. Côté Supabase (JS)
+Ton code doit utiliser les vrais IDs :
+
+```js
+const { data, error } = await supabase
+  .from('friendships')
+  .insert([
+    { user_id: currentUser.id, friend_id: friendId }
+  ]);
+
+if (error) console.error(error);
+```
+
+---
+
+### 5. Widget centré et propre (v0.3 style)
+En front, tu peux isoler ton chat ou ton widget dans un conteneur centré :
+
+```css
+.widget {
+  width: 400px;
+  margin: 0 auto;        /* centre horizontalement */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+}
+```
+
+---
+
+👉 En résumé :  
+- **Refais ta table `users` avec des UUID**.  
+- **Refais ta table `friendships` avec des clés étrangères propres**.  
+- **Toujours insérer des IDs qui existent dans `users`**.  
+- **Ton widget doit avoir une taille fixe et être centré avec `margin: auto`**.
+
+---
+
+Tu veux que je t’écrive le script SQL complet (création des tables + policies Supabase pour que l’ajout marche direct) afin que tu puisses le coller dans ton projet et repartir sur une base clean ?

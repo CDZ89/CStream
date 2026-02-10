@@ -1,0 +1,91 @@
+Corrige et implémente un système d’amis et de chat temps réel comme Discord, sans bug.
+
+Objectifs :
+- Les demandes d’amis doivent fonctionner : un utilisateur envoie une demande, l’autre la reçoit, peut accepter/refuser, et si accepté, les deux deviennent amis.
+- Les amis doivent apparaître dans la liste du profil et dans la page chat.
+- La messagerie doit être fiable, temps réel, avec emojis, vocal, et historique persistant.
+
+Exigences :
+
+1. **Base de données**
+   - Table `friend_requests` :
+     - id (UUID)
+     - sender_id (user_id)
+     - receiver_id (user_id)
+     - status (enum: "pending", "accepted", "rejected")
+     - created_at (timestamp)
+   - Table `friends` :
+     - id (UUID)
+     - user_id
+     - friend_id
+     - created_at
+   - Table `messages` :
+     - id (UUID)
+     - sender_id
+     - receiver_id (ou channel_id si group)
+     - content (text/emoji)
+     - type (enum: "text", "emoji", "voice")
+     - created_at
+     - attachments (JSON optionnel)
+   - Table `voice_sessions` :
+     - id
+     - channel_id
+     - participants [user_id]
+     - started_at, ended_at
+
+2. **API / Backend**
+   - `POST /friends/request` → envoyer une demande (sender_id, receiver_id).
+   - `GET /friends/requests` → récupérer demandes reçues/envoyées.
+   - `POST /friends/request/{id}/accept` → accepter.
+   - `POST /friends/request/{id}/reject` → refuser.
+   - `GET /friends` → liste des amis.
+   - `DELETE /friends/{id}` → supprimer un ami.
+   - `POST /messages` → envoyer message (texte/emoji/vocal).
+   - `GET /messages/{friend_id}` → récupérer historique.
+   - WebSocket `/chat` → recevoir messages en temps réel.
+   - WebRTC pour vocal (signaling via serveur).
+
+3. **Frontend**
+   - Page “Demandes d’amis” :
+     - Liste des demandes reçues avec boutons “Accepter” / “Refuser”.
+     - Liste des demandes envoyées avec statut.
+   - Page “Amis” :
+     - Liste des amis avec statut en ligne/offline.
+     - Bouton “Chat” → ouvre conversation.
+   - Page “Chat” :
+     - Zone de messages avec historique.
+     - Support emojis (picker + rendu).
+     - Bouton vocal → initie session WebRTC.
+     - Messages temps réel via WebSocket.
+   - Notifications :
+     - Quand une demande est reçue.
+     - Quand un message arrive.
+     - Quand un ami se connecte.
+
+4. **Temps réel et fiabilité**
+   - WebSocket pour demandes d’amis et messages.
+   - État “pending” visible immédiatement.
+   - Quand accepté, ajout automatique dans liste d’amis.
+   - Historique persistant : messages stockés en DB, affichés même après refresh.
+   - Vocal : WebRTC avec ICE servers, fallback si NAT.
+
+5. **Tests**
+   - Envoyer une demande → apparaît chez le destinataire.
+   - Accepter → les deux voient l’autre dans leur liste d’amis.
+   - Refuser → disparaît des demandes.
+   - Envoyer message → apparaît instantanément chez l’ami.
+   - Emoji → rendu correct.
+   - Vocal → connexion établie, audio transmis.
+   - Historique → messages visibles après reconnexion.
+
+6. **Qualité**
+   - Pas de doublons (contrainte UNIQUE sur `(user_id, friend_id)`).
+   - Messages d’erreur clairs si action impossible.
+   - Audit log : chaque demande, acceptation, suppression, message.
+   - Sécurité : vérifier authentification, permissions, rate limit.
+
+Résultat attendu :
+- Les demandes d’amis fonctionnent sans bug, avec acceptation/refus.
+- Les amis apparaissent dans profil et chat.
+- Les messages (texte, emoji, vocal) sont temps réel et persistants.
+- Historique et notifications fiables.

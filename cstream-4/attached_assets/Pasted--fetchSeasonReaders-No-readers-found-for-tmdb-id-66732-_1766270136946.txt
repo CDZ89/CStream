@@ -1,0 +1,33 @@
+[fetchSeasonReaders] No readers found for tmdb_id=66732 at all
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] ========== START SEARCH ==========
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Show: "Stranger Things" (TMDB ID: 66732)
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Target: Season 5, Episode 5
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Found 0 total readers for TMDB ID 66732
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] No readers found for tmdb_id=66732. Check if this TMDB ID is correct.
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] No TMDB match, falling back to generic TV/series/anime sources
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Found 0 generic TV/series sources (no TMDB link, filtered)
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Scoring 0 candidates...
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] Top candidates (sorted by score):
+TVDetail-BuiUPAi9.js:8 [fetchCandidates] ========== END SEARCH ==========
+vendor-supabase-B22S24K6.js:26  POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+await in (anonymous)
+then @ vendor-supabase-B22S24K6.js:1Understand this error
+index-4v8HuYNg.js:3 RLS policy blocking users table insert, using profiles only
+vendor-supabase-B22S24K6.js:26  POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+await in (anonymous)
+then @ vendor-supabase-B22S24K6.js:1Understand this error
+vendor-supabase-B22S24K6.js:26  PATCH https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+await in (anonymous)
+then @ vendor-supabase-B22S24K6.js:1Understand this error
+vendor-supabase-B22S24K6.js:26  POST https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id 403 (Forbidden)
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+(anonymous) @ vendor-supabase-B22S24K6.js:26
+await in (anonymous)
+then @ vendor-supabase-B22S24K6.js:1Understand this error
+2index-4v8HuYNg.js:3 RLS policy blocking users table insert, using profiles only

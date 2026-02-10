@@ -1,0 +1,77 @@
+name: CStream CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      actions: read
+      checks: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd project
+          npm ci
+
+      - name: Lint
+        run: |
+          cd project
+          npm run lint --if-present
+
+      - name: Build project
+        run: |
+          cd project
+          npm run build
+
+      - name: Generate changelog (update.json)
+        run: |
+          VERSION="v2.${GITHUB_RUN_NUMBER}"
+          cat > project/update.json << EOF
+          {
+            "version": "${VERSION}",
+            "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "changes": [
+              "Build automatique #${GITHUB_RUN_NUMBER}",
+              "Corrections et améliorations",
+              "Mise à jour des dépendances"
+            ],
+            "type": "patch"
+          }
+          EOF
+
+      - name: Commit & push update.json
+        run: |
+          git config --global user.email "bot@cstream.local"
+          git config --global user.name "CStream Agent Bot"
+          git add project/update.json
+          git commit -m "chore: update changelog v2.${GITHUB_RUN_NUMBER}" || echo "No changes to commit"
+          git push
+
+      - name: Notify Discord
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK" ]; then
+            curl -H "Content-Type: application/json" \
+              -d "{\"content\": \"📢 **CStream Update v2.${GITHUB_RUN_NUMBER}**\n✅ Build réussi\n🚀 Déploiement automatique terminé\n📄 Changelog: update.json\"}" \
+              "$DISCORD_WEBHOOK"
+          fi

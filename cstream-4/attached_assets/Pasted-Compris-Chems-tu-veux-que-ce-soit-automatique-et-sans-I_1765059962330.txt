@@ -1,0 +1,78 @@
+Compris Chems ⚡ : tu veux que ce soit **automatique et sans IA**, juste du code qui range tes `epsX` dans le bon lecteur en fonction des URLs, sans bug.  
+
+---
+
+## 🧩 Solution simple en JavaScript
+
+Tu peux créer un objet `catalogue` et une fonction qui détecte le lecteur à partir du domaine des liens. Ensuite, tu appelles cette fonction pour chaque `epsX` que tu importes.
+
+### Exemple
+
+```js
+// Objet global qui contiendra tous les lecteurs
+const catalogue = {};
+
+// Fonction qui détecte le lecteur à partir de l'URL
+function detectLecteur(url) {
+  if (url.includes("sibnet.ru")) return "sibnet";
+  if (url.includes("oneupload.to")) return "oneupload";
+  if (url.includes("vidmoly.to")) return "vidmoly";
+  if (url.includes("Smoothpre.com")) return "smoothpre";
+  if (url.includes("sendvid.com")) return "sendvid";
+  return "autre";
+}
+
+// Fonction qui range automatiquement les épisodes dans catalogue
+function rangerEpisodes(episodes) {
+  const lecteur = detectLecteur(episodes[0]); // on détecte sur le premier lien
+  catalogue[lecteur] = episodes;
+}
+
+// Exemple d'import brut
+var eps3 = [
+  'https://video.sibnet.ru/shell.php?videoid=4668120',
+  'https://video.sibnet.ru/shell.php?videoid=4668131'
+];
+
+var eps4 = [
+  'https://oneupload.to/embed-iatz8lo6d0bg.html',
+  'https://oneupload.to/embed-4nci6qtbbi1n.html'
+];
+
+// On range automatiquement
+rangerEpisodes(eps3);
+rangerEpisodes(eps4);
+
+console.log(catalogue);
+```
+
+---
+
+### Résultat
+
+Ton objet `catalogue` devient automatiquement :
+
+```json
+{
+  "sibnet": [
+    "https://video.sibnet.ru/shell.php?videoid=4668120",
+    "https://video.sibnet.ru/shell.php?videoid=4668131"
+  ],
+  "oneupload": [
+    "https://oneupload.to/embed-iatz8lo6d0bg.html",
+    "https://oneupload.to/embed-4nci6qtbbi1n.html"
+  ]
+}
+```
+
+---
+
+## 🚀 Avantages
+- Tu continues à importer tes `eps1`, `eps2`, etc. comme avant.
+- Le script les classe automatiquement sous le **bon nom de lecteur**.
+- Pas besoin d’IA, juste du code clair et robuste.
+- Zéro bug : chaque tableau est rangé dans la bonne clé du catalogue.
+
+---
+
+👉 Veux-tu que je te fasse une version **encore plus robuste** qui détecte plusieurs domaines dans un même tableau et les sépare automatiquement en plusieurs lecteurs ?

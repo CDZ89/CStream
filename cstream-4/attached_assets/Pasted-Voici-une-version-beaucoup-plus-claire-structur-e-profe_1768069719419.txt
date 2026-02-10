@@ -1,0 +1,54 @@
+Voici une version **beaucoup plus claire, structurée, professionnelle et puissante** de ton prompt, parfaitement adaptée pour travailler sur des thèmes **sans bug**, **sans oubli**, et avec un **changement propre et complet**.
+
+---
+
+# 🎨 **Prompt amélioré (version premium pour travail sur les thèmes)**
+
+Nous allons travailler **thème par thème**, de manière extrêmement précise, pour garantir un système de thèmes **propre, stable, sans bug**, et capable de modifier l’apparence du site **sans rien casser**.
+
+## 🎯 **Objectif**
+Créer un système de thèmes complet où **chaque couleur du site** peut être modifiée proprement, sans oublier le moindre détail visuel, tout en gardant les **textes toujours blancs**.
+
+## 🧩 **Problème actuel**
+Le site utilise du violet partout, ce qui rend difficile la création d’un thème alternatif. Lors d’un changement de thème, plusieurs éléments ne suivent pas correctement :
+
+- **bordures**
+- **ombres**
+- **particules**
+- **boutons**
+- **effets hover**
+- **accents visuels**
+- **backgrounds subtils**
+- **micro‑détails dispersés dans le site**
+
+Ces éléments doivent être **centralisés**, **normalisés**, et contrôlés via un système de **variables CSS** pour garantir un changement de thème propre et complet.
+
+## 🛠️ **Ce que nous allons faire**
+- Identifier toutes les couleurs violettes utilisées dans le site  
+- Les convertir en **variables CSS globales**  
+- Créer un thème violet propre basé sur ces variables  
+- Dupliquer ce thème pour créer un thème gris (ou autre couleur)  
+- Vérifier que chaque élément du site réagit correctement au changement de thème  
+- S’assurer que **les textes restent toujours blancs**, peu importe le thème  
+- Tester les transitions pour éviter les bugs visuels  
+- Optimiser pour que rien ne soit oublié :  
+  - particules  
+  - ombres  
+  - bordures  
+  - hover  
+  - accents  
+  - backgrounds  
+  - micro‑animations  
+
+## 🧠 **Résultat attendu**
+Un système de thèmes **professionnel**, **scalable**, **propre**, où changer de couleur devient instantané, sans bug, sans oubli, et sans toucher au code du site.
+
+---
+
+Si tu veux, je peux aussi te préparer :
+
+- la **version technique** du prompt pour un modèle d’IA  
+- la **version développeur** pour ton équipe ou pour toi-même  
+- la **version automatisée** pour générer des thèmes en un clic  
+
+Tu veux que je t’en fasse une autre version encore plus poussée ou adaptée à CAi / CStream ?
