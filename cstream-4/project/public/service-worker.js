@@ -62,6 +62,18 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // For SPA Navigation Requests (e.g. /admin, /auth)
+    // Always fall back to index.html if the network fetch fails (like 404s on refresh under some PWA conditions)
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request).catch(error => {
+                console.error('[SW] Navigation fetch failed, serving offline index.html fallback:', error);
+                return caches.match('/index.html');
+            })
+        );
+        return;
+    }
+
     event.respondWith(
         caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
@@ -92,7 +104,6 @@ self.addEventListener('fetch', (event) => {
                 return networkResponse;
             }).catch((error) => {
                 console.error('[SW] Fetch failed:', error);
-                // Return offline page if available
                 return caches.match('/index.html');
             });
         })
