@@ -28,56 +28,39 @@ export const SourceSelectorList = ({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+            <div className="flex overflow-x-auto pb-4 pt-1 snap-x snap-mandatory gap-2 hide-scrollbar w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {SOURCES.map((source, index) => {
                     const isSelected = currentSource === source.id;
                     return (
                         <motion.button
                             key={source.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.01 }}
-                            whileHover={{ scale: 1.02, y: -2 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             onClick={() => onSelect(source.id)}
                             className={cn(
-                                "relative group flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 border overflow-hidden",
+                                "relative shrink-0 group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full transition-all duration-300 border snap-start sm:snap-center",
                                 isSelected
-                                    ? "bg-purple-600/20 border-purple-500 shadow-lg shadow-purple-500/10"
-                                    : "bg-zinc-900/40 border-white/5 hover:border-white/20 hover:bg-zinc-800/60"
+                                    ? "bg-purple-600 border-purple-500 shadow-lg shadow-purple-500/25"
+                                    : "bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10"
                             )}
                         >
-                            {/* Selected Glow */}
-                            {isSelected && (
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10 animate-pulse" />
-                            )}
-
-                            {/* Icon Container */}
-                            <div className={cn(
-                                "w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 transition-all text-lg",
-                                isSelected ? "bg-purple-500 shadow-lg" : "bg-white/5 group-hover:bg-white/10"
-                            )}>
-                                <span>{source.icon || '🎬'}</span>
-                            </div>
+                            {/* Icon */}
+                            <span className="text-sm sm:text-base opacity-90">{source.icon || '🎬'}</span>
 
                             {/* Source Name */}
                             <span className={cn(
-                                "text-[10px] font-bold text-center truncate w-full px-1",
-                                isSelected ? "text-white" : "text-white/60 group-hover:text-white"
+                                "text-[10px] sm:text-xs font-bold whitespace-nowrap tracking-wide",
+                                isSelected ? "text-white" : "text-white/70 group-hover:text-white"
                             )}>
                                 {source.name}
                             </span>
 
-                            {/* Reliable indicator */}
-                            {source.reliable && !isSelected && (
-                                <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
-                            )}
-
                             {/* Checkmark for selection */}
                             {isSelected && (
-                                <div className="absolute top-1 right-1">
-                                    <Check className="w-2.5 h-2.5 text-white" />
-                                </div>
+                                <Check className="w-3 h-3 text-white ml-1 shrink-0" strokeWidth={3} />
                             )}
                         </motion.button>
                     );

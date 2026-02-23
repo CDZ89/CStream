@@ -133,8 +133,8 @@ export const SOURCES: PlayerSourceConfig[] = [
       const s = season || 1;
       const e = episode || 1;
       return mediaType === "movie"
-        ? `https://api.frembed.work/movies/check?id=${tmdbId}`
-        : `https://api.frembed.work/tv/check?id=${tmdbId}&s=${s}&e=${e}`;
+        ? `https://frembed.work/api/film.php?id=${tmdbId}`
+        : `https://frembed.work/api/serie.php?id=${tmdbId}&sa=${s}&epi=${e}`;
     },
   },
   {
@@ -293,8 +293,8 @@ export const SOURCES: PlayerSourceConfig[] = [
       const s = season || 1;
       const e = episode || 1;
       return mediaType === "movie"
-        ? `https://vidsrc.cc/v2/embed/movie/${tmdbId}`
-        : `https://vidsrc.cc/v2/embed/tv/${tmdbId}/${s}/${e}`;
+        ? `https://vidsrc.wtf/api/2/movie/?id=${tmdbId}&color=${PRIMARY_COLOR}`
+        : `https://vidsrc.wtf/api/2/tv/?id=${tmdbId}&s=${s}&e=${e}&color=${PRIMARY_COLOR}`;
     },
   },
   {
