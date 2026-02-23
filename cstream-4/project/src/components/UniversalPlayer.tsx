@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
 import { SubtitleSelector } from "./SubtitleSelector";
+import { SubtitleResult } from "@/lib/wyzieSubs";
 
 export type PlayerSource =
   | "vidsync"
@@ -262,7 +263,7 @@ export const UniversalPlayer = ({
   hasNextEpisode,
   hasPreviousEpisode,
 }: UniversalPlayerProps) => {
-  const { lang } = useI18n();
+  const { language: lang } = useI18n();
   const [currentSource, setCurrentSource] = useState<PlayerSource>(() => {
     try {
       return (
@@ -279,7 +280,7 @@ export const UniversalPlayer = ({
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [iframeKey, setIframeKey] = useState(0);
   const [autoSwitching, setAutoSwitching] = useState(false);
-  const [selectedSubtitle, setSelectedSubtitle] = useState<string | null>(null);
+  const [selectedSubtitle, setSelectedSubtitle] = useState<SubtitleResult | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -492,7 +493,7 @@ export const UniversalPlayer = ({
           </Button>
 
           <SubtitleSelector
-            tmdbId={tmdbId}
+            tmdbId={Number(tmdbId)}
             mediaType={mediaType as any}
             season={season}
             episode={episode}
