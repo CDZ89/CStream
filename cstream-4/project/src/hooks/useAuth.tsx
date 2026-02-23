@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { updateLoginStreak } from './useStreak';
 
 export type UserRole = 'creator' | 'super_admin' | 'admin' | 'moderator' | 'editor' | 'member';
 
@@ -21,6 +22,9 @@ interface UserProfile {
   xp?: number;
   level?: string;
   all_badges?: boolean;
+  current_streak?: number;
+  longest_streak?: number;
+  last_login_date?: string;
 }
 
 interface AuthContextType {
@@ -58,9 +62,6 @@ const XP_LEVELS = [
   { level: '8', minXp: 25000, maxXp: Infinity },
 ];
 
-// Local friend code generation is deprecated in favor of Supabase sequences
-// const generateFriendCode = (): string => { ... }
-
 // Persist role to localStorage for consistency
 const persistRole = (role: UserRole) => {
   if (typeof localStorage !== 'undefined') {
@@ -89,13 +90,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const syncUserToUsersTable = async (userId: string, email: string, username: string, avatarUrl: string | null) => {
     try {
-      const { data: profileExists, error: profileCheckError } = await supabase
+      const { data: profileExists } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', userId)
         .maybeSingle();
 
-      if (!profileExists && !profileCheckError) {
+      if (!profileExists) {
         await supabase.from('profiles').upsert({
           id: userId,
           username: username,
@@ -105,16 +106,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }, { onConflict: 'id' });
       }
 
-      const { data: existingUser, error: selectError } = await supabase
+      const { data: existingUser } = await (supabase as any)
         .from('users')
         .select('id, email, display_code, user_code')
         .eq('id', userId)
-        .or(`auth_id.eq.${userId}`)
         .maybeSingle();
-
-      if (selectError && selectError.code !== 'PGRST116') {
-        return;
-      }
 
       if (!existingUser) {
         await (supabase as any)
@@ -176,7 +172,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             displayCode = userData.display_code || userData.user_code || displayCode;
           }
         } catch (e) {
-          console.warn("[useAuth] Failed to fetch display_code from users:", e);
+          console.warn('[useAuth] Failed to fetch display_code from users:', e);
         }
 
         const profileData: UserProfile = {
@@ -196,6 +192,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           level: isCreatorUser ? 'Creator' : (profileAny.level || '1'),
           all_badges: isCreatorUser ? true : (profileAny.all_badges || false),
           time_spent: profileAny.time_spent || 0,
+          current_streak: isCreatorUser ? 9999 : (profileAny.current_streak || 0),
+          longest_streak: isCreatorUser ? 9999 : (profileAny.longest_streak || 0),
+          last_login_date: profileAny.last_login_date || null,
         };
 
         setProfile(profileData);
@@ -206,6 +205,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsEditor(['creator', 'super_admin', 'admin', 'moderator', 'editor'].includes(userRole));
         setRole(userRole);
         persistRole(userRole);
+
+        // Update login streak (non-blocking)
+        if (!isCreatorUser) {
+          updateLoginStreak(userId).then(streakData => {
+            if (streakData) {
+              setProfile(prev => prev ? {
+                ...prev,
+                current_streak: streakData.currentStreak,
+                longest_streak: streakData.longestStreak,
+                last_login_date: streakData.lastLoginDate || undefined,
+              } : prev);
+            }
+          }).catch(() => { });
+        }
       }
     } catch (error) {
       console.error('Error checking profile:', error);
@@ -217,17 +230,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const refreshFriendCode = async (): Promise<{ error: Error | null; newCode?: string }> => {
-    // Rely on Supabase for code generation/refresh
     return { error: new Error("La génération de code est gérée automatiquement par Supabase.") };
   };
 
   useEffect(() => {
-    setLoading(false);
+    // FIXED: Don't set loading=false immediately. Wait for getSession first.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) checkUserProfile(session.user.id, session.user.email);
-      else {
+      if (session?.user) {
+        // Use setTimeout to avoid Supabase deadlock in some auth flows
+        setTimeout(() => {
+          checkUserProfile(session.user.id, session.user.email);
+        }, 0);
+      } else {
         setProfile(null);
         setIsAdmin(false);
         setIsSuperAdmin(false);
@@ -237,36 +253,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole('member');
       }
     });
+
+    // Get initial session FIRST, then set loading=false
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setSession(session);
         setUser(session.user);
-        checkUserProfile(session.user.id, session.user.email);
+        checkUserProfile(session.user.id, session.user.email).finally(() => {
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
     });
+
     return () => subscription.unsubscribe();
   }, []);
 
+  // XP & time tracking (every 30s while logged in)
   useEffect(() => {
     if (!user || !profile) return;
     const updatePresence = async () => {
-      const timeInc = 30;
-      const { data: cur } = await supabase.from('profiles').select('time_spent, xp, level').eq('id', user.id).single();
-      if (cur) {
-        const p = cur as any;
-        const isCreatorUser = user.email?.toLowerCase() === CREATOR_EMAIL.toLowerCase();
-        const nTime = (p.time_spent || 0) + timeInc;
-        const nXp = isCreatorUser ? 999999 : Math.floor(nTime / 360);
-        let nLvl = p.level || '1';
-        if (isCreatorUser) nLvl = 'Creator';
-        else {
-          const lInfo = XP_LEVELS.find(l => nXp >= l.minXp && (l.maxXp === Infinity || nXp < l.maxXp));
-          if (lInfo && lInfo.level !== nLvl) {
-            nLvl = lInfo.level;
-            import('sonner').then(({ toast }) => toast.success(`🎉 Level Up! Vous êtes niveau ${nLvl} !`));
+      try {
+        const { data: cur } = await supabase.from('profiles').select('time_spent, xp, level').eq('id', user.id).single();
+        if (cur) {
+          const p = cur as any;
+          const isCreatorUser = user.email?.toLowerCase() === CREATOR_EMAIL.toLowerCase();
+          const nTime = (p.time_spent || 0) + 30;
+          const nXp = isCreatorUser ? 999999 : Math.floor(nTime / 360);
+          let nLvl = p.level || '1';
+          if (isCreatorUser) nLvl = 'Creator';
+          else {
+            const lInfo = XP_LEVELS.find(l => nXp >= l.minXp && (l.maxXp === Infinity || nXp < l.maxXp));
+            if (lInfo && lInfo.level !== nLvl) {
+              nLvl = lInfo.level;
+              import('sonner').then(({ toast }) => toast.success(`🎉 Level Up! Vous êtes niveau ${nLvl} !`));
+            }
           }
+          await (supabase as any).from('profiles').update({ xp: nXp, level: nLvl, time_spent: nTime } as any).eq('id', user.id);
         }
-        await (supabase as any).from('profiles').update({ xp: nXp, level: nLvl } as any).eq('id', user.id);
+      } catch (e) {
+        // silently fail
       }
     };
     const interval = setInterval(updatePresence, 30000);
@@ -279,7 +306,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signUp = async (email: string, password: string, username?: string) => {
-    const { error, data } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email, password, options: { data: { username: username || email.split('@')[0] } }
     });
     return { error };
@@ -288,6 +315,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     await supabase.auth.signOut();
     setProfile(null);
+    setUser(null);
+    setSession(null);
+    setRole('member');
+    persistRole('member');
   };
 
   return (

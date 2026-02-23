@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -73,6 +74,7 @@ import {
 import { useBetaSettings } from "@/hooks/useBetaSettings";
 import { applyTheme, THEMES } from "@/lib/themes";
 import { useWatchPartyStore } from "@/lib/watchParty";
+import { useNavbarTheme } from "@/hooks/useNavbarTheme";
 
 interface SessionInfo {
   ip: string;
@@ -106,6 +108,7 @@ const Settings = () => {
 
   const { selectedFontId, fontSize, setFont, setFontSize } = useFontSettings();
   const { betaMode, adsRemoved, setBetaMode, setAdsRemoved } = useBetaSettings();
+  const { theme: navbarTheme, setTheme: setNavbarTheme } = useNavbarTheme();
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loadingSession, setLoadingSession] = useState(true);
@@ -308,6 +311,68 @@ const Settings = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.section>
+
+          {/* Section Navbar Theme */}
+          <motion.section variants={itemVariants} className="space-y-4">
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary/60 px-2">Style de Navigation</h2>
+            <Card className="border-white/5 bg-white/[0.02] backdrop-blur-xl">
+              <CardContent className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Thème de la Navbar</Label>
+                  <div className="grid gap-3">
+                    <button
+                      onClick={() => {
+                        setNavbarTheme('default');
+                        toast.success('Navbar par défaut activée');
+                      }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-primary/30 transition-all group"
+                    >
+                      <div className="p-3 rounded-xl bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                        <Monitor className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold">Par défaut</h4>
+                        <p className="text-xs text-muted-foreground">Navbar standard avec fond semi-transparent</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setNavbarTheme('blur');
+                        toast.success('Navbar Blur activée');
+                      }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-blue-500/30 transition-all group"
+                    >
+                      <div className="p-3 rounded-xl bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
+                        <Sparkles className="w-5 h-5 text-blue-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold">Blur</h4>
+                        <p className="text-xs text-muted-foreground">Effet de flou simple et élégant</p>
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setNavbarTheme('glass');
+                        toast.success('Navbar Glass activée');
+                      }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-purple-500/30 transition-all group"
+                    >
+                      <div className="p-3 rounded-xl bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors">
+                        <Zap className="w-5 h-5 text-purple-400" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h4 className="font-bold">Glass</h4>
+                        <p className="text-xs text-muted-foreground">Glassmorphism avancé avec filtre SVG</p>
+                      </div>
+                      <Badge variant="outline" className="px-2 py-0.5 text-[8px] font-bold bg-purple-500/20 text-purple-400 border-purple-500/30">PREMIUM</Badge>
+                    </button>
                   </div>
                 </div>
               </CardContent>

@@ -14,7 +14,7 @@ const fs = require("fs");
 const path = require("path");
 const { getThreadHistory } = require("./utils/memory");
 const { generateMediaCard } = require("./utils/tmdb");
-require("dotenv").config({ path: path.join(__dirname, ".env.example") });
+require("dotenv").config({ path: path.join(__dirname, "..", "project", ".env") });
 
 const client = new Client({
     intents: [

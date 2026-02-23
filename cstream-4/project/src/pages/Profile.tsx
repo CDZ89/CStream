@@ -37,6 +37,9 @@ import {
   UserPlus,
   ArrowRight,
   Handshake,
+  Flame,
+  Trophy,
+  Zap,
 } from "lucide-react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -44,6 +47,7 @@ import rehypeRaw from "rehype-raw";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWatchHistory } from "@/hooks/useWatchHistory";
+import { useStreak, getStreakEmoji, getNextMilestone } from "@/hooks/useStreak";
 import { cn } from "@/lib/utils";
 
 const BioLink = ({ href, children }: { href?: string; children: any }) => {
@@ -560,6 +564,13 @@ const Profile = () => {
     })
     : "Date inconnue";
 
+  // Streak data (from profile which is updated by useAuth)
+  const currentStreak = profile?.current_streak || 0;
+  const longestStreak = profile?.longest_streak || 0;
+  const nextMilestone = getNextMilestone(currentStreak);
+  const streakProgress = nextMilestone > 0 ? Math.min(100, (currentStreak / nextMilestone) * 100) : 100;
+  const streakEmoji = getStreakEmoji(currentStreak);
+
   const stats = {
     watched: history?.length || 0,
     favorites: profile?.favorites_count || 0,
@@ -799,6 +810,55 @@ const Profile = () => {
                     <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center justify-center md:justify-start gap-1.5">
                       <Calendar className="w-3 h-3" /> {memberSince}
                     </div>
+
+                    {/* 🔥 Streak Section */}
+                    {currentStreak > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex flex-col items-center md:items-start gap-1.5 mt-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <motion.span
+                            animate={{ scale: [1, 1.15, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+                            className="text-xl"
+                          >
+                            {streakEmoji}
+                          </motion.span>
+                          <span className="text-sm font-black text-white">
+                            {currentStreak} jour{currentStreak > 1 ? 's' : ''} consécutif{currentStreak > 1 ? 's' : ''}
+                          </span>
+                          {longestStreak > 0 && longestStreak >= currentStreak && (
+                            <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-yellow-500/70 bg-yellow-500/10 px-1.5 py-0.5 rounded-full border border-yellow-500/20">
+                              <Trophy className="w-2.5 h-2.5" />
+                              Record: {longestStreak}j
+                            </span>
+                          )}
+                        </div>
+                        <div className="w-full md:w-44 space-y-0.5">
+                          <div className="flex justify-between text-[9px] font-black uppercase text-zinc-600">
+                            <span>Prochain: {nextMilestone}j</span>
+                            <span>{currentStreak}/{nextMilestone}</span>
+                          </div>
+                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${streakProgress}%` }}
+                              transition={{ duration: 1, ease: "easeOut" }}
+                              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                    {currentStreak === 0 && isOwnProfile && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Flame className="w-3 h-3 text-zinc-700" />
+                        <span className="text-[10px] text-zinc-600">Connectez-vous chaque jour pour votre streak!</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -11,31 +11,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  X, Shield, FileText, HelpCircle, Mail, 
+import {
+  X, Shield, FileText, HelpCircle, Mail,
   Globe, Palette, Heart, ExternalLink, Play, Cookie, Lock, Eye, Database, Info, AlertTriangle, RefreshCw
 } from 'lucide-react';
 import { useCookieConsent } from '@/components/CookieConsent';
 import { useSiteLogo } from '@/hooks/useSiteLogo';
 import { Badge } from '@/components/ui/badge';
+import { InstallButton } from '@/components/InstallButton';
 
-const PolicyOverlay = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  subtitle, 
-  icon: Icon, 
-  sections 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  title: string; 
-  subtitle: string; 
-  icon: any; 
-  sections: any[] 
+const PolicyOverlay = ({
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  icon: Icon,
+  sections
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle: string;
+  icon: any;
+  sections: any[]
 }) => {
   const { language } = useI18n();
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -55,7 +56,7 @@ const PolicyOverlay = ({
             onClick={e => e.stopPropagation()}
           >
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div 
+              <div
                 className="absolute -top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 rounded-full opacity-20"
                 style={{ background: 'radial-gradient(circle, rgb(139, 92, 246) 0%, transparent 70%)' }}
               />
@@ -141,32 +142,32 @@ export const Footer = () => {
       title: 'Politiques de Contenu',
       subtitle: 'Nos standards de diffusion et règles communautaires',
       sections: [
-        { 
-          title: 'Qualité & Accessibilité', 
+        {
+          title: 'Qualité & Accessibilité',
           content: [
             'Flux Haute Définition (720p, 1080p, 4K) priorisés selon disponibilité.',
             'Encodage optimisé pour une lecture fluide même sur connexions limitées.',
             'Support multi-langues et sous-titres (SRT/VTT) pour une accessibilité mondiale.'
-          ], 
-          icon: Play 
+          ],
+          icon: Play
         },
-        { 
-          title: 'Sécurité de l\'Utilisateur', 
+        {
+          title: 'Sécurité de l\'Utilisateur',
           content: [
             'Analyse proactive des liens externes pour détecter les scripts malveillants.',
             'Environnement de visionnage sécurisé sans publicités intrusives ou pop-ups.',
             'Zéro injection de code tiers dans l\'interface de lecture.'
-          ], 
-          icon: Shield 
+          ],
+          icon: Shield
         },
-        { 
-          title: 'Fréquence de Mise à jour', 
+        {
+          title: 'Fréquence de Mise à jour',
           content: [
             'Mises à jour automatiques du catalogue toutes les 6 heures.',
             'Ajout prioritaire des nouvelles sorties Cinéma et TV.',
             'Vérification périodique de la validité des sources de streaming.'
-          ], 
-          icon: RefreshCw 
+          ],
+          icon: RefreshCw
         },
         {
           title: 'Règles Communautaires',
@@ -183,32 +184,32 @@ export const Footer = () => {
       title: 'Content Policies',
       subtitle: 'Our broadcasting standards and community rules',
       sections: [
-        { 
-          title: 'Quality & Accessibility', 
+        {
+          title: 'Quality & Accessibility',
           content: [
             'High Definition streams (720p, 1080p, 4K) prioritized by availability.',
             'Optimized encoding for smooth playback on limited connections.',
             'Multi-language and subtitle support (SRT/VTT) for global access.'
-          ], 
-          icon: Play 
+          ],
+          icon: Play
         },
-        { 
-          title: 'User Security', 
+        {
+          title: 'User Security',
           content: [
             'Proactive external link scanning for malicious scripts.',
             'Secure viewing environment without intrusive ads or pop-ups.',
             'Zero third-party code injection in the player interface.'
-          ], 
-          icon: Shield 
+          ],
+          icon: Shield
         },
-        { 
-          title: 'Update Frequency', 
+        {
+          title: 'Update Frequency',
           content: [
             'Automatic catalog updates every 6 hours.',
             'Priority adding for new Cinema and TV releases.',
             'Periodic validity checks of streaming sources.'
-          ], 
-          icon: RefreshCw 
+          ],
+          icon: RefreshCw
         },
         {
           title: 'Community Rules',
@@ -228,25 +229,25 @@ export const Footer = () => {
       title: 'Politique DMCA',
       subtitle: 'Protection de la propriété intellectuelle',
       sections: [
-        { 
-          title: 'Nature de la Plateforme', 
+        {
+          title: 'Nature de la Plateforme',
           content: 'CStream fonctionne exclusivement comme un index technique de métadonnées et un moteur de recherche. Nous ne stockons, n\'hébergeons, ni ne téléchargeons aucun média sur nos propres infrastructures physiques ou serveurs cloud.',
-          icon: Database 
+          icon: Database
         },
-        { 
-          title: 'Origine des Contenus', 
+        {
+          title: 'Origine des Contenus',
           content: 'Tous les liens et flux vidéo sont générés dynamiquement à partir de serveurs tiers totalement indépendants. CStream n\'a aucun contrôle sur ces serveurs et ne peut être tenu responsable de leur contenu.',
-          icon: Globe 
+          icon: Globe
         },
-        { 
-          title: 'Procédure de Retrait', 
+        {
+          title: 'Procédure de Retrait',
           content: [
             'Les demandes de retrait doivent inclure une preuve de propriété des droits.',
             'Indiquez précisément l\'URL ou l\'ID du contenu concerné.',
             'Le traitement et le retrait de l\'indexation s\'effectuent sous 24h à 48h ouvrées.',
             'Contact direct : dmca@cstream.app'
           ],
-          icon: AlertTriangle 
+          icon: AlertTriangle
         }
       ]
     },
@@ -254,25 +255,25 @@ export const Footer = () => {
       title: 'DMCA Policy',
       subtitle: 'Intellectual Property Protection',
       sections: [
-        { 
-          title: 'Platform Nature', 
+        {
+          title: 'Platform Nature',
           content: 'CStream operates exclusively as a technical metadata index and search engine. We do not store, host, or upload any media on our own physical infrastructure or cloud servers.',
-          icon: Database 
+          icon: Database
         },
-        { 
-          title: 'Content Origin', 
+        {
+          title: 'Content Origin',
           content: 'All links and video streams are dynamically generated from completely independent third-party servers. CStream has no control over these servers and cannot be held responsible for their content.',
-          icon: Globe 
+          icon: Globe
         },
-        { 
-          title: 'Removal Procedure', 
+        {
+          title: 'Removal Procedure',
           content: [
             'Removal requests must include proof of rights ownership.',
             'Precisely specify the URL or ID of the affected content.',
             'Processing and de-indexing occur within 24 to 48 business hours.',
             'Direct contact: dmca@cstream.app'
           ],
-          icon: AlertTriangle 
+          icon: AlertTriangle
         }
       ]
     }
@@ -283,28 +284,28 @@ export const Footer = () => {
       title: 'Vie Privée',
       subtitle: 'Transparence et protection des données',
       sections: [
-        { 
-          title: 'Collecte Minimale', 
+        {
+          title: 'Collecte Minimale',
           content: [
             'Aucune création de compte obligatoire pour le streaming basique.',
             'Stockage local (LocalStorage) uniquement pour vos préférences de lecture.',
             'Anonymisation systématique des adresses IP dans nos logs techniques.'
-          ], 
-          icon: Lock 
+          ],
+          icon: Lock
         },
-        { 
-          title: 'Cookies & Traceurs', 
-          content: 'Nous utilisons uniquement des cookies essentiels au fonctionnement technique (sessions, préférences de langue). Aucun traceur publicitaire tiers n\'est autorisé sur CStream.', 
-          icon: Cookie 
+        {
+          title: 'Cookies & Traceurs',
+          content: 'Nous utilisons uniquement des cookies essentiels au fonctionnement technique (sessions, préférences de langue). Aucun traceur publicitaire tiers n\'est autorisé sur CStream.',
+          icon: Cookie
         },
-        { 
-          title: 'Vos Droits', 
+        {
+          title: 'Vos Droits',
           content: [
             'Droit d\'accès et de suppression immédiate de vos données de navigation.',
             'Possibilité de refuser tout stockage via les paramètres de votre navigateur.',
             'Conformité stricte avec les standards RGPD européens.'
           ],
-          icon: Eye 
+          icon: Eye
         }
       ]
     },
@@ -312,28 +313,28 @@ export const Footer = () => {
       title: 'Privacy Policy',
       subtitle: 'Transparency and data protection',
       sections: [
-        { 
-          title: 'Minimal Collection', 
+        {
+          title: 'Minimal Collection',
           content: [
             'No mandatory account creation for basic streaming.',
             'Local Storage only used for your playback preferences.',
             'Systematic anonymization of IP addresses in technical logs.'
-          ], 
-          icon: Lock 
+          ],
+          icon: Lock
         },
-        { 
-          title: 'Cookies & Trackers', 
-          content: 'We only use essential technical cookies (sessions, language preferences). No third-party advertising trackers are allowed on CStream.', 
-          icon: Cookie 
+        {
+          title: 'Cookies & Trackers',
+          content: 'We only use essential technical cookies (sessions, language preferences). No third-party advertising trackers are allowed on CStream.',
+          icon: Cookie
         },
-        { 
-          title: 'Your Rights', 
+        {
+          title: 'Your Rights',
           content: [
             'Right to access and immediate deletion of your browsing data.',
             'Ability to refuse all storage via your browser settings.',
             'Strict compliance with European GDPR standards.'
           ],
-          icon: Eye 
+          icon: Eye
         }
       ]
     }
@@ -348,7 +349,7 @@ export const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <Link to="/" className="flex items-center gap-3 mb-4 group">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05, rotate: 3 }}
                   className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/30 via-purple-500/20 to-primary/30 flex items-center justify-center shadow-xl shadow-primary/20 border border-primary/30 ring-2 ring-primary/10 overflow-hidden"
                 >
@@ -406,15 +407,18 @@ export const Footer = () => {
             </div>
           </div>
 
+          {/* PWA Install Button */}
+          <InstallButton variant="footer" />
+
           <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>© {new Date().getFullYear()} CStream.</span>
                 <Heart className="w-3 h-3 text-red-500 fill-red-500 animate-pulse" />
               </div>
-              <a 
-                href="https://drift.rip/cdz" 
-                target="_blank" 
+              <a
+                href="https://drift.rip/cdz"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 transition-all hover:scale-105 relative z-[100] cursor-pointer"
               >
@@ -429,24 +433,24 @@ export const Footer = () => {
         </div>
       </footer>
 
-      <PolicyOverlay 
-        isOpen={activeOverlay === 'privacy'} 
+      <PolicyOverlay
+        isOpen={activeOverlay === 'privacy'}
         onClose={() => setActiveOverlay(null)}
         title={privacyContent[lang].title}
         subtitle={privacyContent[lang].subtitle}
         icon={Shield}
         sections={privacyContent[lang].sections}
       />
-      <PolicyOverlay 
-        isOpen={activeOverlay === 'dmca'} 
+      <PolicyOverlay
+        isOpen={activeOverlay === 'dmca'}
         onClose={() => setActiveOverlay(null)}
         title={dmcaContent[lang].title}
         subtitle={dmcaContent[lang].subtitle}
         icon={AlertTriangle}
         sections={dmcaContent[lang].sections}
       />
-      <PolicyOverlay 
-        isOpen={activeOverlay === 'content'} 
+      <PolicyOverlay
+        isOpen={activeOverlay === 'content'}
         onClose={() => setActiveOverlay(null)}
         title={contentPolicies[lang].title}
         subtitle={contentPolicies[lang].subtitle}

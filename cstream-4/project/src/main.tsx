@@ -6,34 +6,28 @@ import { initializeTheme } from "./lib/themes";
 
 initializeTheme();
 
-// Loader fade-out timing (purely visual, no scroll lock)
-const LOADER_MIN_TIME = 3500; // 3.5s for animation to complete
+// Loader fade-out timing (purely visual)
+const LOADER_MIN_TIME = 2000;
 const startLoadTime = Date.now();
 
+const removeLoader = () => {
+  const loader = document.getElementById('initial-loader');
+  if (loader && !loader.getAttribute('data-removing')) {
+    loader.setAttribute('data-removing', 'true');
+    loader.style.opacity = '0';
+    loader.style.pointerEvents = 'none';
+    loader.style.transition = 'opacity 0.5s ease-out';
+    setTimeout(() => loader.remove(), 500);
+  }
+};
+
 window.addEventListener('load', () => {
-  const elapsedTime = Date.now() - startLoadTime;
-  const remainingTime = Math.max(0, LOADER_MIN_TIME - elapsedTime);
-
-  setTimeout(() => {
-    const loader = document.getElementById('initial-loader');
-
-    if (loader) {
-      loader.style.opacity = '0';
-      loader.style.pointerEvents = 'none';
-      loader.style.transition = 'opacity 0.6s ease-out';
-
-      setTimeout(() => {
-        loader.remove();
-      }, 600);
-    }
-  }, remainingTime);
+  const remainingTime = Math.max(0, LOADER_MIN_TIME - (Date.now() - startLoadTime));
+  setTimeout(removeLoader, remainingTime);
 });
 
-// Safety: Remove loader after max 5s no matter what
-setTimeout(() => {
-  const loader = document.getElementById('initial-loader');
-  if (loader) loader.remove();
-}, 5000);
+// Safety: Remove loader after max 4s no matter what
+setTimeout(removeLoader, 4000);
 
 createRoot(document.getElementById("root")!).render(
   <HelmetProvider>

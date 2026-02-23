@@ -5,7 +5,7 @@ import path from "path";
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => ({
-  base: "/cstream/",
+  base: "/",
   server: {
     host: "0.0.0.0",
     port: 5000,
@@ -80,19 +80,7 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-core';
-            }
-            if (id.includes('@radix-ui') || id.includes('lucide-react') || id.includes('framer-motion')) {
-              return 'vendor-ui';
-            }
-          }
-        },
+        manualChunks: undefined,
       },
     },
     chunkSizeWarningLimit: 2000,

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, ExternalLink, X, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n';
+import { InstallButton } from '@/components/InstallButton';
 
 export const VPNOverlay = () => {
     const { language } = useI18n();
@@ -62,6 +63,9 @@ export const VPNOverlay = () => {
                                         Le streaming peut être surveillé en France. Utilisez un VPN pour masquer votre activité.
                                     </p>
                                 </div>
+
+                                {/* PWA Install Option */}
+                                <InstallButton variant="overlay" />
 
                                 <a
                                     href={vpnLink}
