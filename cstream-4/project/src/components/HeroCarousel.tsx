@@ -415,22 +415,28 @@ const HeroSlide = memo(
                         className="flex flex-row items-center justify-center lg:justify-start gap-4 sm:gap-8 w-full lg:w-auto"
                       >
                         <Button
-                          onClick={() => navigate(getItemLink(item))}
+                          onClick={() => {
+                            // Timeout to allow the browser to paint CSS 'active:scale-95' feedback instantly
+                            setTimeout(() => navigate(getItemLink(item)), 20);
+                          }}
                           onMouseEnter={() => tmdbApi.getMovieDetails(item.id)} // Prefetch
-                          className="flex-1 sm:flex-none gap-3 bg-primary hover:scale-105 hover:shadow-[0_0_30px_rgba(var(--theme-primary-rgb),0.5)] text-primary-foreground font-black h-12 sm:h-14 px-8 sm:px-10 rounded-full shadow-2xl transition-all active:scale-95 group/play relative overflow-hidden border-none ultra-glow"
+                          className="flex-1 sm:flex-none gap-3 bg-primary hover:scale-105 text-primary-foreground font-black h-12 sm:h-14 px-8 sm:px-10 rounded-full transition-transform active:scale-95 group/play relative overflow-hidden border-none"
+                          style={{ boxShadow: "0 0 20px rgba(var(--theme-primary-rgb),0.3)" }}
                         >
-                          <motion.div
-                            className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/play:translate-x-[100%] transition-transform duration-1000"
+                          <div
+                            className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/play:translate-x-[100%] transition-transform duration-700 ease-in-out pointer-events-none"
                           />
-                          <Play className="w-5 h-5 fill-current group-hover/play:scale-125 transition-transform" />
+                          <Play className="w-5 h-5 fill-current group-hover/play:scale-110 transition-transform" />
                           <span className="tracking-tighter uppercase text-base sm:text-lg">{t('home.play')}</span>
                         </Button>
 
                         <Button
                           variant="secondary"
-                          onClick={() => navigate(getItemLink(item))}
+                          onClick={() => {
+                            setTimeout(() => navigate(getItemLink(item)), 20);
+                          }}
                           onMouseEnter={() => tmdbApi.getMovieDetails(item.id)} // Prefetch
-                          className="flex-1 sm:flex-none gap-3 bg-white/5 hover:bg-white/10 hover:scale-105 backdrop-blur-3xl text-white font-black h-12 sm:h-14 px-8 sm:px-10 rounded-full border border-white/10 transition-all active:scale-95 shadow-xl group/info"
+                          className="flex-1 sm:flex-none gap-3 bg-white/5 hover:bg-white/10 hover:scale-105 backdrop-blur-xl text-white font-black h-12 sm:h-14 px-8 sm:px-10 rounded-full border border-white/10 transition-transform active:scale-95 group/info"
                         >
                           <Info className="w-5 h-5 group-hover/info:rotate-12 transition-transform" />
                           <span className="hidden xs:inline tracking-tighter uppercase text-base sm:text-lg">{t('home.info')}</span>
