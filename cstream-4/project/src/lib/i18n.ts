@@ -2527,6 +2527,11 @@ const translations: Record<
     "genre.western": "서부",
     "media.movie": "영화",
     "media.tv": "TV 시리즈",
+    "protection.title": "권장 보호",
+    "protection.desc": "스트리밍은 모니터링될 수 있습니다. 활동을 마스킹하고 광고를 차단하려면 이러한 확장을 사용하세요.",
+    "protection.vpn": "무료 VPN 확장 프로그램",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   ja: {
     "nav.home": "ホーム",
@@ -2795,6 +2800,11 @@ const translations: Record<
     "genre.western": "西部劇",
     "media.movie": "映画",
     "media.tv": "ドラマ",
+    "protection.title": "推奨される保護",
+    "protection.desc": "ストリーミングは監視される可能性があります。これらの拡張機能を使用してアクティビティをマスクし、広告をブロックしてください。",
+    "protection.vpn": "無料VPN拡張機能",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   ru: {
     "nav.home": "Главная",
