@@ -29,6 +29,7 @@ import { SubtitleSelector } from "./SubtitleSelector";
 import { SubtitleResult } from "@/lib/wyzieSubs";
 
 export type PlayerSource =
+  | "vidplus"
   | "bludclart"
   | "rivestream"
   | "vidzee"
@@ -103,6 +104,24 @@ const PRIMARY_COLOR = "8B5CF6"; // Purple 500
 
 export const SOURCES: PlayerSourceConfig[] = [
   {
+    id: "vidplus",
+    name: "VidPlus",
+    description: "Source Anime Ultra-Stable",
+    color: "from-orange-500 to-red-600",
+    reliable: true,
+    priority: 0,
+    icon: "✨",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      if ((mediaType as any) === "anilist") {
+        return `https://player.vidplus.to/embed/anime/${tmdbId}/${episode || 1}?dub=false`;
+      }
+      if (mediaType === "movie") {
+        return `https://player.vidplus.to/embed/movie/${tmdbId}`;
+      }
+      return `https://player.vidplus.to/embed/tv/${tmdbId}/${season || 1}/${episode || 1}`;
+    },
+  },
+  {
     id: "frembed",
     name: "Frembed",
     description: "TOP - VF/VOSTFR - Lecteur français optimisé",
@@ -114,8 +133,8 @@ export const SOURCES: PlayerSourceConfig[] = [
       const s = season || 1;
       const e = episode || 1;
       return mediaType === "movie"
-        ? `https://api.frembed.best/movies/check?id=${tmdbId}`
-        : `https://api.frembed.best/tv/check?id=${tmdbId}&sa=${s}&epi=${e}`;
+        ? `https://api.frembed.work/movies/check?id=${tmdbId}`
+        : `https://api.frembed.work/tv/check?id=${tmdbId}&s=${s}&e=${e}`;
     },
   },
   {
