@@ -379,6 +379,7 @@ const ServiceStatusCard = memo(() => {
     groq: false,
     github: false,
     discordBot: false,
+    supabase: false,
   });
   const [loading, setLoading] = useState(true);
 
@@ -386,6 +387,15 @@ const ServiceStatusCard = memo(() => {
     const checkStatus = async () => {
       try {
         const response = await fetch('/api/service-status');
+
+        let supabaseAlive = false;
+        try {
+          const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+          supabaseAlive = !error;
+        } catch (e) {
+          supabaseAlive = false;
+        }
+
         if (response.ok) {
           const data = await response.json();
           setServiceStatus({
@@ -393,6 +403,7 @@ const ServiceStatusCard = memo(() => {
             groq: data.groq || false,
             github: data.github || false,
             discordBot: data.discordBot || false,
+            supabase: supabaseAlive,
           });
         } else {
           setServiceStatus({
@@ -400,6 +411,7 @@ const ServiceStatusCard = memo(() => {
             groq: false,
             github: false,
             discordBot: false,
+            supabase: supabaseAlive,
           });
         }
       } catch {
@@ -408,6 +420,7 @@ const ServiceStatusCard = memo(() => {
           groq: false,
           github: false,
           discordBot: false,
+          supabase: false,
         });
       } finally {
         setLoading(false);
@@ -417,6 +430,7 @@ const ServiceStatusCard = memo(() => {
   }, []);
 
   const services = [
+    { key: 'supabase', label: 'Supabase', status: serviceStatus.supabase },
     { key: 'tmdb', label: 'TMDB', status: serviceStatus.tmdb },
     { key: 'groq', label: 'Groq AI', status: serviceStatus.groq },
     { key: 'github', label: 'GitHub', status: serviceStatus.github },
@@ -438,8 +452,8 @@ const ServiceStatusCard = memo(() => {
               <Shield className="w-5 h-5 text-green-500" />
               <h3 className="font-semibold">Services API</h3>
             </div>
-            <Badge variant="outline" className={configuredCount >= 3 ? 'border-green-500/50 text-green-500' : 'border-yellow-500/50 text-yellow-500'}>
-              {configuredCount}/4 configurés
+            <Badge variant="outline" className={configuredCount >= 4 ? 'border-green-500/50 text-green-500' : 'border-yellow-500/50 text-yellow-500'}>
+              {configuredCount}/5 configurés
             </Badge>
           </div>
           {loading ? (

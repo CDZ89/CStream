@@ -6,7 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import { InstallButton } from '@/components/InstallButton';
 
 export const VPNOverlay = () => {
-    const { language } = useI18n();
+    const { language, t } = useI18n();
     const [show, setShow] = useState(false);
 
     useEffect(() => {
@@ -56,29 +56,62 @@ export const VPNOverlay = () => {
                                 <ShieldAlert className="w-6 h-6" />
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-4 w-full">
                                 <div>
-                                    <h3 className="font-bold text-white text-base mb-1">Protection Recommandée</h3>
-                                    <p className="text-xs text-slate-300 leading-relaxed">
-                                        Le streaming peut être surveillé en France. Utilisez un VPN pour masquer votre activité.
+                                    <h3 className="font-bold text-white text-base mb-1">{t("protection.title")}</h3>
+                                    <p className="text-[10px] text-slate-300 leading-relaxed">
+                                        {t("protection.desc")}
                                     </p>
                                 </div>
 
-                                {/* PWA Install Option */}
-                                <InstallButton variant="overlay" />
+                                <div className="grid grid-cols-1 gap-2.5">
+                                    {/* VPN Link */}
+                                    <a
+                                        href="https://chromewebstore.google.com/detail/majdfhpaihoncoakbjgbdhglocklcgno?utm_source=item-share-cb"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 w-full bg-white/[0.05] hover:bg-white/[0.1] text-white p-2 rounded-xl transition-all group border border-white/10"
+                                    >
+                                        <div className="bg-white p-1 rounded-lg shrink-0">
+                                            <img src="https://lh3.googleusercontent.com/Rm5hcKXvm9Prc-vyHzNGRpRVPxZAKQiiKPDNWW4Sn-MOm_-TxDOcKqNDpHUOYZBVidpnqWt22Wjwz9vtgW8nq-9Mrw=s120" alt="VPN" className="w-5 h-5 object-contain" />
+                                        </div>
+                                        <span className="text-xs font-bold flex-1">{t("protection.vpn")}</span>
+                                        <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    </a>
 
-                                <a
-                                    href={vpnLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-3 w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white p-1 pr-4 rounded-xl transition-all group shadow-lg shadow-blue-900/20 border border-blue-400/20"
-                                >
-                                    <div className="bg-white p-1.5 rounded-lg shrink-0">
-                                        <img src={faviconUrl} alt={vpnName} className="w-5 h-5 object-contain" />
-                                    </div>
-                                    <span className="text-sm font-bold flex-1 text-center">Utiliser {vpnName}</span>
-                                    <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                </a>
+                                    {/* uBlock Link */}
+                                    <a
+                                        href="https://chromewebstore.google.com/detail/ddkjiahejlhfcafbddmgiahcphecmpfh?utm_source=item-share-cb"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 w-full bg-white/[0.05] hover:bg-white/[0.1] text-white p-2 rounded-xl transition-all group border border-white/10"
+                                    >
+                                        <div className="bg-white p-1 rounded-lg shrink-0">
+                                            <img src="https://lh3.googleusercontent.com/lsanoOfx5N_t-7gh5Qg9FGIirVEjdCqalZXyLZYRd5d7Fydm83FQhu4Oq0JmlRyMtyF_LfwuQQZyKRTHs6emnFirsA=s120" alt="uBlock" className="w-5 h-5 object-contain" />
+                                        </div>
+                                        <span className="text-xs font-bold flex-1">{t("protection.ublock")}</span>
+                                        <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    </a>
+
+                                    {/* Adblock Link */}
+                                    <a
+                                        href="https://chromewebstore.google.com/detail/cfhdojbkjhnklbpkdaibdccddilifddb"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-3 w-full bg-white/[0.05] hover:bg-white/[0.1] text-white p-2 rounded-xl transition-all group border border-white/10"
+                                    >
+                                        <div className="bg-white p-1 rounded-lg shrink-0">
+                                            <img src="https://lh3.googleusercontent.com/nnMASpwJY4U5ukhKl4PfIdaOpuKXNrVvfIc9n8-NJOJIY7m3RLgsazN6ATmDkXyaMll8zADOXuBR574MwC7T71kJcQ=s120" alt="Adblock" className="w-5 h-5 object-contain" />
+                                        </div>
+                                        <span className="text-xs font-bold flex-1">{t("protection.adblock")}</span>
+                                        <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    </a>
+                                </div>
+
+                                {/* PWA Install Option */}
+                                <div className="pt-2 border-t border-white/5">
+                                    <InstallButton variant="overlay" />
+                                </div>
                             </div>
                         </div>
                     </div>

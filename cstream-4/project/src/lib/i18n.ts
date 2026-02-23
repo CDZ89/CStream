@@ -319,7 +319,12 @@ type TranslationKey =
   | "genre.war"
   | "genre.western"
   | "media.movie"
-  | "media.tv";
+  | "media.tv"
+  | "protection.title"
+  | "protection.desc"
+  | "protection.vpn"
+  | "protection.ublock"
+  | "protection.adblock";
 
 const translations: Record<
   SupportedLanguage,
@@ -599,6 +604,11 @@ const translations: Record<
     "genre.western": "Western",
     "media.movie": "Film",
     "media.tv": "Série",
+    "protection.title": "Protection Recommandée",
+    "protection.desc": "Le streaming peut être surveillé. Utilisez ces extensions pour masquer votre activité et bloquer les pubs.",
+    "protection.vpn": "Extension VPN Free",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   en: {
     "nav.home": "Home",
@@ -857,6 +867,11 @@ const translations: Record<
     "genre.western": "Western",
     "media.movie": "Movie",
     "media.tv": "TV Show",
+    "protection.title": "Recommended Protection",
+    "protection.desc": "Streaming can be monitored. Use these extensions to mask your activity and block ads.",
+    "protection.vpn": "Free VPN Extension",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
     "nav.ai_agent": "AI Assistant",
     "common.saving": "Saving...",
     "home.play": "Play",
@@ -1129,6 +1144,11 @@ const translations: Record<
     "genre.western": "Western",
     "media.movie": "Película",
     "media.tv": "Serie",
+    "protection.title": "Protección Recomendada",
+    "protection.desc": "El streaming puede ser monitoreado. Utilice estas extensiones para ocultar su actividad y bloquear anuncios.",
+    "protection.vpn": "Extensión VPN Gratis",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
     "nav.ai_agent": "AI Assistant",
     "common.saving": "Saving...",
     "home.play": "Play",
@@ -1413,6 +1433,11 @@ const translations: Record<
     "genre.western": "Western",
     "media.movie": "Film",
     "media.tv": "Serie",
+    "protection.title": "Empfohlener Schutz",
+    "protection.desc": "Streaming kann überwacht werden. Verwenden Sie diese Erweiterungen, um Ihre Aktivitäten zu maskieren und Werbung zu blockieren.",
+    "protection.vpn": "Kostenlose VPN-Erweiterung",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   it: {
     "nav.home": "Home",
@@ -1684,6 +1709,11 @@ const translations: Record<
     "genre.western": "Western",
     "media.movie": "Film",
     "media.tv": "Serie TV",
+    "protection.title": "Protezione Consigliata",
+    "protection.desc": "Lo streaming può essere monitorato. Usa queste estensioni per mascherare la tua attività e bloccare gli annunci.",
+    "protection.vpn": "Estensione VPN Gratuita",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   pt: {
     "nav.home": "Início",
@@ -1955,6 +1985,11 @@ const translations: Record<
     "genre.western": "Faroeste",
     "media.movie": "Filme",
     "media.tv": "Série",
+    "protection.title": "Proteção Recomendada",
+    "protection.desc": "O streaming pode ser monitorado. Use estas extensões para mascarar sua atividade e bloquear anúncios.",
+    "protection.vpn": "Extensão VPN Gratuita",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   ar: {
     "nav.home": "الرئيسية",
@@ -2221,6 +2256,11 @@ const translations: Record<
     "genre.western": "غرب أمريكي",
     "media.movie": "فيلم",
     "media.tv": "مسلسل",
+    "protection.title": "حماية موصى بها",
+    "protection.desc": "يمكن مراقبة البث. استخدم هذه الإضافات لإخفاء نشاطك وحظر الإعلانات.",
+    "protection.vpn": "إضافة VPN مجانية",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
   ko: {
     "nav.home": "홈",
@@ -3024,6 +3064,11 @@ const translations: Record<
     "genre.western": "Вестерн",
     "media.movie": "Фильм",
     "media.tv": "Сериал",
+    "protection.title": "Рекомендуемая защита",
+    "protection.desc": "Потоковое вещание может отслеживаться. Используйте эти расширения, чтобы скрыть свою активность и заблокировать рекламу.",
+    "protection.vpn": "Бесплатное расширение VPN",
+    "protection.ublock": "uBlock Origin",
+    "protection.adblock": "Adblock Plus",
   },
 };
 

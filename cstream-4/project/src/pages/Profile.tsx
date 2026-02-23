@@ -729,11 +729,11 @@ const Profile = () => {
                   <div className="relative group">
                     <Avatar className="w-20 h-20 md:w-28 md:h-28 ring-1 ring-white/10 shadow-xl">
                       <AvatarImage
-                        src={profile?.avatar_url || ""}
+                        src={profile?.avatar_url || (user?.user_metadata?.avatar_url) || ""}
                         className="object-cover"
                       />
                       <AvatarFallback className="bg-zinc-900 text-xl font-bold">
-                        {username?.charAt(0) || "U"}
+                        {(profile?.username || user?.user_metadata?.full_name || "U").charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     {isOwnProfile && (
@@ -863,29 +863,7 @@ const Profile = () => {
                 </div>
 
                 <div className="hidden lg:block w-72 shrink-0 space-y-4">
-                  <DiscordWidget />
-                  <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-                    <a
-                      href="https://drift.rip/cdz"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative block rounded-2xl overflow-hidden border border-white/10 bg-black p-1 hover:border-primary/50 transition-all z-[100] cursor-pointer"
-                      title="click here"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <div className="w-full aspect-[3/1] bg-gradient-to-br from-primary/20 to-purple-600/20 flex flex-col items-center justify-center p-6 text-center group-hover:from-primary/30 group-hover:to-purple-600/30 transition-all">
-                        <span className="text-primary font-black text-xl uppercase tracking-tighter mb-1">
-                          Rejoindre
-                        </span>
-                        <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest group-hover:text-white/80 transition-colors">
-                          Notre Discord
-                        </span>
-                      </div>
-                    </a>
-                  </div>
+                  {/* Discord widget and link removed */}
                 </div>
               </div>
 
