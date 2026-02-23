@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { UniversalPlayer, SOURCES, type PlayerSource } from '@/components/UniversalPlayer';
+import { SourceSelectorList } from '@/components/SourceSelectorList';
 import { ImportedSourceSelector } from '@/components/ImportedSourceSelector';
 import { MediaCard } from '@/components/MediaCard';
 import { tmdbApi } from '@/lib/tmdb';
@@ -687,99 +688,13 @@ export default function PlayerPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 bg-white/5 rounded-xl mb-4">
-                {SOURCES.map((src) => (
-                  <button
-                    key={src.id}
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 whitespace-nowrap border text-sm font-medium",
-                      selectedSource === src.id
-                        ? "bg-gradient-to-r from-purple-600 to-pink-600 border-white/20 text-white shadow-lg shadow-purple-500/20"
-                        : "bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10"
-                    )}
-                    onClick={() => {
-                      console.log("[PlayerPage] Source clicked:", src.id);
-                      handleSourceChange(src.id as any);
-                    }}
-                  >
-                    <span className="text-lg">{src.icon}</span>
-                    {src.name}
-                  </button>
-                ))}
-              </div>
+              <SourceSelectorList
+                currentSource={selectedSource}
+                onSelect={(id) => handleSourceChange(id)}
+                className="mt-6"
+              />
 
-              {/* Responsive Grid: 2 cols mobile, 3 cols tablet, 4 cols desktop, 5+ cols large */}
-              <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
-                {/* Predefined Sources */}
-                {SOURCES.map((source, index) => {
-                  const isSelected = selectedSource === source.id;
-                  return (
-                    <motion.button
-                      key={source.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.02 }}
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleSourceChange(source.id);
-                      }}
-                      className={cn(
-                        "relative group flex flex-col items-center justify-center p-2 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-300 overflow-hidden cursor-pointer",
-                        isSelected
-                          ? "bg-primary/20 border-2 border-primary shadow-lg shadow-primary/20"
-                          : "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20"
-                      )}
-                    >
-                      {/* Glow effect for selected */}
-                      {isSelected && (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-pink-500/10 animate-pulse" />
-                      )}
-
-                      {/* Icon container */}
-                      <div className={cn(
-                        "relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center mb-1 sm:mb-2 transition-all",
-                        isSelected
-                          ? "bg-primary shadow-lg"
-                          : "bg-white/10 group-hover:bg-white/15"
-                      )}>
-                        <span className="text-base sm:text-lg">{source.icon || '🎬'}</span>
-                      </div>
-
-                      {/* Source name */}
-                      <span className={cn(
-                        "relative z-10 text-[10px] sm:text-sm font-bold text-center truncate w-full transition-colors",
-                        isSelected ? "text-white" : "text-white/70 group-hover:text-white"
-                      )}>
-                        {source.name}
-                      </span>
-
-                      {/* Description - hidden on mobile */}
-                      <span className={cn(
-                        "relative z-10 text-[8px] sm:text-[10px] text-center truncate w-full mt-0.5 sm:mt-1 transition-colors hidden sm:block",
-                        isSelected ? "text-purple-200/80" : "text-white/40 group-hover:text-white/50"
-                      )}>
-                        {source.description.split(' ').slice(0, 1).join(' ')}
-                      </span>
-
-                      {/* Selected indicator */}
-                      {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute top-2 right-2 w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg"
-                        >
-                          <Check className="w-3 h-3 text-white" />
-                        </motion.div>
-                      )}
-
-                      {/* Hover shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                    </motion.button>
-                  );
-                })}
+              <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 mt-8">
 
                 {/* Imported Custom Sources - ADMIN ADDED */}
                 {importedSources.map((source, index) => (

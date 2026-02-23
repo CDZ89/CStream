@@ -134,6 +134,23 @@
     </div>
   </div>
 
+  <!-- Handle Dynamic Import Errors (TypeError: Failed to fetch dynamically imported module) -->
+  <script>
+    window.addEventListener('error', (e) => {
+      if (e.message && e.message.includes('Failed to fetch dynamically imported module')) {
+        console.warn('Dynamic import failed, reloading page...', e);
+        // Only reload once to avoid infinite loops if the server is actually down
+        const reloadKey = 'cstream_last_chunk_reload';
+        const lastReload = parseInt(localStorage.getItem(reloadKey) || '0');
+        const now = Date.now();
+        if (now - lastReload > 30000) { // 30 seconds threshold
+          localStorage.setItem(reloadKey, now.toString());
+          window.location.reload();
+        }
+      }
+    }, true);
+  </script>
+
   <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {

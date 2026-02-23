@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { MediaGrid } from '@/components/MediaGrid';
 import { TrailerModal } from '@/components/TrailerModal';
 import { UniversalPlayer, SOURCES } from "@/components/UniversalPlayer";
+import { SourceSelectorList } from "@/components/SourceSelectorList";
 import { cn } from '@/lib/utils';
 import { CinemaosPlayer } from '@/components/CinemaosPlayer';
 import { CSPlayer } from '@/components/CSPlayer';
@@ -996,22 +997,24 @@ const MovieDetail = () => {
             {/* Lecteur - Affiche source importée ou lecteurs publics */}
             <div className="lg:col-span-3 space-y-5 sm:space-y-7">
               {/* Header de sélection de sources (Nouveau) */}
-              <div className="mb-6 p-3 bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl overflow-hidden">
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  <div className="w-full md:w-auto">
-                    <div className="flex items-center gap-2 mb-2 px-1 text-[10px] font-bold uppercase tracking-widest text-white/40">
-                      <div className="w-1.5 h-1.5 rounded-full bg-pink-500 animate-pulse" />
-                      Lecteurs Premium
-                    </div>
-                    <ImportedSourceSelector
-                      tmdbId={movie.id}
-                      onSelect={(s) => {
-                        handleImportedSourceSelect(s);
-                      }}
-                      currentSource={currentImportedSource}
-                    />
-                  </div>
-                </div>
+              <div className="mb-6 p-4 sm:p-6 bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
+                <SourceSelectorList
+                  currentSource={currentSource?.id as any}
+                  onSelect={(id) => {
+                    const src = SOURCES.find(s => s.id === id);
+                    if (src) {
+                      setCurrentSource({
+                        id: src.id as any,
+                        label: src.name,
+                        url: '', // buildUrl is used internally by UniversalPlayer
+                        media_type: 'movie',
+                        language: 'FR',
+                      });
+                      setIframeKey(prev => prev + 1);
+                      toast.success(`Lecture via ${src.name}`);
+                    }
+                  }}
+                />
               </div>
 
               <Card className="overflow-hidden">

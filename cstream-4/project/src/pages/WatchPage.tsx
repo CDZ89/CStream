@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { UniversalPlayer, SOURCES } from "@/components/UniversalPlayer";
 import { useI18n } from "@/lib/i18n";
+import { SourceSelectorList } from "@/components/SourceSelectorList";
 import { ImportedSourceSelector } from "@/components/ImportedSourceSelector";
 import { PayPalButton } from "@/components/PayPalButton";
 import { SecurityBanner } from "@/components/SecurityBanner";
@@ -355,49 +356,46 @@ const WatchPage = () => {
                   mediaType="movie"
                   title={movie.title}
                   posterPath={movie.poster_path}
-                  autoPlay
                   currentSource={currentSource}
                   setCurrentSource={setCurrentSource}
                 />
               </div>
 
-              <div className="p-3 sm:p-4 bg-zinc-950/80">
-                <div className="flex flex-col gap-3 sm:gap-4">
-                  <div className="space-y-2 sm:space-y-3">
-                    <div className="flex items-center justify-between px-1">
-                      <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-white/40">
-                        Sélecteur de Source
-                      </span>
-                    </div>
-                  </div>
+              <div className="p-4 sm:p-6 bg-zinc-950/80">
+                <SourceSelectorList
+                  currentSource={currentSource}
+                  onSelect={(id) => {
+                    setCurrentSource(id);
+                    toast.success(`Lecture via ${SOURCES.find(s => s.id === id)?.name}`);
+                  }}
+                />
 
-                  <div className="pt-2 sm:pt-3 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-2 sm:gap-4">
-                      <ImportedSourceSelector
-                        tmdbId={movie.id}
-                        onSelect={(s) => {
-                          setCurrentSource(s.id as any);
-                          toast.success(`Lecture via ${s.label}`);
-                        }}
-                        currentSource={null}
-                        className="w-auto h-8 sm:h-9"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentSource(undefined)}
-                        className="text-[8px] sm:text-[10px] font-bold bg-zinc-900/40 border-white/10 hover:bg-zinc-800/60 h-8 sm:h-9"
-                      >
-                        <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1.5 sm:mr-2" />
-                        AUTO
-                      </Button>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="text-[8px] sm:text-[10px] font-bold text-white/40 hover:text-white h-8 sm:h-9">
-                        <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-2" />
-                        <span className="hidden sm:inline">REFRESH</span>
-                      </Button>
-                    </div>
+                <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <ImportedSourceSelector
+                      tmdbId={movie.id}
+                      onSelect={(s) => {
+                        setCurrentSource(s.id as any);
+                        toast.success(`Lecture via ${s.label}`);
+                      }}
+                      currentSource={null}
+                      className="w-auto h-8 sm:h-9"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentSource(undefined)}
+                      className="text-[8px] sm:text-[10px] font-bold bg-zinc-900/40 border-white/10 hover:bg-zinc-800/60 h-8 sm:h-9"
+                    >
+                      <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1.5 sm:mr-2" />
+                      AUTO-REPAIR
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="text-[8px] sm:text-[10px] font-bold text-white/40 hover:text-white h-8 sm:h-9">
+                      <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-2" />
+                      <span className="hidden sm:inline">REFRESH</span>
+                    </Button>
                   </div>
                 </div>
               </div>
