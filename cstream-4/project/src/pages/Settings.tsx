@@ -107,7 +107,7 @@ const Settings = () => {
   } = useUserSettings();
 
   const { selectedFontId, fontSize, setFont, setFontSize } = useFontSettings();
-  const { betaMode, adsRemoved, antiPubEnabled, setBetaMode, setAdsRemoved, setAntiPubEnabled } = useBetaSettings();
+  const { betaMode, adsRemoved, antiPubBeta, setBetaMode, setAdsRemoved, setAntiPubBeta } = useBetaSettings();
   const { theme: navbarTheme, setTheme: setNavbarTheme } = useNavbarTheme();
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
@@ -417,13 +417,13 @@ const Settings = () => {
                         >
                           <div>
                             <div className="flex items-center gap-2">
-                              <h4 className="font-bold text-purple-400">Anti-Pub Beta (Bouclier)</h4>
+                              <h4 className="font-bold text-purple-400">Bloqueur de pub (Beta)</h4>
                               <Badge variant="outline" className="text-[8px] bg-purple-500/20 text-purple-400 border-purple-500/30">EXPERIMENTAL</Badge>
                             </div>
-                            <p className="text-xs text-purple-500/70">Bloque les popups et redirections agressives</p>
-                            <p className="text-[10px] text-amber-500/70 mt-1 italic italic">Note : Peut empêcher certains lecteurs de fonctionner.</p>
+                            <p className="text-xs text-purple-500/70">Bloque les popups et sécurise les lecteurs tiers.</p>
+                            <p className="text-[10px] text-amber-500/70 mt-1 italic">Note : Peut empêcher certains lecteurs de fonctionner.</p>
                           </div>
-                          <Switch checked={antiPubEnabled} onCheckedChange={(v) => setAntiPubEnabled(v)} />
+                          <Switch checked={antiPubBeta} onCheckedChange={(v) => setAntiPubBeta(v)} />
                         </motion.div>
                       </div>
                     )}

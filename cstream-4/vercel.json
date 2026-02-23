@@ -18,7 +18,7 @@
         },
         {
             "source": "/(.*)",
-            "destination": "/index.html"
+            "destination": "/project/dist/index.html"
         }
     ],
     "cleanUrls": true,

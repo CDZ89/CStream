@@ -452,7 +452,7 @@ export const UniversalPlayer = ({
   }, [currentSource, handleSourceChange]);
 
   const translations = getTranslations(lang);
-  const { antiPubEnabled } = useBetaSettings();
+  const { antiPubBeta } = useBetaSettings();
 
   return (
     <div className={cn("flex flex-col w-full", className)}>
@@ -547,7 +547,7 @@ export const UniversalPlayer = ({
           className="absolute inset-0 w-full h-full border-0 z-10"
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-          sandbox={antiPubEnabled ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
+          sandbox={antiPubBeta ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
           referrerPolicy="no-referrer-when-downgrade"
           onLoad={handleIframeLoad}
           onError={handleIframeError}

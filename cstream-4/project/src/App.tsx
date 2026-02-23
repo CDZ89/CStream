@@ -378,8 +378,8 @@ const App = () => {
     };
   }, [activeTheme]);
 
-  const { antiPubEnabled } = useBetaSettings();
-  useAntiPub(antiPubEnabled);
+  const { antiPubBeta } = useBetaSettings();
+  useAntiPub(antiPubBeta);
 
   return (
     <ErrorBoundary>
