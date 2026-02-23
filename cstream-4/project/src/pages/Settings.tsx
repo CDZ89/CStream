@@ -107,7 +107,7 @@ const Settings = () => {
   } = useUserSettings();
 
   const { selectedFontId, fontSize, setFont, setFontSize } = useFontSettings();
-  const { betaMode, adsRemoved, setBetaMode, setAdsRemoved } = useBetaSettings();
+  const { betaMode, adsRemoved, antiPubEnabled, setBetaMode, setAdsRemoved, setAntiPubEnabled } = useBetaSettings();
   const { theme: navbarTheme, setTheme: setNavbarTheme } = useNavbarTheme();
 
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
@@ -397,17 +397,35 @@ const Settings = () => {
                     </div>
 
                     {betaMode && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20"
-                      >
-                        <div>
-                          <h4 className="font-bold text-emerald-400">Bloqueur de pub (Experimental)</h4>
-                          <p className="text-xs text-emerald-500/70">Masque automatiquement les overlays publicitaires</p>
-                        </div>
-                        <Switch checked={adsRemoved} onCheckedChange={(v) => setAdsRemoved(v)} />
-                      </motion.div>
+                      <div className="space-y-4">
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20"
+                        >
+                          <div>
+                            <h4 className="font-bold text-emerald-400">Masquer les pubs (Auto-hide)</h4>
+                            <p className="text-xs text-emerald-500/70">Masque automatiquement les overlays publicitaires détectés</p>
+                          </div>
+                          <Switch checked={adsRemoved} onCheckedChange={(v) => setAdsRemoved(v)} />
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="flex items-center justify-between p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20"
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-bold text-purple-400">Anti-Pub Beta (Bouclier)</h4>
+                              <Badge variant="outline" className="text-[8px] bg-purple-500/20 text-purple-400 border-purple-500/30">EXPERIMENTAL</Badge>
+                            </div>
+                            <p className="text-xs text-purple-500/70">Bloque les popups et redirections agressives</p>
+                            <p className="text-[10px] text-amber-500/70 mt-1 italic italic">Note : Peut empêcher certains lecteurs de fonctionner.</p>
+                          </div>
+                          <Switch checked={antiPubEnabled} onCheckedChange={(v) => setAntiPubEnabled(v)} />
+                        </motion.div>
+                      </div>
                     )}
                   </div>
 

@@ -18,6 +18,8 @@ import { applyTheme, initializeTheme, THEMES } from "@/lib/themes";
 import { blockExternalLinks } from "@/lib/blockExternalLinks";
 import { RadioOverlay } from "@/components/RadioOverlay";
 import { VPNOverlay } from "@/components/VPNOverlay";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { useAntiPub } from "@/hooks/useAntiPub";
 // import { LanguageOverlay } from "@/components/LanguageOverlay";
 
 // Defer non-critical lazy components
@@ -376,6 +378,9 @@ const App = () => {
     };
   }, [activeTheme]);
 
+  const { antiPubEnabled } = useBetaSettings();
+  useAntiPub(antiPubEnabled);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -415,6 +420,7 @@ const App = () => {
                   <AppRoutes />
                   <RadioOverlay />
                   <VPNOverlay />
+                  <SpeedInsights />
                   {/* <LanguageOverlay /> */}
                   <CookieConsent />
                 </div>
