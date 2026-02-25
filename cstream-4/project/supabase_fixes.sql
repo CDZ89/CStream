@@ -112,4 +112,28 @@ ADD COLUMN IF NOT EXISTS "brightness" numeric DEFAULT 100,
 ADD COLUMN IF NOT EXISTS "autoplay" boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS "notifications" jsonb DEFAULT '{"updates": true, "newContent": true, "recommendations": false}'::jsonb;
 
+-- ==============================================================================
+-- 5. Correctif RLS Table "profiles" (Erreur 500 : Infinite Recursion)
+-- ==============================================================================
+-- Supprimer les politiques existantes qui causent une boucle infinie
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert their own profile." ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile." ON public.profiles;
+DROP POLICY IF EXISTS "Enable read access for all users" ON public.profiles;
+DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON public.profiles;
+DROP POLICY IF EXISTS "Enable update for users based on email" ON public.profiles;
+
+-- Recréer des politiques propres et sécurisées sans appels récursifs
+CREATE POLICY "Public profiles are viewable by everyone." 
+ON public.profiles FOR SELECT 
+USING ( true );
+
+CREATE POLICY "Users can insert their own profile." 
+ON public.profiles FOR INSERT 
+WITH CHECK ( auth.uid() = id );
+
+CREATE POLICY "Users can update own profile." 
+ON public.profiles FOR UPDATE 
+USING ( auth.uid() = id );
+
 COMMIT;
