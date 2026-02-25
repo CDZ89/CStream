@@ -1149,6 +1149,18 @@ const TVDetail = () => {
                   )}
                 </div>
 
+                {/* Hero Actions Bar */}
+                <div className="flex border-b border-white/5 bg-zinc-950/80 px-4 py-3 sm:px-6">
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowDownloadModal(true)}
+                    className="h-10 px-4 rounded-xl font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 backdrop-blur-md transition-all text-sm w-full sm:w-auto"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Télécharger
+                  </Button>
+                </div>
+
                 {/* Sources Hub Container */}
                 <div className="p-4 sm:p-6 lg:p-8 bg-zinc-950/80 relative overflow-hidden">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-purple-500/10 blur-[60px] pointer-events-none" />
@@ -2298,6 +2310,13 @@ const TVDetail = () => {
           onDismiss={() => setShowEndOverlay(false)}
         />
       )}
+
+      <MediaDownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        mediaItem={show}
+        mediaType="tv"
+      />
     </div>
   );
 };

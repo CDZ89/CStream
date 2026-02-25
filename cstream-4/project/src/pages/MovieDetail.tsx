@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MediaDownloadModal } from "@/components/MediaDownloadModal";
 import {
   Play, Star, Clock, Calendar, Heart, Bookmark, Share2,
   ChevronLeft, X, Loader2, ThumbsUp, Eye, MessageSquare,
@@ -1164,6 +1165,33 @@ const MovieDetail = () => {
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-0">
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+
+                      {movie.videos?.results?.length > 0 && (
+                        <Button
+                          onClick={() => {
+                            const url = extractTrailerUrl(movie.videos);
+                            if (url) {
+                              setTrailerUrl(url);
+                              setShowTrailer(true);
+                            }
+                          }}
+                          variant="secondary"
+                          className="h-10 sm:h-11 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all sm:text-base text-sm"
+                        >
+                          <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                          Bande-annonce
+                        </Button>
+                      )}
+
+                      <Button
+                        variant="secondary"
+                        onClick={() => setShowDownloadModal(true)}
+                        className="h-10 sm:h-11 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 backdrop-blur-md transition-all sm:text-base text-sm"
+                      >
+                        <Download className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                        <span className="hidden sm:inline">Télécharger</span>
+                      </Button>
+
                       <Button
                         variant={userLiked ? "default" : "outline"}
                         size="sm"
@@ -2199,7 +2227,6 @@ const MovieDetail = () => {
             </DialogContent>
           </Dialog>
           {/* Share Widget - Christmas */}
-          {/* Trailer Modal */}
           <TrailerModal
             open={trailerOpen}
             onOpenChange={setTrailerOpen}
@@ -2208,6 +2235,13 @@ const MovieDetail = () => {
           />
         </>
       )}
+
+      <MediaDownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        mediaItem={movie}
+        mediaType="movie"
+      />
     </div>
   );
 };

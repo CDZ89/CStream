@@ -59,6 +59,10 @@ export type PlayerSource =
   | "111movies"
   | "vidsrc2"
   | "cinesrc"
+  | "vidstorm"
+  | "vidora"
+  | "zxcstream"
+  | "quickwatch"
   | "pstream";
 
 interface UniversalPlayerProps {
@@ -411,6 +415,71 @@ export const SOURCES: PlayerSourceConfig[] = [
     },
   },
   {
+    id: "vidstorm",
+    name: "VidStorm",
+    description: "Premium - Rapide & Progress Sync",
+    color: "from-blue-600 to-indigo-700",
+    reliable: true,
+    priority: 18,
+    icon: "🌪️",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://vidstorm.ru/movie/${tmdbId}?autoplay=true&theme=8b5cf6&download=false`
+        : `https://vidstorm.ru/tv/${tmdbId}/${s}/${e}?autoplay=true&autonext=true&theme=8b5cf6&download=false`;
+    },
+  },
+  {
+    id: "vidora",
+    name: "Vidora",
+    description: "Stable - Très Haute Qualité",
+    color: "from-purple-500 to-fuchsia-600",
+    reliable: true,
+    priority: 19,
+    icon: "💎",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://vidora.su/movie/${tmdbId}?autoplay=true&colour=8b5cf6&backbutton=https://cstream--trte11.replit.app`
+        : `https://vidora.su/tv/${tmdbId}/${s}/${e}?autoplay=true&autonextepisode=true&colour=8b5cf6&backbutton=https://cstream--trte11.replit.app`;
+    },
+  },
+  {
+    id: "zxcstream",
+    name: "ZxcStream",
+    description: "Serveur Rapide (Auto-FR)",
+    color: "from-teal-500 to-emerald-600",
+    reliable: true,
+    priority: 20,
+    icon: "⚡",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      // Passes 'fr' language code so UI loads in French.
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://zxcstream.xyz/player/movie/${tmdbId}/fr?autoplay=true&back=true&server=0`
+        : `https://zxcstream.xyz/player/tv/${tmdbId}/${s}/${e}/fr?autoplay=true&back=true&server=0`;
+    },
+  },
+  {
+    id: "quickwatch",
+    name: "QuickWatch",
+    description: "Multi-hébergeurs Ultra",
+    color: "from-rose-500 to-red-600",
+    reliable: true,
+    priority: 21,
+    icon: "⏱️",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://www.quickwatch.co/embed/${tmdbId}`
+        : `https://www.quickwatch.co/embed/${tmdbId}/${s}/${e}`;
+    },
+  },
+  {
     id: "vidnest",
     name: "VidNest",
     description: "Multi-serveurs",
@@ -642,13 +711,25 @@ export const UniversalPlayer = ({
 }: UniversalPlayerProps) => {
   const { language: lang } = useI18n();
 
+  const detectFrench = () => {
+    try {
+      const isFrLang = typeof navigator !== "undefined" && (navigator.language || (navigator as any).userLanguage)?.toLowerCase().startsWith("fr");
+      const isFrTimezone = typeof Intl !== "undefined" && Intl.DateTimeFormat().resolvedOptions().timeZone.includes("Paris");
+      return isFrLang || isFrTimezone;
+    } catch {
+      return false;
+    }
+  };
+
   const [internalSource, setInternalSource] = useState<PlayerSource>(() => {
     try {
       if (defaultSource) return defaultSource;
       const preferred = localStorage.getItem("cstream_preferred_player") as PlayerSource;
-      return SOURCES.find(s => s.id === preferred)?.id || SOURCES[0].id;
+      if (preferred && SOURCES.find(s => s.id === preferred)) return preferred;
+
+      return detectFrench() ? "frembed" : "vidplus";
     } catch {
-      return SOURCES[0].id;
+      return "vidplus";
     }
   });
 

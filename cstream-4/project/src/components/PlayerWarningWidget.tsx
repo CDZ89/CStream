@@ -54,10 +54,10 @@ const checkIsFrenchUser = (lang: string): boolean => {
   try {
     const browserLang = typeof navigator !== 'undefined' ? navigator.language || (navigator as any).userLanguage : '';
     const isFr = browserLang?.toLowerCase().startsWith('fr') || lang === 'fr';
-    
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const isFrenchTimezone = timezone?.includes('Paris') || timezone?.includes('Europe/Paris');
-    
+
     return isFr || isFrenchTimezone;
   } catch {
     return lang === 'fr';
@@ -81,10 +81,10 @@ const checkDismissal = (): boolean => {
 
 export const PlayerWarningWidget = memo(({ showVFTip = true }: PlayerWarningWidgetProps) => {
   const { language } = useI18n();
-  
+
   const isFrenchUser = checkIsFrenchUser(language);
   const isDismissed = checkDismissal();
-  
+
   const [isVisible, setIsVisible] = useState(!isDismissed && isFrenchUser);
 
   const t = translations[language as keyof typeof translations] || translations.en;
@@ -101,7 +101,7 @@ export const PlayerWarningWidget = memo(({ showVFTip = true }: PlayerWarningWidg
     if (permanent) {
       try {
         localStorage.setItem(DISMISSED_KEY, Date.now().toString());
-      } catch {}
+      } catch { }
     }
   };
 
@@ -118,7 +118,7 @@ export const PlayerWarningWidget = memo(({ showVFTip = true }: PlayerWarningWidg
       >
         <div className="relative overflow-hidden rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 backdrop-blur-sm">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div 
+            <div
               className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
               style={{ background: 'radial-gradient(circle, rgb(245, 158, 11) 0%, transparent 70%)' }}
             />
@@ -159,15 +159,13 @@ export const PlayerWarningWidget = memo(({ showVFTip = true }: PlayerWarningWidg
                     <p className="text-xs text-green-300/90 leading-relaxed mb-2">
                       {t.adblockMessage}
                     </p>
-                    <a
-                      href="https://adblockplus.org/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400 hover:text-green-300 transition-colors"
+                    <button
+                      onClick={() => window.open('https://adblockplus.org/', '_blank', 'noopener,noreferrer')}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400 hover:text-green-300 transition-colors bg-transparent border-none p-0 cursor-pointer text-left"
                     >
                       <ExternalLink className="w-3 h-3" />
                       {t.adblockLink}
-                    </a>
+                    </button>
                   </div>
                 </div>
 
