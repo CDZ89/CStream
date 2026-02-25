@@ -1,8 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://fgcekgrymdcwjanwxrwj.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnY2VrZ3J5bWRjd2phbnd4cndqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMjU1ODAsImV4cCI6MjA3NjcwMTU4MH0.8_aiA-AeB4Qv85tEIx1bcGicOf8cyV9KdVCWY4HNTy4";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://fgcekgrymdcwjanwxrwj.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnY2VrZ3J5bWRjd2phbnd4cndqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMjU1ODAsImV4cCI6MjA3NjcwMTU4MH0.8_aiA-AeB4Qv85tEIx1bcGicOf8cyV9KdVCWY4HNTy4";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
@@ -37,17 +37,17 @@ export const cachedQuery = async <T>(
 ): Promise<{ data: T | null; error: any }> => {
   const cached = queryCache.get(key);
   const now = Date.now();
-  
+
   if (cached && now - cached.timestamp < cached.ttl) {
     return { data: cached.data as T, error: null };
   }
-  
+
   const result = await queryFn();
-  
+
   if (!result.error && result.data) {
     queryCache.set(key, { data: result.data, timestamp: now, ttl: ttlMs });
   }
-  
+
   return result;
 };
 
@@ -56,7 +56,7 @@ export const invalidateCache = (keyPattern?: string) => {
     queryCache.clear();
     return;
   }
-  
+
   for (const key of queryCache.keys()) {
     if (key.includes(keyPattern)) {
       queryCache.delete(key);
@@ -82,10 +82,10 @@ export const batchQuery = async <T>(
 
 export const prefetchData = async () => {
   const now = Date.now();
-  
+
   const readersKey = 'readers:all';
   const profilesKey = 'profiles:all';
-  
+
   if (!queryCache.has(readersKey) || now - (queryCache.get(readersKey)?.timestamp || 0) > 60000) {
     supabase.from('readers').select('*').order('created_at', { ascending: false }).then(result => {
       if (!result.error && result.data) {
@@ -104,22 +104,22 @@ export const withRetry = async <T>(
 ): Promise<{ data: T | null; error: any }> => {
   for (let i = 0; i < retries; i++) {
     const result = await operation();
-    
+
     if (!result.error) {
       connectionRetries = 0;
       return result;
     }
-    
+
     if (result.error.code === 'PGRST301' || result.error.message?.includes('JWT')) {
       await supabase.auth.refreshSession();
       continue;
     }
-    
+
     if (i < retries - 1) {
       await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
     }
   }
-  
+
   const result = await operation();
   return result;
 };

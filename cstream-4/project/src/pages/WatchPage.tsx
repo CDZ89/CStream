@@ -218,7 +218,7 @@ const WatchPage = () => {
     if (!user || !newComment.trim() || !id) return;
     setSubmittingComment(true);
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("comments")
         .insert({
           user_id: user.id,
@@ -228,11 +228,17 @@ const WatchPage = () => {
         })
         .select()
         .single();
+
+      if (error) throw error;
+
       if (data) {
         await fetchComments();
         setNewComment("");
         toast.success("Commentaire ajouté !");
       }
+    } catch (err: any) {
+      console.error("Comment submit error:", err);
+      toast.error(err.message || "Erreur lors de l'envoi du commentaire");
     } finally {
       setSubmittingComment(false);
     }

@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { Check, Settings, Server } from "lucide-react";
+import { Check, Settings, Server, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SOURCES, type PlayerSource } from "./UniversalPlayer";
 
@@ -14,9 +13,11 @@ export const SourceSelectorList = ({
     onSelect,
     className,
 }: SourceSelectorListProps) => {
+    const selectedSourceObj = SOURCES.find(s => s.id === currentSource) || SOURCES[0];
+
     return (
         <div className={cn("space-y-4", className)}>
-            <div className="flex items-center justify-between px-1 mb-4">
+            <div className="flex items-center justify-between px-1 mb-2">
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-purple-500/10 rounded-lg border border-purple-500/20">
                         <Server className="w-4 h-4 text-purple-400" />
@@ -28,43 +29,30 @@ export const SourceSelectorList = ({
                 </div>
             </div>
 
-            <div className="flex overflow-x-auto pb-4 pt-1 snap-x snap-mandatory gap-2 hide-scrollbar w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
-                {SOURCES.map((source, index) => {
-                    const isSelected = currentSource === source.id;
-                    return (
-                        <motion.button
-                            key={source.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.01 }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => onSelect(source.id)}
-                            className={cn(
-                                "relative shrink-0 group flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full transition-all duration-300 border snap-start sm:snap-center",
-                                isSelected
-                                    ? "bg-purple-600 border-purple-500 shadow-lg shadow-purple-500/25"
-                                    : "bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10"
-                            )}
-                        >
-                            {/* Icon */}
-                            <span className="text-sm sm:text-base opacity-90">{source.icon || '🎬'}</span>
+            <div className="relative group w-full sm:w-80">
+                {/* Custom clean dropdown using standard select for mobile ease + styled wrapper */}
+                <div className="relative flex items-center bg-zinc-900/80 border border-white/10 hover:border-purple-500/50 rounded-xl px-4 py-3 transition-all cursor-pointer shadow-sm shadow-purple-900/10">
+                    <div className="flex items-center gap-3 flex-1 min-w-0 pointer-events-none">
+                        <span className="text-xl shrink-0">{selectedSourceObj.icon || '🎬'}</span>
+                        <div className="flex flex-col min-w-0 flex-1">
+                            <span className="text-xs text-white/50 font-medium uppercase tracking-wider mb-0.5">Source Actuelle</span>
+                            <span className="text-sm font-bold text-white truncate group-hover:text-purple-300 transition-colors">{selectedSourceObj.name}</span>
+                        </div>
+                    </div>
+                    <ChevronDown className="w-5 h-5 text-white/40 group-hover:text-white pointer-events-none transition-transform group-hover:translate-y-0.5" />
 
-                            {/* Source Name */}
-                            <span className={cn(
-                                "text-[10px] sm:text-xs font-bold whitespace-nowrap tracking-wide",
-                                isSelected ? "text-white" : "text-white/70 group-hover:text-white"
-                            )}>
+                    <select
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-base bg-zinc-900 text-white"
+                        value={currentSource || SOURCES[0].id}
+                        onChange={(e) => onSelect(e.target.value as PlayerSource)}
+                    >
+                        {SOURCES.map((source) => (
+                            <option key={source.id} value={source.id} className="bg-zinc-900 text-white font-medium py-2">
                                 {source.name}
-                            </span>
-
-                            {/* Checkmark for selection */}
-                            {isSelected && (
-                                <Check className="w-3 h-3 text-white ml-1 shrink-0" strokeWidth={3} />
-                            )}
-                        </motion.button>
-                    );
-                })}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     );
