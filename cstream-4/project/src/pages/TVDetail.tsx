@@ -68,6 +68,7 @@ import {
   Download,
   Tv,
   Zap,
+  Server
 } from "lucide-react";
 import { useLocalAndSyncSources } from "@/hooks/useLocalAndSyncSources";
 import { ScoreCircle } from "@/components/ScoreCircle";
@@ -1071,45 +1072,47 @@ const TVDetail = () => {
         <main className="container mx-auto px-4 py-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
             <div className="lg:col-span-9 space-y-6">
-              <div className="mb-6 p-4 sm:p-6 bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
-                <SourceSelectorList
-                  currentSource={currentSource?.id as any}
-                  onSelect={(id) => {
-                    const src = SOURCES.find(s => s.id === id);
-                    if (src) {
-                      setCurrentSource({
-                        id: src.id as any,
-                        label: src.name,
-                        url: '', // buildUrl is used internally by UniversalPlayer
-                        media_type: 'tv',
-                        language: 'FR',
-                      });
-                      setIframeKey(prev => prev + 1);
-                      toast.success(`Lecture via ${src.name}`);
-                    }
-                  }}
-                />
-              </div>
+              {/* Watch Hub - Player & Sources */}
+              <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-purple-500/20">
+                {/* Premium Header inside player area */}
+                <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-900/20 to-[#0a0a0f] border-b border-white/5 flex flex-wrap items-center justify-between gap-3 relative">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsWatching(false)}
+                    className="absolute -top-12 left-0 z-20 text-muted-foreground hover:text-white transition-all group-hover:translate-x-[-4px]"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Retour aux détails
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex h-2 sm:h-3 w-2 sm:w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
+                      Console de Visionnage
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                      HD 1080P
+                    </Badge>
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                      SÉCURISÉ
+                    </Badge>
+                  </div>
+                </div>
 
-              <div className="relative group">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsWatching(false)}
-                  className="absolute -top-12 left-0 z-20 text-muted-foreground hover:text-white transition-all group-hover:translate-x-[-4px]"
-                >
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Retour aux détails
-                </Button>
-
-                {show && (
-                  <>
+                {/* Player Container */}
+                <div className="relative w-full bg-black aspect-video border-b border-white/5 flex items-center justify-center">
+                  {show ? (
                     <UniversalPlayer
                       tmdbId={show.id}
                       mediaType={
-                        window.location.pathname.startsWith("/anilist/")
+                        (window.location.pathname.startsWith("/anilist/")
                           ? "anilist"
-                          : "tv"
+                          : "tv") as "tv"
                       }
                       season={selectedSeason}
                       episode={selectedEpisode}
@@ -1121,9 +1124,92 @@ const TVDetail = () => {
                       hasNextEpisode={hasNextEpisode}
                       hasPreviousEpisode={hasPreviousEpisode}
                       onProgressUpdate={handleProgressUpdate}
+                      currentSource={currentSource?.id as any}
+                      setCurrentSource={(sourceId) => {
+                        const src = SOURCES.find((s) => s.id === sourceId);
+                        if (src) {
+                          setCurrentSource({
+                            id: src.id as any,
+                            label: src.name,
+                            url: '',
+                            media_type: 'tv',
+                            language: 'FR',
+                          });
+                        } else {
+                          setCurrentSource(undefined as any);
+                        }
+                      }}
+                      className="rounded-none w-full h-full object-cover"
                     />
-                  </>
-                )}
+                  ) : (
+                    <div className="text-gray-400 text-center">
+                      <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                      <p className="text-sm">Chargement du lecteur...</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sources Hub Container */}
+                <div className="p-4 sm:p-6 lg:p-8 bg-zinc-950/80 relative overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-purple-500/10 blur-[60px] pointer-events-none" />
+
+                  <div className="relative z-10 flex flex-col gap-6">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        <Server className="w-4 h-4 text-purple-400" />
+                        Sélection de Source
+                      </h3>
+                    </div>
+
+                    <SourceSelectorList
+                      currentSource={currentSource?.id as any}
+                      onSelect={(sourceId) => {
+                        const src = SOURCES.find(s => s.id === sourceId);
+                        if (src) {
+                          setCurrentSource({
+                            id: src.id as any,
+                            label: src.name,
+                            url: '',
+                            media_type: 'tv',
+                            language: 'FR',
+                          });
+                          setIframeKey(prev => prev + 1);
+                          toast.success(`Lecture via ${src.name}`);
+                        }
+                      }}
+                    />
+
+                    {/* Actions Row */}
+                    <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSource(undefined as any);
+                          }}
+                          className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
+                        >
+                          <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
+                          RÉPARER L'AFFICHAGE
+                        </Button>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setIframeKey(prev => prev + 1);
+                          toast.info('Lecteur rafraîchi');
+                        }}
+                        className="text-[10px] sm:text-xs font-bold text-white/50 hover:text-white hover:bg-white/5 h-9 sm:h-10 rounded-xl"
+                      >
+                        <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2" />
+                        RECHARGER LE FLUX
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-secondary/20 p-6 rounded-2xl border border-white/5 backdrop-blur-sm shadow-xl">

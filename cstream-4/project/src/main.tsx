@@ -7,7 +7,7 @@ import { initializeTheme } from "./lib/themes";
 initializeTheme();
 
 // Loader fade-out timing (purely visual)
-const LOADER_MIN_TIME = 2000;
+const LOADER_MIN_TIME = 0;
 const startLoadTime = Date.now();
 
 const removeLoader = () => {

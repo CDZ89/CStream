@@ -142,6 +142,14 @@ export const applyTheme = (themeId: string) => {
 
   const root = document.documentElement;
 
+  if (theme.isDark) {
+    root.classList.add('dark');
+    root.classList.remove('light');
+  } else {
+    root.classList.add('light');
+    root.classList.remove('dark');
+  }
+
   // Set core theme variables
   root.style.setProperty('--primary-hex', theme.colors.primary);
   root.style.setProperty('--background-hex', theme.colors.background);

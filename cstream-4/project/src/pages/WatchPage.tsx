@@ -23,6 +23,7 @@ import {
   Play,
   Info,
   RefreshCw,
+  Server,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -329,28 +330,31 @@ const WatchPage = () => {
               <PayPalButton planId="P-97B807020U2062216NGAN3EA" />
             </div>
 
-            {/* Player & Sources Combined */}
-            <div className="bg-zinc-900/60 backdrop-blur-2xl border border-white/5 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
-              {/* Header inside player area */}
-              <div className="p-3 sm:p-4 border-b border-white/5 bg-white/5 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-500 animate-pulse" />
-                  <span className="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-white/70">
-                    Lecteur Principal
+            {/* Watch Hub - Player & Sources */}
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-purple-500/20">
+              {/* Premium Header inside player area */}
+              <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-900/20 to-[#0a0a0f] border-b border-white/5 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-2 sm:h-3 w-2 sm:w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
+                  </div>
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
+                    Console de Visionnage
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[8px] sm:text-[10px] font-bold px-1 sm:px-1.5">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
                     HD 1080P
                   </Badge>
-                  <Badge variant="outline" className="bg-purple-500/10 text-purple-500 border-purple-500/20 text-[8px] sm:text-[10px] font-bold px-1 sm:px-1.5">
-                    AUTO-SWITCH
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                    SÉCURISÉ
                   </Badge>
                 </div>
               </div>
 
-              {/* Player */}
-              <div className="relative group bg-black aspect-video w-full">
+              {/* Player Container */}
+              <div className="relative w-full bg-black aspect-video border-b border-white/5">
                 <UniversalPlayer
                   tmdbId={movie.id}
                   mediaType="movie"
@@ -361,40 +365,58 @@ const WatchPage = () => {
                 />
               </div>
 
-              <div className="p-4 sm:p-6 bg-zinc-950/80">
-                <SourceSelectorList
-                  currentSource={currentSource}
-                  onSelect={(id) => {
-                    setCurrentSource(id);
-                    toast.success(`Lecture via ${SOURCES.find(s => s.id === id)?.name}`);
-                  }}
-                />
+              {/* Sources Hub Container */}
+              <div className="p-4 sm:p-6 lg:p-8 bg-zinc-950/80 relative overflow-hidden">
+                {/* Background Glow */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-purple-500/10 blur-[60px] pointer-events-none" />
 
-                <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 sm:gap-4">
-                    <ImportedSourceSelector
-                      tmdbId={movie.id}
-                      onSelect={(s) => {
-                        setCurrentSource(s.id as any);
-                        toast.success(`Lecture via ${s.label}`);
-                      }}
-                      currentSource={null}
-                      className="w-auto h-8 sm:h-9"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentSource(undefined)}
-                      className="text-[8px] sm:text-[10px] font-bold bg-zinc-900/40 border-white/10 hover:bg-zinc-800/60 h-8 sm:h-9"
-                    >
-                      <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1.5 sm:mr-2" />
-                      AUTO-REPAIR
-                    </Button>
+                <div className="relative z-10 flex flex-col gap-6">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                      <Server className="w-4 h-4 text-purple-400" />
+                      Sélection de Source
+                    </h3>
                   </div>
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="text-[8px] sm:text-[10px] font-bold text-white/40 hover:text-white h-8 sm:h-9">
-                      <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3 sm:mr-2" />
-                      <span className="hidden sm:inline">REFRESH</span>
+
+                  <SourceSelectorList
+                    currentSource={currentSource}
+                    onSelect={(id) => {
+                      setCurrentSource(id);
+                      toast.success(`Lecture via ${SOURCES.find(s => s.id === id)?.name}`);
+                    }}
+                  />
+
+                  {/* Actions Row */}
+                  <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <ImportedSourceSelector
+                        tmdbId={movie.id}
+                        onSelect={(s) => {
+                          setCurrentSource(s.id as any);
+                          toast.success(`Lecture via ${s.label}`);
+                        }}
+                        currentSource={null}
+                        className="h-9 sm:h-10"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentSource(undefined)}
+                        className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
+                      >
+                        <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
+                        RÉPARER L'AFFICHAGE
+                      </Button>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.location.reload()}
+                      className="text-[10px] sm:text-xs font-bold text-white/50 hover:text-white hover:bg-white/5 h-9 sm:h-10 rounded-xl"
+                    >
+                      <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2" />
+                      ACTUALISER LA PAGE
                     </Button>
                   </div>
                 </div>

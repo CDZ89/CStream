@@ -26,7 +26,7 @@ import {
   Play, Star, Clock, Calendar, Heart, Bookmark, Share2,
   ChevronLeft, X, Loader2, ThumbsUp, Eye, MessageSquare,
   Send, Globe, User, ChevronDown, ExternalLink, AlertTriangle, RefreshCw, RotateCcw,
-  Film, Image as ImageIcon, Layers, Download, Zap
+  Film, Image as ImageIcon, Layers, Download, Zap, Server
 } from 'lucide-react';
 import { ScoreCircle } from '@/components/ScoreCircle';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -994,39 +994,39 @@ const MovieDetail = () => {
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
-            {/* Lecteur - Affiche source importée ou lecteurs publics */}
-            <div className="lg:col-span-3 space-y-5 sm:space-y-7">
-              {/* Header de sélection de sources (Nouveau) */}
-              <div className="mb-6 p-4 sm:p-6 bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
-                <SourceSelectorList
-                  currentSource={currentSource?.id as any}
-                  onSelect={(id) => {
-                    const src = SOURCES.find(s => s.id === id);
-                    if (src) {
-                      setCurrentSource({
-                        id: src.id as any,
-                        label: src.name,
-                        url: '', // buildUrl is used internally by UniversalPlayer
-                        media_type: 'movie',
-                        language: 'FR',
-                      });
-                      setIframeKey(prev => prev + 1);
-                      toast.success(`Lecture via ${src.name}`);
-                    }
-                  }}
-                />
-              </div>
+            {/* Watch Hub - Player & Sources */}
+            <div className="lg:col-span-3">
+              <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-purple-500/20">
+                {/* Premium Header inside player area */}
+                <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-900/20 to-[#0a0a0f] border-b border-white/5 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex h-2 sm:h-3 w-2 sm:w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
+                      Console de Visionnage
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                      HD 1080P
+                    </Badge>
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                      SÉCURISÉ
+                    </Badge>
+                  </div>
+                </div>
 
-              <Card className="overflow-hidden">
-                {currentImportedSource ? (
-                  // Lecteur direct pour source importée
-                  <div className="w-full bg-black aspect-video flex items-center justify-center">
-                    {sourceLoadError ? (
+                {/* Player Container */}
+                <div className="relative w-full bg-black aspect-video border-b border-white/5 flex items-center justify-center">
+                  {currentImportedSource ? (
+                    sourceLoadError ? (
                       <div className="text-center text-red-400 p-6">
                         <AlertTriangle className="w-12 h-12 mx-auto mb-2 opacity-70" />
                         <p className="font-semibold mb-2">Source indisponible</p>
                         <p className="text-sm text-gray-400 mb-4">
-                          Cette source ne peut pas être intégrée (erreur {currentImportedSource?.provider || 'lecteur'}).
+                          Cette source ne peut pas être intégrée.
                         </p>
                         <Button
                           size="sm"
@@ -1051,78 +1051,114 @@ const MovieDetail = () => {
                         allow="autoplay; fullscreen; picture-in-picture; encrypted-media; clipboard-write; payment"
                         frameBorder="0"
                         scrolling="no"
-                        onLoad={() => {
-                          console.log('[MovieDetail] Iframe loaded successfully');
-                          setSourceLoadError(false);
-                        }}
-                        style={{
-                          border: 'none',
-                          width: '100%',
-                          height: '100%',
-                          display: 'block'
-                        }}
+                        onLoad={() => setSourceLoadError(false)}
+                        style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
                       />
                     ) : (
                       <div className="text-gray-400 text-center">
                         <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
                         <p className="text-sm">Chargement du lecteur...</p>
                       </div>
-                    )}
+                    )
+                  ) : (
+                    <UniversalPlayer
+                      tmdbId={parseInt(id!)}
+                      mediaType="movie"
+                      title={movie.title}
+                      posterPath={movie.poster_path}
+                      currentSource={currentSource?.id as any}
+                      setCurrentSource={(sourceId) => {
+                        const src = SOURCES.find((s) => s.id === sourceId);
+                        if (src) {
+                          setCurrentSource({
+                            id: src.id as any,
+                            label: src.name,
+                            url: '',
+                            media_type: 'movie',
+                            language: 'FR',
+                          });
+                        } else {
+                          setCurrentSource(undefined as any);
+                        }
+                      }}
+                      autoPlay={true}
+                      onProgressUpdate={handleProgressUpdate}
+                      onVideoEnd={handleVideoEnd}
+                      className="rounded-none w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+
+                {/* Sources Hub Container */}
+                <div className="p-4 sm:p-6 lg:p-8 bg-zinc-950/80 relative overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-purple-500/10 blur-[60px] pointer-events-none" />
+
+                  <div className="relative z-10 flex flex-col gap-6">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                      <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        <Server className="w-4 h-4 text-purple-400" />
+                        Sélection de Source
+                      </h3>
+                    </div>
+
+                    <SourceSelectorList
+                      currentSource={currentSource?.id as any}
+                      onSelect={(sourceId) => {
+                        const src = SOURCES.find(s => s.id === sourceId);
+                        if (src) {
+                          setCurrentSource({
+                            id: src.id as any,
+                            label: src.name,
+                            url: '',
+                            media_type: 'movie',
+                            language: 'FR',
+                          });
+                          setIframeKey(prev => prev + 1);
+                          toast.success(`Lecture via ${src.name}`);
+                          setCurrentImportedSource(null);
+                        }
+                      }}
+                    />
+
+                    {/* Actions Row */}
+                    <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <ImportedSourceSelector
+                          tmdbId={movie.id}
+                          onSelect={handleImportedSourceSelect}
+                          currentSource={currentImportedSource}
+                          className="h-9 sm:h-10"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setCurrentSource(undefined as any);
+                            setCurrentImportedSource(null);
+                          }}
+                          className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
+                        >
+                          <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
+                          RÉPARER L'AFFICHAGE
+                        </Button>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setIframeKey(prev => prev + 1);
+                          toast.info('Lecteur rafraîchi');
+                        }}
+                        className="text-[10px] sm:text-xs font-bold text-white/50 hover:text-white hover:bg-white/5 h-9 sm:h-10 rounded-xl"
+                      >
+                        <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2" />
+                        RECHARGER LE FLUX
+                      </Button>
+                    </div>
                   </div>
-                ) : (
-                  // Affiche les vrais streamings ou les lecteurs génériques
-                  <>
-                    {/* Lecteurs génériques comme fallback */}
-                    <Tabs defaultValue="universal" className="w-full mt-4">
-                      <TabsList className="w-full grid w-full grid-cols-4 rounded-none">
-                        <TabsTrigger value="bludclart" className="flex items-center gap-1">
-                          Bludclart <Badge className="bg-blue-500/30 text-blue-300 border-blue-500/50 text-[10px]">Opti</Badge>
-                        </TabsTrigger>
-                        <TabsTrigger value="universal">Lecteur Principal</TabsTrigger>
-                        <TabsTrigger value="cinemaos">Cinemaos</TabsTrigger>
-                        <TabsTrigger value="csplayer">CSPlayer</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="bludclart" className="mt-0">
-                        <div className="w-full bg-black aspect-video">
-                          <iframe
-                            src={`https://bludclart.com/movie/${id}/watch`}
-                            width="100%"
-                            height="100%"
-                            allow="autoplay; fullscreen"
-                            frameBorder="0"
-                          />
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="universal" className="mt-0">
-                        <UniversalPlayer
-                          tmdbId={parseInt(id!)}
-                          mediaType="movie"
-                          title={movie.title}
-                          posterPath={movie.poster_path}
-                          autoPlay={true}
-                          onProgressUpdate={handleProgressUpdate}
-                          onVideoEnd={handleVideoEnd}
-                          className="rounded-none"
-                        />
-                      </TabsContent>
-                      <TabsContent value="cinemaos" className="mt-0 p-4">
-                        <CinemaosPlayer
-                          tmdbId={parseInt(id!)}
-                          mediaType="movie"
-                          title={movie.title}
-                        />
-                      </TabsContent>
-                      <TabsContent value="csplayer" className="mt-0 p-4">
-                        <CSPlayer
-                          tmdbId={parseInt(id!)}
-                          mediaType="movie"
-                          title={movie.title}
-                        />
-                      </TabsContent>
-                    </Tabs>
-                  </>
-                )}
-              </Card>
+                </div>
+              </div>
               {/* Interactions */}
               <Card>
                 <CardContent className="p-3 sm:p-4">

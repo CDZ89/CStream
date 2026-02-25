@@ -14,10 +14,11 @@ import { CloudHint } from '@/components/player/CloudHint';
 import {
   ChevronLeft, Loader2, AlertTriangle, ChevronDown, Play,
   SkipForward, SkipBack, Clock, Calendar, Star, Check,
-  Settings, ChevronRight, Tv
+  Settings, ChevronRight, Tv, Server
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -618,135 +619,155 @@ export default function PlayerPage() {
               mediaType === 'tv' && showEpisodeList ? "lg:w-[70%] xl:w-[75%]" : "lg:w-full"
             )}
           >
-            <div className="mb-4">
-              <CloudHint />
-            </div>
-            {mediaType === 'tv' && season !== undefined && episode !== undefined ? (
-              <UniversalPlayer
-                key={`${playerKey}-${selectedSource}`}
-                tmdbId={parseInt(id)}
-                mediaType="tv"
-                season={season}
-                episode={episode}
-                title={`${title} - S${season}E${episode}`}
-                posterPath={media?.backdrop_path || media?.poster_path}
-                defaultSource={selectedSource}
-                onVideoEnd={handleVideoEnd}
-                hasNextEpisode={!!nextEpisode}
-                hasPreviousEpisode={!!previousEpisode}
-                onNextEpisode={handleNextEpisode}
-                onPreviousEpisode={handlePreviousEpisode}
-              />
-            ) : mediaType === 'movie' ? (
-              <UniversalPlayer
-                key={`${playerKey}-${selectedSource}`}
-                tmdbId={parseInt(id!)}
-                mediaType="movie"
-                title={title}
-                posterPath={media?.backdrop_path || media?.poster_path}
-                defaultSource={selectedSource}
-                onVideoEnd={handleVideoEnd}
-              />
-            ) : null}
+            {/* Premium Watch Hub Layout */}
+            <div className="bg-[#0a0a0f] border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-purple-500/20">
 
-            {/* Source Selector Section - Beautiful Grid Layout */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="mt-3 sm:mt-6 p-3 sm:p-6 bg-gradient-to-br from-zinc-900/80 via-zinc-900/60 to-zinc-800/40 rounded-lg sm:rounded-2xl border border-white/10 backdrop-blur-xl"
-            >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-lg sm:rounded-xl border border-purple-500/20">
-                    <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+              {/* Premium Header inside player area */}
+              <div className="px-4 py-3 sm:px-6 sm:py-4 bg-gradient-to-r from-purple-900/20 to-[#0a0a0f] border-b border-white/5 flex flex-wrap items-center justify-between gap-3 relative">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-2 sm:h-3 w-2 sm:w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
                   </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-white">Sélectionner une source</h3>
-                    <p className="text-xs text-white/50 mt-0.5">Choisissez votre lecteur</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <ImportedSourceSelector
-                    tmdbId={id ? parseInt(id) : 0}
-                    onSelect={(s) => {
-                      // Custom source handling
-                      const newSource = {
-                        id: s.id as any,
-                        name: s.label,
-                        url: s.url,
-                        icon: '🔗'
-                      };
-                      handleSourceChange(s.id as any);
-                    }}
-                    currentSource={null}
-                  />
-                  <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/5 rounded-lg border border-white/10 text-xs">
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                    <span className="text-white/60 font-medium">{SOURCES.length} sources</span>
-                  </div>
-                </div>
-              </div>
-
-              <SourceSelectorList
-                currentSource={selectedSource}
-                onSelect={(id) => handleSourceChange(id)}
-                className="mt-6"
-              />
-
-              <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 mt-8">
-
-                {/* Imported Custom Sources - ADMIN ADDED */}
-                {importedSources.map((source, index) => (
-                  <motion.button
-                    key={`imported-${source.id}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: (SOURCES.length + index) * 0.02 }}
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => {
-                      toast.info(`Source ajoutée: ${source.label}`, { description: source.language ? `Langue: ${source.language}` : undefined });
-                    }}
-                    className="relative group flex flex-col items-center justify-center p-2 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-300 overflow-hidden bg-gradient-to-br from-emerald-600/20 via-teal-500/15 to-emerald-600/20 border-2 border-emerald-500/40 hover:border-emerald-500/60 shadow-lg shadow-emerald-500/10"
-                    title={`Admin ajout: ${source.label}`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 animate-pulse" />
-
-                    <div className="absolute top-1 right-1 bg-emerald-500/60 text-white text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full font-bold">
-                      ADMIN
-                    </div>
-
-                    <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center mb-1 sm:mb-2 transition-all bg-gradient-to-br from-emerald-500/40 to-teal-500/40 shadow-lg">
-                      <span className="text-base sm:text-lg">✨</span>
-                    </div>
-
-                    <span className="relative z-10 text-xs sm:text-sm font-semibold text-center truncate w-full transition-colors text-emerald-100">
-                      {source.label.substring(0, 10)}
-                    </span>
-
-                    <span className="relative z-10 text-[8px] sm:text-[10px] text-center truncate w-full mt-0.5 sm:mt-1 transition-colors text-emerald-300/70">
-                      {source.language || 'FR'}
-                    </span>
-
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  </motion.button>
-                ))}
-              </div>
-
-              {/* Footer info */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 sm:mt-5 pt-3 sm:pt-4 border-t border-white/5 gap-2">
-                <p className="text-xs text-white/40 flex-1">
-                  💡 Si une source ne fonctionne pas, essayez-en une autre {importedSources.length > 0 && `(+${importedSources.length} admin)`}
-                </p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-white/30">Active:</span>
-                  <span className="text-xs font-semibold text-purple-400">
-                    {SOURCES.find(s => s.id === selectedSource)?.name}
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
+                    Console de Visionnage
                   </span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                    HD 1080P
+                  </Badge>
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
+                    SÉCURISÉ
+                  </Badge>
+                </div>
               </div>
-            </motion.div>
+
+              <div className="relative w-full bg-black aspect-video border-b border-white/5">
+                {mediaType === 'tv' && season !== undefined && episode !== undefined ? (
+                  <UniversalPlayer
+                    key={`${playerKey}-${selectedSource}`}
+                    tmdbId={parseInt(id!)}
+                    mediaType="tv"
+                    season={season}
+                    episode={episode}
+                    title={`${title} - S${season}E${episode}`}
+                    posterPath={media?.backdrop_path || media?.poster_path}
+                    currentSource={selectedSource}
+                    setCurrentSource={(sourceId) => handleSourceChange(sourceId as PlayerSource)}
+                    onVideoEnd={handleVideoEnd}
+                    hasNextEpisode={!!nextEpisode}
+                    hasPreviousEpisode={!!previousEpisode}
+                    onNextEpisode={handleNextEpisode}
+                    onPreviousEpisode={handlePreviousEpisode}
+                    className="w-full h-full object-cover"
+                  />
+                ) : mediaType === 'movie' ? (
+                  <UniversalPlayer
+                    key={`${playerKey}-${selectedSource}`}
+                    tmdbId={parseInt(id!)}
+                    mediaType="movie"
+                    title={title}
+                    posterPath={media?.backdrop_path || media?.poster_path}
+                    currentSource={selectedSource}
+                    setCurrentSource={(sourceId) => handleSourceChange(sourceId as PlayerSource)}
+                    onVideoEnd={handleVideoEnd}
+                    className="w-full h-full object-cover"
+                  />
+                ) : null}
+              </div>
+
+              {/* Sources Hub Container */}
+              <div className="p-4 sm:p-6 lg:p-8 bg-zinc-950/80 relative overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-purple-500/10 blur-[60px] pointer-events-none" />
+
+                <div className="relative z-10 flex flex-col gap-6">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                      <Server className="w-4 h-4 text-purple-400" />
+                      Sélection de Source
+                    </h3>
+                  </div>
+
+                  <SourceSelectorList
+                    currentSource={selectedSource}
+                    onSelect={(id) => handleSourceChange(id)}
+                  />
+
+                  {/* Imported Sources Admin Grid Container */}
+                  {importedSources.length > 0 && (
+                    <div className="mt-4 border-t border-white/5 pt-4">
+                      <h4 className="text-xs font-bold text-white/50 mb-3 uppercase tracking-wider">Sources Administrateur ({importedSources.length})</h4>
+                      <div className="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
+                        {importedSources.map((source, index) => (
+                          <motion.button
+                            key={`imported-${source.id}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: (SOURCES.length + index) * 0.02 }}
+                            whileHover={{ scale: 1.03, y: -2 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => {
+                              toast.info(`Source ajoutée: ${source.label}`, { description: source.language ? `Langue: ${source.language}` : undefined });
+                              // If they click an imported source, ideally we'd load it.
+                              // For now, PlayerPage doesn't have a specific handler built-in for imported sources URLs
+                              // so we just notify them.
+                            }}
+                            className="relative group flex flex-col items-center justify-center p-2 sm:p-4 rounded-lg sm:rounded-xl transition-all duration-300 overflow-hidden bg-gradient-to-br from-emerald-600/20 via-teal-500/15 to-emerald-600/20 border-2 border-emerald-500/40 hover:border-emerald-500/60 shadow-lg shadow-emerald-500/10"
+                            title={`Admin ajout: ${source.label}`}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 animate-pulse" />
+
+                            <div className="absolute top-1 right-1 bg-emerald-500/60 text-white text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full font-bold">
+                              ADMIN
+                            </div>
+
+                            <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center mb-1 sm:mb-2 transition-all bg-gradient-to-br from-emerald-500/40 to-teal-500/40 shadow-lg">
+                              <span className="text-base sm:text-lg">✨</span>
+                            </div>
+
+                            <span className="relative z-10 text-xs sm:text-sm font-semibold text-center truncate w-full transition-colors text-emerald-100">
+                              {source.label.substring(0, 10)}
+                            </span>
+
+                            <span className="relative z-10 text-[8px] sm:text-[10px] text-center truncate w-full mt-0.5 sm:mt-1 transition-colors text-emerald-300/70">
+                              {source.language || 'FR'}
+                            </span>
+
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions Row */}
+                  <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2 border-t border-white/5">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <ImportedSourceSelector
+                        tmdbId={id ? parseInt(id) : 0}
+                        onSelect={(s) => {
+                          handleSourceChange(s.id as any);
+                        }}
+                        currentSource={null}
+                        className="h-9 sm:h-10"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          handleSourceChange(SOURCES[0].id as PlayerSource);
+                        }}
+                        className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
+                      >
+                        <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
+                        RÉFRÉNITIALISER LECTEUR
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {currentEpisodeInfo && currentEpisodeInfo.overview && (
               <motion.div
