@@ -600,7 +600,7 @@ export default function AgentPage() {
           </header>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth scrollbar-thin scrollbar-thumb-white/10">
             {!currentChat || currentChat.messages.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -675,12 +675,12 @@ export default function AgentPage() {
                   </div>
 
                   {/* Bubble */}
-                  <div className={cn("flex flex-col gap-1.5 max-w-[85%] md:max-w-[78%]", msg.role === "user" ? "items-end" : "items-start")}>
+                  <div className={cn("flex flex-col gap-2 max-w-[85%] md:max-w-[75%]", msg.role === "user" ? "items-end" : "items-start")}>
                     <div className={cn(
-                      "px-4 py-3.5 rounded-2xl text-sm",
+                      "px-5 py-4 rounded-3xl text-sm md:text-base leading-relaxed tracking-wide",
                       msg.role === "assistant"
-                        ? "bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] text-zinc-100 rounded-tl-none shadow-sm"
-                        : "bg-gradient-to-br from-white to-zinc-100 text-zinc-900 rounded-tr-none font-medium shadow-lg"
+                        ? "bg-white/[0.03] backdrop-blur-xl border border-white/[0.05] text-zinc-200 rounded-tl-sm shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+                        : "bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-tr-sm shadow-[0_8px_30px_rgba(139,92,246,0.3)] font-medium"
                     )}>
                       {msg.role === "assistant"
                         ? <RichText text={msg.content} messageId={msg.id} />
@@ -799,7 +799,7 @@ export default function AgentPage() {
                   whileTap={{ scale: 0.93 }}
                   onClick={() => handleSendMessage()}
                   disabled={!input.trim() || isTyping}
-                  className="h-[52px] w-[52px] rounded-xl bg-white flex items-center justify-center text-black font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
+                  className="h-[52px] w-[52px] rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                 >
                   {isTyping ? <Cpu size={18} className="animate-spin" /> : <ArrowUp size={18} strokeWidth={2.5} />}
                 </motion.button>

@@ -958,63 +958,8 @@ export const UniversalPlayer = ({
     return () => window.removeEventListener("message", handleMessage);
   }, [onProgressUpdate, onVideoEnd, onNextEpisode]);
 
-  const handleIframeLoad = useCallback(() => {
-    clearTimers();
-    setStatus("ready");
-    setLoadingProgress(100);
-    setAutoSwitching(false);
-    autoSwitchAttemptRef.current = 0;
-  }, [clearTimers]);
-
-  const handleIframeError = useCallback(() => {
-    clearTimers();
-    if (autoSwitchAttemptRef.current < Math.min(3, SOURCES.length - 1)) {
-      autoSwitchAttemptRef.current++;
-      const currentIndex = SOURCES.findIndex((s) => s.id === currentSource);
-      const nextIndex = (currentIndex + 1) % SOURCES.length;
-      handleSourceChange(SOURCES[nextIndex].id);
-      setAutoSwitching(true);
-      toast.info(`Tentative de basculement...`);
-    } else {
-      setStatus("error");
-    }
-  }, [currentSource, clearTimers, handleSourceChange]);
-
-  useEffect(() => {
-    clearTimers();
-    setStatus("loading");
-    setLoadingProgress(0);
-
-    // Progress bar animation
-    const interval = setInterval(() => {
-      setLoadingProgress(prev => {
-        if (prev >= 95) return prev;
-        return prev + 15;
-      });
-    }, 200);
-    progressIntervalRef.current = interval;
-
-    // Only auto-switch after a very long timeout (15s) — genuine failures only
-    const timeout = setTimeout(() => {
-      setStatus(prev => {
-        if (prev === "loading") {
-          setTimeout(handleIframeError, 10);
-        }
-        return prev;
-      });
-    }, 15000);
-    loadTimeoutRef.current = timeout;
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, [videoUrl, clearTimers, handleIframeError]);
-
   const handleRetry = useCallback(() => {
-    setStatus("loading");
     setIframeKey((prev) => prev + 1);
-    setLoadingProgress(0);
   }, []);
 
 
@@ -1133,8 +1078,6 @@ export const UniversalPlayer = ({
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
             sandbox={antiPubBeta ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
             referrerPolicy="no-referrer-when-downgrade"
-            onLoad={handleIframeLoad}
-            onError={handleIframeError}
           />
         </div>
       </div>
