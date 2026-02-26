@@ -72,7 +72,13 @@ export type PlayerSource =
   | "vidora"
   | "zxcstream"
   | "quickwatch"
-  | "pstream";
+  | "pstream"
+  | "videasy"
+  | "xpass"
+  | "hexa"
+  | "madplay"
+  | "yflix"
+  | "moviebox";
 
 interface UniversalPlayerProps {
   tmdbId: string | number;
@@ -663,6 +669,103 @@ export const SOURCES: PlayerSourceConfig[] = [
       return mediaType === "movie"
         ? `https://vidsrc.cx/embed/movie/${tmdbId}`
         : `https://vidsrc.cx/embed/tv/${tmdbId}/${s}/${e}`;
+    },
+  },
+  {
+    id: "videasy",
+    name: "Videasy",
+    description: "Lightweight - Episode Selector",
+    color: "from-teal-500 to-cyan-600",
+    reliable: true,
+    priority: 29,
+    icon: "🎧",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://player.videasy.net/movie/${tmdbId}`
+        : `https://player.videasy.net/tv/${tmdbId}/${s}/${e}?episodeSelector=true`;
+    },
+  },
+  {
+    id: "xpass",
+    name: "XPass",
+    description: "Premium Multi-Source",
+    color: "from-violet-600 to-purple-700",
+    reliable: true,
+    priority: 30,
+    icon: "🔑",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      // XPass uses a standard embed page
+      return mediaType === "movie"
+        ? `https://embed.smashystream.com/playere.php?tmdb=${tmdbId}`
+        : `https://embed.smashystream.com/playere.php?tmdb=${tmdbId}&season=${s}&episode=${e}`;
+    },
+  },
+  {
+    id: "hexa",
+    name: "Hexa",
+    description: "Encrypted HLS Source",
+    color: "from-green-800 to-emerald-900",
+    reliable: true,
+    priority: 31,
+    icon: "🔐",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://player.smashy.stream/movie/${tmdbId}?playerList=FMD|SU|D|F|J`
+        : `https://player.smashy.stream/tv/${tmdbId}?s=${s}&e=${e}&playerList=FMD|SU|D|F|J`;
+    },
+  },
+  {
+    id: "madplay",
+    name: "MadPlay",
+    description: "HLS - Multiple Languages",
+    color: "from-red-700 to-rose-800",
+    reliable: true,
+    priority: 32,
+    icon: "🎭",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://madplay.site/embed/movie/${tmdbId}`
+        : `https://madplay.site/embed/tv/${tmdbId}/${s}/${e}`;
+    },
+  },
+  {
+    id: "yflix",
+    name: "YFlix",
+    description: "Premium VF/VOSTFR",
+    color: "from-yellow-600 to-orange-700",
+    reliable: true,
+    priority: 33,
+    icon: "🌟",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://yflix.to/movie/${tmdbId}`
+        : `https://yflix.to/tv/${tmdbId}/${s}/${e}`;
+    },
+  },
+  {
+    id: "moviebox",
+    name: "MovieBox",
+    description: "HD Multi-Serveur",
+    color: "from-sky-600 to-blue-700",
+    reliable: true,
+    priority: 34,
+    icon: "📦",
+    buildUrl: (tmdbId, mediaType, season, episode) => {
+      const s = season || 1;
+      const e = episode || 1;
+      return mediaType === "movie"
+        ? `https://moviebox.ng/movies/watch/${tmdbId}`
+        : `https://moviebox.ng/tv/watch/${tmdbId}/${s}/${e}`;
     },
   },
 ];

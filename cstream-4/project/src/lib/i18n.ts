@@ -3875,15 +3875,16 @@ export const useI18n = create<I18nState>()(
       setLanguage: (lang: SupportedLanguage, isManual: boolean = false) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem("cstream_language", lang);
+          // Always mark as manual when user explicitly changes language
+          // This prevents auto-detection from overriding their preference
+          localStorage.setItem("cstream-language-manual", "true");
         }
         set({ language: lang });
         const isRtl = SUPPORTED_LANGUAGES.find((l) => l.code === lang)?.rtl;
         document.documentElement.lang = lang;
         document.documentElement.dir = isRtl ? "rtl" : "ltr";
 
-        // Mark as manual selection to prevent auto-detection override
-        if (isManual && typeof localStorage !== "undefined") {
-          localStorage.setItem("cstream-language-manual", "true");
+        if (isManual) {
           console.log(`[i18n] Language manually set to: ${lang}`);
         }
       },

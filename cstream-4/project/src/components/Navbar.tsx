@@ -195,9 +195,11 @@ export const Navbar = () => {
   const headerClasses = useMemo(() => {
     const baseClasses = "py-1.5 px-3 md:px-6 transition-all duration-500";
     const bgClass = isNavbarAttached
-      ? "backdrop-blur-xl border-b border-border shadow-md"
-      : "bg-background/60 backdrop-blur-2xl saturate-[1.2] border-white/10";
-    const shadowClass = isNavbarAttached ? "" : "shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-primary/10 hover:border-white/20";
+      ? "backdrop-blur-2xl border-b border-white/10"
+      : "bg-black/30 backdrop-blur-2xl saturate-150 border-white/[0.08]";
+    const shadowClass = isNavbarAttached
+      ? "shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
+      : "shadow-[0_8px_32px_rgba(0,0,0,0.35)] hover:border-white/20";
     return `${baseClasses} ${bgClass} border ${shadowClass}`;
   }, [isNavbarAttached, mode]);
 
@@ -277,14 +279,10 @@ export const Navbar = () => {
                     />
                   </motion.div>
                   <div className="hidden sm:flex flex-col justify-center">
-                    <span
-                      className={`text-sm font-bold whitespace-nowrap transition-colors duration-300 ${mode === "dark" ? "text-white" : "text-gray-900"}`}
-                    >
+                    <span className="text-sm font-bold whitespace-nowrap text-white drop-shadow-sm">
                       CStream
                     </span>
-                    <span
-                      className={`text-[10px] whitespace-nowrap transition-colors duration-300 ${mode === "dark" ? "text-gray-400" : "text-gray-500"}`}
-                    >
+                    <span className="text-[10px] whitespace-nowrap text-white/60">
                       Streaming
                     </span>
                   </div>
