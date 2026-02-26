@@ -19,6 +19,7 @@ import { blockExternalLinks } from "@/lib/blockExternalLinks";
 import { RadioOverlay } from "@/components/RadioOverlay";
 import { VPNOverlay } from "@/components/VPNOverlay";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import { useAntiPub } from "@/hooks/useAntiPub";
 // import { LanguageOverlay } from "@/components/LanguageOverlay";
 
@@ -421,6 +422,7 @@ const App = () => {
                   <RadioOverlay />
                   <VPNOverlay />
                   <SpeedInsights />
+                  <Analytics />
                   {/* <LanguageOverlay /> */}
                   <CookieConsent />
                 </div>
