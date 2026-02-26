@@ -197,10 +197,10 @@ export const Navbar = () => {
   const headerClasses = useMemo(() => {
     const baseClasses = "py-1.5 px-3 md:px-6 transition-all duration-500";
     if (navbarTheme === 'glass') {
-      return `${baseClasses} bg-white/[0.04] backdrop-blur-3xl saturate-200 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] ring-1 ring-white/5`;
+      return `${baseClasses} bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_rgba(255,255,255,0.05)] ring-1 ring-white/20`;
     }
     if (navbarTheme === 'blur') {
-      return `${baseClasses} bg-black/40 backdrop-blur-2xl border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.3)]`;
+      return `${baseClasses} bg-black/40 backdrop-blur-2xl border border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.3)]`;
     }
     // default
     const bgClass = isNavbarAttached
@@ -284,7 +284,7 @@ export const Navbar = () => {
                     <motion.img
                       src={logoUrl}
                       alt="CStream"
-                      className="w-full h-full object-contain p-1 drop-shadow-2xl filter brightness-110 relative z-10 transition-all duration-300 group-hover:drop-shadow-[0_0_16px_rgba(var(--theme-primary-rgb),0.6)]"
+                      className="w-full h-full object-contain p-1 drop-shadow-2xl brightness-0 invert relative z-10 transition-all duration-300 group-hover:drop-shadow-[0_0_16px_rgba(var(--theme-primary-rgb),0.6)]"
                     />
                   </motion.div>
                   <div className="hidden sm:flex flex-col justify-center">
