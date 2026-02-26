@@ -1,0 +1,57 @@
+Je vois mieux ton idée Chemsdine ⚡. En fait, tu veux un **toggle (oui/non)** sur la page sport qui simule l’activation/désactivation du VPN uniquement pour les images :  
+
+- **Par défaut :** les images nécessitent le VPN (elles ne s’affichent pas sans).  
+- **Si l’utilisateur clique sur “Non” :** tu désactives la logique VPN côté page sport → les images se chargent via un proxy ou une autre source qui ne bloque pas.  
+- **Si l’utilisateur reclique sur “Oui” :** tu réactives le mode VPN → les images passent par la source qui demande le VPN.  
+- **Quand on lance le lecteur vidéo :** tu forces “Non” (pas de VPN) pour éviter les lags.  
+- **Quand on quitte le lecteur ou la page sport :** tu remets “Oui” (VPN actif pour les images).  
+
+---
+
+### 🎯 Comment le coder côté front‑end
+Tu peux gérer ça avec un simple **state React** qui contrôle l’URL des images :
+
+```tsx
+import React, { useState } from "react";
+
+const SportImages: React.FC = () => {
+  const [vpnMode, setVpnMode] = useState(true); // true = VPN actif (images via VPN), false = VPN désactivé
+
+  const toggleVpn = () => setVpnMode(!vpnMode);
+
+  // Exemple d’URL : si vpnMode = true → API Images classique
+  // sinon → proxy qui contourne le VPN
+  const getImageUrl = (badgeId: string) => {
+    return vpnMode
+      ? `https://streamed.pk/api/images/badge/${badgeId}.webp`
+      : `/proxy/images/${badgeId}.webp`; // ton proxy côté serveur
+  };
+
+  return (
+    <div>
+      <button onClick={toggleVpn}>
+        {vpnMode ? "VPN: Oui (images via VPN)" : "VPN: Non (images sans VPN)"}
+      </button>
+
+      <div style={{ marginTop: "20px" }}>
+        <img src={getImageUrl("man-utd-badge")} alt="Manchester United" width={50} height={50} />
+        <img src={getImageUrl("liverpool-badge")} alt="Liverpool" width={50} height={50} />
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+### ⚡ Logique complète
+- **Bouton toggle** → change `vpnMode`.  
+- **Lecteur vidéo** → quand tu passes en mode lecture, tu forces `vpnMode = false`.  
+- **Quitter lecteur ou page sport** → tu remets `vpnMode = true`.  
+- **Proxy côté serveur** → indispensable pour que les images s’affichent sans VPN (ton backend fait la requête et renvoie l’image).  
+
+---
+
+👉 En résumé : tu ne peux pas “désactiver un vrai VPN” depuis ton site, mais tu peux **simuler le comportement** avec un bouton qui bascule entre deux sources d’images (VPN vs proxy).  
+
+Veux‑tu que je t’écrive aussi la partie **proxy Node.js/Express** qui sert les images sans VPN, pour que ton front‑end marche vraiment dans les deux modes ?

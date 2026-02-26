@@ -1,0 +1,98 @@
+Tu veux que ton site **détecte automatiquement la langue du visiteur** (France → français, États‑Unis/Canada → anglais, etc.) et affiche la bonne traduction. C’est exactement ce que font les sites pros, et c’est assez simple à mettre en place si tu utilises la bonne méthode.
+
+Je te donne une explication claire et les options possibles.
+
+---
+
+# 🌍 Comment détecter automatiquement la langue du visiteur
+
+Il existe **2 méthodes fiables** :
+
+---
+
+## ✅ 1. Détection via le navigateur (la méthode la plus propre)
+Chaque navigateur envoie automatiquement la langue préférée de l’utilisateur dans l’en‑tête :
+
+```
+Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7
+```
+
+Tu peux récupérer cette info côté serveur ou côté client.
+
+### **Exemple en JavaScript (frontend)**
+
+```js
+const userLang = navigator.language || navigator.userLanguage;
+
+if (userLang.startsWith("fr")) {
+    setLanguage("fr");
+} else if (userLang.startsWith("en")) {
+    setLanguage("en");
+} else {
+    setLanguage("en"); // langue par défaut
+}
+```
+
+---
+
+## ✅ 2. Détection via l’adresse IP (géolocalisation)
+Tu peux utiliser une API de géolocalisation :
+
+- ipapi.co  
+- ipinfo.io  
+- ipgeolocation.io  
+
+Exemple simple :
+
+```js
+fetch("https://ipapi.co/json/")
+  .then(res => res.json())
+  .then(data => {
+      const country = data.country_code;
+
+      if (country === "FR" || country === "BE" || country === "CH") {
+          setLanguage("fr");
+      } else {
+          setLanguage("en");
+      }
+  });
+```
+
+---
+
+# ✅ Quelle méthode choisir ?
+
+| Méthode | Avantages | Inconvénients |
+|--------|-----------|---------------|
+| **Langue du navigateur** | Très fiable, instantané, pas d’API | L’utilisateur peut avoir son navigateur en anglais même s’il vit en France |
+| **IP / géolocalisation** | Détecte le pays réel | Nécessite une API externe |
+
+👉 **Le mieux est de combiner les deux** :  
+1. On regarde la langue du navigateur  
+2. Si c’est ambigu, on vérifie le pays via IP  
+
+---
+
+# ✅ Comment intégrer ça dans ton système de traduction ?
+
+Tu dois avoir une fonction du style :
+
+```js
+function setLanguage(lang) {
+    // charger ton fichier de traduction
+    loadTranslations(lang);
+}
+```
+
+Ensuite tu appelles `setLanguage()` selon la détection.
+
+---
+
+# ✅ Je peux t’aider à l’intégrer complètement
+Pour que je te donne un code **100 % adapté à ton site**, dis‑moi :
+
+- Ton site est en **PHP, Node.js, HTML/JS pur, WordPress, autre**  
+- Tu utilises un système de traduction **maison** ou un plugin  
+- Tu veux une détection **automatique** ou **automatique + bouton manuel**  
+
+Je peux te générer le code exact prêt à coller dans ton site.

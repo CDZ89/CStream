@@ -1,0 +1,79 @@
+
+> workspace@1.0.0 dev
+> cd project && npm run dev --host 0.0.0.0 --port 5000
+
+
+> vite_react_shadcn_ts@0.0.0 dev
+🚀 CStream DEV server on port 5000
+12:47:43 PM [vite] Internal server error:   × Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+     ╭─[/home/runner/workspace/project/src/pages/Agent.tsx:722:1]
+ 719 │       </main>
+ 720 │     </div>
+ 721 │   );
+ 722 │ }
+     · ▲
+     ╰────
+  × Expected '</', got '<eof>'
+     ╭─[/home/runner/workspace/project/src/pages/Agent.tsx:722:3]
+ 720 │     </div>
+ 721 │   );
+ 722 │ }
+     ╰────
+
+
+Caused by:
+    Syntax Error
+  Plugin: vite:react-swc
+  File: /home/runner/workspace/project/src/pages/Agent.tsx
+  
+node:internal/process/promises:391
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+[Error:   × Expected ';', '}' or <eof>
+   ╭─[/home/runner/workspace/project/src/pages/Agent.tsx:2:1]
+ 1 │ 
+ 2 │       body { 
+   ·       ──┬─ ─
+   ·         ╰── This is the expression part of an expression statement
+ 3 │         margin: 0; 
+ 4 │         background: #0a0a0f; 
+ 5 │         color: #fff;
+   ╰────
+
+
+Caused by:
+    Syntax Error] {
+  code: 'GenericFailure',
+  plugin: 'vite:react-swc',
+  id: '/home/runner/workspace/project/src/pages/Agent.tsx?html-proxy&direct&index=0.css',
+  pluginCode: '\n' +
+    '      body { \n' +
+    '        margin: 0; \n' +
+    '        background: #0a0a0f; \n' +
+    '        color: #fff;\n' +
+    "        font-family: 'Inter', system-ui, -apple-system, sans-serif;\n" +
+    '      }\n' +
+    '      #root { min-height: 100vh; }\n' +
+    '      .initial-loader {\n' +
+    '        position: fixed;\n' +
+    '        inset: 0;\n' +
+    '        display: flex;\n' +
+    '        align-items: center;\n' +
+    '        justify-content: center;\n' +
+    '        background: #0a0a0f;\n' +
+    '        z-index: 9999;\n' +
+    '      }\n' +
+    '      .loader-spinner {\n' +
+    '        width: 40px;\n' +
+    '        height: 40px;\n' +
+    '        border: 3px solid rgba(139, 92, 246, 0.2);\n' +
+    '        border-top-color: #8B5CF6;\n' +
+    '        border-radius: 50%;\n' +
+    '        animation: spin 0.8s linear infinite;\n' +
+    '      }\n' +
+    '      @keyframes spin {\n' +
+    '        to { transform: rotate(360deg); }\n' +
+    '      }\n' +
+    '    '
+}

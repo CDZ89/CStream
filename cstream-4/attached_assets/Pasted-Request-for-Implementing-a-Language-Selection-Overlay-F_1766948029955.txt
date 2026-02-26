@@ -1,0 +1,131 @@
+Request for Implementing a Language Selection Overlay (First Visit or Login)
+
+Hello,
+
+I would like to implement an overlay that appears on the first visit or after the first login on the site, informing the user that the default language is English and offering them the option to change it if needed.
+
+Here are the details for this feature:
+
+Overlay with Animation:
+
+On the first visit or after the first login, an overlay should appear with a subtle animation.
+
+The overlay should contain the message: "The default language is English. If this is not your preferred language, click here to change."
+
+It should also feature an animated arrow pointing towards the language selection button in the navigation bar. This will help guide the user to the language change option.
+
+Behavior Based on Language:
+
+If the user’s current language is already English, the overlay should show a message like: "This is your language, close this message."
+
+If the user's language is not English, the message should encourage them to change the language here.
+
+Automatic Closure:
+
+The overlay should close automatically after 15 seconds if the user does not interact with it, without any bugs or interruptions on the site.
+
+It should also close when the user clicks on the overlay or anywhere outside the overlay.
+
+Cross-Platform Functionality:
+
+Ensure that this feature works seamlessly on both mobile and desktop without creating bugs or visual issues.
+
+Important:
+
+Do not change any other functionality or elements on the site except for the language selection overlay.
+
+Please ensure that nothing else is modified or affected during this process.
+
+Example of Desired Behavior and Animation (For Technical Reference):
+
+Displaying the Overlay:
+
+The overlay should be discreet at first, but become more visible after a few seconds when the user arrives on the site for the first time.
+
+Transition Effect:
+
+Use a fade-in or slide-in animation for the overlay to appear smoothly.
+
+Interaction with Language:
+
+When the user clicks on the language message, the overlay should disappear, and the language should be changed (if the user selects another language).
+
+Example HTML/CSS/JS Code (Simplified):
+
+<!-- Overlay HTML -->
+<div id="language-overlay" class="overlay">
+    <p id="language-message">The default language is English. If this is not your preferred language, click here to change.</p>
+    <button id="close-overlay">Close</button>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Display the overlay when the page loads
+    window.onload = function() {
+        setTimeout(function() {
+            document.getElementById("language-overlay").style.display = 'block';
+        }, 2000);  // Show after 2 seconds
+
+        // Close the overlay automatically after 15 seconds if not interacted with
+        setTimeout(function() {
+            document.getElementById("language-overlay").style.display = 'none';
+        }, 15000);  // Close after 15 seconds
+    };
+
+    // Close the overlay manually
+    document.getElementById("close-overlay").addEventListener('click', function() {
+        document.getElementById("language-overlay").style.display = 'none';
+    });
+</script>
+
+<!-- CSS for the overlay -->
+<style>
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        animation: fadeIn 1s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    #language-message {
+        margin-bottom: 10px;
+    }
+
+    #close-overlay {
+        background-color: #ff5c5c;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #close-overlay:hover {
+        background-color: #ff0000;
+    }
+</style>
+</script>
+
+Expected Outcome:
+
+An overlay that discreetly informs the user about the default English language and allows them to change it.
+
+The overlay closes automatically after 15 seconds if the user does not interact with it.
+
+The overlay can also be closed by the user if they click on the overlay or the close button.
+
+The animated arrow should guide the user to the language selection button in the navigation bar.
+
+Ensure no other modifications are made to the website during this process.

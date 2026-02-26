@@ -1,0 +1,120 @@
+Images API
+The Images API provides access to various visual assets used throughout the Streamed platform, including team badges, match posters, and proxied images. All images are served in WebP format for optimal performance.
+
+Available Endpoints
+Team Badges
+Get team badge images:
+
+GET /api/images/badge/[id].webp
+
+Note: The [id] value is provided in the team.badge field of the match object.
+
+Match Posters
+Get match poster images:
+
+GET /api/images/poster/[badge]/[badge].webp
+
+Note: The [badge] values are typically derived from team badge IDs for the match.
+
+Proxied Images
+Access images via proxy (useful for external images):
+
+GET /api/images/proxy/[poster].webp
+
+Note: The [poster] value is provided in the poster field of the match object.
+
+Usage Example
+// First, get match data to find image references
+fetch('https://streamed.pk/api/matches/football')
+  .then(response => response.json())
+  .then(matches => {
+    if (matches.length > 0) {
+      const match = matches[0];
+      
+      // Create container for match details
+      const container = document.createElement('div');
+      
+      // Add match title
+      const title = document.createElement('h2');
+      title.textContent = match.title;
+      container.appendChild(title);
+      
+      // Add match date
+      const date = document.createElement('p');
+      date.textContent = new Date(match.date).toLocaleString();
+      container.appendChild(date);
+      
+      // Add team badges if available
+      if (match.teams) {
+        const teamsDiv = document.createElement('div');
+        teamsDiv.style.display = 'flex';
+        teamsDiv.style.alignItems = 'center';
+        
+        if (match.teams.home && match.teams.home.badge) {
+          const homeBadge = document.createElement('img');
+          homeBadge.src = `https://streamed.pk/api/images/badge/${match.teams.home.badge}.webp`;
+          homeBadge.alt = match.teams.home.name;
+          homeBadge.width = 50;
+          homeBadge.height = 50;
+          teamsDiv.appendChild(homeBadge);
+        }
+        
+        const vs = document.createElement('span');
+        vs.textContent = ' vs ';
+        vs.style.margin = '0 10px';
+        teamsDiv.appendChild(vs);
+        
+        if (match.teams.away && match.teams.away.badge) {
+          const awayBadge = document.createElement('img');
+          awayBadge.src = `https://streamed.pk/api/images/badge/${match.teams.away.badge}.webp`;
+          awayBadge.alt = match.teams.away.name;
+          awayBadge.width = 50;
+          awayBadge.height = 50;
+          teamsDiv.appendChild(awayBadge);
+        }
+        
+        container.appendChild(teamsDiv);
+      }
+      
+      // Add match poster if available
+      if (match.poster) {
+        const poster = document.createElement('img');
+        poster.src = `https://streamed.pk${match.poster}.webp`;
+        poster.alt = match.title;
+        poster.style.maxWidth = '100%';
+        poster.style.marginTop = '20px';
+        container.appendChild(poster);
+      }
+      
+      // Add the container to the page
+      document.getElementById('match-container').appendChild(container);
+    }
+  })
+  .catch(error => console.error('Error:', error));
+HTML Implementation Example
+<!-- Team Badge Example -->
+<img 
+  src="https://streamed.pk/api/images/badge/man-utd-badge.webp" 
+  alt="Manchester United" 
+  width="50" 
+  height="50"
+/>
+
+<!-- Match Poster Example -->
+<img 
+  src="https://streamed.pk/api/images/poster/man-utd-badge/liverpool-badge.webp" 
+  alt="Manchester United vs Liverpool" 
+  class="match-poster"
+/>
+
+<!-- Proxied Image Example -->
+<img 
+  src="https://streamed.pk/api/images/proxy/custom-event-poster.webp" 
+  alt="Special Event" 
+  class="event-poster"
+/>
+Image Optimization Tips
+All images are served in WebP format for optimal compression and quality
+Use appropriate width/height attributes to prevent layout shifts
+Consider using the loading="lazy" attribute for images below the fold
+Images can be styled with CSS as needed for responsive design

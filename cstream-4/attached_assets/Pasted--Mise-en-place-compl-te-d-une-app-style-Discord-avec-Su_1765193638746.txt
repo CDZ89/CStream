@@ -1,0 +1,396 @@
+# Mise en place complète d’une app “style Discord” avec Supabase déjà créé
+
+Tu as déjà ton projet Supabase. Voici tout ce qu’il faut pour mettre en place, de A à Z, les amis, chat en temps réel, groupes, badges, sécurité (RLS), API et intégration front — prêt à l’emploi et fiable.
+
+---
+
+## Préparation Supabase et paramètres
+
+- **Projet et clés:**
+  - **Supabase URL:** récupère l’URL du projet.
+  - **Supabase anon key:** côté front (lecture/écriture selon policies).
+  - **Service role key:** uniquement côté backend (Edge Functions/serveur) pour tâches privilégiées.
+
+- **Extensions et options:**
+  - **Postgres enums:** pour statuts et rôles.
+  - **Realtime activé:** sur les tables critiques (`messages`, `group_members`, `friends`).
+  - **Storage buckets:**
+    - `avatars` (public, cache long).
+    - `badges` (public).
+    - `attachments` (privé, URLs signées).
+
+---
+
+## Schéma de base de données prêt à exécuter
+
+Copie-colle ces SQL dans Supabase SQL Editor pour créer tables, indexes et enums. Ajuste les noms si besoin.
+
+```sql
+-- Enums
+create type friend_status as enum ('pending', 'accepted', 'blocked');
+create type member_role as enum ('member', 'admin');
+create type message_type as enum ('text', 'image', 'file', 'system');
+
+-- Users (référence: auth.users, vue locale pour profils)
+create table public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  username text unique not null,
+  avatar_url text,
+  bio text,
+  created_at timestamptz default now()
+);
+
+-- Friends
+create table public.friends (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  friend_id uuid not null references auth.users(id) on delete cascade,
+  status friend_status not null default 'pending',
+  created_at timestamptz default now(),
+  unique (user_id, friend_id)
+);
+create index friends_user_idx on public.friends (user_id, status);
+create index friends_friend_idx on public.friends (friend_id, status);
+
+-- Groups
+create table public.groups (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz default now()
+);
+create index groups_owner_idx on public.groups (owner_id);
+
+-- Group members
+create table public.group_members (
+  id uuid primary key default gen_random_uuid(),
+  group_id uuid not null references public.groups(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role member_role not null default 'member',
+  joined_at timestamptz default now(),
+  unique (group_id, user_id)
+);
+create index group_members_gid_idx on public.group_members (group_id);
+create index group_members_uid_idx on public.group_members (user_id);
+
+-- Messages (DM ou groupe)
+create table public.messages (
+  id uuid primary key default gen_random_uuid(),
+  type message_type not null default 'text',
+  sender_id uuid not null references auth.users(id) on delete cascade,
+  group_id uuid references public.groups(id) on delete set null,
+  receiver_id uuid references auth.users(id) on delete set null,
+  content text,
+  attachment_url text,
+  created_at timestamptz default now(),
+  constraint dm_or_group check (
+    (group_id is not null and receiver_id is null) or
+    (group_id is null and receiver_id is not null)
+  )
+);
+create index messages_group_idx on public.messages (group_id, created_at);
+create index messages_dm_idx on public.messages (receiver_id, sender_id, created_at);
+
+-- Badges
+create table public.badges (
+  id uuid primary key default gen_random_uuid(),
+  name text unique not null,
+  icon_url text not null
+);
+
+-- User badges
+create table public.user_badges (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  badge_id uuid not null references public.badges(id) on delete cascade,
+  earned_at timestamptz default now(),
+  unique (user_id, badge_id)
+);
+
+-- Audit logs (actions admin/modération)
+create table public.audit_logs (
+  id bigserial primary key,
+  actor_id uuid references auth.users(id),
+  action text not null,
+  context jsonb,
+  created_at timestamptz default now()
+);
+```
+
+---
+
+## Sécurité RLS et policies solides
+
+Active la RLS et ajoute les politiques. C’est la clé pour que tout marche “sans bug” et de façon sécurisée.
+
+```sql
+alter table public.profiles enable row level security;
+alter table public.friends enable row level security;
+alter table public.groups enable row level security;
+alter table public.group_members enable row level security;
+alter table public.messages enable row level security;
+alter table public.badges enable row level security;
+alter table public.user_badges enable row level security;
+alter table public.audit_logs enable row level security;
+
+-- Profiles: lecture globale, écriture par le propriétaire
+create policy "read_profiles" on public.profiles
+  for select using (true);
+create policy "write_own_profile" on public.profiles
+  for update using (auth.uid() = id)
+  with check (auth.uid() = id);
+create policy "insert_own_profile" on public.profiles
+  for insert with check (auth.uid() = id);
+
+-- Friends: visibilité uniquement parties prenantes, insert/update par l’initiateur ou le destinataire
+create policy "read_my_friends" on public.friends
+  for select using (user_id = auth.uid() or friend_id = auth.uid());
+
+create policy "insert_friend_request" on public.friends
+  for insert with check (user_id = auth.uid());
+
+create policy "update_friend_status" on public.friends
+  for update using (user_id = auth.uid() or friend_id = auth.uid());
+
+-- Groups: lecture si membre ou owner, création par owner
+create policy "read_groups_member" on public.groups
+  for select using (
+    owner_id = auth.uid() or
+    exists (
+      select 1 from public.group_members gm
+      where gm.group_id = groups.id and gm.user_id = auth.uid()
+    )
+  );
+
+create policy "create_group" on public.groups
+  for insert with check (owner_id = auth.uid());
+
+create policy "update_group_owner_only" on public.groups
+  for update using (owner_id = auth.uid());
+
+-- Group members: lecture si membre du groupe, insert par owner/admin
+create policy "read_group_members" on public.group_members
+  for select using (
+    exists (
+      select 1 from public.group_members gm
+      where gm.group_id = group_members.group_id and gm.user_id = auth.uid()
+    ) or
+    exists (
+      select 1 from public.groups g
+      where g.id = group_members.group_id and g.owner_id = auth.uid()
+    )
+  );
+
+create policy "add_member_owner_admin" on public.group_members
+  for insert with check (
+    exists (
+      select 1 from public.groups g
+      where g.id = group_members.group_id and g.owner_id = auth.uid()
+    ) or
+    exists (
+      select 1 from public.group_members gm
+      where gm.group_id = group_members.group_id and gm.user_id = auth.uid() and gm.role = 'admin'
+    )
+  );
+
+create policy "update_member_role_admin" on public.group_members
+  for update using (
+    exists (
+      select 1 from public.group_members gm
+      where gm.group_id = group_members.group_id and gm.user_id = auth.uid() and gm.role = 'admin'
+    ) or
+    exists (
+      select 1 from public.groups g
+      where g.id = group_members.group_id and g.owner_id = auth.uid()
+    )
+  );
+
+-- Messages: lecture si DM concerné ou membre du groupe, envoi par l’utilisateur
+create policy "read_messages_scoped" on public.messages
+  for select using (
+    (receiver_id is not null and (receiver_id = auth.uid() or sender_id = auth.uid())) or
+    (group_id is not null and exists (
+      select 1 from public.group_members gm
+      where gm.group_id = messages.group_id and gm.user_id = auth.uid()
+    ))
+  );
+
+create policy "send_message" on public.messages
+  for insert with check (
+    sender_id = auth.uid() and (
+      (receiver_id is not null and receiver_id <> auth.uid()) or
+      (group_id is not null and exists (
+        select 1 from public.group_members gm
+        where gm.group_id = messages.group_id and gm.user_id = auth.uid()
+      ))
+    )
+  );
+
+-- Badges: lecture globale, écriture via service (admin)
+create policy "read_badges" on public.badges
+  for select using (true);
+
+-- User badges: lecture pour soi, insertion via service
+create policy "read_my_badges" on public.user_badges
+  for select using (user_id = auth.uid());
+```
+
+---
+
+## RPC (fonctions SQL) pour performances et simplicité
+
+Ajoute ces fonctions pour réduire les allers-retours et centraliser les règles métier.
+
+```sql
+-- Lister messages d’un groupe avec pagination
+create or replace function public.get_group_messages(p_group uuid, p_limit int, p_after timestamptz)
+returns setof public.messages
+language sql stable as $$
+  select *
+  from public.messages
+  where group_id = p_group
+    and (p_after is null or created_at > p_after)
+  order by created_at asc
+  limit p_limit;
+$$;
+
+-- Lister messages DM entre deux utilisateurs
+create or replace function public.get_dm_messages(p_user uuid, p_friend uuid, p_limit int, p_after timestamptz)
+returns setof public.messages
+language sql stable as $$
+  select *
+  from public.messages
+  where ((sender_id = p_user and receiver_id = p_friend)
+      or (sender_id = p_friend and receiver_id = p_user))
+    and (p_after is null or created_at > p_after)
+  order by created_at asc
+  limit p_limit;
+$$;
+```
+
+---
+
+## Realtime et intégration front (Supabase JS)
+
+- **Abonnements Realtime:** écoute `messages` pour groupes et DMs.
+- **Flux DM et groupes:** sépare les canaux pour réduire le bruit.
+
+```js
+// client/supabase.js
+import { createClient } from '@supabase/supabase-js';
+export const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+// Subscribe messages in a group
+export function subscribeGroupMessages(groupId, onMessage) {
+  return supabase
+    .channel(`group:${groupId}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'messages', filter: `group_id=eq.${groupId}` },
+      payload => onMessage(payload.new)
+    )
+    .subscribe();
+}
+
+// Subscribe DM between me and friend (filter client-side for sender/receiver)
+export function subscribeDm(userId, friendId, onMessage) {
+  return supabase
+    .channel(`dm:${userId}:${friendId}`)
+    .on('postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'messages' },
+      ({ new: msg }) => {
+        if (
+          (msg.sender_id === userId && msg.receiver_id === friendId) ||
+          (msg.sender_id === friendId && msg.receiver_id === userId)
+        ) onMessage(msg);
+      }
+    )
+    .subscribe();
+}
+```
+
+- **Actions essentielles (front):**
+  - **Envoyer un DM:**
+    ```js
+    await supabase.from('messages').insert({
+      sender_id: user.id,
+      receiver_id: friend.id,
+      content: text,
+      type: 'text'
+    });
+    ```
+  - **Envoyer un message groupe:**
+    ```js
+    await supabase.from('messages').insert({
+      sender_id: user.id,
+      group_id: group.id,
+      content: text,
+      type: 'text'
+    });
+    ```
+  - **Demande d’ami:**
+    ```js
+    await supabase.from('friends').insert({
+      user_id: user.id,
+      friend_id: friend.id,
+      status: 'pending'
+    });
+    ```
+  - **Accepter une demande:**
+    ```js
+    await supabase.from('friends')
+      .update({ status: 'accepted' })
+      .eq('user_id', friend.id)
+      .eq('friend_id', user.id);
+    ```
+
+---
+
+## Edge Functions et Storage
+
+- **URLs signées pour pièces jointes:**
+  - Stocke fichiers dans `attachments` (privé).
+  - Utilise une Edge Function pour créer URLs signées (300–600 s).
+
+```ts
+// supabase/functions/createSignedUrl/index.ts
+import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+export default async (req: Request) => {
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const { path, expiresIn = 300 } = await req.json();
+  const { data, error } = await supabase.storage.from('attachments').createSignedUrl(path, expiresIn);
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 400 });
+  return new Response(JSON.stringify({ url: data.signedUrl }), { headers: { 'Content-Type': 'application/json' } });
+};
+```
+
+- **Upload avatars/badges (public):**
+  - `avatars` et `badges` en public, fichiers immutables + cache CDN.
+
+---
+
+## Monitoring, modération et fiabilité
+
+- **Logs et modération:**
+  - **Audit logs:** insère une entrée sur actions sensibles (ban, suppressions).
+  - **Rate limiting (edge):** protège `messages` et `friends` contre spam (compteur IP/user en mémoire/Redis).
+  - **Modération de contenu:** filtre messages (profanité, liens douteux) côté edge avant insert si nécessaire.
+
+- **Observabilité:**
+  - **Supabase logs:** surveille erreurs RLS/DB.
+  - **Sentry (front/back):** capte exceptions.
+  - **Alertes:** sur taux d’erreurs, latence, pics d’insert.
+
+---
+
+## Checklist d’activation
+
+- **DB créée:** tables + indexes + enums.
+- **RLS activées:** policies collées et testées avec un compte user.
+- **Realtime:** abonnements `messages` fonctionnels.
+- **Storage:** buckets `avatars/badges/attachments` configurés.
+- **Edge:** fonction `createSignedUrl` déployée et testée.
+- **Front:** composants Chat/DM/Groupe branchés aux RPC et Realtime.
+- **Modération:** rate limit basique activé sur insert messages.
+- **Tests:** scénarios e2e (ajout ami → acceptation → DM → groupe → message → badge).
+
+Si tu veux, dis-moi ta stack front (React/Next/Vue) et je t’envoie les composants “Chat”, “Liste d’amis”, “Groupes” prêts à brancher, plus les requêtes Supabase exactes pour tes écrans Admin.

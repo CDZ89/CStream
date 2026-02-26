@@ -1,0 +1,141 @@
+Parfait, je te prépare **un texte propre, premium, bilingue (FR + EN)** que tu peux mettre dans :
+
+- **La bio du bot (About Me)**
+- **Le message d’accueil**
+- **Le statut personnalisé**
+- **Les embeds envoyés par le bot**
+- **Les messages automatiques (vérification, boost, etc.)**
+
+Tout est optimisé pour un bot sérieux, premium, cohérent avec CStream.
+
+---
+
+# 🎯 **1. Bio du bot (About Me)**
+
+**Version FR :**  
+> Bot officiel de CStream.  
+> Rejoignez la communauté, découvrez films, séries & anime, et profitez d’outils exclusifs.  
+> Support, vérification, recherche TMDB et plus encore.
+
+**Version EN :**  
+> Official CStream bot.  
+> Join the community, explore movies, series & anime, and access exclusive tools.  
+> Support, verification, TMDB search and more.
+
+---
+
+# 🎬 **2. Statut du bot**
+
+**Type : Watching**  
+> regarde CStream
+
+---
+
+# 💬 **3. Message d’accueil (DM ou salon dédié)**
+
+**FR :**  
+> 👋 Bienvenue sur le serveur CStream !  
+> Ici, vous pouvez discuter films, séries et anime, proposer des idées, suivre les mises à jour et accéder à des outils exclusifs.  
+>  
+> 🔗 Site : *{ton lien ici}*  
+> 💬 Discord : https://discord.gg/YSkhZubt3y  
+>  
+> Profitez de votre expérience sur CStream.
+
+**EN :**  
+> 👋 Welcome to the CStream server!  
+> Here you can talk about movies, series and anime, share ideas, follow updates and access exclusive tools.  
+>  
+> 🔗 Website: *{your link here}*  
+> 💬 Discord: https://discord.gg/YSkhZubt3y  
+>  
+> Enjoy your CStream experience.
+
+---
+
+# 🛡️ **4. Message de vérification (DM envoyé après /verify)**
+
+**FR :**  
+> ✅ Merci beaucoup !  
+> Vous êtes maintenant **vérifié** sur Discord et sur CStream.  
+> Votre rôle **Verified** a été ajouté avec succès.  
+>  
+> 🔗 Accédez au site : *{URL du site}*
+
+**EN :**  
+> ✅ Thank you!  
+> You are now **verified** on Discord and on CStream.  
+> Your **Verified** role has been successfully added.  
+>  
+> 🔗 Access the website: *{website URL}*
+
+---
+
+# 💜 **5. Message automatique pour un boost**
+
+**FR :**  
+> 💜 Merci infiniment pour le boost, {user} !  
+> Votre soutien aide CStream à grandir.  
+> Le rôle **Server Booster** vous a été attribué.
+
+**EN :**  
+> 💜 Thank you so much for the boost, {user}!  
+> Your support helps CStream grow.  
+> The **Server Booster** role has been assigned to you.
+
+---
+
+# 🔍 **6. Message pour la commande /search (TMDB)**
+
+**FR :**  
+> 🎬 Résultat trouvé pour **{titre}**  
+> Cliquez ci‑dessous pour regarder sur CStream :  
+> 🔗 {lien}
+
+**EN :**  
+> 🎬 Result found for **{title}**  
+> Click below to watch it on CStream:  
+> 🔗 {link}
+
+---
+
+# 🧩 **7. Message d’erreur propre**
+
+**FR :**  
+> ❌ Une erreur est survenue. Réessayez dans un instant.
+
+**EN :**  
+> ❌ An error occurred. Please try again shortly.
+
+---
+
+# 📌 **8. Message pour commandes /help**
+
+**FR :**  
+> 📚 **Commandes disponibles**  
+> • `/search` – Rechercher un film, une série ou un anime via TMDB  
+> • `/verify` – Vérifier votre compte CStream  
+> • `/profile` – Voir vos informations  
+> • `/support` – Infos pour soutenir CStream  
+>  
+> Plus de commandes arrivent bientôt.
+
+**EN :**  
+> 📚 **Available Commands**  
+> • `/search` – Search movies, series or anime via TMDB  
+> • `/verify` – Verify your CStream account  
+> • `/profile` – View your information  
+> • `/support` – Support CStream  
+>  
+> More commands coming soon.
+
+---
+
+Si tu veux, je peux aussi te préparer :
+
+- un **embed complet** pour chaque message  
+- un **pack complet de textes** pour toutes les commandes  
+- un **système de messages automatiques premium**  
+- ou même **le code du bot** déjà structuré proprement
+
+Tu veux que je te fasse **le pack complet** ou **le code du bot** directement ?

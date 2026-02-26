@@ -1,0 +1,157 @@
+Matches
+Using the API to get the matches available to watch for a specific sport
+
+The matches API provides several endpoints to retrieve matches across different sports with various filtering options. All endpoints return matches for today (past 12 hours and future 12 hours) by default, unless a date parameter is specified.
+
+Get Matches by Sport
+This will return the matches for a specific sport. You can also optionally pass a date to get the matches for a specific date.
+
+/api/v1/matches/[sport] [?date=2025-01-01]
+interface Match {
+  matchId: string;
+  title: string;
+  poster: string;
+  teams: {
+    home: {
+      name: string;
+    };
+    away: {
+      name: string;
+    };
+  };
+  scores: {
+    home: number;
+    away: number;
+  };
+  status: string;
+  currentMinute: string;
+  currentMinuteNumber: number;
+  isEvent: boolean;
+  date: string;
+  timestamp: number;
+  league: string;
+  sport: string;
+  streams: {
+    id: string;
+    url: string;
+    quality: string;
+    language: string;
+    isRedirect: boolean;
+    nsfw: boolean;
+    ads: boolean;
+  }[];
+};
+ 
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/football");
+const MatchesData = await Matches.json() as Match[];
+ 
+if (MatchesData.length > 0) {
+  const Match = MatchesData[0];
+  const Streams = Match.streams;
+  if (Streams.length > 0) {
+    const Stream = Streams[0];
+    console.log(Stream); // { id: "123", url: "https://spiderembed.top/xxxx", quality: "1080p", language: "en", isRedirect: false, nsfw: false, ads: false }
+  }
+  console.log(Match); // { matchId: "123", title: "Arsenal vs Manchester United", poster: "https://spiderembed.top/api/match-poster?matchId=123", teams: { home: { name: "Arsenal" }, away: { name: "Manchester United" } }, isEvent: false, date: "2025-01-01", timestamp: 1714732800, league: "Premier League", sport: "football", streams: [{ id: "123", url: "https://spiderembed.top/xxxx", quality: "1080p", language: "en", isRedirect: false, nsfw: false, ads: false }] }
+}
+ 
+// Specifying a date
+const DateString = "2025-01-01";
+const Matches = await fetch(`https://api.watchfooty.st/api/v1/matches/football?date=${DateString}`);
+const MatchesData = await Matches.json() as Match[];
+ 
+if (MatchesData.length > 0) {
+  console.log(MatchesData);
+}
+Copy
+Get All Matches
+Returns matches across all sports.
+
+/api/v1/matches/all [?date=2025-01-01]
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/all");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Get Popular Matches
+Returns popular matches across all sports. Popular matches are determined by top teams and top leagues.
+
+/api/v1/matches/popular [?date=2025-01-01]
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/popular");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Get Popular Live Matches
+Returns popular matches that are currently live across all sports.
+
+/api/v1/matches/popular/live
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/popular/live");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Get Live Matches
+Returns all matches that are currently live across all sports.
+
+/api/v1/matches/live
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/live");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Get Popular Matches by Sport
+Returns popular matches for a specific sport.
+
+/api/v1/matches/[sport]/popular [?date=2025-01-01]
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/football/popular");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Get Live Matches by Sport
+Returns all matches that are currently live for a specific sport.
+
+/api/v1/matches/[sport]/live
+const Matches = await fetch("https://api.watchfooty.st/api/v1/matches/football/live");
+const MatchesData = await Matches.json() as Match[];
+Copy
+Response Format
+/api/v1/matches/football
+[
+  {
+    "matchId": "123",
+    "title": "Arsenal vs Manchester United",
+    "poster": "/api/v1/poster/123",
+    "teams": {
+      "home": {
+        "name": "Arsenal",
+        "logoUrl": "/api/v1/team-logo/123",
+        "logoId": "123"
+      },
+      "away": {
+        "name": "Manchester United",
+        "logoUrl": "/api/v1/team-logo/456",
+        "logoId": "456"
+      }
+    },
+    "isEvent": false,
+    "date": "2025-01-01T00:00:00.000Z",
+    "timestamp": 1714732800,
+    "league": "Premier League",
+    "leagueLogo": "/api/v1/league-logo/789",
+    "leagueLogoId": "789",
+    "sport": "football",
+    "streams": [{
+      "id": "123",
+      "url": "https://spiderembed.top/embed/xxxx",
+      "quality": "hd",
+      "language": "english",
+      "isRedirect": false,
+      "nsfw": false,
+      "ads": false
+    }]
+  }
+]
+Copy
+Embedding
+You can embed the matches by using the API within the embed.
+
+https://spiderembed.top/embed/xxxx
+<iframe
+  src="https://spiderembed.top/embed/xxxx"
+  width="100%"
+  height="100%"
+  frameborder="0"
+  allowfullscreen
+></iframe>

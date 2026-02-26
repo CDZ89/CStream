@@ -1,0 +1,90 @@
+Très bonne question ! Tu veux mettre en place un système où chaque utilisateur de ton site possède un **ID unique** dans son profil, et dans la page de chat on peut ajouter un ami en entrant ce code ID. Voici comment tu peux structurer ça :
+
+---
+
+## 🛠 Étapes principales
+
+### 1. Générer un ID unique pour chaque utilisateur
+- Quand un utilisateur crée son compte, tu lui attribues un **UUID** (universally unique identifier) ou un identifiant auto-incrémenté en base de données.
+- Exemple en SQL :
+```sql
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE
+);
+```
+👉 Ici `id` est l’ID que tu affiches dans le profil.
+
+---
+
+### 2. Créer une table pour les relations d’amis
+- Tu as besoin d’une table qui stocke les relations entre utilisateurs.
+```sql
+CREATE TABLE friends (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    friend_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (friend_id) REFERENCES users(id)
+);
+```
+👉 Chaque fois qu’un utilisateur ajoute un ami, tu insères une ligne avec `user_id` et `friend_id`.
+
+---
+
+### 3. Formulaire pour ajouter un ami via son ID
+- Dans ta page **chat**, tu mets un champ texte où l’utilisateur entre l’ID de son ami.
+- Exemple en HTML :
+```html
+<form method="POST" action="/add-friend">
+  <input type="text" name="friend_id" placeholder="Entrez l'ID de votre ami">
+  <button type="submit">Ajouter</button>
+</form>
+```
+
+---
+
+### 4. Logique côté serveur
+- Quand le formulaire est soumis, ton serveur vérifie si l’ID existe dans la table `users`.
+- Si oui, il ajoute la relation dans `friends`.
+- Exemple en PHP :
+```php
+if (isset($_POST['friend_id'])) {
+    $friend_id = intval($_POST['friend_id']);
+    $user_id = $_SESSION['user_id']; // l'utilisateur connecté
+
+    // Vérifier si l'ami existe
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE id = ?");
+    $stmt->execute([$friend_id]);
+    if ($stmt->fetch()) {
+        // Ajouter la relation
+        $stmt = $pdo->prepare("INSERT INTO friends (user_id, friend_id) VALUES (?, ?)");
+        $stmt->execute([$user_id, $friend_id]);
+        echo "Ami ajouté avec succès !";
+    } else {
+        echo "Cet ID n'existe pas.";
+    }
+}
+```
+
+---
+
+### 5. Afficher la liste des amis
+- Tu peux ensuite récupérer les amis d’un utilisateur :
+```sql
+SELECT u.username 
+FROM users u
+JOIN friends f ON u.id = f.friend_id
+WHERE f.user_id = ?;
+```
+
+---
+
+## 🚀 Résultat attendu
+- Dans le profil : chaque utilisateur voit son **ID unique**.
+- Dans la page chat : il entre l’ID d’un autre utilisateur → la relation est créée → ils apparaissent dans sa liste d’amis.
+
+---
+
+Veux-tu que je te propose un **exemple complet avec Node.js/Express et MongoDB** (plus moderne pour un site web), ou tu préfères rester sur **PHP/MySQL** comme dans mon exemple ?

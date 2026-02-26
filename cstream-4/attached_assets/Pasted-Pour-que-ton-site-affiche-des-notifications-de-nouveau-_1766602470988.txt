@@ -1,0 +1,84 @@
+Pour que ton site affiche des **notifications de nouveau message** quand l’utilisateur a accepté les notifications, voici le système complet à mettre en place :
+
+---
+
+## ✅ Étapes pour les notifications de chat
+
+### 1. 🔐 Demander la permission
+Au chargement du site (ou dans les paramètres), demande la permission :
+
+```js
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission().then(permission => {
+    if (permission === "granted") {
+      console.log("✅ Notifications activées");
+    }
+  });
+}
+```
+
+---
+
+### 2. 📡 Écouter les nouveaux messages
+Tu dois avoir un système en temps réel (WebSocket, Supabase Realtime, etc.) qui détecte les nouveaux messages :
+
+```js
+chatSocket.on("new-message", (msg) => {
+  if (shouldNotify(msg)) {
+    showNotification(msg);
+  }
+});
+```
+
+---
+
+### 3. 🧠 Filtrer les messages à notifier
+Exemples :
+- Ne pas notifier si l’utilisateur est déjà dans la conversation.
+- Ne pas notifier les messages système ou auto.
+
+```js
+function shouldNotify(msg) {
+  return (
+    Notification.permission === "granted" &&
+    msg.sender !== currentUser.id &&
+    !isChatOpen(msg.chatId)
+  );
+}
+```
+
+---
+
+### 4. 🛎️ Afficher la notification
+```js
+function showNotification(msg) {
+  const notif = new Notification(`💬 Nouveau message de ${msg.senderName}`, {
+    body: msg.preview || msg.text.slice(0, 80),
+    icon: "/icons/chat-notif.png", // ton icône
+    tag: `chat-${msg.chatId}`, // empêche les doublons
+  });
+
+  notif.onclick = () => {
+    window.focus();
+    openChat(msg.chatId);
+  };
+}
+```
+
+---
+
+### 5. 🧩 Bonus UX
+- Ajoute un **badge rouge** sur l’icône de chat.
+- Ajoute un **son discret** (optionnel).
+- Ajoute une option “Ne pas déranger” dans les paramètres.
+
+---
+
+## 🛡️ Sécurité et respect
+- Ne spamme pas : une notif par message ou par groupe.
+- Respecte les préférences utilisateur : “Activer/Désactiver les notifications”.
+- Stocke l’état dans `localStorage` ou dans le profil utilisateur.
+
+---
+
+Tu veux que je te prépare un module React/Vite/Supabase qui gère tout ça proprement (permission, socket, badge, notification native, clic pour ouvrir le chat) ? Je peux te livrer ça prêt à intégrer dans ton layout CStream.

@@ -1,0 +1,107 @@
+modules = ["nodejs-20", "postgresql-16"]
+[nix]
+channel = "stable-25_05"
+packages = ["unzip"]
+
+[agent]
+expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "CStream Dev Server"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Discord Bot Service, status: running"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Discord Bot Service"
+
+[[workflows.workflow]]
+name = "CStream Dev Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev -- --host 0.0.0.0 --port 5000 --clearScreen false"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Discord Bot Service, status: running"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node bot/index.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow]]
+name = "Discord Bot Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node bot/index.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[ports]]
+localPort = 443
+externalPort = 3002
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 24678
+externalPort = 3000
+
+[userenv]
+
+[userenv.shared]
+GOOGLE_API_KEY = "AIzaSyBLrIYdFba1slecBvoYi-RxyG191Pqp4nE"
+GOOGLE_CX = "e078c68c7a25c41d1"
+VITE_TMDB_API_KEY = "d430c6c589f4549e780b7e1786f0ac9c"
+GROQ_API_KEY = "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"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnY2VrZ3J5bWRjd2phbnd4cndqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMjU1ODAsImV4cCI6MjA3NjcwMTU4MH0.8_aiA-AeB4Qv85tEIx1bcGicOf8cyV9KdVCWY4HNTy4"
+DISCORD_CHANNEL_ID = "1444692905347514479"
+DISCORD_GUILD_ID = "1444692903439110229"
+ANIMESCHEDULE_APP_ID = "R5Qn3yJSv5eEevqsbJ5e"
+ANIMESCHEDULE_TOKEN = "ZuDO37qUPvKmlsIWoI8U2ao4CdVsJL"
+VITE_ANIMESCHEDULE_APP_ID = "R5Qn3yJSv5eEevqsbJ5e"
+VITE_ANIMESCHEDULE_TOKEN = "ZuDO37qUPvKmlsIWoI8U2ao4CdVsJL"
+SUPABASE_URL = "https://supabase.com/dashboard/project/fgcekgrymdcwjanwxrwj"
+
+[deployment]
+build = ["npm", "run", "build"]
+run = ["npm", "run", "serve"]
+deploymentTarget = "vm"
+
+[rules]
+
+[rules.formatter]
+
+[rules.formatter.fileExtensions]
+
+[rules.formatter.fileExtensions.".tsx"]
+id = "module:nodejs-20/formatter:prettier"

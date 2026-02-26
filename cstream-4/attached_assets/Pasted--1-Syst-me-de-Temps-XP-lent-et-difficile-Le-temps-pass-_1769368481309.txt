@@ -1,0 +1,186 @@
+⏳ 1. Système de Temps → XP (lent et difficile)
+Le temps passé sur le site est compté automatiquement, même si l’utilisateur change de page.
+
+Conversion recommandée (très lente) :
+1 heure = 10 XP
+
+10 heures = 100 XP
+
+100 heures = 1000 XP
+
+500 heures = 5000 XP
+
+1000 heures = 10 000 XP
+
+C’est volontairement très long, pour rendre les niveaux rares et prestigieux.
+
+Stockage dans Supabase :
+time_spent (en secondes)
+
+xp (entier)
+
+level (entier)
+
+⭐ 2. Niveaux (extrêmement difficiles)
+Les niveaux sont basés sur l’XP totale.
+
+Niveau	XP requis	Temps estimé
+Level 1	0–100 XP	10 heures
+Level 2	100–500 XP	50 heures
+Level 3	500–1000 XP	100 heures
+Level 4	1000–2500 XP	250 heures
+Level 5	2500–5000 XP	500 heures
+Level 6 (Ultra Rare)	5000–10 000 XP	1000 heures
+Level 7 (Mythique)	10 000–25 000 XP	2500 heures
+Level 8 (Immortel)	25 000+ XP	5000 heures
+Les niveaux élevés sont quasi impossibles, ce qui les rend prestigieux.
+
+🏆 3. Badges (automatiques et rares)
+Chaque palier de temps ou de niveau débloque un badge.
+
+Badges basés sur le temps :
+Badge 10h → 10 heures
+
+Badge 50h → 50 heures
+
+Badge 100h → 100 heures
+
+Badge 500h → 500 heures
+
+Badge 1000h → 1000 heures
+
+Badge 5000h → 5000 heures
+
+Badges basés sur les niveaux :
+Badge Bronze → Level 1
+
+Badge Argent → Level 2
+
+Badge Or → Level 3
+
+Badge Diamant → Level 4
+
+Badge Ultra Rare → Level 6
+
+Badge Mythique → Level 7
+
+Badge Immortel → Level 8
+
+Chaque badge est un SVG propre, affiché dans le profil.
+
+🎁 4. Récompenses selon le niveau
+Tu peux ajouter des récompenses (optionnel) :
+
+accès à des catégories spéciales
+
+thèmes exclusifs
+
+icônes premium
+
+badges secrets
+
+accès anticipé à des films
+
+couleur de profil spéciale
+
+Exemples :
+
+Level 3 → thème “Or”
+
+Level 5 → badge animé
+
+Level 7 → accès à une section secrète
+
+Level 8 → profil Immortel
+
+🔔 5. Notifications automatiques
+Quand l’utilisateur :
+
+monte de niveau
+
+gagne un badge
+
+atteint un palier de temps
+
+Il reçoit une notification propre :
+
+Exemples :
+Code
+🎉 Félicitations ! Tu viens de passer Level 4 !
+Code
+🏆 Nouveau badge débloqué : Badge Diamant !
+Code
+⏳ Tu as passé 100 heures sur CStream ! Badge 100h obtenu !
+Les notifications doivent être :
+
+animées
+
+propres
+
+non bloquantes
+
+visibles 3–5 secondes
+
+📊 6. Barre d’XP dans le profil
+La page reste identique, mais on ajoute une barre d’XP :
+
+affichée sous le pseudo
+
+montre la progression vers le prochain niveau
+
+animée
+
+couleur selon le niveau (bronze, argent, or, diamant, etc.)
+
+Exemple :
+
+Code
+[██████████░░░░░░░░░░] 320 / 500 XP
+👑 7. Statut spécial : Creator
+L’utilisateur chemsdine.kachid@gmail.com doit automatiquement avoir :
+
+Level Creator (niveau unique)
+
+XP illimité
+
+tous les badges débloqués
+
+badge Creator (SVG spécial)
+
+couleur spéciale dans le profil
+
+rang affiché : “Creator”
+
+Dans Supabase :
+
+Code
+level = "Creator"
+xp = 999999
+all_badges = true
+role = "creator"
+Dans le profil :
+
+badge couronne
+
+couleur or
+
+style unique
+
+🎯 8. Résumé final
+Tu ajoutes à ta page actuelle (sans rien changer) :
+
+un système d’XP lent et difficile
+
+des niveaux rares
+
+des badges automatiques
+
+des récompenses
+
+une barre d’XP
+
+des notifications
+
+un statut Creator complet
+
+Le tout basé sur le temps passé sur le site, propre, fluide et sans bug.

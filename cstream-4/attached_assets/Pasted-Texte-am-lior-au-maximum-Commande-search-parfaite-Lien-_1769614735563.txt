@@ -1,0 +1,198 @@
+Texte amélioré au maximum
+
+Commande /search parfaite
+
+Lien dynamique 100% correct :
+
+Films → /movie/TMDB_ID
+
+Séries & Anime → /tv/TMDB_ID
+
+Domaine officiel : https://cstream-1--outrra22.replit.app (cstream-1--outrra22.replit.app in Bing)
+
+Embed ultra premium
+
+Bouton propre
+
+Texte FR + EN
+
+Style cohérent avec une vraie plateforme streaming premium
+
+Tu vas avoir un bot niveau Netflix / Crunchyroll / Plex, mais version CStream.
+
+🎯 1. Texte officiel du bot (About Me) — Version Premium
+FR :
+
+Bot officiel de CStream.
+Recherchez films, séries & anime, vérifiez votre compte, recevez des rôles automatiques et accédez à des outils exclusifs.
+CStream, votre plateforme streaming moderne et immersive.
+
+EN :
+
+Official CStream bot.
+Search movies, series & anime, verify your account, receive automatic roles and access exclusive tools.
+CStream, your modern and immersive streaming platform.
+
+🎬 2. Statut du bot (présence)
+Type : WATCHING
+
+Texte : CStream
+
+💬 3. Message d’accueil (DM)
+FR :
+
+👋 Bienvenue sur le serveur CStream  
+Explorez films, séries et anime, suivez les mises à jour et profitez d’outils exclusifs.
+
+🌐 Site : https://cstream-1--outrra22.replit.app (cstream-1--outrra22.replit.app in Bing)  
+💬 Discord : https://discord.gg/YSkhZubt3y
+
+Bonne expérience sur CStream.
+
+EN :
+
+👋 Welcome to CStream  
+Explore movies, series and anime, follow updates and enjoy exclusive tools.
+
+🌐 Website: https://cstream-1--outrra22.replit.app (cstream-1--outrra22.replit.app in Bing)  
+💬 Discord: https://discord.gg/YSkhZubt3y
+
+Enjoy your CStream experience.
+
+🔍 4. Commande /search — Version ULTRA PREMIUM
+✔ Films → /movie/TMDB_ID
+✔ Séries → /tv/TMDB_ID
+✔ Anime → /tv/TMDB_ID (TMDB ne sépare pas anime)
+🧠 5. Code final de la commande /search (discord.js v14)
+Optimisé, propre, premium, bilingue, embed parfait.
+
+js
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
+const axios = require('axios');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('search')
+    .setDescription('Rechercher un film, une série ou un anime via TMDB')
+    .addStringOption(option =>
+      option.setName('query')
+        .setDescription('Nom du film, série ou anime')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('Type de média')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Film', value: 'movie' },
+          { name: 'Série', value: 'tv' },
+          { name: 'Anime', value: 'anime' }
+        )
+    ),
+
+  async execute(interaction) {
+    const query = interaction.options.getString('query');
+    const type = interaction.options.getString('type');
+
+    await interaction.deferReply();
+
+    try {
+      const tmdbType = type === 'anime' ? 'tv' : type;
+
+      const url = `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${process.env.TMDB_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`;
+
+      const response = await axios.get(url);
+      const results = response.data.results;
+
+      if (!results || results.length === 0) {
+        return interaction.editReply(`❌ Aucun résultat trouvé pour **${query}**`);
+      }
+
+      const media = results[0];
+
+      const title = media.title || media.name;
+      const poster = media.poster_path
+        ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
+        : null;
+
+      const route = type === 'movie'
+        ? `movie/${media.id}`
+        : `tv/${media.id}`;
+
+      const cstreamUrl = `https://cstream-1--outrra22.replit.app/${route}`;
+
+      const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(
+          `🎬 **Disponible sur CStream**\n` +
+          `Cliquez sur le bouton ci‑dessous pour regarder.\n\n` +
+          `🌍 **FR / EN**\n` +
+          `Search powered by TMDB • Streaming via CStream`
+        )
+        .setColor('#5865F2')
+        .setImage(poster)
+        .setFooter({ text: 'CStream • TMDB Powered' });
+
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel('Regarder sur CStream')
+          .setStyle(ButtonStyle.Link)
+          .setURL(cstreamUrl)
+      );
+
+      return interaction.editReply({ embeds: [embed], components: [row] });
+
+    } catch (err) {
+      console.error(err);
+      return interaction.editReply('❌ Une erreur est survenue lors de la recherche.');
+    }
+  }
+};
+💜 6. Message automatique pour un boost (version premium)
+FR :
+
+💜 Merci pour le boost, {user} !
+Votre soutien aide CStream à évoluer.
+Le rôle Server Booster vous a été attribué.
+
+EN :
+
+💜 Thank you for the boost, {user}!
+Your support helps CStream grow.
+The Server Booster role has been assigned.
+
+🛡️ 7. Message de vérification (DM)
+FR :
+
+✅ Vous êtes maintenant vérifié sur Discord et sur CStream.
+Votre rôle Verified a été ajouté.
+🌐 https://cstream-1--outrra22.replit.app (cstream-1--outrra22.replit.app in Bing)
+
+EN :
+
+✅ You are now verified on Discord and on CStream.
+Your Verified role has been added.
+🌐 https://cstream-1--outrra22.replit.app (cstream-1--outrra22.replit.app in Bing)
+
+🚀 8. Tu veux que je t’améliore quoi ensuite ?
+Je peux te créer :
+
+/trending (tendances TMDB)
+
+/random (film/série/anime aléatoire)
+
+/actor (recherche d’acteurs)
+
+/watch (ouvrir un ID CStream direct)
+
+/anime version Anilist + TMDB
+
+Un système de vérification complet (site → Discord)
+
+Un dashboard admin pour gérer le bot

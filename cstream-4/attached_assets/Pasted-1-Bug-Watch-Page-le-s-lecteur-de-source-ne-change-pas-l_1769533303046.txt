@@ -1,0 +1,189 @@
+1. Bug Watch Page : le sélecteur de source ne change pas la source
+Cause la plus probable
+Ton code fait quelque chose comme :
+
+js
+sourceSelector.addEventListener("change", () => {
+  changeSource(selectedSource);
+});
+Mais selectedSource n’est pas mis à jour, ou bien changeSource n’est pas défini avant l’appel, ou encore le lecteur n’est pas rechargé.
+
+Correction propre
+Assure-toi que ton code ressemble à ceci :
+
+js
+const player = document.getElementById("player");
+const sourceSelector = document.getElementById("sourceSelector");
+
+sourceSelector.addEventListener("change", (e) => {
+  const newSrc = e.target.value;
+  if (!newSrc) return;
+
+  player.src = newSrc;
+  player.load();
+});
+Important
+Si tu utilises un iframe :
+
+js
+document.getElementById("player").src = newSrc;
+Si tu utilises video.js  :
+
+js
+player.src({ src: newSrc, type: "application/x-mpegURL" });
+✅ 2. Watch Page : cliquer sur le lecteur ne fait rien
+Cause
+Tu as probablement un overlay invisible qui bloque les clics.
+
+Exemple :
+
+css
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+→ Ça bloque tout.
+
+Correction
+Ajoute :
+
+css
+.overlay {
+  pointer-events: none;
+}
+Ou supprime l’overlay si inutile.
+
+✅ 3. Live TV : ajouter API 1 / API 2 (beta)
+Tu veux :
+
+API 1 = ton lecteur actuel
+
+API 2 = CDN Live 2 .txt
+
+Structure recommandée
+html
+<button id="api1">API 1</button>
+<button id="api2">API 2 (beta)</button>
+js
+document.getElementById("api1").addEventListener("click", () => {
+  loadLiveTV("api1");
+});
+
+document.getElementById("api2").addEventListener("click", () => {
+  loadLiveTV("api2");
+});
+
+function loadLiveTV(api) {
+  let url;
+
+  if (api === "api1") {
+    url = "/Lecteur media complet/Api Tv live api-master";
+  } else {
+    url = "/Lecteur media complet/CDN LIve 2 .txt";
+  }
+
+  fetch(url)
+    .then(res => res.text())
+    .then(src => {
+      document.getElementById("livePlayer").src = src;
+    });
+}
+❌ 4. Sport : ReferenceError: Cannot access 'fetchMatches' before initialization
+Cause
+Tu fais probablement :
+
+js
+loadMatches();
+const fetchMatches = () => { ... };
+→ Tu appelles la fonction avant de la déclarer.
+
+Correction
+Déclare la fonction AVANT :
+
+js
+const fetchMatches = async () => {
+  // ton code
+};
+
+fetchMatches();
+Ou :
+
+js
+function fetchMatches() {
+  // ton code
+}
+
+fetchMatches();
+❌ 5. Sport API ne renvoie rien
+Causes possibles
+Mauvais endpoint
+
+Mauvaise clé API
+
+Mauvais format JSON
+
+fetch bloqué par CORS
+
+Le fichier Stream Sport API CStream.txt n’est pas lu correctement
+
+Correction recommandée
+js
+async function fetchMatches() {
+  try {
+    const res = await fetch("/Lecteur media complet/Stream Sport API CStream.txt");
+    const url = await res.text();
+
+    const apiRes = await fetch(url);
+    const data = await apiRes.json();
+
+    displayMatches(data);
+  } catch (err) {
+    console.error("Erreur API Sport :", err);
+  }
+}
+🎨 6. Amélioration du thème Watch Page (sans supprimer rien)
+Tu veux :
+
+moins de violet
+
+plus propre
+
+plus premium
+
+Palette recommandée
+Fond : #0d0d0d
+
+Accent : #1f1f1f
+
+Boutons : #2a2a2a
+
+Texte : #ffffff
+
+Accent secondaire : #4a90e2 (bleu premium)
+
+Exemple CSS
+css
+body {
+  background: #0d0d0d;
+  color: #fff;
+}
+
+.selector {
+  background: #1f1f1f;
+  border: 1px solid #2a2a2a;
+  color: #fff;
+}
+
+button {
+  background: #2a2a2a;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+button:hover {
+  background: #4a90e2;
+}

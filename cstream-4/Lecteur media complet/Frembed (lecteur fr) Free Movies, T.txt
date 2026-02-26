@@ -1,0 +1,80 @@
+Free Movies, Tv Shows Streaming API
+API Documentation
+API Endpoints
+Movies Endpoint
+https://api.frembed.best/movies
+Send
+JSON Response:
+Parameter	Description	Required
+limit	results per page (max 100).	no
+page	pagination.	no
+order	sort by: latest, popular, update, year	no
+Examples
+Request to get the latest 100 movies:
+https://api.frembed.best/movies?order=latest&limit=100
+
+Request to get the latest updated movies:
+https://api.frembed.best/movies?order=update&limit=10
+
+Use pagination to get more results:
+https://api.frembed.best/movies?order=latest&limit=100&page=2
+
+Get Movie by TMDB/IMDB ID
+https://api.frembed.best/movies/check?id=
+Send
+JSON Response:
+Parameter	Description	Required
+id	TMDB ID or IMDB ID	no
+Examples
+Get Movie by TMDB/IMDB ID:
+https://api.frembed.best/movies/check?id=695721
+
+TV Episode Endpoint
+https://api.frembed.best/tv
+Send
+JSON Response:
+Parameter	Description	Required
+limit	results per page (max 100).	no
+page	pagination.	no
+order	sort by: latest, popular	no
+Examples
+Request to get the latest 100 TV series:
+https://api.frembed.best/tv?order=latest&limit=100
+
+Use pagination to get more results:
+https://api.frembed.best/tv?order=latest&limit=100&page=2
+
+Check TV Show by ID
+https://api.frembed.best/tv/check?id=
+Send
+JSON Response:
+Parameter	Description	Required
+id	TMDB ID or IMDB ID	yes
+sa	Season number	no
+epi	Episode number	no
+Examples
+Get All Season and Episode For TV Show by TMDB/IMDB ID:
+https://api.frembed.best/tv/check?id=60625
+
+Get All Episode For Specific Season by TMDB/IMDB ID:
+https://api.frembed.best/tv/check?id=60625&sa=1
+
+Get Specific Episode by TMDB/IMDB ID:
+https://api.frembed.best/tv/check?id=60625&sa=7&epi=2
+
+Get Movie Link
+TMDB ID or IMDB ID
+ID
+ex: tt13287846 or 753342
+Submit
+Get Episode Link
+TMDB ID or IMDB ID
+ID
+ex: tt13287846 or 753342
+Season
+Season
+Enter Season Number
+Episode
+Episode
+Enter Episode Number
+Submit

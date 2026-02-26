@@ -1,0 +1,122 @@
+const GUILD_ID = "1444692903439110229";
+const WIDGET_URL = `https://discord.com/api/guilds/${GUILD_ID}/widget.json`;
+const INVITE_URL = "https://discord.gg/YSkhZubt3y";
+const GOAL = 1500;
+
+// Elements
+const serverNameEl = document.getElementById("dw-server-name");
+const onlineCountEl = document.getElementById("dw-online-count");
+const totalCountEl = document.getElementById("dw-total-count");
+const avatarsContainer = document.getElementById("dw-avatars");
+const joinBtn = document.getElementById("dw-join-btn");
+
+const subtitleEl = document.getElementById("dw-subtitle");
+const onlineTextEl = document.getElementById("dw-online-text");
+const membersTextEl = document.getElementById("dw-members-text");
+const footerTextEl = document.getElementById("dw-footer-text");
+const noteEl = document.getElementById("dw-note");
+
+const goalText = document.getElementById("goal-text");
+const goalCount = document.getElementById("goal-count");
+const goalProgress = document.getElementById("goal-progress");
+
+const langFR = document.getElementById("lang-fr");
+const langEN = document.getElementById("lang-en");
+
+let currentLang = "fr";
+
+const TEXT = {
+  fr: {
+    subtitle: "Rejoignez la communauté CStream pour discuter films, séries & anime.",
+    online: "en ligne",
+    members: "membres",
+    footer: "Communauté active, discussions en temps réel.",
+    join: "Rejoindre le serveur",
+    note: "Communauté officielle CStream",
+    goal: "Objectif membres"
+  },
+  en: {
+    subtitle: "Join the CStream community to talk movies, series & anime.",
+    online: "online",
+    members: "members",
+    footer: "Active community, real-time discussions.",
+    join: "Join the server",
+    note: "Official CStream community",
+    goal: "Member goal"
+  }
+};
+
+function applyLang() {
+  const t = TEXT[currentLang];
+  subtitleEl.textContent = t.subtitle;
+  onlineTextEl.textContent = t.online;
+  membersTextEl.textContent = t.members;
+  footerTextEl.textContent = t.footer;
+  joinBtn.textContent = t.join;
+  noteEl.textContent = t.note;
+  goalText.textContent = t.goal;
+
+  langFR.classList.toggle("active", currentLang === "fr");
+  langEN.classList.toggle("active", currentLang === "en");
+}
+
+langFR.onclick = () => { currentLang = "fr"; applyLang(); };
+langEN.onclick = () => { currentLang = "en"; applyLang(); };
+
+async function loadWidget() {
+  try {
+    const res = await fetch(WIDGET_URL);
+    const data = await res.json();
+
+    serverNameEl.textContent = data.name;
+
+    const online = data.presence_count ?? 0;
+    const total = data.members?.length ?? online;
+
+    onlineCountEl.textContent = online;
+    totalCountEl.textContent = total;
+
+    // Progression bar
+    const percent = Math.min((total / GOAL) * 100, 100);
+    goalProgress.style.width = percent + "%";
+    goalCount.textContent = `${total} / ${GOAL}`;
+
+    if (total >= GOAL) {
+      goalProgress.style.background = "linear-gradient(90deg, #3dffb0, #6affd1)";
+    }
+
+    // Avatars
+    avatarsContainer.innerHTML = "";
+    const members = data.members.slice(0, 7);
+
+    members.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "dw-avatar";
+
+      if (m.avatar_url) {
+        const img = document.createElement("img");
+        img.src = m.avatar_url;
+        div.appendChild(img);
+      } else {
+        div.textContent = m.username[0].toUpperCase();
+      }
+
+      avatarsContainer.appendChild(div);
+    });
+
+    if (data.members.length > 7) {
+      const more = document.createElement("div");
+      more.className = "dw-avatar";
+      more.textContent = `+${data.members.length - 7}`;
+      avatarsContainer.appendChild(more);
+    }
+
+    joinBtn.href = data.instant_invite || INVITE_URL;
+
+  } catch (err) {
+    console.error("Erreur widget Discord :", err);
+  }
+}
+
+applyLang();
+loadWidget();

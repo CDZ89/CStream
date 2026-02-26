@@ -1,0 +1,267 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Sparkles, Bot, Image, Video, Music, Code, Pencil, FileText, BookOpen, Lightbulb, Wrench } from 'lucide-react';
+import { sendMessage, Message as GroqMessage } from '../../services/groqService';
+import { motion, AnimatePresence } from 'motion/react';
+
+interface ChatAreaProps {
+  isDark: boolean;
+  isExpertMode: boolean;
+}
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+const categories = [
+  {
+    name: 'Création',
+    icon: Sparkles,
+    tools: [
+      { icon: Image, label: 'Image', prompt: 'Génère une image de' },
+      { icon: Video, label: 'Video', prompt: 'Crée une vidéo de' },
+      { icon: Music, label: 'Audio', prompt: 'Compose un audio de' },
+      { icon: Code, label: 'Code', prompt: 'Écris du code pour' },
+    ],
+  },
+  {
+    name: 'Intelligence',
+    icon: Lightbulb,
+    tools: [
+      { icon: BookOpen, label: 'Education', prompt: 'Explique-moi' },
+      { icon: Wrench, label: 'Solver', prompt: 'Résous ce problème:' },
+    ],
+  },
+  {
+    name: 'Outils',
+    icon: Pencil,
+    tools: [
+      { icon: Pencil, label: 'Writing', prompt: 'Rédige un texte sur' },
+      { icon: FileText, label: 'Summarize', prompt: 'Résume ceci:' },
+    ],
+  },
+];
+
+export function ChatArea({ isDark, isExpertMode }: ChatAreaProps) {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || isStreaming) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message,
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setMessage('');
+    setIsStreaming(true);
+
+    const aiMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: '',
+    };
+
+    setMessages(prev => [...prev, aiMessage]);
+
+    const groqMessages: GroqMessage[] = [
+      ...messages.map(m => ({ role: m.role, content: m.content })),
+      { role: 'user', content: message },
+    ];
+
+    try {
+      await sendMessage(groqMessages, (chunk) => {
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === aiMessage.id
+              ? { ...m, content: m.content + chunk }
+              : m
+          )
+        );
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === aiMessage.id
+            ? { ...m, content: 'Erreur lors de la génération de la réponse.' }
+            : m
+        )
+      );
+    } finally {
+      setIsStreaming(false);
+    }
+  };
+
+  const handleToolClick = (prompt: string) => {
+    setMessage(prompt + ' ');
+  };
+
+  const categoriesToShow = isExpertMode ? categories : categories.slice(0, 2);
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden relative">
+      {/* Background with subtle effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a12] via-[#141420] to-[#1a1a28]" />
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, rgba(139,92,246,0.15) 1px, transparent 1px)',
+          backgroundSize: '50px 50px',
+        }}
+      />
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto relative z-10 px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {messages.length === 0 ? (
+            <>
+              {/* Welcome Message - BIGGER */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center mt-24 mb-16"
+              >
+                <h1 className="text-5xl font-light text-white tracking-tight mb-3">
+                  Hello, I'm{' '}
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent font-medium">
+                    CAi
+                  </span>
+                </h1>
+                <p className="text-sm text-white/40 font-light">
+                  How can I make things easier for you?
+                </p>
+              </motion.div>
+
+              {/* Categories - More Spacious */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="space-y-10"
+              >
+                {categoriesToShow.map((category, idx) => (
+                  <div key={idx}>
+                    <div className="flex items-center gap-2 mb-4 px-1">
+                      <category.icon className="w-4 h-4 text-white/30" />
+                      <h2 className="text-xs text-white/30 font-medium uppercase tracking-widest">
+                        {category.name}
+                      </h2>
+                    </div>
+                    <div className={`grid gap-3 ${isExpertMode ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3'}`}>
+                      {category.tools.map((tool, toolIdx) => (
+                        <motion.button
+                          key={toolIdx}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.1 + toolIdx * 0.05 }}
+                          onClick={() => handleToolClick(tool.prompt)}
+                          className="group relative bg-white/[0.02] backdrop-blur-sm rounded-xl py-5 px-4 text-xs hover:bg-white/[0.04] transition-all duration-300 border border-white/[0.03] hover:border-white/10 overflow-hidden"
+                        >
+                          {/* Subtle gradient on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-purple-500/0 group-hover:from-blue-500/5 group-hover:to-purple-500/5 transition-all duration-300" />
+                          
+                          <div className="relative flex flex-col items-center gap-3">
+                            <div className="p-2.5 rounded-lg bg-white/[0.03] group-hover:bg-white/[0.06] transition-all duration-300">
+                              <tool.icon className="w-5 h-5 text-white/40 group-hover:text-white/70 transition-colors" />
+                            </div>
+                            <span className="text-white/50 group-hover:text-white/80 transition-colors font-medium tracking-wide">
+                              {tool.label}
+                            </span>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {!isExpertMode && (
+                  <div className="text-center">
+                    <p className="text-xs text-white/30">
+                      Activez le mode Expert pour plus d'outils
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            </>
+          ) : (
+            <AnimatePresence>
+              {messages.map((msg, idx) => (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex gap-4 ${
+                    msg.role === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="flex items-start justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex-shrink-0 shadow-xl shadow-blue-500/20">
+                      <Bot className="w-4 h-4 text-white mt-2" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[75%] px-5 py-3 rounded-2xl ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20'
+                        : 'bg-white/[0.03] backdrop-blur-sm text-white/90 border border-white/[0.05] shadow-sm'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {msg.content}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+              <div ref={messagesEndRef} />
+            </AnimatePresence>
+          )}
+        </div>
+      </div>
+
+      {/* Input Area - Cleaner & Floating */}
+      <div className="relative z-20 p-6 pb-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 bg-white/[0.03] backdrop-blur-xl rounded-full px-6 py-3 border border-white/[0.08] shadow-2xl hover:border-white/15 transition-all duration-300">
+            <button className="text-white/30 hover:text-white/60 transition-colors">
+              <Sparkles className="w-4 h-4" />
+            </button>
+            <input
+              type="text"
+              placeholder="Message CAi..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              disabled={isStreaming}
+              className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-white/30"
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={isStreaming || !message.trim()}
+              className="flex items-center justify-center w-9 h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-full transition-all shadow-lg hover:shadow-xl hover:shadow-blue-500/30 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

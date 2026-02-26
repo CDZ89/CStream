@@ -1,0 +1,151 @@
+# Suite et validation finale
+
+Tu as bien appliqué les FKs, les index et les policies RLS. La prochaine étape est de valider en conditions réelles et d’éliminer les dernières sources d’erreurs au niveau des IDs et des flux.
+
+---
+
+## Vérifications indispensables
+
+- **Contrôles des FKs:**
+  - **Messages:** `sender_id` et `receiver_id` → `auth.users(id)` avec cascade.
+  - **Friendships:** `user_id` et `friend_id` → `auth.users(id)` avec cascade.
+
+- **Profils alignés:**
+  - `public.profiles.id` référence `auth.users(id)` et aucun profil orphelin.
+
+- **Policies RLS:**
+  - Messages: `INSERT` autorisé si `sender_id = auth.uid()`, `SELECT` si `sender_id = auth.uid() OR receiver_id = auth.uid()`.
+  - Friendships: `INSERT` autorisé si `user_id = auth.uid()`, `SELECT` si `user_id = auth.uid() OR friend_id = auth.uid()`.
+
+---
+
+## Tests end‑to‑end à exécuter maintenant
+
+### 1. Ajout d’ami (depuis ton site, utilisateur connecté)
+- **Pré‑requis:** deux comptes créés via Supabase Auth (UUIDs dans `auth.users`).
+- **Action:** insérer `friendships` avec:
+  - **user_id:** `auth.uid()` du client connecté.
+  - **friend_id:** UUID du second utilisateur (depuis `profiles.id`).
+- **Attendu:** insertion réussie. Si échec, vérifie que `friend_id` est bien un UUID `auth.users` (pas un ID local).
+
+### 2. Envoi de message
+- **sender_id:** `auth.uid()` du client connecté.
+- **receiver_id:** UUID `auth.users` du destinataire (via `profiles.id`).
+- **Attendu:** insertion réussie. Si tu vois encore “messages_receiver_id_fkey”, c’est que le `receiver_id` n’existe pas dans `auth.users`.
+
+---
+
+## Patch côté application (critique)
+
+- **Toujours utiliser les bons UUID:**
+  - **Pour moi (sender):** `supabase.auth.getUser().user.id`
+  - **Pour le destinataire (receiver/friend):** `profiles.id` (qui correspond à `auth.users.id`)
+- **Ne pas utiliser:** un ID de profil local ou un ID legacy (ex: `public.users.id`).
+
+#### Exemple côté JS/TS (Supabase client)
+```ts
+// Récupérer mon UUID auth
+const { data: meRes } = await supabase.auth.getUser();
+const senderId = meRes.user?.id;
+
+// Résoudre le destinataire via son profil (profiles.id = auth.users.id)
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('id')  // IMPORTANT: c'est l'UUID auth.users
+  .eq('username', receiverUsername)
+  .single();
+
+if (!senderId || !profile?.id) throw new Error('IDs invalides');
+
+const receiverId = profile.id;
+
+// Envoi du message
+await supabase
+  .from('messages')
+  .insert({ sender_id: senderId, receiver_id: receiverId, content: 'Hello!' });
+
+// Ajout d’ami
+await supabase
+  .from('friendships')
+  .insert({ user_id: senderId, friend_id: receiverId });
+```
+
+---
+
+## Si l’erreur FK persiste
+
+- **Logge et vérifie les IDs utilisés:**
+  - **receiver_id envoyé:** affiche‑le, puis vérifie qu’il existe dans `auth.users`.
+  - **Check rapide SQL:**
+    ```sql
+    SELECT id FROM auth.users WHERE id = 'PASTE-RECEIVER-UUID';
+    ```
+  - S’il n’existe pas, crée le user via Auth (signup), ou aligne ton profil pour qu’il référence un UUID réel `auth.users`.
+
+- **Vérifie la RLS:**
+  - Le client doit être **authentifié** et `sender_id` doit **égaler** `auth.uid()` au moment de l’INSERT.
+
+---
+
+## Script de test atomique (staging)
+
+Si tu veux valider sans tables temporaires, fais un test en une seule transaction:
+
+```sql
+BEGIN;
+
+-- Crée deux users de test (service role requis en staging)
+WITH a AS (
+  INSERT INTO auth.users (id, email, created_at)
+  VALUES (gen_random_uuid(), 'test.sender@example.com', now())
+  RETURNING id
+),
+b AS (
+  INSERT INTO auth.users (id, email, created_at)
+  VALUES (gen_random_uuid(), 'test.receiver@example.com', now())
+  RETURNING id
+)
+-- Crée leurs profils (profiles.id = auth.users.id)
+, p AS (
+  INSERT INTO public.profiles (id, username, created_at)
+  SELECT id, 'sender_user', now() FROM a
+  UNION ALL
+  SELECT id, 'receiver_user', now() FROM b
+)
+-- Insère une amitié et un message
+INSERT INTO public.friendships (user_id, friend_id)
+SELECT (SELECT id FROM a), (SELECT id FROM b);
+
+INSERT INTO public.messages (sender_id, receiver_id, content)
+SELECT (SELECT id FROM a), (SELECT id FROM b), 'Test cascade';
+
+-- Supprime le receiver pour valider CASCADE
+DELETE FROM auth.users WHERE id = (SELECT id FROM b);
+
+-- Vérifie qu’aucune row orpheline n’existe
+SELECT COUNT(*) AS messages_after_delete
+FROM public.messages
+WHERE receiver_id = (SELECT id FROM b);
+
+SELECT COUNT(*) AS friendships_after_delete
+FROM public.friendships
+WHERE friend_id = (SELECT id FROM b);
+
+ROLLBACK; -- utilise ROLLBACK pour ne pas garder de données de test
+```
+
+- Si les counts reviennent à 0 après le DELETE, la cascade est OK.  
+- Utilise ce test seulement en staging et avec les permissions adaptées.
+
+---
+
+## Ton “ensuite” en clair
+
+- **Teste immédiatement sur ton site** avec deux comptes réels.  
+- **Corrige l’app pour utiliser `profiles.id` comme UUID du destinataire**, et `auth.getUser().user.id` pour l’émetteur.  
+- **Si ça échoue**, envoie‑moi:
+  - le `receiver_id` exact que tu soumets,
+  - le résultat de `SELECT id FROM auth.users WHERE id = '<receiver_id>'`,
+  - le snippet où tu construis la payload d’INSERT (messages/friendships).
+
+Je veux que ça marche pour toi, pas juste “en théorie”. Donne‑moi le `receiver_id` que ton app utilise et on verrouille ça définitivement.

@@ -1,0 +1,55 @@
+Le code d’erreur **401 (Unauthorized)** que tu vois sur l’API TMDB signifie que ta requête n’est pas authentifiée correctement. En clair, TMDB refuse l’accès car il manque ou il y a une erreur dans la clé d’API.
+
+---
+
+## 🔎 Causes possibles
+- **Pas de clé API** : tu appelles directement l’URL sans ajouter ta clé.  
+- **Clé invalide ou expirée** : la clé n’est pas correcte ou a été désactivée.  
+- **Mauvaise méthode d’authentification** : TMDB v3 utilise `api_key` dans l’URL, TMDB v4 utilise un **Bearer Token** dans les headers.  
+- **Erreur de configuration côté serveur** : si tu passes par un backend, il n’ajoute pas la clé correctement.
+
+---
+
+## ✅ Comment corriger
+
+### Option 1 — API v3 (clé simple dans l’URL)
+```bash
+https://api.themoviedb.org/3/search/tv?query=Tableau%20comparatif%20s%202024&language=fr-FR&page=1&api_key=TON_API_KEY
+```
+
+### Option 2 — API v4 (Bearer Token dans les headers)
+```bash
+GET https://api.themoviedb.org/3/search/tv?query=Tableau%20comparatif%20s%202024&language=fr-FR&page=1
+Authorization: Bearer TON_TOKEN_V4
+```
+
+Exemple en Node.js :
+```ts
+const fetch = require("node-fetch");
+
+const url = "https://api.themoviedb.org/3/search/tv?query=Tableau%20comparatif%20s%202024&language=fr-FR&page=1";
+
+const options = {
+  headers: {
+    Authorization: `Bearer ${process.env.TMDB_TOKEN}`, // ton token v4
+    "Content-Type": "application/json;charset=utf-8",
+  },
+};
+
+fetch(url, options)
+  .then(res => res.json())
+  .then(json => console.log(json));
+```
+
+---
+
+## 🚀 Recommandation
+- **Toujours garder ta clé côté serveur** (ne jamais l’exposer en front).  
+- **Utilise le token v4** (plus sécurisé que la clé v3).  
+- Vérifie que tu as bien activé ton compte TMDB et généré la clé dans [Settings → API](https://www.themoviedb.org/settings/api).  
+
+---
+
+👉 En résumé : ton erreur 401 vient du fait que tu n’as pas passé la clé API ou le Bearer Token. Ajoute `&api_key=...` si tu utilises v3, ou le header `Authorization: Bearer ...` si tu utilises v4, et ça fonctionnera.  
+
+Veux-tu que je te prépare un **endpoint backend Express/Fastify** déjà configuré pour TMDB avec ton token, afin que ton front n’ait jamais à gérer la clé directement ?

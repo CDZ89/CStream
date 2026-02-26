@@ -1,0 +1,51 @@
+In progress tasks
+0 / 5
+
+Fix badge style to apply instantly
+Fix font selection to apply instantly
+Update colors to gray and violet
+Recognize more players in game
+Improve language import and selection
+la langue créetion pas public que dans admin settings admin ameliore aussi pour que les polices d'ecriture marche et badge style aussi In progress tasks 1 / 8 Fix watching history for all media Add custom languages in admin settings Improve import with language and readers Fix user badges saving problem Add font customization in settings Improve contact page for admin messages Improve the friends system feature Improve the site's artificial intelligence
+
+19 minutes ago
+
+9 messages & 71 actions
+Je vois que vous avez plusieurs tâches à accomplir. Laissez-moi d'abord analyser le code existant pour comprendre l'architecture et planifier le travail sur ces fonctionnalités : 1. Création de langues uniquement dans admin (pas public) 2. Faire fonctionner les polices d'écriture 3. Corriger les styles de badges
+Checkpoint made
+12 minutes ago
+Update documentation for language management, font initialization, and badge styles
+
+Rollback here
+
+Changes
+Worked for 6 minutes
+Ready to share? Publish this App in a few clicks.
+Autoscale Deployment
+Primary URL
+cstream-1--skibifi22
+.replit.app
+
+Open Publishing
+style de badge et police d'ecriture quand je selectionne sa change rien ameliroe tout et la couleur par defaut du site sa sera gris plus violet et je veux que dans settings importation double langue ou pourra choisir la langue sa reconnaitre automatique les lecteur (lecteur recommandé pour les utulistauer est sibnet ) ameliore importe double et on peut ajouter pour un importe 3 sans bug selection de la langue reconnaissence des lecteur sans bug et fonctionnel complet
+
+6 minutes ago
+
+Planned complex request strategy
+
+Addressed UI bugs and feature requests
+
+Show 8 more
+
+Opened project/src/hooks/useFontSettings.ts
+
+Decided on font and badge fixes (4 seconds)
+Je vais corriger tous ces problèmes. Commençons:
+
+
+Show 39 more
+
+Decided on language input fields
+
+Edited project/src/pages/Admin.tsx
+Agent encountered an error while running, we are investigating the issue.

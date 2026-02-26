@@ -1,0 +1,312 @@
+# Agent autonome pour CStream de A à Z
+
+Tu veux un agent vraiment autonome, avec qui tu peux parler, qui exécute tes commandes sans bug, et qui gère tout le cycle (code, déploiement, mises à jour, notifications). Voici une implémentation complète et pragmatique, du design à la prod.
+
+---
+
+## Architecture du système
+
+- **Modules principaux:**
+  - **Agent core:** boucle de décision, interprétation des commandes, planification des tâches.
+  - **NLP & commandes:** analyse du texte, mappage vers des actions (CRUD, import, déploiement).
+  - **Connecteurs:** GitHub (CI/CD), Supabase (Auth/DB/Storage), Discord (notif), Lecteur vidéo (proxy/API).
+  - **Admin Panel:** interface pour parler à l’agent, valider/refuser, suivre les logs et l’état.
+  - **Orchestrateur CI/CD:** GitHub Actions pour tests, build, déploiement, changelog, notifications.
+
+- **Flux de bout en bout:**
+  - **Tu parles →** Admin Panel envoie la commande à l’Agent core.
+  - **Agent planifie →** vérifications, simulation, plan de tâches.
+  - **Agent exécute →** modifie code/DB, commit + push → pipeline → déploiement.
+  - **Agent informe →** met à jour widget Update + Discord + Admin Panel.
+
+---
+
+## Fonctionnalités clés de l’agent
+
+- **Compréhension des commandes:**
+  - **Actions supportées:** importer URLs, créer/modifier pages, changer logo, gérer catégories, lancer déploiement, rollback, générer changelog.
+  - **Format libre:** langage naturel en français, avec validations et questions de clarification si besoin.
+
+- **Sécurité et fiabilité:**
+  - **Vérifications pré-exécution:** permissions de l’admin, tokens valides, tests rapides.
+  - **Sandbox/branche de travail:** crée une branche pour modifications risquées, ouvre PR si “mode sécurisé”.
+  - **Rollback automatique:** si déploiement échoue, retour à la version précédente.
+  - **Journalisation complète:** trace chaque action avec contexte et résultat.
+
+- **Synchronisation:**
+  - **CI/CD:** tests → build → déploiement → changelog → notif Discord → widget Update.
+  - **Statut en temps réel:** Admin Panel affiche l’état de chaque tâche et les logs.
+
+---
+
+## Mise en place technique
+
+### Admin Panel (front)
+
+- **Vue principale:**
+  - **Chat agent:** champ de saisie + historique, tags d’état (Planifié, En cours, Terminé).
+  - **Widgets clés:** version, builds récents, nombre d’imports, erreurs.
+  - **Contrôles rapides:** Déployer, Rollback, Purger cache, Regénérer changelog.
+
+- **UX et performance:**
+  - **Notifications temps réel:** WebSocket ou Supabase Realtime.
+  - **Raccourcis:** “/deploy”, “/rollback v1.23”, “/import URL …”, “/create page …”.
+  - **Prévisualisation:** avant commit, l’agent affiche les diffs et te demande validation (mode sécurisé).
+
+### API agent (backend)
+
+- **Endpoints:**
+  - **POST /agent/command:** reçoit une commande, crée une “Task” avec état.
+  - **GET /agent/tasks:** liste et statut des tâches.
+  - **POST /agent/approve:** valide une action nécessitant confirmation (ex. déploiement prod).
+  - **POST /agent/dispatch:** déclenche le workflow GitHub Actions (workflow_dispatch).
+  - **GET /agent/status:** version courante, dernier déploiement, santé des services.
+
+- **Logique interne (Agent core):**
+  - **Parser commandes:** détecte intent, entités (URL, page, version).
+  - **Planificateur:** crée un plan en étapes (ex. code → test → commit → push → deploy).
+  - **Exécuteur:** lance scripts (import, build, deploy), gère erreurs et retries.
+  - **Persistant:** stocke historique dans DB (Supabase) pour traçabilité.
+
+### Intégrations
+
+- **GitHub Actions:**
+  - **Workflow:** checkout → lint/test → build → deploy → generate update.json → commit/push → notify Discord.
+  - **Secrets:** GITHUB_TOKEN, DISCORD_WEBHOOK. Ne jamais exposer en clair.
+
+- **Supabase (Auth/DB/Storage):**
+  - **Auth admin:** RLS stricte, MFA pour comptes admin.
+  - **Tables agent:**
+    - **commands:** id, author_id, text, status, created_at.
+    - **tasks:** id, command_id, type, status, logs, started_at, finished_at.
+    - **versions:** id, tag, changelog, deployed_at, success.
+  - **Storage:** logos/images publiques avec cache long; vidéos privées avec URLs signées.
+
+- **Discord:**
+  - **Messages:** “Déploiement v1.27 réussi”, erreurs, imports massifs, changelogs formatés.
+
+---
+
+## Fichiers et scripts indispensables
+
+### Workflow GitHub Actions
+
+```yaml
+# .github/workflows/cstream.yml
+name: CStream CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Test
+        run: npm test --if-present
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        run: npm run deploy
+
+      - name: Generate update.json
+        run: |
+          VERSION="v${{ github.run_number }}"
+          cat > update.json <<EOF
+          {
+            "version": "${VERSION}",
+            "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "changes": [
+              "Corrections: stabilité lecteur",
+              "Améliorations: temps de chargement",
+              "Nouveautés: panneau admin extensions"
+            ]
+          }
+          EOF
+
+      - name: Commit & push changelog
+        run: |
+          git config --global user.email "bot@cstream"
+          git config --global user.name "CStream Agent Bot"
+          git add update.json
+          git commit -m "chore: update changelog ${VERSION}" || true
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/<owner>/<repo>.git HEAD:main
+
+      - name: Notify Discord
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            📢 Mise à jour CStream ${VERSION}
+            ✅ Corrections : stabilité lecteur
+            🚀 Améliorations : temps de chargement
+            🛠️ Nouveautés : panneau admin extensions
+```
+
+### API Agent (exemple Node/Express)
+
+```js
+// server/agent.js
+import express from 'express';
+import { nanoid } from 'nanoid';
+import fetch from 'node-fetch';
+
+const app = express();
+app.use(express.json());
+
+const tasks = new Map(); // remplace par DB Supabase en prod
+
+function planFromCommand(text) {
+  if (/^\/deploy/.test(text)) return { type: 'deploy', steps: ['dispatch'] };
+  if (/^\/rollback/.test(text)) return { type: 'rollback', steps: ['git-reset', 'dispatch'] };
+  if (/^\/import\s+/i.test(text)) return { type: 'import', steps: ['validate-url', 'save-db'] };
+  if (/^\/logo\s+/i.test(text)) return { type: 'logo', steps: ['upload-storage', 'commit'] };
+  return { type: 'code-change', steps: ['apply-change', 'commit', 'push', 'dispatch'] };
+}
+
+app.post('/agent/command', async (req, res) => {
+  const { text, userId } = req.body;
+  const id = nanoid();
+  const plan = planFromCommand(text);
+  tasks.set(id, { id, text, userId, status: 'queued', plan, logs: [] });
+  res.json({ id, status: 'queued', plan });
+  // Option: démarrer l'exécution async ici
+});
+
+app.post('/agent/dispatch', async (req, res) => {
+  const { owner, repo, token } = req.body;
+  const url = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/cstream.yml/dispatches`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+    body: JSON.stringify({ ref: 'main' })
+  });
+  res.json({ ok: r.status === 204 });
+});
+
+app.get('/agent/tasks', (req, res) => {
+  res.json([...tasks.values()]);
+});
+
+app.listen(3002, () => console.log('Agent API running on :3002'));
+```
+
+### Proxy vidéo robuste
+
+```js
+// server/video-proxy.js
+import express from 'express';
+import fetch from 'node-fetch';
+
+const app = express();
+app.get('/video/source', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'missing url' });
+  try {
+    const head = await fetch(url, { method: 'HEAD' });
+    const ct = head.headers.get('content-type') || '';
+    const type = ct.includes('mpegurl') || url.endsWith('.m3u8') ? 'hls'
+               : ct.includes('dash+xml') || url.endsWith('.mpd') ? 'dash'
+               : ct.includes('mp4') || url.endsWith('.mp4') ? 'mp4'
+               : 'unknown';
+    if (type === 'unknown') return res.status(415).json({ error: 'unsupported' });
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    res.json({ type, src: url });
+  } catch {
+    res.status(504).json({ error: 'timeout' });
+  }
+});
+app.listen(3003);
+```
+
+---
+
+## Sécurité, fiabilité et anti‑bug
+
+- **Secrets et permissions:**
+  - **GITHUB_TOKEN, DISCORD_WEBHOOK, SUPABASE_SERVICE_ROLE_KEY** dans secrets/variables d’environnement.
+  - **RLS Supabase:** seules les actions admin passent; audit de chaque action.
+
+- **Tests et validations:**
+  - **Unitaires:** parser de commandes, adaptateurs GitHub, import URLs.
+  - **E2E:** commande → plan → commit → push → déploiement → widget Update.
+  - **Canary/preview:** déployer sur un environnement de préproduction pour valider.
+
+- **Observabilité:**
+  - **Sentry/LogRocket:** erreurs front.
+  - **Logs agent:** états, temps d’exécution, erreurs, retries.
+  - **Alertes:** latence pipeline, taux d’échec import/déploiement.
+
+- **Robustesse:**
+  - **Retry/backoff:** 3 tentatives sur réseau/CI.
+  - **Circuit breaker:** désactive temporairement une action instable (ex. import massif).
+  - **Rollback auto:** si build ou déploiement échoue.
+
+---
+
+## Expérience de conversation avec l’agent
+
+- **Guides de commande:**
+  - **/deploy:** lance le workflow.
+  - **/rollback v1.26:** revient à une version.
+  - **/import https://…:** ajoute une source vidéo.
+  - **/logo ./path:** met à jour le logo (via Storage).
+  - **/create page FAQ:** crée ou modifie une page.
+
+- **Comportement de l’agent:**
+  - **Clarification:** s’il manque une info, il demande précisément ce qu’il faut.
+  - **Résumé avant exécution:** montre le plan et attend validation si “mode sécurisé”.
+  - **Feedback clair:** succès/échec avec logs, liens vers build et changelog.
+
+---
+
+## Déploiement et scalabilité
+
+- **Hébergement recommandé:**
+  - **Front:** Vercel/Netlify/Cloudflare Pages.
+  - **Agent/API:** Node sur Fly.io/Render/Docker + autoscaling.
+  - **DB/Storage:** Supabase (auth, DB, storage) + CDN pour assets publics.
+
+- **Cache & CDN:**
+  - **Brotli + cache long** pour assets versionnés.
+  - **ETag/Last-Modified** pour API de liste.
+  - **Edge Functions** pour vérif tokens et URLs signées (latence minimale).
+
+---
+
+## Checklist finale
+
+- **Admin Panel:** chat + widgets + approvals.
+- **Agent API:** endpoints command/tasks/dispatch + planificateur.
+- **GitHub Actions:** workflow complet CI/CD + changelog + Discord.
+- **Supabase:** tables commands/tasks/versions + RLS + Storage.
+- **Proxy vidéo:** validation formats + cache + fallback.
+- **Sécurité:** secrets, MFA admin, audit logs.
+- **Tests/CI:** unitaires + e2e + previews.
+- **Monitoring:** Sentry + alertes + logs centralisés.
+
+Si tu me donnes ta stack (React/Next/Vue/Svelte) et ton hébergeur, je t’envoie les snippets front (composant Chat + hooks) et le schéma exact des tables Supabase pour brancher l’agent en une fois.

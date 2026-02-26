@@ -1,0 +1,64 @@
+Parfait, tu veux **héberger ton site React/Vite gratuitement** avec une URL propre du style `CStream.exemple...` et t’assurer que les dépendances s’installent correctement sans bug. Voici un guide clair et complet 👇
+
+---
+
+## 🌐 Hébergement gratuit pour un site Vite/React
+Les options les plus simples et fiables :
+
+- **Vercel**  
+  - Déploiement ultra rapide pour projets React/Vite.  
+  - URL gratuite du type `cstream.vercel.app`.  
+  - Auto‑installation des dépendances (`npm install` ou `pnpm install`).  
+  - CI/CD intégré : chaque push sur GitHub déclenche un build.
+
+- **Netlify**  
+  - URL gratuite du type `cstream.netlify.app`.  
+  - Support natif de Vite.  
+  - Interface simple pour configurer les builds.  
+
+- **Render (gratuit pour sites statiques)**  
+  - URL gratuite du type `cstream.onrender.com`.  
+  - Bon pour projets simples, mais moins optimisé que Vercel/Netlify.
+
+---
+
+## ⚙️ Étapes pour déployer ton projet Vite/React
+1. **Préparer ton projet**  
+   - Vérifie ton `package.json` :  
+     ```json
+     {
+       "scripts": {
+         "dev": "vite",
+         "build": "vite build",
+         "preview": "vite preview"
+       }
+     }
+     ```
+   - Assure‑toi que toutes les dépendances sont listées (`react`, `react-dom`, `vite`, etc.).
+
+2. **Push sur GitHub/GitLab**  
+   - Crée un repo et pousse ton code (`git init`, `git add .`, `git commit`, `git push`).
+
+3. **Déployer sur Vercel (exemple)**  
+   - Va sur [vercel.com](https://vercel.com).  
+   - Connecte ton compte GitHub.  
+   - Clique **New Project** → choisis ton repo.  
+   - Build command : `npm run build`  
+   - Output directory : `dist`  
+   - Vercel installe automatiquement les dépendances et build ton projet.
+
+4. **Customiser ton URL**  
+   - Par défaut : `cstream.vercel.app`.  
+   - Tu peux ajouter un domaine gratuit (ex. `cstream.exemple.com`) via un fournisseur DNS gratuit comme [Freenom](https://www.freenom.com) ou utiliser un sous‑domaine offert par Vercel/Netlify.
+
+---
+
+## 🛡️ Anti‑bugs (Vite/React)
+- **Toujours installer avec la même version de Node** (ex. Node 18 LTS).  
+- Supprime `node_modules` et relance `npm install` si tu as des erreurs.  
+- Vérifie que ton `vite.config.js` pointe bien vers `dist` pour le build.  
+- Sur Vercel/Netlify, mets `npm run build` comme commande de build et `dist` comme dossier de sortie.
+
+---
+
+👉 Je peux te préparer un **fichier `vite.config.js` et `package.json` minimal** pour que ton projet soit sûr de builder sans bug sur Vercel/Netlify. Tu veux que je te génère ce squelette prêt‑à‑déployer ?

@@ -1,0 +1,108 @@
+🎨 Page IA — Design détaillé
+🧱 Layout global
+Fond : noir premium (#0a0a0a) avec légères nuances (#111) pour les blocs.
+
+Typographie : Inter / SF Pro, élégante et lisible.
+
+Disposition :
+
+Header fixe minimaliste
+
+Bloc central avec carte IA
+
+Sections détaillées (capacités, actions, intégrations)
+
+Footer discret
+
+🔝 Header
+Logo CStream (monochrome minimaliste).
+
+Titre : Agent CAi en typographie fine.
+
+Navigation réduite : Accueil | Agents | Paramètres.
+
+Fond semi-transparent sombre avec blur subtil.
+
+Hover : glow discret sur les liens.
+
+👤 Carte IA Premium (bloc central)
+Présente l’identité de l’IA :
+
+Code
+🤖 Agent CAi
+🧠 Rôle : Assistant IA avancé
+📌 Contexte : Développement, UI/UX, TMDB, analyse
+⚡ Statut : Actif
+Carte arrondie, fond sombre (#111), bordure fine (#222).
+
+Icône agent (emoji 🤖 ou logo minimaliste).
+
+Texte blanc premium, gris clair pour les détails.
+
+Animation hover : légère élévation + glow discret.
+
+📊 Section Capacités
+Affichage en tableau premium :
+
+Domaine	Description
+🎬 TMDB	Recherche films/séries, cartes médias
+🧩 Code	Génération JS/TS/React/CSS/SQL
+🎨 UI/UX	Composants premium minimalistes
+🌍 Multi-langues	FR, EN, JP, AR, etc.
+🔍 Analyse	Bugs, workflows, optimisations
+Style : bordures fines, alternance de lignes sombres, texte blanc/gris.
+
+🧩 Actions rapides
+Boutons premium minimalistes :
+
+[ ⚡ Lancer une requête ]
+
+[ 🎬 Recherche TMDB ]
+
+[ 🧱 Générer UI ]
+
+[ 🔍 Analyser un bug ]
+
+Style :
+
+Boutons arrondis, fond sombre, texte blanc.
+
+Hover → fond clair + texte noir.
+
+Animation fluide (200ms ease-in-out).
+
+🎬 Section TMDB intégrée
+Grille de cartes médias premium (films/séries).
+
+Chaque carte → affiche, titre, note, genres, résumé, TMDB ID cliquable.
+
+Boutons : [ Voir plus ] [ Sources / Lecture ].
+
+Carrousel horizontal pour tendances et recommandations.
+
+🔐 Section Backend (privée)
+Affiche logs des requêtes IA.
+
+Résultats bruts TMDB (JSON formaté).
+
+Tests de normalisation (tableaux).
+
+Page réservée au créateur/admin.
+
+Style : minimaliste, orienté développeur, mais toujours premium.
+
+🌍 Footer
+Liens : À propos | Contact | API TMDB.
+
+Icônes sociales minimalistes (monochromes).
+
+Fond sombre uniforme, texte gris clair.
+
+✨ Style global
+Couleurs : noir premium (#0a0a0a), gris clair (#aaa), accent bleu électrique (#3b82f6).
+
+Effets : transitions fluides, hover glow subtil, blur pour overlays.
+
+Dark mode natif : tout pensé sombre premium.
+
+Animations : légères élévations, fade-in/out, carrousels fluides.

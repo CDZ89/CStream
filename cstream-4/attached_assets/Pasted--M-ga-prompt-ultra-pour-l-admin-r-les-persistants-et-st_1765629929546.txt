@@ -1,0 +1,169 @@
+# Méga prompt ultra pour l’admin: rôles persistants et statuts “style Discord” sans bug
+
+Copie-colle ce prompt. Il couvre la gestion des rôles et permissions côté admin, leur persistance fiable (ils restent jusqu’au changement ou suppression), la visualisation des statuts en temps réel “comme Discord”, l’audit, la sécurité et des tests pour éviter les régressions.
+
+---
+
+## Objectifs du projet
+
+- **But:** Permettre à l’admin de créer/éditer/attribuer/supprimer des rôles et permissions, voir et filtrer les statuts des membres en temps réel, avec persistance fiable et traçabilité.
+- **Qualités clés:** Cohérence des données, stabilité temps réel, UX claire, sécurité stricte (RBAC), audit complet, performances p95 < 250 ms.
+
+---
+
+## Exigences fonctionnelles
+
+### Gestion des rôles et permissions
+- **Rôles persistants:** un rôle attribué à un utilisateur reste jusqu’à modification explicite ou suppression, jamais perdu sur refresh, reconnexion ou mise à jour.
+- **Hiérarchie et granularité:** rôles système (admin, mod, staff, membre) et rôles custom; permissions atomiques (ex. users.read, users.update, roles.manage, analytics.read).
+- **Attribution multiple:** un utilisateur peut avoir plusieurs rôles; calcul des permissions effectives avec règle “deny > allow”.
+- **Versioning:** chaque changement de rôle/permission est historisé; possibilité de rollback.
+
+### Statuts des membres “type Discord”
+- **Types de statut:** online, idle, dnd, offline, message custom, activité (app/jeu), dernière activité.
+- **Temps réel:** propagation < 1 s via WebSocket/SSE; reconnection avec rattrapage des événements manqués.
+- **Détection inactivité:** seuil configurable (ex. idle après 5 min).
+
+### Administration et visibilité
+- **Dashboard admin:** cartes de synthèse (utilisateurs actifs, statuts, changements de rôles récents, alertes).
+- **Listes et filtres:** filtrer par rôle, permission, statut, date d’inscription, bannis/désactivés.
+- **Audit et recherche:** journal immuable des actions admin (qui a changé quoi, quand, sur qui).
+
+---
+
+## Modèles de données
+
+#### Utilisateurs
+- **Champs:** id (UUID), username, display_name, email, avatar_url, status, status_message, activity_name, last_seen_at, is_banned, is_disabled, created_at, updated_at.
+- **Index:** username unique, email unique, last_seen_at, is_banned.
+
+#### Rôles
+- **Champs:** id (UUID), name (unique), description, priority (int), permissions (JSON array), is_system (bool), created_at, updated_at.
+- **Règles:** priorité aide à résoudre conflits; deny > allow.
+
+#### Liaison utilisateur-rôle
+- **Champs:** id (UUID), user_id (FK), role_id (FK), assigned_by (FK), assigned_at (timestamp), revoked_at (nullable).
+- **Contraintes:** UNIQUE (user_id, role_id, revoked_at IS NULL) pour empêcher doublons actifs.
+
+#### Audit log
+- **Champs:** id, actor_user_id, action (role.create, role.assign, status.update…), target_type (user/role), target_id, payload (JSON), result (success/fail), timestamp, ip, user_agent.
+- **Propriété:** append-only (pas de UPDATE/DELETE).
+
+---
+
+## API et endpoints
+
+### Auth et contrôle d’accès
+- **Middleware RBAC:** vérifier permissions sur chaque requête; calcul des permissions effectives à partir des rôles actifs.
+- **Tokens:** JWT court-terme + refresh; rotation et révocation.
+
+### Rôles
+- **GET /roles:** liste avec permissions, pagination, filtre is_system.
+- **POST /roles:** créer rôle (validations: name unique, permissions connues).
+- **PATCH /roles/{id}:** modifier description/priority/permissions (audit + versioning).
+- **DELETE /roles/{id}:** supprimer (interdire si is_system=true; option “soft delete”).
+- **GET /roles/{id}/history:** versions et diffs.
+
+### Attribution de rôles
+- **POST /users/{id}/roles:** assigner (role_id, reason); transaction atomique; retour set effectif.
+- **DELETE /users/{id}/roles/{role_id}:** révoquer; garde audit.
+- **GET /users/{id}/roles:** rôles actifs + permissions effectives.
+
+### Statuts/presence
+- **GET /presence:** snapshot des statuts (filtre par rôle, online only).
+- **WS /presence:** subscribe aux updates (presence.update, presence.activity).
+- **POST /users/{id}/status:** changer statut/message/activité; validations; audit.
+
+### Audit et analytics
+- **GET /audit:** filtrer par actor, action, target, date.
+- **GET /analytics/admin:** métriques (utilisateurs actifs, latence, erreurs, changements de rôles/heure).
+
+---
+
+## Flux temps réel et cohérence
+
+- **Transport:** WebSocket prioritaire; fallback SSE; backoff exponentiel; ping/pong health.
+- **Propagations:** pub/sub (ex. Redis) sur événements role.assigned, role.revoked, presence.update; clients admin reçoivent diff minimal.
+- **Idempotence:** request_id pour éviter double application; write-through cache côté serveur.
+- **Ordering:** timestamps monotones; clients gèrent out-of-order via version field.
+
+---
+
+## UI/UX du panel admin
+
+### Dashboard
+- **Cartes:** utilisateurs en ligne, répartition statuts, changements de rôles récents, erreurs/alertes.
+- **Feed temps réel:** événements admin (role.assign, role.revoke, status.update).
+
+### Gestion des rôles
+- **Tableau rôles:** nom, priorité, nb d’utilisateurs, permissions; actions créer/éditer/supprimer.
+- **Éditeur de permissions:** checklist avec descriptions; prévisualisation des permissions effectives pour un utilisateur.
+
+### Liste utilisateurs
+- **Colonnes:** avatar, nom, rôles actifs, permissions effectives (résumé), statut live, dernière activité, actions rapides (assigner/révoquer).
+- **Fiches utilisateur:** onglets “Infos”, “Rôles”, “Historique”, “Audit”.
+
+### Accessibilité et feedback
+- **Accessibilité:** WCAG 2.1 AA, navigation clavier, ARIA labels.
+- **Feedback:** toasts/banque d’états pour succès/erreur; messages clairs et non techniques.
+
+---
+
+## Sécurité, qualité et tests
+
+### Sécurité
+- **RBAC strict:** seules les actions autorisées passent; logs d’accès.
+- **Protection:** rate limiting sur endpoints sensibles; validation schémas (JSON Schema); CSP, CSRF, TLS.
+- **Conformité:** RGPD (export/suppression des données, consentement analytics).
+
+### Tests automatisés
+- **Unitaires:** calcul des permissions effectives (deny > allow, multi-rôle).
+- **Intégration:** assigner/révoquer un rôle → persistance; audit écrit; permissions appliquées immédiatement.
+- **E2E:** admin crée rôle, attribue à utilisateur, utilisateur conserve rôle après refresh/reconnexion; snapshot présence affiche statuts en temps réel.
+- **Charge:** 10k connexions WS; propagation presence.update < 1 s; latence API p95 < 250 ms.
+- **Régression:** suppression rôle n’affecte pas autres rôles; versioning correct.
+
+### Critères d’acceptation
+- **Persistance rôles:** un rôle attribué reste visible et actif jusqu’à action explicite d’admin; aucune perte après redémarrage ou reconnexion.
+- **Statuts live:** mise à jour du statut d’un membre visible en < 1 s pour l’admin et les pages concernées.
+- **Audit complet:** chaque changement de rôle/statut est tracé avec actor, target, payload, timestamp.
+- **Sécurité appliquée:** accès refusé sans permission; erreurs claires.
+
+---
+
+## Exemples de payloads
+
+```json
+// POST /roles
+{
+  "name": "moderator",
+  "description": "Modération et gestion des utilisateurs",
+  "priority": 50,
+  "permissions": ["users.read", "users.update", "moderation.ban", "presence.read"]
+}
+```
+
+```json
+// POST /users/{id}/roles
+{
+  "role_id": "role_moderator",
+  "reason": "Ajout à l'équipe de modération"
+}
+```
+
+```json
+// presence.update (WebSocket event)
+{
+  "type": "presence.update",
+  "user_id": "u_123",
+  "status": "idle",
+  "status_message": "En réunion",
+  "activity_name": "Figma",
+  "last_seen_at": "2025-12-13T12:02:11Z",
+  "version": 17
+}
+```
+
+---
+
+Si tu veux, je peux te fournir le schéma SQL exact (DDL), les validations JSON Schema et un exemple de middleware RBAC pour appliquer les permissions sur tes endpoints. Dis-moi ta stack (Node/Java/.NET, DB, framework front) et je l’adapte.

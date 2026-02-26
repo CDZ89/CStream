@@ -1,0 +1,95 @@
+Tu veux que la langue du site change automatiquement selon le pays de l’utilisateur, sans toucher à ton système actuel, sans supprimer tes sélecteurs, sans modifier tes lecteurs, et sans casser quoi que ce soit.
+
+Et tu veux que ça marche pour :
+
+🇫🇷 France → Français
+
+🇺🇸 USA / 🇬🇧 UK / Canada anglophone → Anglais
+
+🇪🇸 Espagne / Amérique latine → Espagnol
+
+etc.
+
+Et le sélecteur de langue manuel reste disponible.
+
+C’est exactement faisable, proprement, en ajoutant juste une mini‑logique avant le chargement du site.
+
+🌍 🎯 Objectif
+Détecter automatiquement le pays de l’utilisateur.
+
+Choisir automatiquement la langue correspondante.
+
+Charger ton site dans cette langue.
+
+L’utilisateur peut toujours changer la langue manuellement.
+
+Tu ne modifies rien d’autre dans ton site.
+
+🧠 La logique simple et universelle
+Tu ajoutes un petit script qui :
+
+détecte le pays via une API IP (ex : ipapi, ipinfo, geoplugin…)
+
+mappe le pays → langue
+
+applique la langue automatiquement
+
+ne touche pas aux autres éléments du site
+
+💡 Exemple de code ultra simple (à coller tel quel)
+js
+fetch("https://ipapi.co/json/")
+  .then(res => res.json())
+  .then(data => {
+      const country = data.country_code;
+
+      let autoLang = "en"; // langue par défaut
+
+      const map = {
+          "FR": "fr",
+          "BE": "fr",
+          "CH": "fr",
+
+          "US": "en",
+          "GB": "en",
+          "CA": "en",
+          "AU": "en",
+
+          "ES": "es",
+          "MX": "es",
+          "AR": "es",
+          "CO": "es",
+          "CL": "es",
+          "PE": "es",
+          "VE": "es"
+      };
+
+      if (map[country]) {
+          autoLang = map[country];
+      }
+
+      // Applique la langue automatiquement
+      changeLanguage(autoLang);
+  });
+🧩 Fonction changeLanguage()
+Tu l’as déjà dans ton site (puisque tu as un sélecteur de langue).
+Donc tu n’as rien à modifier.
+
+Le script va juste appeler ta fonction existante.
+
+🎯 Résultat final
+Si l’utilisateur est en France → ton site charge en Français
+
+Si l’utilisateur est aux USA → ton site charge en Anglais
+
+Si l’utilisateur est en Espagne → ton site charge en Espagnol
+
+Si l’utilisateur est en Argentine → Espagnol
+
+Si l’utilisateur est au Canada → Anglais (sauf si tu veux gérer Québec → Français)
+
+Le sélecteur manuel continue de fonctionner
+
+Aucun lecteur, aucune page, aucune structure n’est modifiée
+
+C’est exactement ce que tu veux.

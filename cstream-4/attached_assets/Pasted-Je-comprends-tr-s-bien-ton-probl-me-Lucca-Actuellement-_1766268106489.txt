@@ -1,0 +1,55 @@
+Je comprends très bien ton problème, Lucca ⚡. Actuellement ton site **charge directement VidKing** quand tu cliques sur un épisode, alors que tu veux d’abord afficher la **page lecteur / sélection des sources**. C’est une logique de routage et d’état qu’il faut corriger dans ton code React.
+
+---
+
+## 🔎 Ce qui se passe
+- **handleEpisodeClick** déclenche directement le lancement du lecteur VidKing.  
+- Le composant **VideoPlayerSection** initialise `currentSource` trop tôt, sans passer par la sélection.  
+- Résultat : tu vois la notification “Lecture S5E5” mais la page lecteur ne s’affiche pas → rien ne se lance.
+
+---
+
+## ✅ Ce qu’il faut faire
+1. **Séparer les états :**
+   - `selectedEpisode` → l’épisode sur lequel tu as cliqué.  
+   - `showSourceModal` → booléen qui contrôle l’affichage de la page lecteur/sources.  
+   - `currentSource` → défini uniquement après que l’utilisateur a choisi un lecteur.
+
+2. **Corriger handleEpisodeClick :**
+   ```tsx
+   const handleEpisodeClick = (episode) => {
+     setSelectedEpisode(episode);
+     setShowSourceModal(true); // ouvre la page lecteur
+     // ❌ ne pas lancer VidKing directement ici
+   };
+   ```
+
+3. **Afficher la page lecteur (sources modal) :**
+   ```tsx
+   {showSourceModal && selectedEpisode && (
+     <SourceSelectionModal
+       episode={selectedEpisode}
+       onSelectSource={(source) => {
+         setCurrentSource(source);
+         setShowSourceModal(false);
+         setWatchMode(true); // active le vrai lecteur
+       }}
+       onClose={() => setShowSourceModal(false)}
+     />
+   )}
+   ```
+
+4. **Initialisation du lecteur :**
+   - Dans `VideoPlayerSection`, ne choisis pas VidKing par défaut.  
+   - Utilise `currentSource` passé en prop → si null, affiche un message “Choisissez un lecteur”.
+
+---
+
+## 🚀 Résultat attendu
+- Tu cliques sur un épisode → **page lecteur/sources** s’ouvre.  
+- Tu choisis un lecteur (VidKing, StreamSB, etc.) → **VideoPlayerSection** se lance avec ce `currentSource`.  
+- Plus d’erreur, plus de blocage, et l’utilisateur garde le contrôle.
+
+---
+
+👉 Si tu veux, je peux te rédiger un **snippet complet React/Tailwind** qui remplace ton workflow actuel et garantit que **la page lecteur s’affiche avant VidKing**. Tu veux que je te prépare ce code prêt à coller dans ton projet ?

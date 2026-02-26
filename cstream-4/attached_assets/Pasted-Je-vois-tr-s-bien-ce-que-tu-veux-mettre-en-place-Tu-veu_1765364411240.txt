@@ -1,0 +1,97 @@
+Je vois très bien ce que tu veux mettre en place 👍. Tu veux un système **solide et persistant** où :  
+
+1. **Chaque nouvel utilisateur** est enregistré une seule fois (à l’inscription, pas à chaque connexion).  
+2. L’identifiant principal est le **username** (pas l’email).  
+3. Un **message de bienvenue** et les **mises à jour** sont envoyés automatiquement.  
+4. La colonne `role` doit être ajoutée et gérée correctement dans ta base de données.  
+5. Tu veux remplacer ton ancien **webhook Discord** par un **bot Discord** connecté en continu avec ton site/admin.  
+
+---
+
+## 🛠️ Étapes techniques
+
+### 1. Base de données (Supabase / Postgres)
+- Table `users` :  
+  - `id` (UUID ou auto-incrément)  
+  - `username` (unique, obligatoire)  
+  - `role` (FK vers table `roles`)  
+  - `created_at`  
+- Table `roles` :  
+  - `id`  
+  - `name` (Admin, Mod, Premium, etc.)  
+  - `permissions` (JSON ou texte)  
+
+👉 Ajoute la colonne `role` dans `users` :  
+```sql
+ALTER TABLE users ADD COLUMN role_id UUID REFERENCES roles(id);
+```
+
+---
+
+### 2. Inscription avec username
+- Formulaire d’inscription → champ `username` obligatoire.  
+- Vérifie l’unicité (`UNIQUE` constraint).  
+- Pas besoin d’email si tu veux un système basé uniquement sur pseudo.  
+
+---
+
+### 3. Message de bienvenue + mises à jour
+- Crée une **table `updates`** avec : `id`, `title`, `content`, `created_at`.  
+- À chaque inscription → déclenche un **event** qui :  
+  - Envoie un message de bienvenue (via ton bot Discord).  
+  - Ajoute l’utilisateur dans la DB avec son rôle par défaut (ex. `user`).  
+
+---
+
+### 4. Bot Discord (remplace webhook)
+- Utilise **discord.js** (Node.js).  
+- Exemple minimal :  
+
+```js
+const { Client, GatewayIntentBits } = require('discord.js');
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+
+client.once('ready', () => {
+  console.log(`Bot connecté en tant que ${client.user.tag}`);
+});
+
+// Message de bienvenue
+client.on('guildMemberAdd', member => {
+  const channel = member.guild.systemChannel;
+  if (channel) {
+    channel.send(`Bienvenue ${member.user.username} sur le site et Discord !`);
+  }
+});
+
+// Notification de mise à jour
+function notifyUpdate(updateTitle, updateContent) {
+  const channel = client.channels.cache.get('ID_DU_CHANNEL');
+  if (channel) {
+    channel.send(`📢 Nouvelle mise à jour : **${updateTitle}**\n${updateContent}`);
+  }
+}
+
+client.login('TON_TOKEN_DISCORD');
+```
+
+⚠️ **Important** : ne partage jamais ton **token Discord** en public (comme tu viens de le faire). Garde-le dans un fichier `.env` sécurisé et charge-le avec `process.env.DISCORD_TOKEN`.  
+
+---
+
+### 5. Connexion H24
+- Héberge ton bot sur **Railway, Render, Vercel (Edge Functions)** ou un VPS.  
+- Mets un système de **reconnexion automatique** (si crash → restart).  
+- Tu peux utiliser **PM2** ou **Docker** pour garder ton bot actif en continu.  
+
+---
+
+## 🎯 Résultat attendu
+- Nouvel utilisateur → inscrit avec **username**.  
+- Rôle attribué et stocké en DB.  
+- Message de bienvenue envoyé par le bot Discord.  
+- Mises à jour → envoyées automatiquement via le bot.  
+- Admin panel → toujours synchronisé avec la DB et le bot.  
+
+---
+
+👉 Veux-tu que je te prépare un **prompt universel** pour ton IA (comme celui pour les rôles) qui couvre **tout ce workflow** : inscription, rôle, bot Discord, mises à jour, persistance, sécurité ?

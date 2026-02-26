@@ -1,0 +1,101 @@
+🧠 ÉTAPE 1 — Refonte de la structure visuelle globale
+🎨 Fond et ambiance
+Fond principal : linear-gradient(135deg, #0F0F0F, #1C1C1C) + backdrop-filter: blur(12px)
+
+Mode clair : #F9F9F9 + blur(12px) + linear-gradient(135deg, #F8F9FF, #EAF4FF)
+
+Étoiles ou particules : animation subtile en canvas ou SVG, opacité faible
+
+🧩 Layout modulaire
+Zone centrale : centrée, largeur max 720px, padding généreux
+
+Sidebar : rétractable, icônes seules avec tooltip
+
+Header : typographie fine, centré, avec icône animée (sparkle, halo)
+
+💬 ÉTAPE 2 — Bulles de message ultra propres
+💎 Design des bulles
+css
+.bubble {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 10px 14px;
+  max-width: 60%;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #EAEAEA;
+  margin: 8px 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+🧠 IA vs Utilisateur
+IA : alignement gauche, fond flou
+
+Utilisateur : alignement droite, fond accentué rgba(108,108,255,0.1)
+
+Timestamp discret, typographie fine
+
+📜 ÉTAPE 3 — Slide bar historique fluide
+🧩 Composants
+Icônes : Home, Chat, Explore, Settings
+
+Historique : liste verticale, scroll fluide, hover doux
+
+Effets :
+
+transition: all 0.3s ease
+
+hover: background rgba(255,255,255,0.08)
+
+active: border-left accentuée
+
+🧠 Fonctionnalité
+Historique cliquable → recharge la session
+
+Option “épingle” pour garder une session en haut
+
+Mode compact : icônes seules
+
+✨ ÉTAPE 4 — Suggestions interactives et animations
+💡 Suggestions
+css
+.suggestion-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  font-size: 15px;
+  color: #EAEAEA;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+🎬 Animations
+Apparition : fade-in, slide-up
+
+Hover : halo doux, légère expansion
+
+Envoi : onde ou halo autour du bouton
+
+🧠 ÉTAPE 5 — Input bar + comportement intelligent
+🧩 Barre d’envoi
+css
+.input-bar {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+🧠 Fonctionnalités
+Suggestions dynamiques selon historique
+
+Effet “typing” fluide pour l’IA
+
+Mode compact / expert
+
+Accessibilité : navigation clavier, contraste optimisé

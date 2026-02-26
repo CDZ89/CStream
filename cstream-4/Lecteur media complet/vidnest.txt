@@ -1,0 +1,103 @@
+vidnest 
+ 
+API DOCUMENTATION
+Embed Movies
+TmdbId is required from The Movie Database API.
+
+https://vidnest.fun/movie/[TMDB_ID]
+
+Code Example
+
+<iframe src="https://vidnest.fun/movie/666243" frameBorder="0" scrolling="no" allowFullScreen></iframe>
+
+Embed Shows
+TmdbId is required from The Movie Database API. Season and episode number should not be empty.
+
+https://vidnest.fun/tv/[TMDB_ID]/[SEASON]/[EPISODE]
+
+Code Example
+
+<iframe src="https://vidnest.fun/tv/94997/1/1" frameBorder="0" scrolling="no" allowFullScreen></iframe>
+
+Embed Anime
+AnilistId is required. Episode number and sub/dub preference should be specified.
+
+https://vidnest.fun/anime/[ANILIST_ID]/[EPISODE]/[SUB_OR_DUB]
+
+Code Example
+
+<iframe src="https://vidnest.fun/anime/154587/1/hindi" frameBorder="0" scrolling="no" allowFullScreen></iframe>
+
+Embed AnimePahe
+AnilistId is required. Episode number and sub/dub preference should be specified.
+
+https://vidnest.fun/animepahe/[ANILIST_ID]/[EPISODE]/[SUB_OR_DUB]
+
+Code Example
+
+<iframe src="https://vidnest.fun/animepahe/16498/1/sub" frameBorder="0" scrolling="no" allowFullScreen></iframe>
+
+Query Parameters
+Customize playback using query params.
+
+startAt / progress
+Start playback at N seconds from the beginning.
+
+https://vidnest.fun/movie/666243?startAt=120
+
+https://vidnest.fun/tv/94997/1/1?progress=90
+
+server
+Force an initial server. Allowed values: lamda, primesrc, sigma, alfa, beta, gama, catflix, hexa, delta.
+
+https://vidnest.fun/movie/666243?server=gama
+
+https://vidnest.fun/tv/94997/1/1?server=alfa
+
+Combined Example
+
+<iframe src="https://vidnest.fun/movie/666243?server=gama&startAt=100" frameBorder="0" scrolling="no" allowFullScreen></iframe>
+
+Hide Controls (by query)
+Pass control names as query params with values like hide, false, 0, off, or empty to hide.
+
+Server Icon (servericon)
+Top Captions (topcaption)
+Top Settings (topsettings)
+Seek Backward (centerseekbackward)
+Play (centerplay)
+Seek Forward (centerseekforward)
+Time Slider (timeslider)
+Mute (mute)
+Volume (volume)
+Time Group (current/duration) (timegroup)
+Bottom Captions (bottomcaption)
+Bottom Settings (bottomsettings)
+Picture-in-Picture (pip)
+Cast (cast)
+Fullscreen (fullscreen)
+Prev Episode (TV only) (prevepisode)
+Next Episode (TV only) (nextepisode)
+Movie examples
+
+https://vidnest.fun/movie/666243?servericon=hide&topcaption=false&timeslider=0
+
+TV examples
+
+https://vidnest.fun/tv/94997/1/1?prevepisode=hide&nextepisode=hide&bottomsettings=off
+
+Progress Tracking Docs
+Simple, persistent video progress tracking system
+
+Overview
+Event Listener
+Data Structure
+Player Events
+Implementation
+Overview
+Progress Tracking is a lightweight event-driven system for monitoring playback progress in your custom video player. It stores watch data locally, providing persistent resume functionality across sessions.
+
+Smart resume and episode-specific tracking
+Real-time event monitoring (play, pause, seeked, etc.)
+Persistent local storage
+Simple API for analytics or resume points

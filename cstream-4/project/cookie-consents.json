@@ -1,0 +1,44 @@
+[
+  {
+    "id": "sx5xa6due",
+    "preferences": {
+      "essential": true,
+      "analytics": true,
+      "marketing": true,
+      "preferences": true
+    },
+    "userEmail": null,
+    "username": null,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "language": "fr",
+    "timestamp": "2026-02-25T18:10:54.833Z",
+    "screenResolution": "1661x935",
+    "timezone": "Europe/Paris",
+    "referrer": null,
+    "platform": "Win32",
+    "isLoggedIn": false,
+    "ip_address": "127.0.0.1",
+    "created_at": "2026-02-25T18:10:54.845Z"
+  },
+  {
+    "id": "0lqvbigpv",
+    "preferences": {
+      "essential": true,
+      "analytics": true,
+      "marketing": true,
+      "preferences": true
+    },
+    "userEmail": null,
+    "username": null,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "language": "fr",
+    "timestamp": "2026-02-24T11:45:02.834Z",
+    "screenResolution": "1661x935",
+    "timezone": "Europe/Paris",
+    "referrer": "http://localhost:5000/auth",
+    "platform": "Win32",
+    "isLoggedIn": false,
+    "ip_address": "127.0.0.1",
+    "created_at": "2026-02-24T11:45:02.857Z"
+  }
+]

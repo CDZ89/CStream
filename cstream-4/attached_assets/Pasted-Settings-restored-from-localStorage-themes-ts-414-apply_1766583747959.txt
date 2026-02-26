@@ -1,0 +1,105 @@
+Settings restored from localStorage
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png:1   Failed to load resource: the server responded with a status of 400 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 404 ()
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50:1   Failed to load resource: the server responded with a status of 404 ()
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/users?on_conflict=id:1   Failed to load resource: the server responded with a status of 403 ()
+useAuth.tsx:101 RLS policy blocking users table insert, using profiles only
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 404 ()
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779:1   Failed to load resource: the server responded with a status of 404 ()
+useUserSettings.ts:156 user_settings table not available, using local storage only
+Settings.tsx:369 [Settings] Changing theme to: sparkle-magic
+themes.ts:414 [applyTheme] Applied theme: sparkle-magic Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: sparkle-magic Object
+themes.ts:414 [applyTheme] Applied theme: sparkle-magic Object
+themes.ts:414 [applyTheme] Applied theme: sparkle-magic Object
+themes.ts:414 [applyTheme] Applied theme: sparkle-magic Object
+Settings.tsx:369 [Settings] Changing theme to: theme-creator-exclusive
+themes.ts:414 [applyTheme] Applied theme: theme-creator-exclusive Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: theme-creator-exclusive Object
+themes.ts:414 [applyTheme] Applied theme: theme-creator-exclusive Object
+themes.ts:414 [applyTheme] Applied theme: theme-creator-exclusive Object
+themes.ts:414 [applyTheme] Applied theme: theme-creator-exclusive Object
+Settings.tsx:369 [Settings] Changing theme to: dark-slate
+themes.ts:414 [applyTheme] Applied theme: dark-slate Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-slate Object
+themes.ts:414 [applyTheme] Applied theme: dark-slate Object
+themes.ts:414 [applyTheme] Applied theme: dark-slate Object
+themes.ts:414 [applyTheme] Applied theme: dark-slate Object
+Settings.tsx:369 [Settings] Changing theme to: dark-green
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+Settings.tsx:369 [Settings] Changing theme to: dark-pink
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+themes.ts:414 [applyTheme] Applied theme: dark-pink Object
+Settings.tsx:369 [Settings] Changing theme to: dark-teal
+themes.ts:414 [applyTheme] Applied theme: dark-teal Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-teal Object
+themes.ts:414 [applyTheme] Applied theme: dark-teal Object
+themes.ts:414 [applyTheme] Applied theme: dark-teal Object
+themes.ts:414 [applyTheme] Applied theme: dark-teal Object
+Settings.tsx:369 [Settings] Changing theme to: dark-green
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+themes.ts:414 [applyTheme] Applied theme: dark-green Object
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
+Settings.tsx:369 [Settings] Changing theme to: dark-red
+themes.ts:414 [applyTheme] Applied theme: dark-red {primary: '#EF4444', background: '#1A0A0A'}
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-red {primary: '#EF4444', background: '#1A0A0A'}
+themes.ts:414 [applyTheme] Applied theme: dark-red {primary: '#EF4444', background: '#1A0A0A'}
+themes.ts:414 [applyTheme] Applied theme: dark-red {primary: '#EF4444', background: '#1A0A0A'}
+themes.ts:414 [applyTheme] Applied theme: dark-red {primary: '#EF4444', background: '#1A0A0A'}
+client:536  WebSocket connection to 'wss://6cb71a8a-d830-43f9-a836-6bd67d467aed-00-2i2g1hgeeimer.janeway.replit.dev:24678/?token=wosxC1bF3Kqu' failed: Error in connection establishment: net::ERR_CONNECTION_TIMED_OUT
+setupWebSocket @ client:536
+client:560 [vite] server connection lost. Polling for restart...
+Settings.tsx:369 [Settings] Changing theme to: dark-cyan
+themes.ts:414 [applyTheme] Applied theme: dark-cyan {primary: '#06B6D4', background: '#0A1A1A'}
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-cyan {primary: '#06B6D4', background: '#0A1A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-cyan {primary: '#06B6D4', background: '#0A1A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-cyan {primary: '#06B6D4', background: '#0A1A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-cyan {primary: '#06B6D4', background: '#0A1A1A'}
+Settings.tsx:369 [Settings] Changing theme to: dark-purple
+themes.ts:414 [applyTheme] Applied theme: dark-purple {primary: '#A855F7', background: '#0C0A1A'}
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-purple {primary: '#A855F7', background: '#0C0A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-purple {primary: '#A855F7', background: '#0C0A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-purple {primary: '#A855F7', background: '#0C0A1A'}
+themes.ts:414 [applyTheme] Applied theme: dark-purple {primary: '#A855F7', background: '#0C0A1A'}
+Settings.tsx:369 [Settings] Changing theme to: dark-slate
+themes.ts:414 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+Settings.tsx:371 [Settings] Theme changed, saved
+themes.ts:414 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:414 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:414 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}
+themes.ts:414 [applyTheme] Applied theme: dark-slate {primary: '#8B5CF6', background: '#09090B'}

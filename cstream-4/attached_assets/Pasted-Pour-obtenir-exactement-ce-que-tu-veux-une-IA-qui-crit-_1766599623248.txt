@@ -1,0 +1,108 @@
+Pour obtenir exactement ce que tu veux — une IA qui écrit en live, lettre par lettre, avec effet flou → net, sans blocs qui tombent d’un coup — il faut combiner trois éléments dans ton front‑end :
+
+1. Streaming token par token
+Utilise l’API en mode stream: true.
+
+Lis le flux avec un ReadableStream (res.body.getReader()).
+
+Chaque delta.content correspond à un morceau de texte (souvent un caractère ou un mot).
+
+Tu l’ajoutes immédiatement au DOM au lieu d’attendre la fin.
+
+js
+const reader = res.body.getReader();
+const decoder = new TextDecoder("utf-8");
+let buffer = "";
+
+while (true) {
+  const { value, done } = await reader.read();
+  if (done) break;
+  buffer += decoder.decode(value, { stream: true });
+
+  const lines = buffer.split("\n");
+  buffer = lines.pop() || "";
+
+  for (const line of lines) {
+    if (!line.startsWith("data:")) continue;
+    const payload = line.slice(5).trim();
+    if (payload === "[DONE]") return;
+    const json = JSON.parse(payload);
+    const delta = json?.choices?.[0]?.delta?.content || "";
+    if (delta) appendToken(delta);
+  }
+}
+2. Effet flou → net
+Chaque caractère est inséré dans un <span> avec une classe .token-blur.
+Puis, après un court délai, tu enlèves le flou.
+
+css
+.token-blur {
+  filter: blur(2.6px);
+  opacity: 0.85;
+  transition: filter .28s ease, opacity .28s ease;
+}
+.token-blur.done {
+  filter: blur(0);
+  opacity: 1;
+}
+js
+function appendToken(char) {
+  const span = document.createElement("span");
+  span.className = "token-blur";
+  span.textContent = char;
+  assistantDiv.appendChild(span);
+  requestAnimationFrame(() => {
+    setTimeout(() => span.classList.add("done"), 120); // délai pour l’effet
+  });
+}
+3. Rendu Markdown incrémental
+Tu accumules le texte complet dans un buffer.
+
+Tous les ~100–150 caractères, tu re‑rends le Markdown avec Marked.js + DOMPurify.
+
+Ça permet de garder les titres, listes, tableaux, code stylés, tout en ayant l’effet live.
+
+js
+let bufferText = "";
+let ticker = 0;
+
+function appendToken(char) {
+  bufferText += char;
+  // effet flou
+  const span = document.createElement("span");
+  span.className = "token-blur";
+  span.textContent = char;
+  assistantDiv.appendChild(span);
+  requestAnimationFrame(() => setTimeout(() => span.classList.add("done"), 120));
+
+  ticker++;
+  if (ticker > 150) {
+    ticker = 0;
+    renderMarkdown(bufferText);
+  }
+}
+
+function renderMarkdown(text) {
+  const rawHtml = marked.parse(text);
+  const safeHtml = DOMPurify.sanitize(rawHtml);
+  assistantDiv.innerHTML = safeHtml;
+  assistantDiv.querySelectorAll("pre code").forEach(block => hljs.highlightElement(block));
+}
+Résultat attendu
+L’IA tape doucement, caractère par caractère.
+
+Chaque lettre apparaît floue puis devient nette.
+
+Le texte final est Markdown complet (titres, listes, tableaux, code).
+
+Les blocs de code sont colorés et copiable.
+
+Les liens sont enrichis avec cartes.
+
+👉 En résumé :
+
+Streaming = pas de blocs, mais tokens en direct.
+
+Effet flou → net = chaque caractère a une animation.
+
+Markdown re‑render = style propre pour tableaux, code, liens.

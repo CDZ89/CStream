@@ -1,0 +1,44 @@
+Ce que tu décris est un comportement classique lié au **scroll automatique** et à la **taille dynamique du conteneur** dans une page de chat. Voici pourquoi ça se produit :
+
+---
+
+### 📌 Pourquoi ça descend et ça s’agrandit
+- **Le conteneur du chat s’adapte au contenu**  
+  Chaque fois que l’IA envoie un long message, la `div` ou le composant qui contient les messages augmente sa hauteur pour afficher tout le texte.
+
+- **Le navigateur fait défiler vers le bas automatiquement**  
+  Souvent, le code du chat inclut une logique du type :
+  ```js
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  ```
+  Cela force la vue à se placer tout en bas dès qu’un nouveau message arrive.
+
+- **Pas de limite de hauteur ou de scroll interne**  
+  Si ton conteneur n’a pas de `max-height` ou de `overflow-y: auto`, il va continuer à grandir indéfiniment au lieu de garder une taille fixe avec une barre de défilement.
+
+---
+
+### ✅ Comment corriger
+1. **Fixer une hauteur au conteneur du chat**  
+   Exemple CSS :
+   ```css
+   .chat-container {
+     height: 80vh;       /* ou une valeur fixe en px */
+     overflow-y: auto;   /* permet de scroller à l’intérieur */
+   }
+   ```
+
+2. **Gérer le scroll automatique intelligemment**  
+   - Si tu veux que ça descende seulement quand un nouveau message arrive :  
+     ```js
+     chatContainer.scrollTop = chatContainer.scrollHeight;
+     ```
+   - Si tu veux éviter que ça descende pendant que l’utilisateur lit un ancien message, ajoute une condition (par ex. descendre seulement si l’utilisateur est déjà en bas).
+
+3. **Utiliser un composant de chat existant**  
+   Si tu es en React/Vue, il existe des librairies qui gèrent ça proprement (`react-chat-ui`, `react-scroll-to-bottom`, etc.).
+
+---
+
+👉 En résumé : ton conteneur n’a pas de limite de hauteur et ton code force le scroll en bas, donc ça “s’agrandit” à chaque message.  
+Tu veux que je te montre un exemple complet en React (avec `useEffect`) pour gérer le scroll proprement ?

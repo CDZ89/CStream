@@ -1,0 +1,426 @@
+Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-25' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-25 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-28' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-28 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-30' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-30 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-26' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-26 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-27' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-27 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-24' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-24 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+planning:1  Access to fetch at 'https://animeschedule.net/api/v3/timetables/2025-12-29' from origin 'https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+animeScheduleApi.ts:99   GET https://animeschedule.net/api/v3/timetables/2025-12-29 net::ERR_FAILED
+fetchWithAuth @ animeScheduleApi.ts:99
+getTimetable @ animeScheduleApi.ts:125
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+animeScheduleApi.ts:130  Failed to fetch timetable: TypeError: Failed to fetch
+    at fetchWithAuth (animeScheduleApi.ts:99:26)
+    at Object.getTimetable (animeScheduleApi.ts:125:26)
+    at Object.getWeeklyTimetable (animeScheduleApi.ts:152:28)
+    at fetchAnimeSchedule (Planning.tsx:134:49)
+    at Planning.tsx:142:5
+    at commitHookEffectListMount (react-dom.development.js:23189:26)
+    at commitPassiveMountOnFiber (react-dom.development.js:24970:11)
+    at commitPassiveMountEffects_complete (react-dom.development.js:24930:9)
+    at commitPassiveMountEffects_begin (react-dom.development.js:24917:7)
+    at commitPassiveMountEffects (react-dom.development.js:24905:3)
+getTimetable @ animeScheduleApi.ts:130
+await in getTimetable
+getWeeklyTimetable @ animeScheduleApi.ts:152
+fetchAnimeSchedule @ Planning.tsx:134
+(anonymous) @ Planning.tsx:142
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+useSiteLogo.ts:45   HEAD https://fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png net::ERR_ABORTED 400 (Bad Request)
+fetchLogo @ useSiteLogo.ts:45
+initializeSiteLogo @ useSiteLogo.ts:118
+(anonymous) @ Navbar.tsx:175
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+client:736   GET https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT
+ping @ client:736
+waitForSuccessfulPing @ client:755
+await in waitForSuccessfulPing
+(anonymous) @ client:561
+fetch.ts:7   PATCH https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+client:736   GET https://da905980-a052-48c9-a4a9-f20aeef5b56c-00-35f03gge4vizt.riker.replit.dev:24678/ net::ERR_CONNECTION_TIMED_OUT

@@ -1,0 +1,108 @@
+Parfait stesp 👌, tu veux que ton site **CStream** soit entièrement multilingue avec toutes ces langues disponibles. Actuellement, TMDB gère bien les traductions des contenus médias, mais ton **interface (menus, boutons, messages)** doit aussi être traduite.  
+
+---
+
+## 🌍 Liste des langues à intégrer
+- Français (fr)  
+- English (en)  
+- Español (es)  
+- Deutsch (de)  
+- Italiano (it)  
+- Português (pt)  
+- العربية (ar)  
+- 한국어 (ko)  
+- 日本語 (ja)  
+- Русский (ru)  
+
+---
+
+## ✅ Mise en place complète de l’internationalisation (i18n)
+
+### 1. Créer des fichiers de traduction
+Tu crées un fichier par langue, par exemple `fr.json`, `en.json`, etc.
+
+```json
+// fr.json
+{
+  "home": "Accueil",
+  "movies": "Films",
+  "series": "Séries",
+  "anime": "Anime",
+  "actors": "Acteurs",
+  "chat": "Chat",
+  "contact": "Contact",
+  "login": "Se connecter",
+  "signup": "S'inscrire",
+  "watch": "Regarder",
+  "more_info": "Plus d'infos"
+}
+
+// en.json
+{
+  "home": "Home",
+  "movies": "Movies",
+  "series": "Series",
+  "anime": "Anime",
+  "actors": "Actors",
+  "chat": "Chat",
+  "contact": "Contact",
+  "login": "Log in",
+  "signup": "Sign up",
+  "watch": "Watch",
+  "more_info": "More info"
+}
+```
+
+Tu fais pareil pour **es.json, de.json, it.json, pt.json, ar.json, ko.json, ja.json, ru.json**.
+
+---
+
+### 2. Charger la langue choisie
+Dans ton code (JS/React/Vue/Angular), tu détectes la langue choisie dans les **settings** et tu charges le bon fichier.
+
+```js
+import fr from './locales/fr.json';
+import en from './locales/en.json';
+import es from './locales/es.json';
+// etc...
+
+const translations = { fr, en, es };
+
+function t(key) {
+  const lang = getUserLang(); // ex: 'fr' ou 'en'
+  return translations[lang][key] || key;
+}
+
+// Exemple d’utilisation
+document.getElementById("nav-home").innerText = t("home");
+```
+
+---
+
+### 3. Synchroniser avec TMDB
+- Tu continues à utiliser `language=fr-FR`, `language=en-US`, etc. pour les contenus médias.  
+- Tu relies ton système i18n pour les **textes internes du site**.  
+- Résultat : **tout le site est traduit** (menus, boutons, contenus TMDB).
+
+---
+
+### 4. Bonus : gestion RTL (droite → gauche)
+- Pour l’arabe (`ar`), tu ajoutes dans ton CSS :
+```css
+html[lang="ar"] {
+  direction: rtl;
+  text-align: right;
+}
+```
+
+---
+
+## ✨ Résultat attendu
+- L’utilisateur choisit une langue dans les **settings**.  
+- Ton site charge automatiquement le fichier JSON correspondant.  
+- Les contenus TMDB sont traduits via leur API.  
+- Toute l’interface (menus, boutons, messages) est traduite grâce à ton système i18n.  
+
+---
+
+👉 Veux-tu que je te prépare un **prompt complet pour React avec i18next** afin que tu puisses gérer toutes ces langues facilement et sans bug ?

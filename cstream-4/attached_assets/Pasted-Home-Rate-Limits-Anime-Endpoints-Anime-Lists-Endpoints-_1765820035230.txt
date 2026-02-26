@@ -1,0 +1,640 @@
+Home
+Rate Limits
+Anime Endpoints
+Anime Lists Endpoints
+Account Endpoints
+Changelog
+Base URL: https://animeschedule.net/api/v3
+OBJ
+Anime
+id
+string
+The unique ID.
+title
+string
+The title. Separate from other names and used as a high-priority name in some cases.
+route
+string
+The unique URL slug.
+premier
+datetime
+The Japanese release date of the first episode.
+subPremier
+datetime
+The English Sub release date of the first episode.
+dubPremier
+datetime
+The English Dub release date of the first episode.
+month
+string
+The earliest month of an anime's release date.
+year
+int
+The earliest year of an anime's release date.
+season
+Season
+episodeOverride
+episodeOverride
+subEpisodeOverride
+episodeOverride
+dubEpisodeOverride
+episodeOverride
+delayedTimetable
+string
+The delayed text on the timetable.
+delayedFrom
+datetime
+The date from which it has been delayed.
+delayedUntil
+datetime
+The date until it has been delayed to.
+subDelayedTimetable
+string
+The sub delayed text on the timetable. Used only if SubPremier is not null.
+subDelayedFrom
+datetime
+The date from which the sub has been delayed. Used only if SubPremier is not null.
+subDelayedUntil
+datetime
+The date until it the sub has been delayed to. Used only if SubPremier is not null.
+dubDelayedTimetable
+string
+The dub delayed text on the timetable. Used only if DubPremier is not null.
+dubDelayedFrom
+datetime
+The date from which the dub has been delayed from. Used only if DubPremier is not null.
+dubDelayedUntil
+datetime
+The date until it the dub has been delayed to. Used only if DubPremier is not null.
+delayedDesc
+string
+The delayed description text on the anime's page.
+jpnTime
+datetime
+The Japanese release time. Only the hour and minute are relevant.
+subTime
+datetime
+The English Sub release time. Only the hour and minute are relevant.
+dubTime
+datetime
+The English Dub release time. Only the hour and minute are relevant.
+description
+html
+The description.
+genres
+[]Category
+The anime's genres in an array of the category object.
+studios
+[]Category
+The anime's studios in an array of the category object.
+sources
+[]Category
+The anime's sources in an array of the category object.
+mediaTypes
+[]Category
+The anime's media types in an array of the category object.
+episodes
+int
+The number of episodes.
+lengthMin
+int
+The length per episode in minutes.
+status
+string
+The airing status.
+Examples:
+Finished
+Ongoing
+Delayed
+imageVersionRoute
+string
+The anime's poster/image URL slug.
+stats
+Stats
+days
+Days
+names
+Names
+relations
+Relations
+websites
+Websites
+OBJ
+Category
+name
+string
+Examples:
+Fantasy
+Trigger
+Manga
+TV
+route
+string
+The unique URL slug.
+Examples:
+martial-arts
+a-1-pictures
+light-novel
+tv-short
+OBJ
+Days
+Description
+Whether an anime airs multiple times a week and which days specifically. Used only if it airs multiple times a week.
+monday
+bool
+tuesday
+bool
+wednesday
+bool
+thursday
+bool
+friday
+bool
+saturday
+bool
+sunday
+bool
+OBJ
+Episode Override
+Description
+Contains information about when episodes aired on dates different from the regular schedule.
+overrideDate
+datetime
+The date when the episode override occurred.
+Examples:
+2024-01-15T00:00:00Z
+2023-12-25T12:00:00Z
+overrideEpisode
+int
+The episode number that aired on the override date.
+Examples:
+12
+25
+50
+episodesAired
+int
+The number of episodes that aired on the override date minus one. E.g. to indicate 7-12 this will be 5 instead of 6.
+Examples:
+5
+1
+3
+OBJ
+Names
+romaji
+string
+english
+string
+native
+string
+abbreviation
+string
+synonyms
+[]string
+OBJ
+Relations
+Description
+All related anime. The strings represent their route/slug.
+sequels
+[]string
+prequels
+[]string
+parents
+[]string
+alternatives
+[]string
+other
+[]string
+sideStories
+[]string
+spinoffs
+[]string
+OBJ
+Season
+title
+string
+Examples:
+Winter 2017
+year
+int
+The year the season is in.
+Examples:
+2017
+season
+string
+The calendar season.
+Examples:
+Winter
+route
+string
+The unique URL slug, consisting of the calendar season and the year.
+Examples:
+winter-2017
+OBJ
+Stats
+averageScore
+float64
+The average score from 1 to a 100. The score is weighted with the formula ratingCount/(ratingCount+5)*ratingSum/ratingCount+(5/(ratingCount+5))*mean. Mean is the average score across all anime.
+Examples:
+5
+68.753
+97.1
+ratingCount
+int
+How many users have rated/scored.
+Examples:
+5
+100
+5000
+trackedCount
+int
+How many users have it in their anime list.
+Examples:
+5
+100
+5000
+trackedRating
+int
+Popularity rating compared to all other anime.
+Examples:
+1
+15
+243
+colorLightMode
+string
+The HEX color value for Average Score's color in default theme mode.
+Examples:
+196D39
+80643B
+colorDarkMode
+string
+The HEX color value for Average Score's color in dark theme mode.
+Examples:
+22964F
+FDC676
+OBJ
+StreamEntry
+Description
+Contains information about a streaming platform where an anime is available.
+platform
+string
+The streaming platform name (e.g., 'crunchyroll', 'netflix', 'hulu').
+Examples:
+crunchyroll
+netflix
+hulu
+amazon
+hidive
+disney
+url
+string
+The URL to the anime on the streaming platform.
+Examples:
+crunchyroll.com/watch/one-piece
+netflix.com/title/80057281
+disneyplus.com/movie/star-wars
+name
+string
+The label for the stream entry (e.g., 'YouTube (Dub)', 'Crunchyroll (Raw)', 'Netflix').
+Examples:
+YouTube (Dub)
+YouTube (Channel)
+Crunchyroll
+Crunchyroll (Raw)
+Netflix
+Disney+
+OBJ
+Streams
+platform
+string
+The streaming platform identifier (e.g., 'crunchyroll', 'netflix', 'hulu').
+url
+string
+The URL to the anime on the streaming platform.
+name
+string
+The display name for the stream entry.
+OBJ
+Timetable Anime
+title
+string
+The display title. Separate from other names and used as a high-priority name in some cases.
+route
+string
+The unique URL slug.
+romaji
+string
+The Romaji name.
+english
+string
+The English name.
+native
+string
+The Native name.
+delayedText
+string
+The timetable delayed display text.
+delayedFrom
+datetime
+The date from which it has been delayed.
+delayedUntil
+datetime
+The date until it has been delayed to.
+status
+string
+The airing status.
+Examples:
+Finished
+Ongoing
+Delayed
+Upcoming
+episodeDate
+datetime
+The episode's date and time.
+episodeNumber
+int
+The episode's number.
+subtractedEpisodeNumber
+int
+The lowest episode number. Used only if multiple episodes air. The full format is SubtractedEpisodeNumber - EpisodeNumber.
+episodes
+int
+The total episodes of an anime. 0 indicates unknown.
+lengthMin
+int
+The length of an episode in minutes.
+donghua
+bool
+Whether a timetable anime is a donghua/chinese.
+airType
+string
+The air type. Raw and Dub will only display timetable anime that match it. Sub will use Raw if Sub is not available.
+Examples:
+raw
+sub
+dub
+mediaTypes
+[]category
+The timetable anime's media types in an array of the category object.
+imageVersionRoute
+string
+The timetable anime's poster/image URL slug.
+streams
+streams
+airingStatus
+string
+The episode's immediate timetable status.
+Examples:
+airing
+aired
+unaired
+delayed-air
+OBJ
+Websites
+Description
+Contains official website, third-party anime list websites, and streaming platform information.
+official
+string
+mal
+string
+aniList
+string
+kitsu
+string
+animePlanet
+string
+anidb
+string
+streams
+[]StreamEntry
+Array of streaming platform entries.
+GET
+/anime/{slug}
+Fetch the data of a specific anime
+Examples:
+/anime/one-piece
+/anime/kimetsu-no-yaiba
+GET
+/anime
+Fetch the data of multiple anime
+Description
+Fetches a paginated array of anime. Each page can contain up to 18 anime. Can be filtered further by using the optional parameters. Contains the page number and amount of anime that match the parameters.
+Examples:
+/anime?page=5&st=alphabetic
+/anime?page=2&mt=all&genres=fantasy&genres=isekai
+page
+int
+The number of the page of the anime array being requested. Defaults to 1.
+Examples:
+?page=15
+q
+string
+Filter by text. Applies to an anime's names. Failing that it tries genres, studios, sources and media types. Maximum length is 200.
+Examples:
+?q=one+piece
+mt
+string
+The filter match type you want to use. Valid values are any and all. Any searches for anime that match any of the filters. All searches for ones that match all of the filters. Defaults to all.
+Examples:
+?mt=all
+?mt=any
+st
+string
+The sorting type you want to use. Valid values are popularity, score, alphabetic and releaseDate. Defaults to popularity.
+Examples:
+?st=popularity
+?st=score
+?st=alphabetic
+?st=releaseDate
+genres
+string
+Filter by genre. Requires the genre's route/slug. For multiple genres add another genres query for each genre.
+Examples:
+?genres=action
+?genres=fantasy&genres=isekai
+?genres=action&genres=adventure&genres=shounen&genres=martial-arts
+genres-exclude
+string
+Exclude a genre from the search. Requires the genre's route/slug. For multiple genres add another genres-exclude query for each genre.
+Examples:
+?genres-exclude=romance
+?genres-exclude=action&genres-exclude=shounen
+?genres=fantasy&genres-excludes=isekai
+studios
+string
+Filter by genre. Requires the studio's route/slug. For multiple studios add another studios query for each studio.
+Examples:
+?studios=mappa
+?studios=trigger&studios=a-1-pictures
+studios-exclude
+string
+Exclude a studio from the search. Requires the studio's route/slug. For multiple studios add another studios-exclude query for each studio.
+Examples:
+?studios-exclude=lidenfilms
+?studios-exclude=sunrise&studios-exclude=orange
+sources
+string
+Filter by genre. Requires the source's route/slug. For multiple sources add another sources query for each source.
+Examples:
+?sources=manga
+?sources=light-novel&sources=novel
+?sources=music&sources=other
+sources-exclude
+string
+Exclude a source from the search. Requires the source's route/slug. For multiple sources add another sources-exclude query for each source.
+Examples:
+?sources-exclude=ova
+?sources-exclude=ona-chinese&sources-exclude=tv-chinese&sources-exclude=movie-chinese
+media-types
+string
+Filter by genre. Requires the media type's route/slug. For multiple media types add another media-types query for each media-type.
+Examples:
+?media-types=ona
+?media-types=tv&media-types=tv-short
+?media-types=ona-chinese&media-types=movie-chinese
+media-types-exclude
+string
+Exclude a media type from the search. Requires the media type's route/slug. For multiple media types add another media-types-exclude query for each media type.
+Examples:
+?media-types-exclude=ova
+?media-types-exclude=ona-chinese&media-types-exclude=tv-chinese&media-types-exclude=movie-chinese
+years
+int
+Filter by year. For multiple years add another years query for each year.
+Examples:
+?years=2017
+?years=2017&years=2018
+?years=2010&years=2020
+years-exclude
+int
+Exclude a year from the search. For multiple years add another years-exclude query for each year.
+Examples:
+?years-exclude=2015
+?years-exclude=2005&years-exclude=2006&years-exclude=2007
+seasons
+string
+Filter by calendar season. For multiple seasons add another seasons query for each season.
+Examples:
+?seasons=fall
+?seasons=winter&seasons=spring
+?seasons=winter&seasons=summer
+seasons-exclude
+string
+Exclude a calendar season from the search. For multiple seasons add another seasons-exclude query for each season.
+Examples:
+?seasons-exclude=fall
+?seasons-exclude=summer&seasons-exclude=spring&seasons-exclude=winter
+airing-statuses
+string
+Filter by airing status. For multiple airing statuses add another airing-statuses query for each airing status. Valid values are finished, ongoing and upcoming.
+Examples:
+?airing-statuses=ongoing
+?airing-statuses=ongoing&airing-statuses=upcoming
+?airing-statuses=finished
+airing-statuses-exclude
+string
+Exclude an airing status from the search. For multiple airing statuses add another airing-statuses-exclude query for each airing status. Valid values are finished, ongoing and upcoming.
+Examples:
+?airing-statuses-exclude=finished
+?airing-statuses-exclude=upcoming&airing-statuses-exclude=finished
+duration
+string
+Filter by episode duration (in minutes.) Format is 0-∞.
+Examples:
+?duration=0-25
+?duration=50-120
+episodes
+string
+Filter by episode count. Format is 0-∞.
+Examples:
+?episodes=0-13
+?episodes=14-2000
+streams
+string
+Filter by streaming platform. Requires the platform name (e.g., 'crunchyroll', 'netflix', 'hulu'). For multiple platforms add another streams query for each platform.
+Examples:
+?streams=crunchyroll
+?streams=netflix&streams=hulu
+?streams=amazon
+?streams=disney
+streams-exclude
+string
+Exclude a streaming platform from the search. Requires the platform name (e.g., 'crunchyroll', 'netflix', 'hulu'). For multiple platforms add another streams-exclude query for each platform.
+Examples:
+?streams-exclude=crunchyroll
+?streams-exclude=netflix&streams-exclude=hulu
+?streams-exclude=disney
+mal-ids
+int
+Filter by MyAnimeList ID. For multiple ids add another mal-ids query for each id.
+Examples:
+?mal-ids=21
+?mal-ids=20&mal-ids=21
+anilist-ids
+int
+Filter by AniList ID. For multiple ids add another anilist-ids query for each id.
+Examples:
+?anilist-ids=21
+?anilist-ids=20&anilist-ids=21
+anidb-ids
+int
+Filter by AniDB ID. For multiple ids add another anidb-ids query for each id.
+Examples:
+?anidb-ids=69
+?anidb-ids=239&anidb-ids=69
+GET
+/categories/{categoryType}/{slug}
+Fetch the data of a specific category
+Examples:
+/categories/genres/action
+/categories/studios/trigger
+/categories/sources/manga
+/categories/media-types/tv
+GET
+/categories/{categoryType}
+Fetch the data of multiple categories by query
+Examples:
+/categories/genres?q=action
+/categories/studios?q=trigger
+/categories/sources?q=manga
+/categories/media-types?q=tv
+q
+string
+Filter by text. Maximum length is 200.
+Examples:
+?q=fantasy
+?q=martial-arts
+?q=novel
+GET
+/timetables
+/timetables/{airType}
+Fetch a week's timetable anime
+Description
+Fetches an array of a week's timetable anime. Valid airType values are raw, sub, dub and all. Defaults to all.
+Examples:
+/timetables/dub
+/timetables?year=2022&week=30
+/timetables/raw?tz=Asia/Tokyo
+week
+int
+The week's number in a year. Requires the year query parameter.
+Examples:
+?week=5
+?week=40
+year
+int
+The year the requested week belongs in. Requires the week query parameter.
+Examples:
+?year=2021
+?year=2022
+tz
+string
+A IATA timezone string. Converts all of the times to that timezones. Defaults to Europe/London (GMT/BST.) Warning: It auto-converts for daylights savings if the target timezone has it.
+Examples:
+?tz=America/New_York
+?tz=Asia/Tokyo
+Copyright © 2025 AnimeSchedule
+Contact
+Privacy
+Terms
+RSS
+API

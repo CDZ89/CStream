@@ -1,0 +1,32 @@
+pour series tv je veux que tu repare le bouton source et que les series dedié sont que pour les series dedié par pour les autre et que pour seires je veux voire tout les lecteur comme exemple dans le dossier : Lecteur media complet et dans la page home il y a 2 widget history garde 1 ameliore le site complet et admin au maximum puit a la fin regarde tout le site sans loupé un truc pour voir que tou se passe bien et erreur : frembed.pro a refusé de se connecter.Le message « frembed.pro a refusé de se connecter » signifie que ton navigateur a tenté de charger du contenu (souvent une vidéo ou un lecteur intégré) depuis le domaine frembed.pro, mais que ce serveur a bloqué la requête.
+
+Voici les causes les plus fréquentes :
+
+🔒 Raisons possibles
+Restrictions côté serveur : le site frembed.pro peut être configuré pour refuser l’intégration (via des en-têtes comme X-Frame-Options: DENY ou SAMEORIGIN).
+Problème de droits d’accès : si le contenu est privé ou réservé à certains domaines, il ne s’affiche pas ailleurs.
+Blocage par navigateur ou extension : certaines extensions de sécurité, bloqueurs de pubs ou paramètres de confidentialité empêchent le chargement d’iframes externes.
+Erreur temporaire du site : le serveur peut être en panne ou mal configuré.
+🛠️ Que faire ?
+Vérifier si le contenu s’ouvre directement en allant sur frembed.pro (hors intégration).
+Tester dans un autre navigateur ou en mode navigation privée pour exclure un blocage local.
+Désactiver temporairement les bloqueurs de pubs ou extensions de sécurité.
+Si tu es propriétaire du site qui tente d’intégrer frembed.pro, il faudra modifier la configuration côté serveur (en-têtes HTTP) ou utiliser une autre source d’intégration.
+👉 Veux-tu que je vérifie en ligne si frembed.pro est actuellement accessible ou s’il est connu pour bloquer les intégrations ?En bref : Le site frembed.pro est bien réel, mais il est connu pour refuser l’intégration directe (iframes) et il change souvent d’adresse. Ce blocage est volontaire côté serveur, pas une erreur de ton navigateur.
+
+🌐 Ce qu’on sait sur frembed.pro
+Origine : C’est une plateforme de streaming qui fournit des liens vidéo à partir d’IDs TMDB/IMDB (par ex. film.php?id=597 pour Titanic).
+Blocage d’intégration : Le site utilise des en-têtes de sécurité (X-Frame-Options) qui empêchent son affichage dans une iframe ou un lecteur externe. C’est pour limiter la réutilisation de son contenu sur d’autres sites.
+Changements fréquents d’URL : La communauté Kodi/vStream note que frembed.pro a déjà migré vers d’autres domaines comme frembed.art ou des miroirs (ex. directstreamfr).
+Fiabilité discutable : Certains dérivés comme frembed.com sont jugés très peu fiables (score de confiance 2/100 sur ScamAdviser).
+📌 Pourquoi tu vois « refusé de se connecter »
+Ton navigateur a tenté de charger un lecteur depuis frembed.pro.
+Le serveur a explicitement refusé cette intégration.
+Résultat : message d’erreur au lieu de la vidéo.
+✅ Solutions possibles
+Accéder directement au site : ouvre frembed.pro ou ses miroirs (frembed.art) dans un onglet, plutôt que via un lecteur intégré.
+Vérifier les alternatives : certains addons (Kodi vStream) gèrent automatiquement les nouvelles adresses.
+Attention à la légalité et sécurité : ces plateformes de streaming gratuit sont souvent instables et peuvent poser des risques (contenu non officiel, sécurité faible).
+👉 Donc, le problème ne vient pas de ton navigateur mais du site lui-même. Si tu veux accéder au contenu, il faut passer par l’URL directe ou un addon qui gère les redirections.
+
+Veux-tu que je t’indique les dernières adresses actives de frembed (comme frembed.art) pour tester directement ? et je ne veux pas de probleme de sandbox !

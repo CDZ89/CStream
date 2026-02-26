@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>CAi — Ultra Premium Streaming Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Libs: Marked + DOMPurify + Highlight.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+  <style>
+    :root {
+      --bg: #07080b;
+      --panel: #0c1118;
+      --glass: rgba(16, 20, 27, 0.72);
+      --border: #1a2230;
+      --text: #eaf1ff;
+      --muted: #97a7bd;
+      --primary: #8b5cf6;
+      --primary-2: #4cc9f0;
+      --accent: #f7b267;
+      --ring: rgba(139,92,246,.35);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --card: #0b1016;
+      --code-bg: #0b1016;
+      --code-border: #1b2433;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 12% 6%, #101633 8%, transparent 60%),
+        radial-gradient(1000px 800px at 85% 92%, #081026 10%, transparent 60%),
+        linear-gradient(180deg, #06070a, #0b0f18 40%, #07080b);
+    }
+
+    /* Layout */
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Sidebar (history + widgets) */
+    .sidebar {
+      background: var(--glass);
+      border: 1px solid rgba(26,34,48,.55);
+      border-radius: 18px;
+      box-shadow: 0 18px 60px rgba(8,12,18,.55), inset 0 1px rgba(255,255,255,.04);
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      overflow: hidden;
+      min-height: 86vh;
+    }
+    .side-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px; border-bottom: 1px solid var(--border);
+      background: #0b1016;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: conic-gradient(from 210deg, var(--primary), var(--primary-2), var(--accent), var(--primary));
+      position: relative; isolation: isolate;
+      box-shadow: 0 0 0 6px rgba(139,92,246,0.10), inset 0 0 20px rgba(255,255,255,0.06);
+      animation: spin 16s linear infinite;
+    }
+    .logo::after { content: ""; position: absolute; inset: 3px; border-radius: 8px; background: rgba(10,12,18,.55); box-shadow: inset 0 0 12px rgba(255,255,255,.06); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .live { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 14px rgba(139,92,246,.35); }
+    .dot.on { background: var(--success); animation: ping 1.8s infinite; }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.6);} 70% { box-shadow: 0 0 0 10px rgba(34,197,94,0);} 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0);} }
+
+    .controls {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      padding: 12px; border-bottom: 1px solid var(--border); background: #0b1016;
+    }
+    .select, .input {
+      appearance: none;
+      background: #0b1016; border: 1px solid var(--border); color: var(--text);
+      border-radius: 12px; padding: 10px 12px; font-size: 13px; outline: none;
+    }
+    .select:focus, .input:focus { box-shadow: 0 0 0 3px var(--ring); border-color: #2a3450; }
+
+    .widgets {
+      padding: 12px; overflow-y: auto; border-bottom: 1px solid var(--border);
+    }
+    .widget {
+      background: #0b1016; border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px; margin-bottom: 12px;
+    }
+    .widget h3 { margin: 0 0 8px; font-size: 14px; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border);
+      background: #0c1118; color: var(--text); cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      border: none; color: #07080b; font-weight: 800;
+      box-shadow: 0 8px 24px rgba(76,201,240,.18), 0 2px 8px rgba(139,92,246,.25);
+    }
+    .btn:hover { transform: translateY(-1px); }
+
+    .history {
+      padding: 10px; overflow-y: auto;
+    }
+    .conv {
+      display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center;
+      background: #0b1016; border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px; margin-bottom: 8px; cursor: pointer;
+    }
+    .conv:hover { border-color: #2a3450; box-shadow: 0 0 0 3px var(--ring); }
+    .conv .title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .icon-btn {
+      padding: 6px 8px; border-radius: 10px; border: 1px solid var(--border);
+      background: #0c1118; color: var(--muted); cursor: pointer;
+    }
+    .side-footer {
+      border-top: 1px solid var(--border);
+      padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      background: #0b1016;
+    }
+
+    /* Main chat area */
+    .main { display: grid; gap: 16px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .error { padding: 10px 12px; background: #1a0e10; border: 1px solid #3a1420; color: #ff9fb0; border-radius: 12px; display: none; }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid rgba(26,34,48,.55);
+      border-radius: 18px;
+      box-shadow: 0 18px 60px rgba(8,12,18,.55), inset 0 1px rgba(255,255,255,.04);
+      display: grid; grid-template-rows: 1fr auto;
+      min-height: 72vh; overflow: hidden;
+    }
+    .messages { padding: 18px; overflow-y: auto; scroll-behavior: smooth; }
+    .msg { max-width: 78%; margin: 12px 0; padding: 14px 16px; border-radius: 16px; position: relative; }
+    .msg.user {
+      margin-left: auto; background: linear-gradient(180deg, #0e1524, #121a2e);
+      border: 1px solid #223051; box-shadow: 0 8px 24px rgba(34,48,81,.22);
+      white-space: pre-wrap; word-wrap: break-word;
+    }
+    .msg.assistant {
+      background: linear-gradient(180deg, #0b1118, #0e141c);
+      border: 1px solid #1b2433; box-shadow: 0 8px 24px rgba(27,36,51,.22);
+    }
+    .msg.assistant::before {
+      content: ""; position: absolute; inset: -1px; border-radius: 18px;
+      padding: 1px; background: linear-gradient(135deg, rgba(139,92,246,.25), rgba(76,201,240,.25));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+    }
+
+    /* Markdown content + pro code blocks */
+    .content :is(p, ul, ol, blockquote) { margin: 0.6em 0; }
+    .content h1, .content h2, .content h3 { margin: 0.4em 0 0.3em; }
+    .content table { width: 100%; border-collapse: collapse; margin: 0.6em 0; }
+    .content th, .content td { border: 1px solid var(--code-border); padding: 8px; }
+    .content a { color: #9ecaff; text-decoration: none; border-bottom: 1px dashed rgba(158,202,255,.5); }
+    .content a:hover { color: #cce3ff; border-bottom-color: rgba(204,227,255,.65); }
+
+    .content pre {
+      background: var(--code-bg); border: 1px solid var(--code-border);
+      padding: 12px; border-radius: 12px; position: relative; overflow: auto;
+    }
+    .content pre code { background: transparent; border: none; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 12px; padding: 6px 8px; border-radius: 8px;
+      background: #0c1118; border: 1px solid var(--code-border);
+      color: var(--muted); cursor: pointer;
+    }
+    .copy-btn.ok { color: #8ee59f; border-color: #21563a; background: #0e1613; }
+
+    /* Blur streaming */
+    .token-blur { filter: blur(2.6px); opacity: 0.85; transition: filter .28s ease, opacity .28s ease; }
+    .token-blur.done { filter: blur(0px); opacity: 1; }
+
+    /* Composer */
+    .composer { display: grid; grid-template-columns: 1fr auto; gap: 12px; border-top: 1px solid var(--border); padding: 12px; background: #0b1016; }
+    textarea {
+      width: 100%; resize: none; min-height: 80px; max-height: 240px;
+      padding: 12px 14px; border-radius: 12px; color: var(--text);
+      background: #091019; border: 1px solid var(--border); outline: none; box-shadow: inset 0 1px rgba(255,255,255,.04);
+    }
+    textarea::placeholder { color: #6f7d8f; }
+    .send {
+      align-self: end; padding: 12px 16px; border-radius: 12px; border: 0; cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #07080b; font-weight: 800; letter-spacing: .1px;
+      box-shadow: 0 8px 24px rgba(76,201,240,.18), 0 2px 8px rgba(139,92,246,.25);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .send:hover { transform: translateY(-1px); }
+
+    @media (max-width: 1020px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { min-height: unset; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-header">
+        <div class="brand">
+          <div class="logo"></div>
+          <div class="live"><span id="dot" class="dot"></span><span id="status">Prêt</span></div>
+        </div>
+        <button id="newConv" class="btn primary">Nouvelle conversation</button>
+      </div>
+
+      <div class="controls">
+        <select id="model" class="select">
+          <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+          <option value="llama-3.2-90b-text">llama-3.2-90b-text</option>
+          <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+        </select>
+        <input id="temp" class="input" type="number" step="0.1" min="0" max="2" value="0.9" title="Température">
+      </div>
+
+      <div class="widgets">
+        <div class="widget" id="weatherWidget">
+          <h3>Météo — Open‑Meteo</h3>
+          <div class="row">
+            <input id="weatherCity" class="input" placeholder="Ville (ex: Paris)" />
+            <button id="weatherBtn" class="btn">Voir</button>
+          </div>
+          <div id="weatherOut" style="margin-top:8px; font-size:13px; color:var(--muted)"></div>
+        </div>
+        <div class="widget" id="planWidget">
+          <h3>Plan du jour</h3>
+          <div class="row">
+            <input id="planInput" class="input" placeholder="Ajouter une tâche..." />
+            <button id="planAdd" class="btn">Ajouter</button>
+          </div>
+          <ul id="planList" style="margin-top:8px; padding-left:16px"></ul>
+        </div>
+      </div>
+
+      <div id="history" class="history"></div>
+
+      <div class="side-footer">
+        <button id="renameConv" class="btn">Renommer</button>
+        <button id="deleteConv" class="btn">Supprimer</button>
+        <button id="resetAll" class="btn" style="grid-column: 1 / span 2; background:#1a0e10; border-color:#3a1420; color:#ff9fb0;">Réinitialiser tout</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="topbar">
+        <div class="error" id="error"></div>
+      </div>
+
+      <div class="card">
+        <div id="messages" class="messages"></div>
+        <div class="composer">
+          <textarea id="input" placeholder="Écris en Markdown. Liens au format [Titre](URL). (Shift+Entrée = nouvelle ligne)"></textarea>
+          <button id="send" class="send">Envoyer</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Config API
+    const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const API_KEY = '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';
+
+    // Markdown config
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+      smartLists: true,
+      highlight: (code, lang) => {
+        try { return hljs.highlight(code, { language: lang || 'plaintext' }).value; }
+        catch { return hljs.highlightAuto(code).value; }
+      }
+    });
+
+    // Elements
+    const $history = document.getElementById('history');
+    const $error = document.getElementById('error');
+    const $messages = document.getElementById('messages');
+    const $input = document.getElementById('input');
+    const $send = document.getElementById('send');
+    const $model = document.getElementById('model');
+    const $temp = document.getElementById('temp');
+    const $dot = document.getElementById('dot');
+    const $status = document.getElementById('status');
+    const $newConv = document.getElementById('newConv');
+    const $renameConv = document.getElementById('renameConv');
+    const $deleteConv = document.getElementById('deleteConv');
+    const $resetAll = document.getElementById('resetAll');
+
+    const $weatherCity = document.getElementById('weatherCity');
+    const $weatherBtn = document.getElementById('weatherBtn');
+    const $weatherOut = document.getElementById('weatherOut');
+
+    const $planInput = document.getElementById('planInput');
+    const $planAdd = document.getElementById('planAdd');
+    const $planList = document.getElementById('planList');
+
+    // State
+    let conversations = load('cai.conversations') || [];
+    let currentId = load('cai.currentId') || null;
+    let plan = load('cai.plan') || [];
+
+    // Persist controls
+    const savedModel = load('cai.model'); if (savedModel) $model.value = savedModel;
+    const savedTemp = load('cai.temp'); if (savedTemp) $temp.value = savedTemp;
+
+    // Helpers storage
+    function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+
+    function setLive(on) {
+      $dot.classList.toggle('on', on);
+      $status.textContent = on ? 'En cours…' : 'Prêt';
+    }
+    function showError(msg) { $error.style.display = 'block'; $error.textContent = msg; setLive(false); }
+    function clearError() { $error.style.display = 'none'; $error.textContent = ''; }
+
+    // Conversation model
+    function newConversation(title = 'Nouvelle conversation') {
+      const id = crypto.randomUUID();
+      const conv = { id, title, history: [] };
+      conversations.unshift(conv);
+      currentId = id;
+      syncUI();
+      saveState();
+      return conv;
+    }
+    function getCurrent() { return conversations.find(c => c.id === currentId); }
+    function setTitle(id, title) { const c = conversations.find(c => c.id === id); if (c) { c.title = title; syncHistory(); saveState(); } }
+    function deleteCurrent() {
+      conversations = conversations.filter(c => c.id !== currentId);
+      currentId = conversations[0]?.id || null;
+      syncUI(); saveState();
+    }
+    function resetAll() {
+      conversations = []; currentId = null; plan = [];
+      syncUI(); saveState();
+    }
+    function saveState() {
+      save('cai.conversations', conversations);
+      save('cai.currentId', currentId);
+      save('cai.model', $model.value);
+      save('cai.temp', $temp.value);
+      save('cai.plan', plan);
+    }
+
+    // UI history
+    function syncHistory() {
+      $history.innerHTML = '';
+      conversations.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'conv';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = c.title;
+
+        const rename = document.createElement('button');
+        rename.className = 'icon-btn';
+        rename.textContent = '✏️';
+        rename.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const t = prompt('Nouveau titre:', c.title);
+          if (t && t.trim()) setTitle(c.id, t.trim());
+        });
+
+        const del = document.createElement('button');
+        del.className = 'icon-btn';
+        del.textContent = '🗑️';
+        del.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Supprimer cette conversation ?')) {
+            conversations = conversations.filter(x => x.id !== c.id);
+            if (currentId === c.id) currentId = conversations[0]?.id || null;
+            syncUI(); saveState();
+          }
+        });
+
+        row.appendChild(title);
+        row.appendChild(rename);
+        row.appendChild(del);
+
+        row.addEventListener('click', () => { currentId = c.id; syncUI(); saveState(); });
+
+        $history.appendChild(row);
+      });
+    }
+
+    // UI messages
+    function renderMessages() {
+      $messages.innerHTML = '';
+      const conv = getCurrent();
+      if (!conv) return;
+      conv.history.forEach(m => {
+        if (m.role === 'user') appendUserMessage(m.content);
+        else appendAssistantMessage(m.content);
+      });
+    }
+
+    function createMsg(role) {
+      const wrap = document.createElement('div');
+      wrap.className = `msg ${role}`;
+      const content = document.createElement('div');
+      content.className = 'content';
+      wrap.appendChild(content);
+      $messages.appendChild(wrap);
+      $messages.scrollTop = $messages.scrollHeight;
+      return content;
+    }
+
+    function appendUserMessage(text) { const el = createMsg('user'); el.textContent = text; }
+
+    function renderMarkdown(targetEl, fullText) {
+      const rawHtml = marked.parse(fullText);
+      const safeHtml = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] });
+      targetEl.innerHTML = safeHtml;
+      targetEl.querySelectorAll('pre code').forEach(block => {
+        hljs.highlightElement(block);
+        // Add copy button
+        const pre = block.parentElement;
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copier';
+        btn.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(block.textContent || ''); btn.textContent = 'Copié'; btn.classList.add('ok'); setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('ok'); }, 1200); }
+          catch { btn.textContent = 'Erreur'; }
+        });
+        pre.appendChild(btn);
+      });
+      enrichLinks(targetEl);
+    }
+
+    function appendAssistantMessage(fullText) { const el = createMsg('assistant'); renderMarkdown(el, fullText); }
+
+    async function enrichLinks(container) {
+      const links = container.querySelectorAll('a[href]');
+      for (const a of links) {
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener');
+        try {
+          const url = new URL(a.href);
+          const favicon = `${url.origin}/favicon.ico`;
+          const card = document.createElement('div');
+          card.className = 'link-card';
+          card.innerHTML = `
+            <span class="favicon" style="width:20px;height:20px;border-radius:4px;background:#0b1016;border:1px solid #1b2433;display:inline-block;background-image:url('${favicon}');background-size:cover;"></span>
+            <div class="meta">
+              <div class="title">${a.textContent || url.hostname}</div>
+              <div class="url" style="font-size:12px;color:var(--muted)">${url.hostname}</div>
+            </div>
+          `;
+          a.insertAdjacentElement('afterend', card);
+        } catch {}
+      }
+    }
+
+    // Streaming renderer with blur tokens + markdown incremental
+    function AssistantRenderer(container) {
+      let buffer = '';
+      let ticker = 0;
+      return {
+        push(delta) {
+          buffer += delta;
+          // Token by token
+          for (let i = 0; i < delta.length; i++) {
+            const span = document.createElement('span');
+            span.className = 'token-blur';
+            span.textContent = delta[i];
+            container.appendChild(span);
+            requestAnimationFrame(() => setTimeout(() => span.classList.add('done'), 12));
+          }
+          // Re-render markdown every ~160 chars
+          ticker += delta.length;
+          if (ticker > 160) { ticker = 0; renderMarkdown(container, buffer); }
+          $messages.scrollTop = $messages.scrollHeight;
+        },
+        finalize() { renderMarkdown(container, buffer); },
+        text() { return buffer; }
+      };
+    }
+
+    // Suggest a title from first user message
+    function autoTitle(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return 'Nouvelle conversation';
+      const first = trimmed.split('\n')[0];
+      const words = first.split(/\s+/).slice(0, 6).join(' ');
+      return (words.length > 40 ? words.slice(0, 40) + '…' : words);
+    }
+
+    // Sync UI
+    function syncUI() { syncHistory(); renderMessages(); renderPlan(); }
+
+    // Boot
+    (function init() {
+      if (!currentId && conversations.length === 0) {
+        const conv = newConversation('Nouvelle conversation'); currentId = conv.id;
+      } else if (!currentId) {
+        currentId = conversations[0].id;
+      }
+      syncUI();
+    })();
+
+    // Persist controls
+    $model.addEventListener('change', () => saveState());
+    $temp.addEventListener('change', () => saveState());
+
+    // New conv / rename / delete / reset
+    document.getElementById('newConv').addEventListener('click', () => {
+      const title = prompt('Titre de la conversation:', 'Nouvelle conversation') || 'Nouvelle conversation';
+      const conv = newConversation(title); currentId = conv.id; syncUI(); saveState();
+    });
+    $renameConv.addEventListener('click', () => {
+      const c = getCurrent(); if (!c) return;
+      const t = prompt('Nouveau titre:', c.title);
+      if (t && t.trim()) { setTitle(c.id, t.trim()); }
+    });
+    $deleteConv.addEventListener('click', () => { if (confirm('Supprimer la conversation courante ?')) deleteCurrent(); });
+    $resetAll.addEventListener('click', () => { if (confirm('Tout réinitialiser ?')) resetAll(); });
+
+    // Send message
+    $send.addEventListener('click', () => {
+      const text = $input.value.trim();
+      if (!text) return;
+      $input.value = '';
+      handleUserMessage(text);
+    });
+    $input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $send.click(); }
+    });
+
+    async function handleUserMessage(text) {
+      clearError(); setLive(true);
+
+      const conv = getCurrent(); if (!conv) return;
+
+      // Auto-title if empty
+      if (!conv.history.length) { conv.title = autoTitle(text); syncHistory(); saveState(); }
+
+      // Append user
+      conv.history.push({ role: 'user', content: text }); appendUserMessage(text); saveState();
+
+      // Assistant container
+      const assistantEl = createMsg('assistant');
+      const renderer = AssistantRenderer(assistantEl);
+
+      // Build body
+      const body = {
+        model: $model.value,
+        temperature: Number($temp.value),
+        stream: true,
+        messages: [
+          { role: 'system', content: 'Tu es CAi: premium, précis, concis, en français. Tu produis un Markdown propre (titres, listes, tableaux, code). Pour chaque lien, utilise le format [Titre du lien](URL) avec un titre clair.' },
+          ...conv.history.map(m => ({ role: m.role, content: m.content }))
+        ]
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) { const t = await res.text(); throw new Error(`HTTP ${res.status} — ${t}`); }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+
+        let buffer = '';
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const payload = trimmed.slice(5).trim();
+            if (payload === '[DONE]') { setLive(false); break; }
+            try {
+              const json = JSON.parse(payload);
+              const delta = json?.choices?.[0]?.delta?.content || '';
+              if (delta) renderer.push(delta);
+            } catch {}
+          }
+        }
+
+        renderer.finalize();
+        const assistantText = renderer.text();
+        conv.history.push({ role: 'assistant', content: assistantText });
+        saveState(); setLive(false);
+      } catch (e) {
+        showError('Échec du stream: ' + (e?.message || e));
+      }
+    }
+
+    // Weather widget (Open‑Meteo, no API key)
+    $weatherBtn.addEventListener('click', async () => {
+      const q = ($weatherCity.value || '').trim();
+      if (!q) { $weatherOut.textContent = 'Entrez une ville.'; return; }
+      $weatherOut.textContent = 'Recherche…';
+      try {
+        // 1) Geocoding
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=fr&format=json`);
+        const geo = await geoRes.json();
+        const loc = geo?.results?.[0];
+        if (!loc) { $weatherOut.textContent = 'Ville introuvable.'; return; }
+        const { latitude, longitude, name, country } = loc;
+
+        // 2) Weather
+        const meteoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,is_day,weather_code&hourly=temperature_2m&timezone=auto`);
+        const meteo = await meteoRes.json();
+        const c = meteo?.current || {};
+        const temp = c.temperature_2m;
+        const hum = c.relative_humidity_2m;
+        const day = c.is_day ? 'Jour' : 'Nuit';
+        const code = c.weather_code;
+
+        $weatherOut.innerHTML = `<strong>${name}, ${country}</strong><br>Temp: ${temp}°C · Humidité: ${hum}% · ${day} · Code: ${code}`;
+      } catch {
+        $weatherOut.textContent = 'Erreur météo.';
+      }
+    });
+
+    // Plan widget
+    function renderPlan() {
+      $planList.innerHTML = '';
+      plan.forEach((t, idx) => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        li.style.margin = '6px 0';
+        const del = document.createElement('button');
+        del.className = 'icon-btn';
+        del.style.marginLeft = '8px';
+        del.textContent = '✖';
+        del.addEventListener('click', () => {
+          plan.splice(idx, 1); saveState(); renderPlan();
+        });
+        li.appendChild(del);
+        $planList.appendChild(li);
+      });
+    }
+    $planAdd.addEventListener('click', () => {
+      const text = ($planInput.value || '').trim();
+      if (!text) return;
+      plan.push(text); $planInput.value = ''; saveState(); renderPlan();
+    });
+
+  </script>
+</body>
+</html>

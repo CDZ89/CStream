@@ -1,0 +1,90 @@
+Parfait, je comprends mieux maintenant 💡 : tes `eps1`, `eps2`, `eps3`, etc. ne sont **pas des saisons** mais bien des **lecteurs différents** (chaque lecteur = une source vidéo différente).  
+
+Le bug que tu décrivais (129 épisodes d’un seul bloc) vient du fait que ton script ne distingue pas les lecteurs, il concatène tout. La solution est de **structurer tes lecteurs dans un seul objet** et de gérer l’affichage par lecteur.
+
+---
+
+## 🛠️ Structure recommandée
+
+```js
+// Chaque lecteur est un tableau d'épisodes
+var lecteurs = {
+  lecteur1: [
+    'https://Smoothpre.com/embed/pk7r9noq7x14',
+    'https://Smoothpre.com/embed/t5kxy27o3nn8',
+    // ...
+  ],
+  lecteur2: [
+    'https://vidmoly.to/embed-jhjse50c3rpx.html',
+    'https://vidmoly.to/embed-g24g4b8s17cn.html',
+    // ...
+  ],
+  lecteur3: [
+    'https://video.sibnet.ru/shell.php?videoid=4668120',
+    'https://video.sibnet.ru/shell.php?videoid=4668131',
+    // ...
+  ],
+  lecteur4: [
+    'https://oneupload.to/embed-iatz8lo6d0bg.html',
+    'https://oneupload.to/embed-4nci6qtbbi1n.html',
+    // ...
+  ],
+  lecteur5: [
+    'https://sendvid.com/embed/vmi24hp5',
+    'https://sendvid.com/embed/164a3rj7',
+    // ...
+  ]
+};
+```
+
+---
+
+## 🎬 Fonction d’affichage
+
+```js
+function afficherEpisodes(lecteur) {
+  var episodes = lecteurs[lecteur];
+  for (var i = 0; i < episodes.length; i++) {
+    console.log("Episode " + (i+1) + " : " + episodes[i]);
+    // Exemple d'intégration dans la page :
+    // document.body.innerHTML += `<iframe src="${episodes[i]}" width="640" height="360"></iframe>`;
+  }
+}
+```
+
+---
+
+## 🎛️ Exemple d’utilisation
+
+```js
+// Affiche tous les épisodes du lecteur 3
+afficherEpisodes("lecteur3");
+
+// Affiche tous les épisodes du lecteur 1
+afficherEpisodes("lecteur1");
+```
+
+---
+
+## 🚀 Bonus : Sélecteur de lecteur en HTML
+
+Tu peux ajouter un menu pour choisir le lecteur :
+
+```html
+<select id="choixLecteur" onchange="afficherEpisodes(this.value)">
+  <option value="lecteur1">Lecteur 1 (Smoothpre)</option>
+  <option value="lecteur2">Lecteur 2 (Vidmoly)</option>
+  <option value="lecteur3">Lecteur 3 (Sibnet)</option>
+  <option value="lecteur4">Lecteur 4 (Oneupload)</option>
+  <option value="lecteur5">Lecteur 5 (Sendvid)</option>
+</select>
+```
+
+---
+
+👉 Résultat :  
+- Tu gardes **un seul bloc par lecteur**.  
+- Tu peux switcher facilement entre les lecteurs sans mélanger les épisodes.  
+- Fini le bug des 129 épisodes en continu.  
+
+Veux-tu que je te prépare un **script complet avec menu HTML + affichage dynamique des iframes** pour que tu n’aies plus qu’à copier-coller ?

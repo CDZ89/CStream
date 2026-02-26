@@ -1,0 +1,77 @@
+Implémente un système complet de statuts utilisateur + chat + gestion d’amis dans la navbar de mon site CStream (React/Vite/TS + Tailwind).
+Je veux une expérience premium, festive, minimaliste et sans bug, inspirée de Discord, mais adaptée à mon branding.
+
+🔐 Profil connecté dans la navbar :
+Affiche la photo de profil proprement (cercle, ombre, hover).
+
+À côté, un badge de statut :
+
+🟢 Vert = En ligne
+
+🟠 Orange = Ne pas déranger
+
+🟣 Violet = Regarde un stream
+
+🔵 Trois petits points animés = Écrit dans le chat
+
+Le badge doit être responsive, visible sur mobile et desktop, bien positionné à côté de l’avatar.
+
+Le statut doit être réactif en temps réel (WebSocket ou polling).
+
+🧭 Admin & présence :
+Si l’utilisateur est admin → affiche un badge "Admin" dans la navbar.
+
+Permet à l’admin de voir tous les membres connectés avec leur statut.
+
+Intégration avec le système de chat pour voir qui écrit, qui regarde un stream, etc.
+
+💬 Chat intégré :
+Composant de chat dans la navbar ou en drawer.
+
+Affiche les messages récents, les utilisateurs actifs.
+
+Supporte les statuts dynamiques (écrit, lit, regarde).
+
+Pas de bug d’empilement (z-index bien géré), pas de scroll cassé.
+
+👥 Ajout d’amis :
+Système complet :
+
+Bouton "Ajouter un ami" dans le profil.
+
+Envoi de demande → notification.
+
+Acceptation → ajout dans la liste d’amis.
+
+Liste d’amis visible dans le profil ou dans une modale.
+
+Supporte les statuts en live pour les amis.
+
+Utilise Supabase ou autre backend pour stocker les relations.
+
+📱 Responsive & UX :
+Sur mobile → tout doit être accessible via drawer ou overlay.
+
+Sur desktop → tout est visible dans la navbar ou en dropdown.
+
+Transitions fluides (transition-all duration-300), pas de flash.
+
+Testé sur Chrome, Firefox, Safari, iOS, Android.
+
+🎨 Branding :
+Respecte les thèmes dark/light existants.
+
+Les badges, modales, boutons doivent s’adapter au thème actif.
+
+Utilise les tokens Tailwind définis dans tailwind.config.js.
+
+🔁 Bonus :
+Ajoute des micro-interactions (hover, focus, animations).
+
+Prépare les hooks pour usePresence, useFriends, useChatStatus.
+
+Prévois une API REST ou WebSocket pour synchroniser les statuts.
+
+👉 Avec ce prompt, ton agent IA saura qu’il doit te livrer un système complet, stable, et ultra-branded, prêt à intégrer dans ton projet React/Vite/TS.
+
+Tu veux que je te code le composant UserStatusBadge.tsx ou FriendRequestModal.tsx directement 

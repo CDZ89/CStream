@@ -1,0 +1,82 @@
+Je comprends, Lucca ⚡ — tu es bloqué parce que **le clic sur un épisode ne déclenche pas l’affichage de la page lecteur/sources**, et ton app reste figée ou vide. Ça veut dire que la logique de ton composant n’est pas encore correctement séparée entre **sélection d’épisode** et **lancement du lecteur**.
+
+---
+
+## 🔎 Diagnostic
+- Actuellement, ton `handleEpisodeClick` lance directement le lecteur (VidKing) ou ne met pas à jour l’état correctement.  
+- Le composant qui doit afficher la **page lecteur (sources modal)** n’est jamais rendu, car l’état `showSourceModal` ou `watchMode` n’est pas géré comme il faut.  
+- Résultat : tu vois la notification “Lecture S5E5” mais rien ne s’affiche → blocage.
+
+---
+
+## ✅ Correction étape par étape
+
+### 1. États nécessaires
+Dans ton composant parent (ex. `TvDetailPage`), tu dois avoir :
+```tsx
+const [selectedEpisode, setSelectedEpisode] = useState(null);
+const [showSourceModal, setShowSourceModal] = useState(false);
+const [currentSource, setCurrentSource] = useState(null);
+const [watchMode, setWatchMode] = useState(false);
+```
+
+### 2. handleEpisodeClick
+Corrige la fonction pour **ouvrir la page lecteur** au lieu de lancer VidKing :
+```tsx
+const handleEpisodeClick = (episode) => {
+  setSelectedEpisode(episode);
+  setShowSourceModal(true);   // ouvre la page lecteur
+  setWatchMode(false);        // on n’est pas encore en mode lecture
+};
+```
+
+### 3. Affichage du modal de sources
+```tsx
+{showSourceModal && selectedEpisode && (
+  <SourceSelectionModal
+    episode={selectedEpisode}
+    onSelectSource={(source) => {
+      setCurrentSource(source);
+      setShowSourceModal(false);
+      setWatchMode(true); // active le vrai lecteur
+    }}
+    onClose={() => setShowSourceModal(false)}
+  />
+)}
+```
+
+### 4. VideoPlayerSection
+Dans ton composant lecteur :
+```tsx
+function VideoPlayerSection({ currentSource }) {
+  if (!currentSource) {
+    return <div>Choisissez un lecteur pour commencer</div>;
+  }
+  return (
+    <iframe
+      src={currentSource.url}
+      allowFullScreen
+      className="w-full h-[80vh]"
+    />
+  );
+}
+```
+
+### 5. Rendu conditionnel
+Dans ta page :
+```tsx
+{watchMode && currentSource && (
+  <VideoPlayerSection currentSource={currentSource} />
+)}
+```
+
+---
+
+## 🚀 Résultat attendu
+- Tu cliques sur un épisode → **page lecteur/sources** s’ouvre.  
+- Tu choisis un lecteur → **VideoPlayerSection** se lance avec ce `currentSource`.  
+- Plus de blocage, plus d’erreur, et tu gardes le contrôle sur le choix du lecteur.  
+
+---
+
+👉 Si tu veux, je peux te préparer un **snippet complet prêt à coller** (React + Tailwind) qui remplace ton workflow actuel et garantit que la **page lecteur s’affiche avant VidKing**. Veux‑tu que je te génère ce code directement ?

@@ -1,0 +1,60 @@
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 551, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 552, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 553, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 554, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 555, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 556, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 557, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 558, Col 5
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 559, Col 5
+Property '"nav.ai_agent"' is missing in type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 229 more ...; 'share.supportKoFi': string; }' but required in type 'Record<TranslationKey, string>'.
+(typescript)
+Ln 561, Col 3
+An object literal cannot have multiple properties with the same name.
+(typescript)
+Ln 782, Col 5
+Property '"nav.ai_agent"' is missing in type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 229 more ...; 'share.supportKoFi': string; }' but required in type 'Record<TranslationKey, string>'.
+(typescript)
+Ln 804, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 1046, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 1277, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 1508, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 1739, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 1970, Col 3
+Type '{ 'nav.home': string; 'nav.movies': string; 'nav.tv': string; 'nav.anime': string; 'nav.actors': string; 'nav.chat': string; 'nav.admin': string; 'nav.profile': string; 'nav.settings': string; 'nav.logout': string; ... 218 more ...; 'share.supportKoFi': string; }' is missing the following properties from type 'Record<TranslationKey, string>': "nav.ai_agent", "common.saving", "settings.account", "settings.manageAccount", and 8 more.
+(typescript)
+Ln 2201, Col 3
+'detectBrowserLanguage' is declared but its value is never read.
+(typescript)
+Ln 2455, Col 7
+'detectLocationLanguage' is declared but its value is never read.
+(typescript)
+Ln 2459, Col 7

@@ -1,0 +1,65 @@
+Crée une page média ultra complète, propre et fluide, avec tous les éléments suivants :
+
+1. Présentation du média
+   - Titre du film ou série affiché en haut, avec une police cinématographique, lisible et indépendante de l’affiche.
+   - Score/notation visible (ex. 7.4), avec étoiles ou jauge circulaire.
+   - Boutons d’action : Regarder, Infos, Favoris, Watchlist, Noter, Partager.
+   - Affiche principale (poster) placée à gauche ou en haut, sans jamais masquer le titre.
+
+2. Métadonnées
+   - Date de sortie, durée, genres cliquables, pays d’origine, langue originale.
+   - Sociétés de production (logo + nom), réalisateurs, créateurs, acteurs principaux.
+   - Disposition en colonnes ou blocs compacts, responsive.
+
+3. Sections de contenu
+   - Overview : synopsis complet, paragraphe lisible avec interligne suffisant.
+   - Galerie d’images : backdrops en mosaïque responsive, zoom au clic.
+   - Collection : autres titres liés avec affiche + année.
+   - Reviews : auteur, avatar, note, date relative, extrait + bouton “Lire plus”.
+   - Cast & Credits : grille de portraits, nom + rôle, bouton “Show All”.
+   - Recommendations & Similar : grille de suggestions avec affiche + titre, hover résumé.
+
+4. Interactions persistantes
+   - Favoris, Watchlist, Likes, Reviews, Commentaires enregistrés en base, jamais supprimés automatiquement.
+   - Synchronisation sur tous les appareils via compte connecté.
+   - Feedback visuel immédiat (toast, icône active).
+
+5. Disposition et hiérarchie visuelle
+   - Titre → Score → Actions → Métadonnées → Sections.
+   - Grilles responsive : 2–6 colonnes selon écran.
+   - Espacements réguliers entre blocs pour respirer.
+   - Sections bien délimitées avec titres typographiques (H2/H3).
+
+6. Accessibilité et qualité
+   - Navigation clavier complète.
+   - ARIA labels pour boutons, modals, images.
+   - Texte lisible avec interligne suffisant et largeur max.
+   - Contraste respectant WCAG 2.1 AA.
+   - Modals accessibles (focus piégé, fermeture par ESC).
+
+7. Performances
+   - Minification CSS/JS.
+   - Cache navigateur pour images et scripts.
+   - CDN pour assets.
+   - Lazy load pour médias lourds.
+   - SEO optimisé : balises meta, structured data (schema.org Movie/TVSeries).
+
+8. Comportements interactifs
+   - Flèche de retour en haut :
+     - Apparait dès qu’on descend de 300px.
+     - Position fixe en bas à droite.
+     - Icône claire (↑), taille minimum 44x44px.
+     - Animation fluide au clic (scrollTo top).
+   - Indicateur circulaire de progression :
+     - Cercle discret en bas à gauche ou en overlay.
+     - Remplissage dynamique selon la position dans la page.
+     - Affiche “haut” ou “bas” selon scroll.
+     - Accessible au clavier et visible sur mobile.
+
+9. Tests et validation
+   - Titre toujours visible, même sans affiche.
+   - Boutons toujours accessibles, jamais masqués.
+   - Flèche de retour fonctionne sur tous les navigateurs.
+   - Indicateur circulaire synchronisé avec le scroll.
+   - Responsive sur desktop, tablette, mobile.
+   - Temps de chargement < 3s, interactions < 250ms.

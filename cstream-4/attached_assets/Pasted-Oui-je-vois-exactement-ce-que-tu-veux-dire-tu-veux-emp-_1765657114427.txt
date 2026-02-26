@@ -1,0 +1,72 @@
+Oui, je vois exactement ce que tu veux dire 👀 : tu veux empêcher que **des pubs ou des redirections s’ouvrent dans un nouvel onglet** quand on clique sur un élément de ton site. Voici comment **bloquer ces comportements indésirables** proprement :
+
+---
+
+## 🔒 1. Empêcher les redirections vers des pubs
+
+### ✅ Vérifie ton code HTML/JS
+- **Inspecte tous les liens (`<a href="...">`)** et boutons : certains scripts injectent des pubs via des attributs `onclick`, `target="_blank"` ou des redirections JS.
+- Supprime ou neutralise les liens suspects :
+```html
+<a href="#" onclick="return false;">Lien sécurisé</a>
+```
+
+### ✅ Supprime les `target="_blank"` non nécessaires
+- Les pubs s’ouvrent souvent via des liens avec `target="_blank"` :
+```html
+<a href="https://pubsite.com" target="_blank">Ne pas faire ça</a>
+```
+- Solution : **ne pas mettre `target="_blank"`** ou le filtrer dynamiquement.
+
+---
+
+## 🧼 2. Filtrer les scripts malveillants
+
+### ✅ Vérifie les scripts tiers
+- Supprime tout script externe non vérifié (ex: widgets, analytics douteux, CDN obscurs).
+- Utilise **Content Security Policy (CSP)** pour bloquer les domaines publicitaires :
+```html
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; frame-src 'none';">
+```
+
+---
+
+## 🛡️ 3. Bloquer les popups et onglets via JavaScript
+
+### ✅ Désactive les ouvertures forcées :
+```js
+window.open = function() {
+  console.warn("Tentative d'ouverture bloquée");
+  return null;
+};
+```
+
+### ✅ Intercepte les clics suspects :
+```js
+document.addEventListener('click', function(e) {
+  const target = e.target.closest('a');
+  if (target && target.href.includes('pub') || target.href.includes('ad')) {
+    e.preventDefault();
+    console.log("Lien publicitaire bloqué :", target.href);
+  }
+});
+```
+
+---
+
+## 🧠 4. Bonus : protection côté serveur
+
+- Si tu as un backend, filtre les URLs ou les redirections vers des domaines publicitaires.
+- Utilise une **liste blanche** de domaines autorisés.
+
+---
+
+## ✅ Résultat attendu
+
+- Aucun clic ne déclenche une ouverture de pub ou d’onglet indésirable.
+- Ton site reste fluide, sécurisé, et sans intrusion publicitaire.
+- Tu gardes le contrôle total sur les liens et les scripts.
+
+---
+
+Si tu veux, je peux t’aider à **scanner ton site automatiquement** pour détecter les liens ou scripts qui ouvrent des pubs. Tu veux que je te prépare un script de nettoyage ?

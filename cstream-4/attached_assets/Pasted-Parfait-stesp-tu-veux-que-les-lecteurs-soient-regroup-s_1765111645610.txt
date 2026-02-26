@@ -1,0 +1,110 @@
+Parfait stesp 👌, tu veux que **les lecteurs soient regroupés par saison** et que tout soit synchronisé proprement entre **TMDB** et ton **admin interne**. Je vais t’expliquer la logique technique pour que ça marche sans bug ni duplication.
+
+---
+
+## 🧩 Structure des données (Admin + TMDB)
+
+### Côté Admin
+Tu dois organiser tes données ainsi :
+```json
+{
+  "tv_id": 12345,
+  "saisons": [
+    {
+      "saison": 1,
+      "lecteurs": [
+        {
+          "nom": "Sibnet",
+          "episodes": [
+            { "episode": 1, "url": "https://sibnet/embed/ep1" },
+            { "episode": 2, "url": "https://sibnet/embed/ep2" }
+          ]
+        },
+        {
+          "nom": "Vidmoly",
+          "episodes": [
+            { "episode": 1, "url": "https://vidmoly/embed/ep1" }
+          ]
+        }
+      ]
+    },
+    {
+      "saison": 2,
+      "lecteurs": [
+        { "nom": "Sendvid", "episodes": [...] }
+      ]
+    }
+  ]
+}
+```
+
+### Côté TMDB
+Tu récupères les infos officielles :
+- `tv/{tv_id}/season/{season_number}` → liste des épisodes avec :
+  - `name` (titre officiel)
+  - `overview` (description)
+  - `still_path` (image)
+  - `episode_number`
+
+---
+
+## ⚙️ Logique de regroupement
+
+1. **Sélecteur de saison**  
+   - Tu affiches toutes les saisons disponibles (via TMDB ou admin).  
+   - Exemple : Saison 1, Saison 2, Saison 3.  
+
+2. **Sélecteur de lecteur (par saison)**  
+   - Quand une saison est sélectionnée, tu affiches **uniquement les lecteurs liés à cette saison** (depuis l’admin).  
+   - Exemple : Saison 1 → Sibnet, Vidmoly, Sendvid.  
+
+3. **Affichage des épisodes (par lecteur)**  
+   - Quand un lecteur est choisi, tu affiches uniquement ses épisodes.  
+   - Tu fais correspondre `episode_number` (TMDB) avec `episode` (admin).  
+   - Tu enrichis avec TMDB : titre, image, description.  
+   - Tu ajoutes l’URL du lecteur (admin).  
+
+---
+
+## 🚨 Gestion des cas limites
+- **Lecteur avec moins d’épisodes que TMDB** → tu affiches seulement ceux disponibles dans l’admin.  
+- **Image manquante** → fallback = poster de la saison.  
+- **Description manquante** → fallback = “Description non disponible”.  
+- **Nouveau lecteur ajouté dans l’admin** → il apparaît automatiquement car tu parcours la liste `lecteurs` dynamiquement.  
+
+---
+
+## 💻 Exemple de rendu (pseudo-code React/Vue)
+```jsx
+<SaisonSelector saisons={admin.saisons} onSelect={setSaison} />
+
+<LecteurSelector lecteurs={saison.lecteurs} onSelect={setLecteur} />
+
+<EpisodeList>
+  {lecteur.episodes.map(ep => {
+    const tmdbEp = tmdbData.episodes.find(e => e.episode_number === ep.episode);
+    return (
+      <EpisodeCard
+        title={tmdbEp?.name || `Episode ${ep.episode}`}
+        image={tmdbEp?.still_path || saison.poster_path}
+        description={tmdbEp?.overview || "Description non disponible"}
+        url={ep.url}
+      />
+    );
+  })}
+</EpisodeList>
+```
+
+---
+
+## ✨ Résultat attendu
+- **Saison → Lecteurs regroupés → Episodes synchronisés**.  
+- Pas de mélange entre lecteurs.  
+- Nouveaux lecteurs ajoutés automatiquement.  
+- Interface propre, responsive, sans bug.  
+
+---
+
+👉 En résumé : tu dois **structurer tes données admin par saison et lecteur**, puis **mapper les épisodes avec TMDB** via `episode_number`. Ainsi, chaque lecteur est regroupé par saison et affiche uniquement ses épisodes, sans duplication ni mélange.  
+
+Veux-tu que je t’écrive un **prompt backend complet (Node.js/Express)** qui gère cette synchro automatiquement (Admin + TMDB → JSON regroupé par saison/lecteur/épisode) ?

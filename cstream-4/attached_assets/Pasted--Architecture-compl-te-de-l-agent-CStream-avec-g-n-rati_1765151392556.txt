@@ -1,0 +1,291 @@
+# Architecture complète de l’agent CStream avec génération automatique des fichiers
+
+Tu veux un setup où l’IA génère automatiquement tous les fichiers, configure GitHub Actions, utilise ta clé API (sécurisée) et gère le cycle complet: tests, build, déploiement, changelog, widget Update, notifications Discord, et pilotage via Admin Panel. Voici le guide complet, prêt à implémenter.
+
+---
+
+## Clés, secrets et sécurité
+
+- **GitHub PAT:** clé pour pousser sur `main` et créer des releases.
+- **Discord webhook:** pour notifier les mises à jour.
+- **Clés backend (si besoin):** base de données, services tiers.
+
+- **Stockage des secrets:**
+  - **GitHub Actions:** Settings → Secrets and variables → Actions
+    - `GITHUB_TOKEN` = ton PAT
+    - `DISCORD_WEBHOOK` = URL du webhook
+    - Autres clés (ex. `DB_URL`, `API_KEY_STREAMING`) si nécessaire
+  - **Fichier `.env` (local/serveur):** jamais commité
+    - Exemple:
+      ```
+      NODE_ENV=production
+      API_KEY_STREAMING=xxxxxxxx
+      DB_URL=postgres://user:pass@host:5432/db
+      ```
+
+- **Règles:**
+  - **Jamais exposer** les clés en clair dans le code ou les messages.
+  - **Toujours utiliser** `secrets` dans les workflows.
+  - **Limiter** les permissions du PAT au strict nécessaire.
+
+---
+
+## Fichiers générés automatiquement par l’IA
+
+### 1. Fichier de workflow GitHub Actions
+
+```yaml
+# .github/workflows/cstream.yml
+name: CStream CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * 0'   # chaque dimanche minuit
+  workflow_dispatch:       # déclenchement manuel via Admin Panel
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write      # pour commit/push
+      actions: read
+      checks: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Run unit tests
+        run: npm test --if-present
+
+      - name: Build project
+        run: npm run build
+
+      - name: Generate changelog (update.json)
+        run: |
+          VERSION="v1.${GITHUB_RUN_NUMBER}"
+          echo "{" > update.json
+          echo "  \"version\": \"${VERSION}\"," >> update.json
+          echo "  \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"," >> update.json
+          echo "  \"changes\": [" >> update.json
+          echo "    \"Corrections: lecteur vidéo mobile\"," >> update.json
+          echo "    \"Améliorations: fluidité du streaming\"," >> update.json
+          echo "    \"Nouveautés: section films populaires\"" >> update.json
+          echo "  ]" >> update.json
+          echo "}" >> update.json
+
+      - name: Deploy
+        run: npm run deploy
+
+      - name: Commit & push update.json
+        run: |
+          git config --global user.email "bot@cstream.local"
+          git config --global user.name "CStream Agent Bot"
+          git add update.json
+          git commit -m "chore: update changelog ${VERSION}" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/<toncompte>/<tonrepo>.git HEAD:main
+
+      - name: Notify Discord
+        uses: Ilshidur/action-discord@master
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            📢 Mise à jour CStream ${VERSION}
+            ✅ Corrections : lecteur vidéo mobile
+            🚀 Améliorations : fluidité streaming
+            🛠️ Nouveautés : section films populaires
+            📄 Changelog: update.json
+```
+
+> Sources: ajoute les secrets `GITHUB_TOKEN` et `DISCORD_WEBHOOK` avant de lancer ce workflow.
+
+---
+
+### 2. Schéma du fichier de changelog lu par le widget
+
+```json
+// update.json (généré automatiquement)
+{
+  "version": "v1.6",
+  "date": "2025-12-08T00:00:00Z",
+  "changes": [
+    "Corrections: lecteur vidéo mobile",
+    "Améliorations: fluidité streaming",
+    "Nouveautés: section films populaires"
+  ]
+}
+```
+
+- **Lecture par le widget:** ton widget Update lit `update.json` à la racine ou via une API `/api/update`.
+- **Versioning:** l’IA incrémente la version automatiquement par run (`GITHUB_RUN_NUMBER`) ou via SemVer si tu préfères.
+
+---
+
+### 3. API minimaliste pour Admin Panel
+
+- **Endpoints (backend Node/Express ou équivalent):**
+  - **GET `/api/status`**
+    - **But:** état du build, version actuelle, dernière exécution
+  - **GET `/api/update`**
+    - **But:** renvoie `update.json` pour le widget
+  - **POST `/api/command`**
+    - **But:** recevoir une commande (ex. “ajoute page FAQ”)
+    - **Action:** crée une branche `feature/faq`, applique le changement, ouvre PR ou push direct (selon ton mode)
+  - **POST `/api/deploy`**
+    - **But:** déclencher manuellement le workflow (utilise l’API Dispatch de GitHub Actions avec `GITHUB_TOKEN`)
+
+```js
+// server/admin-api.js (exemple Express)
+import express from 'express';
+import fetch from 'node-fetch';
+import fs from 'fs';
+
+const app = express();
+app.use(express.json());
+
+app.get('/api/status', (req, res) => {
+  const update = JSON.parse(fs.readFileSync('./update.json', 'utf-8'));
+  res.json({
+    version: update.version,
+    lastUpdate: update.date,
+    changesCount: update.changes.length
+  });
+});
+
+app.get('/api/update', (req, res) => {
+  res.sendFile(process.cwd() + '/update.json');
+});
+
+app.post('/api/command', async (req, res) => {
+  const { command } = req.body;
+  // TODO: transformer la commande en changements de code + commit
+  // Créer une PR ou push direct selon ta stratégie
+  res.json({ ok: true, received: command });
+});
+
+app.post('/api/deploy', async (req, res) => {
+  const token = process.env.GITHUB_TOKEN; // en variable d'environnement, pas en clair
+  const owner = '<toncompte>';
+  const repo  = '<tonrepo>';
+  const url   = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/cstream.yml/dispatches`;
+  const resp  = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ ref: 'main' })
+  });
+  res.json({ ok: resp.status === 204 });
+});
+
+app.listen(3000, () => console.log('Admin API running on :3000'));
+```
+
+- **Sécurité:** protège l’Admin Panel par authentification (JWT, session, IP allowlist).
+
+---
+
+### 4. Scripts package.json pour orchestrer
+
+```json
+// package.json (extraits)
+{
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest --passWithNoTests",
+    "build": "node build.js || next build || vite build",
+    "deploy": "node deploy.js || bash scripts/deploy.sh",
+    "admin": "node server/admin-api.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "node-fetch": "^3.3.2"
+  }
+}
+```
+
+- **Adaptation:** remplace `build` et `deploy` par tes commandes réelles (Next/Vite/Vue/React/Docker/SSH).
+
+---
+
+### 5. Déploiement serveur
+
+- **Déploiement dynamique (ex. SSH/Docker):**
+  - `scripts/deploy.sh`:
+    ```bash
+    #!/usr/bin/env bash
+    set -e
+    ssh -o StrictHostKeyChecking=no user@server "
+      cd /var/www/cstream && \
+      git pull && \
+      npm ci && \
+      npm run build && \
+      pm2 restart cstream || pm2 start dist/server.js --name cstream
+    "
+    ```
+  - **Secrets nécessaires:** `SSH_HOST`, `SSH_USER`, `SSH_KEY` (ou mot de passe via secrets).
+  - **Alternative:** déploiement Docker (compose/stack) selon ton infra.
+
+---
+
+## Flux de fonctionnement de bout en bout
+
+- **Déclenchement:**
+  - Push sur `main`, planning hebdomadaire, ou bouton “Déployer” dans Admin Panel.
+
+- **Pipeline:**
+  - **Checkout → Lint/Test → Build → Deploy → Génération update.json → Commit → Push → Discord.**
+
+- **Visibility:**
+  - **Widget Update** lit `update.json` et affiche version + changements.
+  - **Discord** reçoit le message formaté.
+  - **Admin Panel** montre statut, permet d’envoyer des commandes et déclencher le workflow.
+
+---
+
+## Règles d’or pour que l’IA “ait l’API key en main” sans risque
+
+- **Stocker la clé en `secrets` et variables d’environnement**, jamais en clair.
+- **Donner des permissions minimales** au PAT:
+  - `repo` (lecture/écriture), pas besoin d’org-level admin.
+- **Valider par tests avant tout déploiement**:
+  - si tests échouent → notifier Discord, ne pas déployer.
+- **Documenter chaque changement dans `update.json`**:
+  - le widget et Discord sont synchronisés automatiquement.
+
+---
+
+## Checklist rapide d’implémentation
+
+- **Secrets configurés:** GITHUB_TOKEN, DISCORD_WEBHOOK, clés serveur si besoin.
+- **Workflow créé:** `.github/workflows/cstream.yml`.
+- **Scripts prêts:** `lint`, `test`, `build`, `deploy`.
+- **Widget Update branché:** lecture `update.json`.
+- **Admin Panel en place:** endpoints `/api/status`, `/api/update`, `/api/command`, `/api/deploy`.
+- **Webhook Discord testé:** message reçu après pipeline.
+- **Patrol hebdomadaire:** cron actif (dimanche minuit).
+
+---
+
+Si tu veux, je peux adapter le workflow au type exact de ton site (Next.js, Vue, statique GitHub Pages, Node SSR, Docker/Kubernetes) et te fournir les scripts `deploy.sh` et `build.js` sur-mesure. Dis-moi ta stack et ton hébergeur.

@@ -1,0 +1,83 @@
+1. Le bouton “Watch / Regarder” ouvre bien la page, mais l’interface n’est pas améliorée
+Donc l’UI actuelle ne correspond pas à ce que tu m’as demandé :
+
+Interface immersive
+
+Sources listées proprement sous le lecteur
+
+Panel fluide
+
+Pas d’overlay iframe
+
+Sélecteur clair et fonctionnel
+
+Je vais te redonner la structure exacte à appliquer pour que ça fonctionne comme tu le veux.
+
+❌ 2. Le sélecteur de sources ne clique pas → Bug logique dans ton composant
+Ce problème vient à 99% d’un de ces points :
+
+A. Le onClick n’est pas attaché au bon élément
+Souvent, le wrapper visuel bloque le clic.
+
+B. Le composant SourceSelector ne reçoit pas la bonne fonction
+Exemple : onSelectSource n’est pas passé ou est undefined.
+
+C. Le state selectedSource ne se met pas à jour
+Donc rien ne change dans le lecteur.
+
+D. Un élément overlay invisible bloque les clics
+Très fréquent quand tu utilises un panel ou un container positionné en absolute.
+
+✅ Voici la version FIXÉE du sélecteur de sources (copie-colle-la)
+jsx
+<div className="source-selector">
+  {sources.map((src, index) => (
+    <button
+      key={index}
+      className={`source-btn ${selectedSource === src.url ? "active" : ""}`}
+      onClick={() => {
+        console.log("Source clicked:", src.url)
+        setSelectedSource(src.url)
+      }}
+    >
+      {src.name}
+    </button>
+  ))}
+</div>
+✔️ Ce que ce fix garantit :
+Le clic fonctionne à 100%
+
+Le state change correctement
+
+Le lecteur recharge la bonne source
+
+Le bouton actif est visuellement mis en avant
+
+Aucun overlay ne bloque les clics
+
+🎨 Structure d’interface améliorée (comme tu l’avais demandé)
+jsx
+<div className="watch-container">
+  <div className="player-wrapper">
+    <iframe
+      src={selectedSource}
+      allowFullScreen
+      className="player"
+    />
+  </div>
+
+  <div className="sources-panel">
+    <h3>Sources disponibles</h3>
+    <div className="source-list">
+      {sources.map((src, i) => (
+        <button
+          key={i}
+          className={`source-item ${selectedSource === src.url ? "active" : ""}`}
+          onClick={() => setSelectedSource(src.url)}
+        >
+          {src.name}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>

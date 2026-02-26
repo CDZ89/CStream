@@ -1,0 +1,145 @@
+Parfait, je comprends exactement ce que tu veux 🎯 : un **widget de type Netflix/Crunchyroll** qui apparaît **7 minutes avant la fin de l’épisode**, avec un design propre et compact :
+
+- 🖼️ **Image officielle de l’épisode suivant** (via TMDB `still_path`).  
+- 📝 **Titre + numéro de l’épisode suivant**.  
+- ▶️ **Bouton “Regarder prochain épisode”**.  
+- ❌ **Petite croix pour fermer le widget** si l’utilisateur ne veut pas.  
+- ⚡ **Auto‑play** du prochain épisode si l’utilisateur ne ferme pas le widget.  
+
+---
+
+## 🛠️ Structure HTML du widget
+
+```html
+<div id="next-episode-widget" class="widget">
+  <div class="widget-content">
+    <img id="next-episode-image" alt="Prochain épisode">
+    <div class="widget-info">
+      <h4 id="next-episode-title"></h4>
+      <button id="watch-next">▶️ Regarder prochain épisode</button>
+    </div>
+    <span id="close-widget">&times;</span>
+  </div>
+</div>
+```
+
+---
+
+## 🎨 CSS pour un rendu type Netflix
+
+```css
+.widget {
+  display: none; /* caché par défaut */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  z-index: 9999;
+}
+
+.widget-content {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.widget-content img {
+  width: 120px;
+  height: 70px;
+  object-fit: cover;
+}
+
+.widget-info {
+  padding: 10px;
+}
+
+.widget-info h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.widget-info button {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#close-widget {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+```
+
+---
+
+## ⚙️ JS logique du widget
+
+```js
+const video = document.getElementById("player"); // si HTML5 <video>
+const widget = document.getElementById("next-episode-widget");
+const nextImage = document.getElementById("next-episode-image");
+const nextTitle = document.getElementById("next-episode-title");
+const watchNextBtn = document.getElementById("watch-next");
+const closeWidget = document.getElementById("close-widget");
+
+function showNextEpisodeWidget(nextEp) {
+  nextImage.src = TMDB_IMAGE(nextEp.still_path, "w300");
+  nextTitle.textContent = `Épisode ${nextEp.episode_number} — ${nextEp.name}`;
+  widget.style.display = "block";
+}
+
+function hideWidget() {
+  widget.style.display = "none";
+}
+
+closeWidget.addEventListener("click", hideWidget);
+
+watchNextBtn.addEventListener("click", () => {
+  // Charger l’épisode suivant
+  episodeSelector.value = parseInt(episodeSelector.value, 10) + 1;
+  onEpisodeChange();
+  hideWidget();
+});
+
+// Détection 7 min avant la fin
+video.addEventListener("timeupdate", () => {
+  const remaining = video.duration - video.currentTime;
+  if (remaining <= 420 && widget.style.display === "none") {
+    const nextIndex = parseInt(episodeSelector.value, 10) + 1;
+    const nextEp = tmdbSeason.episodes[nextIndex];
+    if (nextEp) {
+      showNextEpisodeWidget(nextEp);
+    }
+  }
+});
+
+// Auto-play si l’utilisateur ne ferme pas
+video.addEventListener("ended", () => {
+  if (widget.style.display === "block") {
+    watchNextBtn.click();
+  }
+});
+```
+
+---
+
+## ✅ Résultat
+
+- **7 minutes avant la fin** → un petit widget apparaît en bas à droite, avec l’image et le titre du prochain épisode.  
+- L’utilisateur peut cliquer sur **▶️ Regarder prochain épisode** ou fermer avec la ❌.  
+- Si l’utilisateur ne ferme pas, **l’épisode suivant démarre automatiquement** à la fin.  
+- Si c’est le dernier épisode, tu peux remplacer `showNextEpisodeWidget(nextEp)` par une **recommandation d’anime** (comme Netflix).  
+
+---
+
+👉 Veux-tu que je te prépare aussi la **version “dernier épisode”** où le widget propose automatiquement un autre anime recommandé (via TMDB “similar shows”) ?

@@ -1,0 +1,120 @@
+# Style et structure complète des pages de 1Shows
+
+Ce descriptif couvre la structure, les composants, la hiérarchie visuelle et les interactions des pages clé de 1Shows, sans couleurs, avec un style détaillé et cohérent.
+
+---
+
+## Structure globale du site
+
+- **En-tête fixe:** barre supérieure contenant le logo/titre, un lien “Movies”, “TV”, “LiveTV”, “Sports”, un champ de recherche, et des liens d’authentification (Login). Les éléments de navigation mènent aux sections correspondantes et se répètent sur les pages de détail. L’en-tête conserve une densité modérée et un alignement horizontal structuré. 
+- **Recherche universelle:** accessible depuis la barre supérieure, orientée vers films, séries, filtres, genres, acteurs, et fournisseurs de streaming. Les liens de recherche s’ouvrent vers une page dédiée avec filtres, ce qui indique une architecture orientée index + détail. 
+- **Pied de page compact:** regroupe des sections “Authentication”, “Explore”, “Search”, “Get in Touch”, avec des liens directs (Login, Favorites, Watchlist, Rated Film, Movies, TV Shows, Top Rated Movies, Upcoming Movies). Le pied de page sert également d’espace d’orientation rapide pour l’exploration et le compte. 
+
+---
+
+## Page d’accueil
+
+- **Disposition:** navigation principale en haut, contenu focalisé sur l’exploration “Movies” par défaut, avec un accès facile aux autres verticales (TV, LiveTV, Sports). L’absence de titre spécifique indique un template minimaliste centré sur les listes et la recherche. 
+- **Comportements attendus:** l’accueil agit comme une porte d’entrée vers le catalogue, les filtres et les classements, avec une structure prête à accueillir des carrousels ou des grilles de contenus, pilotée par la recherche et les segments “Top Rated”/“Upcoming”. 
+
+---
+
+## Page film complète (exemple: Zootopia 2)
+
+### En-tête et navigation
+
+- **Barre supérieure:** liens “Movies”, “TV”, “LiveTV”, “Sports”, “Search”, et “Login”. Le fil d’Ariane minimal est implicite via la navigation, sans breadcrumb formel sur la page. Le login peut rediriger vers la page en cours après authentification. 
+
+### En-tête de contenu et résumé
+
+- **Titre principal:** le nom du film en grand titre, aligné à gauche, suivi d’images d’affiche/visuels (poster et backdrops) affichés en séquence ou grille simple. Le score numérique (ex. 7.7) est présenté à proximité du visuel pour un repère rapide. 
+- **Fournisseur de données:** mention “Available on The Movie Database” avec logo, indiquant la provenance des métadonnées. Cet élément agit comme un badge/source, placé près du header de la fiche. 
+
+### Métadonnées et informations clés
+
+- **Production:** bloc “Produced by” listant la société (logo + nom cliquable), chaque item menant à une recherche filtrée par compagnie. Style en liste verticale avec icône/visuel de compagnie. 
+- **Date de sortie et durée:** affichage textuel du jour, date et pays, suivi du runtime formaté en minutes et format lisible (1h 47m). Placé dans la colonne d’infos du film. 
+- **Genres:** liste de genres cliquables (Animation, Comedy, Adventure, Family, Mystery), chaque genre renvoie vers une recherche filtrée. Présentation en puces/liste, proche des métadonnées principales. 
+- **Réalisateurs:** bloc “Directed by” avec portrait miniature et nom/role (Director), présenté en sous-sections, chaque personne peut avoir un visuel et un rôle. 
+
+### Actions et interactions utilisateur
+
+- **Actions sociales:** “Favorite”, “Watchlist”, “Share”, “Rated Film” (via login). Les boutons sont groupés sous ou près du titre et nécessitent authentification, avec un modal “Login Required!” qui explique les bénéfices (noter, ajouter aux favoris, watchlist) et propose redirection. Les CTA utilisent des libellés directs et un flux clair. 
+- **État non authentifié:** toute interaction protégée déclenche le panneau d’authentification/alerte avec options “Close” et “Proceed to Login”, indiquant une gestion d’état cohérente et non intrusive. 
+
+### Sections de contenu
+
+- **Overview:** paragraphe narratif décrivant l’intrigue, accompagné de plusieurs images (backdrops), disposées en mosaïque ou grille fluide, permettant un aperçu visuel étendu. Le texte est d’un seul bloc, suivi d’images illustratives. 
+- **Collection:** bloc “Zootopia Collection” listant les titres de la saga avec vignettes (affiches réduites) et année, en colonnes ou cartes verticales compactes; chaque item mène à la fiche du film correspondant. Un item peut afficher une date invalide, conservé pour la complétude de la collection. 
+- **Reviews:** section avec cartes de critiques. Chaque critique affiche:
+  - **Auteur + notation** (ex. Rated: 8/9/7)
+  - **Date relative** (ex. 17 days ago)
+  - **Résumé ou lien vers critique complète**
+  - **Avatar miniature** si disponible.
+  Présentation en liste verticale, chaque carte ayant un titre, un extrait et éventuellement un lien externe. 
+- **Casts & Credits:** grille ou liste avec portrait, nom de l’acteur, et rôle (ex. “Judy Hopps (voice)”), chaque carte est cliquable. Un bouton “Show All” indique pagination ou expansion pour charger le reste du casting. Les cartes comportent image (w185), nom et rôle sous forme de sous-titre. 
+- **Recommendation & Similar:** grille de suggestions avec poster moyen (w300) et titre, chaque carte redirige vers la fiche correspondante. Disposition en grille multi-colonnes pour optimiser la densité visuelle. 
+
+### Authentification et parcours compte
+
+- **Bloc “Authentication”:** liens centralisés pour Login, Favorites, Watchlist, Rated Film pointant vers le profil, faisant office de raccourcis de compte. Placé dans une zone globale (souvent pied de page) accessible depuis chaque page, garantissant un parcours utilisateur uniforme. 
+
+### Explore et Search
+
+- **Explore:** liens d’exploration rapide (Movies, TV Shows, Top Rated Movies, Upcoming Movies, Popular TV Shows), indiquant des listes préfiltrées/triées. Idéal pour navigation complémentaire depuis une fiche. 
+- **Search:** liens utilitaires vers filtres, genres, acteurs, providers, vote count; structure indiquant une page de recherche pouvant composer des requêtes par critères multiples, utile pour prolonger la découverte. 
+
+---
+
+## Composants et style détaillés
+
+### Cartes média
+
+- **Affiche:** image avec ratio cohérent, titre en légende, score adjacent ou sous le titre.
+- **Hover/Focus:** état visuel pour indiquer la cliquabilité (bordure/élévation), sans dépendance à la couleur; utiliser ombres/épaisseurs pour feedback tactile.
+- **Grille:** disposition responsive en colonnes fluides, marges régulières, espacement entre cartes pour lisibilité.
+
+### Listes et sections
+
+- **Listes cliquables:** genres, compagnies, acteurs presentés en lignes ou puces; chaque item a une zone cliquable étendue et un feedback de focus clavier.
+- **Sections titrées:** titres de section en typographie plus grande avec espacement supérieur et inférieur; contenu encadré par marges uniformes.
+
+### Modaux et états protégés
+
+- **Modal “Login Required!”:** centré, largeur moyenne, titre, texte explicatif, deux boutons (Close, Proceed to Login). Navigation clavier possible, focus piégé dans le modal, fermeture par échappement.
+- **CTA désactivés:** actions favorites/watchlist désactivées pour non authentifiés avec tooltip explicatif; activation après login.
+
+### Typographie et hiérarchie
+
+- **Titres:** H1 pour le nom du film, H2 pour sections (“Overview”, “Reviews”), H3 pour sous-sections (“Directed by”, “Casts & Credits”).
+- **Texte courant:** paragraphe lisible avec interligne suffisant, largeur maximale pour éviter les lignes trop longues.
+- **Labels/données:** métadonnées en lignes courtes, séparateurs discrets, icônes miniatures pour compagnies/personnes.
+
+### Icônes et visuels
+
+- **Portraits et logos:** tailles standardisées (w92, w185, w300, w500), alignés en grille, avec légende nom/rôle sous l’image.
+- **Badges source/score:** petits visuels (provider logo) et score numérique adjacents au titre; tailles compactes et lisibles.
+
+### Accessibilité et interactions
+
+- **Navigation clavier:** focus visible sur liens et boutons, ordre logique, modals accessibles.
+- **Responsive:** grille fluide, barres de navigation repliables sur mobile, sections empilées (titre → image → actions → texte → listes).
+- **Performances visuelles:** lazy‑load des images, placeholders pour portraits, pagination ou “Show All” pour longues listes.
+
+---
+
+## Comportements et parcours utilisateur
+
+- **Parcours découverte:** de la fiche film, l’utilisateur passe aux genres associés, aux compagnies ou aux recommandations via listes cliquables; la structure favorise exploration latérale du catalogue. 
+- **Parcours compte:** toute action sociale mène au flux d’authentification; après connexion, l’utilisateur doit revenir à la fiche en conservant l’état (redirection `redirect_to` présente dans le lien Login). 
+
+---
+
+## Résumé des éléments clés du style
+
+- **Navigation claire et répétée:** entête constant, sections “Explore/Search” et liens de compte standardisés pour cohérence et orientation. 
+- **Fiches riches en visuels:** posters/backdrops en différentes tailles, blocs d’infos structurés, actions sociales groupées. 
+- **Sections modulaires:** Overview, Collection, Reviews, Casts & Credits, Recommendations; chacune présentée comme un module autonome avec titre et contenu cohérent. 
+- **États d’authentification polis:** modal dédié, CTA guidés, parcours de login avec redirection propre. 
+
+> Sources: 

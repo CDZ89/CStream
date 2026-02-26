@@ -1,0 +1,53 @@
+**Résumé rapide :** **Vous ne pouvez pas forcer un site tiers à s’afficher en iframe si le serveur l’interdit** ; les solutions fiables sont **utiliser l’embed officiel**, **héberger la vidéo vous‑même**, ou **mettre en place un proxy serveur** en connaissance de cause (risques légaux et sécurité).
+
+### Comparaison rapide des options
+| **Méthode** | **Facilité** | **Contrôle** | **Fiabilité** |
+|---|---:|---:|---:|
+| Embed officiel (YouTube, Vimeo) | Élevée | Faible | Élevée |
+| Héberger sur votre serveur / CDN | Moyenne | Élevé | Très élevée |
+| Proxy serveur (reverse proxy) | Faible | Élevé | Moyenne |
+| Contournements côté client (JS) | Très faible | N/A | Très faible |
+
+> Sources: 
+
+---
+
+### Pourquoi votre iframe est bloquée
+Les navigateurs appliquent des protections envoyées par le **serveur source** : **`X-Frame-Options`** et la directive **`frame-ancestors`** de la Content‑Security‑Policy. Si le site distant renvoie `SAMEORIGIN` ou interdit les ancêtres, le navigateur refuse l’affichage et affiche « Vidéo indisponible ». Il existe des méthodes techniques pour contourner (proxy, modification d’en‑têtes), mais elles impliquent un traitement côté serveur.
+
+### Que faire, étape par étape
+1. **Privilégiez l’embed officiel**  
+   - Cherchez l’URL d’embed fournie par le service (ex. `https://www.youtube.com/embed/ID`). C’est la solution la plus simple et conforme.
+
+2. **Hébergez la vidéo vous‑même** *(meilleure fiabilité)*  
+   - Stockez le fichier sur votre serveur ou un CDN et utilisez un lecteur HTML5 (ex. Video.js). Vous contrôlez les en‑têtes et l’affichage.
+
+3. **Proxy côté serveur (si vous avez les droits)**  
+   - Créez un endpoint serveur qui récupère la ressource distante, **supprime/ajuste** les en‑têtes `X-Frame-Options`/CSP, puis sert le contenu à votre iframe. Des scripts d’exemple existent (PHP/Node) pour ce cas d’usage.  
+   - **Exemple minimal Node/Express** :
+```js
+const express = require('express');
+const fetch = require('node-fetch');
+const app = express();
+
+app.get('/proxy', async (req, res) => {
+  const url = req.query.u;
+  const r = await fetch(url);
+  const body = await r.buffer();
+  res.set('Content-Type', r.headers.get('content-type') || 'text/html');
+  // Ne pas renvoyer les en-têtes X-Frame-Options/CSP
+  res.send(body);
+});
+
+app.listen(3000);
+```
+4. **Vérifiez les en‑têtes** avec `curl -I https://exemple.com/video` pour repérer `X-Frame-Options` ou `Content-Security-Policy`.
+
+### Risques et limites
+- **Légalité et CGU** : le proxy peut violer les conditions d’utilisation ou les droits d’auteur ; n’utilisez‑le que pour du contenu dont vous avez les droits ou l’accord explicite du fournisseur.  
+- **Sécurité et performance** : proxying augmente la charge serveur et peut exposer à des vulnérabilités si mal configuré.  
+- **Impossibilité côté client** : vous **ne pouvez pas** modifier ces en‑têtes depuis le navigateur ; l’en‑tête est défini par le serveur source.
+
+---
+
+**Action possible maintenant :** Je peux **générer un script proxy prêt à l’emploi** (Node.js ou PHP) adapté à votre hébergement, avec gestion des en‑têtes et conseils de sécurité.

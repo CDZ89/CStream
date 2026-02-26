@@ -1,0 +1,64 @@
+Je vois ce que tu veux faire stesp 👌 : ta **page chat** doit fonctionner comme un mini‑Discord, avec IA + ajout d’amis. Tu dis que ça marche avec **Supabase** mais pas avec ton endpoint `/add-friend/...`.  
+
+---
+
+## 🚫 Pourquoi ça ne marche pas
+Quelques causes fréquentes :
+- **Endpoint backend** : ton route `/add-friend/:id` doit être bien défini côté serveur (POST ou GET). Si tu l’appelles en GET alors que ton backend attend un POST, ça échoue.  
+- **Auth Supabase** : si tu n’envoies pas le `user_id` ou le token Supabase dans la requête, l’API refuse.  
+- **CORS** : si ton frontend n’a pas les bons headers (`Access-Control-Allow-Origin`), le navigateur bloque.  
+- **Mapping DB** : ta table `friends` doit avoir une relation claire : `user_id` + `friend_id`. Si tu n’insères pas les deux, ça ne s’enregistre pas.  
+
+---
+
+## ✅ Exemple d’implémentation avec Supabase
+### Table `friends`
+```sql
+create table friends (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references users(id),
+  friend_id uuid references users(id),
+  created_at timestamp default now()
+);
+```
+
+### Backend (Node.js/Express)
+```js
+app.post("/add-friend/:friendId", async (req, res) => {
+  const { userId } = req.body; // récupéré via auth
+  const { friendId } = req.params;
+
+  const { data, error } = await supabase
+    .from("friends")
+    .insert([{ user_id: userId, friend_id: friendId }]);
+
+  if (error) return res.status(400).json({ error });
+  res.json({ success: true, data });
+});
+```
+
+### Frontend (React/Vue)
+```js
+async function addFriend(friendId) {
+  const res = await fetch(`/add-friend/${friendId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: currentUser.id })
+  });
+  const data = await res.json();
+  console.log(data);
+}
+```
+
+---
+
+## 💡 Astuce
+- Vérifie que ton **frontend envoie bien le `userId`** (celui connecté via Supabase).  
+- Vérifie que ton **backend accepte POST** et insère correctement dans la table.  
+- Teste directement avec **Postman** ou `curl` pour voir si l’endpoint fonctionne.  
+
+---
+
+👉 En résumé : ton problème vient sûrement du **mapping user_id/friend_id** ou du **type de requête (GET vs POST)**. Si Supabase fonctionne en direct mais pas ton endpoint, c’est que ton backend ne relaie pas correctement l’info.  
+
+Veux-tu que je t’écrive un **prompt complet** pour une API "ajouter un ami" qui marche à coup sûr avec Supabase (auth + DB + frontend) ?

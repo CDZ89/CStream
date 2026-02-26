@@ -1,0 +1,49 @@
+**En bref :** Tes images TMDB ne s’affichent plus car tu utilises probablement le mauvais domaine pour les posters/backdrops. Tu ne peux pas charger directement depuis `media.themoviedb.org` (réservé au site TMDB). Il faut utiliser **`image.tmdb.org`**, qui est le domaine public prévu pour les intégrations.
+
+---
+
+## 🔍 Pourquoi ça bloque ?
+- **TMDB a deux domaines d’images :**
+  - `media.themoviedb.org` → réservé à leur propre site, inaccessible pour les intégrations externes.
+  - `image.tmdb.org` → domaine public pour développeurs et API.
+- Si ton code pointe vers `media.themoviedb.org`, les images seront bloquées et n’apparaîtront pas.
+- Certains pays ou réseaux peuvent aussi bloquer temporairement TMDB, mais le problème le plus courant est l’URL utilisée.
+
+---
+
+## ✅ Solution
+1. **Vérifie ton code** :  
+   Dans ton site (par ex. `cstream.replit.app`), regarde comment tu construis l’URL des images.  
+   Exemple incorrect :  
+   ```js
+   https://media.themoviedb.org/t/p/w500/xyz.jpg
+   ```
+   Exemple correct :  
+   ```js
+   https://image.tmdb.org/t/p/w500/xyz.jpg
+   ```
+
+2. **Utilise les tailles officielles** :  
+   TMDB propose plusieurs tailles (`w200`, `w500`, `original`, etc.).  
+   Exemple :  
+   ```js
+   const posterUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
+   ```
+
+3. **Teste en local** :  
+   Essaie d’ouvrir directement une URL d’image TMDB dans ton navigateur.  
+   - Si `image.tmdb.org` fonctionne → ton problème est bien dans le code.  
+   - Si ça ne marche pas → vérifie ton réseau ou un éventuel blocage IP.
+
+---
+
+## ⚠️ Points à surveiller
+- **CORS** : TMDB autorise les requêtes d’images, mais si tu fais un fetch API direct, assure-toi que tu utilises l’endpoint API (`api.themoviedb.org`) pour les données et `image.tmdb.org` pour les images.  
+- **Cache** : parfois les images peuvent sembler “disparaître” si ton navigateur ou ton hébergeur (Replit) a un cache corrompu. Vide le cache et recharge.  
+- **HTTPS obligatoire** : assure-toi que tes URLs sont bien en HTTPS, sinon les navigateurs modernes bloquent le contenu mixte.
+
+---
+
+👉 Chemsdine, je te conseille de vérifier dans ton code où tu génères les URLs d’images TMDB. Si tu veux, tu peux me montrer un extrait de ton code (la partie où tu affiches les posters/backdrops), et je t’indique exactement quoi modifier pour que ça refonctionne.  
+
+Veux-tu que je t’écrive un **snippet React/JS** corrigé pour afficher correctement les images TMDB ?

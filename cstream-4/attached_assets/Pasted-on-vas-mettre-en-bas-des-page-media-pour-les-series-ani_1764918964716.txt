@@ -1,0 +1,161 @@
+on vas mettre en bas des page media pour les series anime tv ou encore film tout ce qui sont admin editor et surper admin pourront sur la page ajouter des lien url avec leur langue et elle sera enregnistré sur ce tmdb de media pas d'autre et je peux modifier sans dans la page admin ameliorer l'ui du site encore mieux passé sur laa version v.0.3 (beta) avec un widget mise a jour de toute les langue avec ce qu'il y a de nouveau et notification marche toujour pas quand sur admin j'envoie une notification sa marche pas sur la navabr notification il y a rien et dans le chat quand on parle avec quelequn on peut voir si il est en ligne hors ligne ou ne pas derangé ameliore sa au max et quand quelqun nous ecrit et qu'on est pas sur la page de chat sa mets un petit rond rouge sur le bouton chaat et daans notification et on peut le message sans bug et je veux que l'ia groq est sans bug et connecté h24 avec mon site je veux quelle puisse connaitret tout mes page tout comme sa si je lui pose exemple ou est la page profil et me donne la page et elle prend tout en compte le code tout tout sans bug et le markdown le tsx le txt bref tout et dans la page profil quand je me connecte des fois sa me metss : Impossible de charger le profil et pareil quand j'importe une image elle mets : Erreur lors du téléchargement de l'image a chaaque fois et sa sera aussi possible pour la baniere de changé de coulleur ou importé une baniere et dans chat quand on clique sur l'utulisateur on peut voir son profil sont compte son nom sa banniere image et que sa marche et le status tout compris et que la langue est traduit automatique et dans une page media quand je mets en favoris dans profil sa marche toujour 0 pareil pour historique suivie et series vue et film vue ameliore le bouton et l'ui et que l'app soit fluide et des petite animation de scrolling : Un timeline synchronisé au scroll, c’est quand plusieurs animations se déclenchent dans un ordre précis, comme une petite histoire visuelle qui se déroule au fur et à mesure que tu descends la page.
+🎬 Exemple avec GSAP + ScrollTrigger
+
+<div class="section intro">Intro</div>
+<div class="section step1">Étape 1</div>
+<div class="section step2">Étape 2</div>
+<div class="section step3">Étape 3</div>
+
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Crée une timeline
+const tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: ".intro",   // point de départ
+    start: "top center", // quand l'élément atteint le centre
+    end: "+=1000",       // durée du scroll
+    scrub: true,         // synchronisé avec le scroll
+    pin: true            // fixe la section pendant l'animation
+  }
+});
+
+// Ajoute des étapes dans l'ordre
+tl.to(".step1", { opacity: 1, y: -50, duration: 1 })
+  .to(".step2", { opacity: 1, x: 100, duration: 1 })
+  .to(".step3", { scale: 1.2, duration: 1 });
+
+✨ Résultat visuel
+
+    Quand tu commences à scroller sur la section Intro, elle se fixe à l’écran.
+    Step1 apparaît en fondu et monte légèrement.
+    Ensuite, Step2 glisse vers la droite.
+    Enfin, Step3 s’agrandit.
+    Tout est synchronisé avec ton scroll : si tu remontes, les animations se rejouent à l’envers.
+
+⚡ Avantages
+
+    Tu racontes une histoire visuelle fluide.
+    Tu gardes le contrôle : chaque étape se déclenche dans l’ordre que tu définis.
+    L’utilisateur vit une expérience immersive, comme une présentation animée au fil du défilement.
+    sans bug et on peut aussi dans la page contact demaandé pour faire soit editeur admin ou lecteur (il verifie si tout se pase bien) et je veux que dans admin quand je chsoisi de les promouvoir soit editeur soit admin soit lecteur je veux que dans leur profil c'est marqué et il peuve avoir des fonction que les membres on pas ameliore la page admin et aussi quand il y a des nouveau truc ou quand il y a une nouvel mise a jour je veux un badge aa coté sur pour voir new pour montrer ce qu'il y a de nouveau et dans la page profil en bas on vas faire comme un genre de truc qui aide les perosnnes qui ne savent poir regarder il mette leur genre des autre filtre et apres sa recherche se qui leur correspond comme media et aussi ameliore tout les pages et aussi en bas dans la page contact je veux quand l'utulisateur envoie sa m'envoie a moi dans la page admin et tout ce qui ont le badge pour cette fonction et aussi en bas de la page contact tu mets les personne qui on fait ce site propre avec leur photo de profil propre et que sa marche et aussi install tout les dependance qui faut et dans la page profil quand on s'inscrit que pour la premiere fois on a un stepper dans notre page de profil : sans bug et que sa marche et aussi voici un style pour les bouton :exemple : import React from 'react';
+    import './StarBorder.css';
+
+type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
+as?: T;
+className?: string;
+children?: React.ReactNode;
+color?: string;
+speed?: React.CSSProperties['animationDuration'];
+thickness?: number;
+};
+
+const StarBorder = <T extends React.ElementType = 'button'>({
+as,
+className = '',
+color = 'white',
+speed = '6s',
+thickness = 1,
+children,
+...rest
+}: StarBorderProps<T>) => {
+const Component = as || 'button';
+
+return (
+<Component
+className={star-border-container ${className}}
+{...(rest as any)}
+style={{
+padding: ${thickness}px 0,
+...(rest as any).style
+}}
+>
+<div
+className="border-gradient-bottom"
+style={{
+background: radial-gradient(circle, ${color}, transparent 10%),
+animationDuration: speed
+}}
+></div>
+<div
+className="border-gradient-top"
+style={{
+background: radial-gradient(circle, ${color}, transparent 10%),
+animationDuration: speed
+}}
+></div>
+<div className="inner-content">{children}</div>
+</Component>
+);
+};
+
+export default StarBorder; quand amelior l'ia quand elle reflechi :import './ShinyText.css';
+
+interface ShinyTextProps {
+text: string;
+disabled?: boolean;
+speed?: number;
+className?: string;
+}
+
+const ShinyText: React.FC<ShinyTextProps> = ({ text, disabled = false, speed = 5, className = '' }) => {
+const animationDuration = ${speed}s;
+
+return (
+<div className={shiny-text ${disabled ? 'disabled' : ''} ${className}} style={{ animationDuration }}>
+{text}
+</div>
+);
+};
+
+export default ShinyText;
+propre et aussi ameliore au max et on eput avoir un istorique avec elle qui reste elle mets un titre automatique on puet modifier notre message le copier arreter l'ia bref la total et sans bug on vas aussi dans le chat quand j'ecris a un ami je veux que je puisse aussi modifier mon message ou le supprimer pour moi ou pour tout le monde pareil pour les groupe ameliore aau max chaat et aussi on vas faire sa pour chat nouveau : sans bug :
+on vas faire un enrengistreur vocal quand on parle dans un groupe ou avec un ami : Parfait, concentrons‑nous uniquement sur l’enregistrement vocal 🎤, sans IA ni chat.
+🎤 Comment faire un enregistrement vocal simple (Web)
+
+En JavaScript, tu peux utiliser l’API native du navigateur :
+
+// Demande l'accès au micro
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+// Crée un enregistreur
+const recorder = new MediaRecorder(stream);
+let chunks = [];
+
+// Récupère les données audio
+recorder.ondataavailable = e => chunks.push(e.data);
+
+// Quand on arrête l'enregistrement
+recorder.onstop = () => {
+  const blob = new Blob(chunks, { type: 'audio/webm' });
+  const url = URL.createObjectURL(blob);
+
+  // Ajoute un lecteur audio pour réécouter
+  const audio = document.createElement('audio');
+  audio.src = url;
+  audio.controls = true;
+  document.body.appendChild(audio);
+};
+
+// Lance l'enregistrement
+recorder.start();
+
+// Arrête après 5 secondes (exemple)
+setTimeout(() => recorder.stop(), 5000);
+
+👉 Résultat : tu obtiens un fichier audio (Blob) que tu peux écouter directement avec <audio controls>.
+📱 Sur mobile
+
+    Android : utilise MediaRecorder (SDK Java/Kotlin).
+    iOS : utilise AVAudioRecorder (Swift/Objective‑C).
+
+Ces APIs permettent de capturer le son du micro et de sauvegarder un fichier .mp3 ou .m4a.
+⚡ Résumé
+
+    Web → MediaRecorder est ton outil principal.
+    Mobile → MediaRecorder (Android) ou AVAudioRecorder (iOS).
+    Tu peux ensuite stocker le fichier ou juste l’écouter localement.
+
+que sa marche et que sa apparait dans le chat sans bug et aussi dans un groupe ou juste entre ami dans le groupe il faut differente couleur pour voir que l'autre c'est l'autre ect et on voit son nom de profil et sa photo et quand il ecrit sa marche exemple : cdz est entrain d'ecrirre ou quand c'est un vocal cdz est entrain de voc et que sa marche sans bug et on voit les badge des utulisateur sans bug et l'admin et super adin peuve tout gerer quand quelqun crée un groupe c'est lui le chef du groupe mais si admin ou super admin veut supprimer il peut car il est admin

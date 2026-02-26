@@ -1,0 +1,284 @@
+ </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="w-56 rounded-xl bg-card/95 backdrop-blur-xl p-2 border border-border shadow-2xl shadow-black/50"
+                      align="end"
+                    >
+                      <div className="px-3 py-3 mb-2 rounded-lg bg-secondary/50">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {profile?.username || user.email}
+                        </p>
+                        <div className="mt-2 flex gap-1 flex-wrap items-center">
+                          {user?.email === 'chemsdine.kachid@gmail.com' ? (
+                            <RoleBadge role="creator" size="sm" />
+                          ) : user?.email === 'laylamayacoub@gmail.com' ? (
+                            <RoleBadge role="admin" size="sm" />
+                          ) : isAdmin ? (
+                            <RoleBadge role="admin" size="sm" />
+                          ) : (
+                            <RoleBadge role={role} size="sm" />
+                          )}
+                          <PresenceStatusBadge userId={user?.id || ''} />
+                        </div>
+                      </div>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/app")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        {t("nav.dashboard")}
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/agent")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30 flex items-center"
+                      >
+                        <Bot className="w-4 h-4 mr-2 text-purple-400" />
+                        <span className="flex-1 text-left">{t("nav.ai_agent")}</span>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/profile")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        {t("nav.profile")}
+                        <span className="ml-auto px-1.5 py-0.5 text-[8px] font-bold bg-amber-500/20 text-amber-400 rounded-full border border-amber-500/30">
+                          BETA
+                        </span>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/settings")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        {t("nav.settings")}
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/planning")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Planning & APIs
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator className="my-2 bg-border/30" />
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/chat")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        {t("nav.messaging")}
+                        <span className="ml-auto px-1.5 py-0.5 text-[8px] font-bold bg-amber-500/20 text-amber-400 rounded-full border border-amber-500/30">
+                          BETA
+                        </span>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        onClick={() => navigate("/contact")}
+                        className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                      >
+                        <Mail className="w-4 h-4 mr-2" />
+                        {t("nav.contact")}
+                      </DropdownMenuItem>
+
+                      {(isAdmin || isCreator || user?.email === 'chemsdine.kachid@gmail.com' || user?.email === 'laylamayacoub@gmail.com') && (
+                        <>
+                          <DropdownMenuSeparator className="my-2 bg-border/30" />
+                          {(isAdmin || user?.email === 'laylamayacoub@gmail.com') && (
+                            <DropdownMenuItem
+                              onClick={() => navigate("/admin")}
+                              className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                            >
+                              <Shield className="w-4 h-4 mr-2" />
+                              {t("nav.admin")}
+                            </DropdownMenuItem>
+                          )}
+                          {(isCreator || user?.email === 'chemsdine.kachid@gmail.com') && (
+                            <DropdownMenuItem
+                              onClick={() => navigate("/creator")}
+                              className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground hover:bg-secondary/30"
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Outils Créateur
+                              <span className="ml-auto px-1.5 py-0.5 text-[8px] font-bold bg-gradient-to-r from-primary/30 to-accent/30 text-primary rounded-full border border-primary/30">
+                                NEW
+                              </span>
+                            </DropdownMenuItem>
+                          )}
+                        </>
+                      )}
+
+                      <DropdownMenuSeparator className="my-2 bg-border/30" />
+
+                      <DropdownMenuItem
+                        onClick={handleSignOut}
+                        className="rounded-lg cursor-pointer text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        {t("nav.logout")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                      <div className="flex items-center gap-1.5 sm:gap-2.5">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="flex-shrink-0"
+                        >
+                          <Button
+                            variant="ghost"
+                            onClick={() => navigate("/auth")}
+                            className="text-gray-300 hover:text-white bg-white/5 border border-white/10 rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-semibold transition-all"
+                          >
+                            {t("nav.signIn")}
+                          </Button>
+                        </motion.div>
+
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="flex-shrink-0"
+                        >
+                          <Button
+                            onClick={() => navigate("/auth?mode=signup")}
+                            className="bg-primary hover:bg-primary/90 rounded-xl px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs text-white font-bold shadow-lg shadow-primary/20 border border-primary/50"
+                          >
+                            {t("nav.signUp")}
+                          </Button>
+                        </motion.div>
+                      </div>
+              )}
+
+            </div>
+          </div>
+
+            <AnimatePresence>
+              {mobileMenuOpen && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={closeMobileMenu}
+                    className="fixed inset-0 bg-black/80 backdrop-blur-md z-[55]"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    className="fixed top-[64px] left-4 right-4 bg-[#1a1a2e]/95 backdrop-blur-2xl rounded-2xl border border-primary/30 shadow-2xl z-[60] p-6 lg:hidden overflow-y-auto"
+                    style={{ maxHeight: 'calc(100vh - 100px)' }}
+                  >
+                    <div className="flex flex-col h-full space-y-8">
+                      {/* Header in Menu */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-12 h-12 border-2 border-primary/50 shadow-lg shadow-primary/20">
+                            <AvatarImage src={profile?.avatar_url || ""} />
+                            <AvatarFallback className="bg-primary/20 text-primary font-bold">{userInitial}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-white text-lg truncate max-w-[150px]">{profile?.username || user?.email?.split('@')[0]}</span>
+                            {user && <RoleBadge role={role} size="sm" />}
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={closeMobileMenu} className="rounded-full bg-white/5 hover:bg-white/10">
+                          <X className="w-6 h-6 text-white" />
+                        </Button>
+                      </div>
+
+                      {/* Navigation Links */}
+                      <div className="space-y-3">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-2 mb-4">Navigation</p>
+                        {navLinks.map((link, idx) => {
+                          const Icon = link.icon;
+                          const isActive = location.pathname === link.href;
+                          return (
+                            <motion.div
+                              key={link.href}
+                              initial={{ x: 20, opacity: 0 }}
+                              animate={{ x: 0, opacity: 1 }}
+                              transition={{ delay: idx * 0.05 }}
+                            >
+                              <Link
+                                to={link.href}
+                                onClick={closeMobileMenu}
+                                className={`flex items-center gap-3 p-3 rounded-xl transition-all ${isActive ? 'bg-primary/20 border border-primary/30 text-white' : 'text-gray-400 hover:bg-white/5'}`}
+                              >
+                                <div className={`p-2 rounded-xl ${isActive ? 'bg-primary text-white' : 'bg-white/5'}`}>
+                                  <Icon className="w-5 h-5" />
+                                </div>
+                                <span className="font-bold text-base capitalize">{link.label}</span>
+                                {isActive && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgb(var(--color-primary))]" />}
+                              </Link>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Settings & Admin */}
+                      <div className="space-y-3 pt-4 border-t border-white/5">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-2 mb-4">Paramètres</p>
+                        {isAdmin && (
+                          <Link to="/admin" onClick={closeMobileMenu} className="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500">
+                              <Shield className="w-5 h-5" />
+                            </div>
+                            <span className="font-bold text-base">Admin Panel</span>
+                          </Link>
+                        )}
+                        <Link to="/settings" onClick={closeMobileMenu} className="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                          <div className="p-2 rounded-xl bg-white/5">
+                            <Settings className="w-5 h-5" />
+                          </div>
+                          <span className="font-bold text-base">Paramètres</span>
+                        </Link>
+                        {user ? (
+                          <button onClick={handleSignOut} className="flex items-center gap-3 p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all w-full text-left">
+                            <div className="p-2 rounded-xl bg-red-500/10">
+                              <LogOut className="w-5 h-5" />
+                            </div>
+                            <span className="font-bold text-base">Déconnexion</span>
+                          </button>
+                        ) : (
+                          <div className="flex flex-col gap-2 pt-2">
+                            <Button onClick={() => { navigate("/auth"); closeMobileMenu(); }} className="w-full bg-primary font-bold">Sign In</Button>
+                            <Button onClick={() => { navigate("/auth?mode=signup"); closeMobileMenu(); }} variant="outline" className="w-full border-white/10 font-bold">Sign Up</Button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Footer Info */}
+                      <div className="mt-auto pt-8 pb-4 text-center">
+                        <div className="flex items-center justify-center gap-2 opacity-50">
+                          <span className="text-xs font-bold tracking-widest">CSTREAM v3.9</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+        </div>
+      </motion.header>
+
+      {/* Notification & Changelog Panels */}
+      <NotificationsPanel
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
+      <ChangelogWidget
+        open={changelogOpen}
+        onClose={() => setChangelogOpen(false)}
+      />
+    </>
+  );
+};

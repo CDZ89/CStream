@@ -1,0 +1,82 @@
+Objectif :  
+Transformer une interface futuriste dense (INTELLIGENCE V4.2) en une UI minimaliste, fluide, élégante et premium inspirée du design Figma partagé. Le résultat doit évoquer Grok, ChatGPT Plus, ou Humane AI, avec une expérience centrée sur la clarté, la respiration visuelle, et l’interaction intuitive.
+
+🎨 STYLE GÉNÉRAL
+Thème : minimaliste, moderne, premium
+
+Fond : backdrop-filter: blur(12px) avec dégradé doux (linear-gradient) pastel ou sombre selon le mode
+
+Modes : clair et sombre, switchable avec transition fluide
+
+Typographie : fine, sans serif, non-grasse (ex. Inter, SF Pro, Neue Haas)
+
+Palette :
+
+Mode clair : #F9F9F9, #EAEAEA, #6C6CFF, #1A1A1A
+
+Mode sombre : #0F0F0F, #1C1C1C, #6C6CFF, #EAEAEA
+
+🧩 STRUCTURE MODULAIRE
+1. Header
+Titre centré : “Ask our AI anything” ou “Hello, I’m CAi”
+
+Icône subtile (sparkle, halo, ou pulsation lente)
+
+Bouton switch Dark/Light discret à droite
+
+2. Zone centrale
+Suggestions dynamiques (ex. “What can I ask you to do?”)
+
+Présentées sous forme de cards floues ou textes animés
+
+Animation d’apparition (fade-in, slide-up)
+
+3. Zone de message
+plaintext
+╭────────────────────────────╮
+│ Message CAi...     ⤴︎      │
+╰────────────────────────────╯
+Fond flou, bord fin, icône d’envoi stylisée
+
+Animation d’envoi (onde, rayon, halo)
+
+4. Réponses IA
+Bulle semi-transparente, fond flou
+
+Typo fine, timestamp discret
+
+Boutons “Like” et “Share” stylisés (icônes ligne + animation au survol)
+
+5. Sidebar (optionnelle)
+Icônes seules : Home, Chat, Explore, Settings
+
+Tooltip au survol
+
+Rétractable
+
+✨ INTERACTIONS PREMIUM
+Hover : expansion douce + halo
+
+Transitions : fade, slide, scale
+
+Animations : pulsation lente, halo, onde
+
+Loading : cercle animé ou effet “neural scan”
+
+Réactions : cœur qui pulse, icône qui s’illumine
+
+🧠 COMPORTEMENT INTELLIGENT
+Suggestions qui évoluent selon l’historique
+
+Réponses IA avec effet de “typing” fluide
+
+Mode compact pour utilisateurs avancés
+
+Accessibilité : contraste, taille de texte, navigation clavier
+
+📦 EXPORT / INTÉGRATION
+Compatible avec Figma, React, Tailwind, ou Webflow
+
+Composants réutilisables : Header, MessageBubble, InputBar, SuggestionCard
+
+Responsive : mobile-first, desktop fluide

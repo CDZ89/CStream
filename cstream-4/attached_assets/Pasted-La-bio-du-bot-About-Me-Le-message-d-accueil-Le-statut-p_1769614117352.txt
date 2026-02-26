@@ -1,0 +1,271 @@
+La bio du bot (About Me)
+
+Le message d’accueil
+
+Le statut personnalisé
+
+Les embeds envoyés par le bot
+
+Les messages automatiques (vérification, boost, etc.)
+
+Tout est optimisé pour un bot sérieux, premium, cohérent avec CStream.
+
+🎯 1. Bio du bot (About Me)
+Version FR :
+
+Bot officiel de CStream.
+Rejoignez la communauté, découvrez films, séries & anime, et profitez d’outils exclusifs.
+Support, vérification, recherche TMDB et plus encore.
+
+Version EN :
+
+Official CStream bot.
+Join the community, explore movies, series & anime, and access exclusive tools.
+Support, verification, TMDB search and more.
+
+🎬 2. Statut du bot
+Type : Watching
+
+regarde CStream
+
+💬 3. Message d’accueil (DM ou salon dédié)
+FR :
+
+👋 Bienvenue sur le serveur CStream !
+Ici, vous pouvez discuter films, séries et anime, proposer des idées, suivre les mises à jour et accéder à des outils exclusifs.
+
+🔗 Site : {ton lien ici}  
+💬 Discord : https://discord.gg/YSkhZubt3y
+
+Profitez de votre expérience sur CStream.
+
+EN :
+
+👋 Welcome to the CStream server!
+Here you can talk about movies, series and anime, share ideas, follow updates and access exclusive tools.
+
+🔗 Website: {your link here}  
+💬 Discord: https://discord.gg/YSkhZubt3y
+
+Enjoy your CStream experience.
+
+🛡️ 4. Message de vérification (DM envoyé après /verify)
+FR :
+
+✅ Merci beaucoup !
+Vous êtes maintenant vérifié sur Discord et sur CStream.
+Votre rôle Verified a été ajouté avec succès.
+
+🔗 Accédez au site : {URL du site}
+
+EN :
+
+✅ Thank you!
+You are now verified on Discord and on CStream.
+Your Verified role has been successfully added.
+
+🔗 Access the website: {website URL}
+
+💜 5. Message automatique pour un boost
+FR :
+
+💜 Merci infiniment pour le boost, {user} !
+Votre soutien aide CStream à grandir.
+Le rôle Server Booster vous a été attribué.
+
+EN :
+
+💜 Thank you so much for the boost, {user}!
+Your support helps CStream grow.
+The Server Booster role has been assigned to you.
+
+🔍 6. Message pour la commande /search (TMDB)
+FR :
+
+🎬 Résultat trouvé pour {titre}  
+Cliquez ci‑dessous pour regarder sur CStream :
+🔗 {lien}
+
+EN :
+
+🎬 Result found for {title}  
+Click below to watch it on CStream:
+🔗 {link}
+
+🧩 7. Message d’erreur propre
+FR :
+
+❌ Une erreur est survenue. Réessayez dans un instant.
+
+EN :
+
+❌ An error occurred. Please try again shortly.
+
+📌 8. Message pour commandes /help
+FR :
+
+📚 Commandes disponibles  
+• /search – Rechercher un film, une série ou un anime via TMDB
+• /verify – Vérifier votre compte CStream
+• /profile – Voir vos informations
+• /support – Infos pour soutenir CStream
+
+Plus de commandes arrivent bientôt.
+
+EN :
+
+📚 Available Commands  
+• /search – Search movies, series or anime via TMDB
+• /verify – Verify your CStream account
+• /profile – View your information
+• /support – Support CStream
+
+More commands coming soon.
+
+Si tu veux, je peux aussi te préparer :
+
+un embed complet pour chaque message
+
+un pack complet de textes pour toutes les commandes
+
+un système de messages automatiques premium
+
+ou même le code du bot déjà structuré proprement
+
+Tu veux que je te fasse le pack complet ou le code du bot directement ?
+
+donne pour crée la commande /search ( tmdb) connecté avec le site
+Parfait, je te donne le code complet, propre, premium, pour créer la commande /search qui :
+
+Cherche un film / série / anime via TMDB
+
+Renvoie un embed propre
+
+Avec un bouton cliquable qui redirige vers ton site CStream
+
+Compatible avec discord.js  v14
+
+Ultra simple à connecter à ton backend si tu veux plus tard
+
+Aucune dépendance bizarre, juste TMDB + ton site.
+
+✅ 1. Déclaration de la commande /search
+À mettre dans ton fichier de commandes (ex: commands/search.js) :
+
+js
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const axios = require('axios');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('search')
+    .setDescription('Rechercher un film, une série ou un anime via TMDB')
+    .addStringOption(option =>
+      option.setName('query')
+        .setDescription('Nom du film, série ou anime')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('Type de média')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Film', value: 'movie' },
+          { name: 'Série', value: 'tv' },
+          { name: 'Anime', value: 'anime' }
+        )
+    ),
+
+  async execute(interaction) {
+    const query = interaction.options.getString('query');
+    const type = interaction.options.getString('type');
+
+    await interaction.deferReply();
+
+    try {
+      const tmdbType = type === 'anime' ? 'tv' : type;
+
+      const url = `https://api.themoviedb.org/3/search/${tmdbType}?api_key=${process.env.TMDB_KEY}&query=${encodeURIComponent(query)}&language=fr-FR`;
+
+      const response = await axios.get(url);
+      const results = response.data.results;
+
+      if (!results || results.length === 0) {
+        return interaction.editReply(`❌ Aucun résultat trouvé pour **${query}**`);
+      }
+
+      const media = results[0];
+
+      const title = media.title || media.name;
+      const poster = media.poster_path
+        ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
+        : null;
+
+      const cstreamUrl = `https://ton-site.com/watch/${type}/${media.id}`;
+
+      const embed = new EmbedBuilder()
+        .setTitle(title)
+        .setDescription(`🎬 Cliquez sur le bouton ci‑dessous pour regarder sur **CStream**`)
+        .setColor('#5865F2')
+        .setImage(poster)
+        .setFooter({ text: 'Powered by TMDB • CStream' });
+
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel('Regarder sur CStream')
+          .setStyle(ButtonStyle.Link)
+          .setURL(cstreamUrl)
+      );
+
+      return interaction.editReply({ embeds: [embed], components: [row] });
+
+    } catch (err) {
+      console.error(err);
+      return interaction.editReply('❌ Une erreur est survenue lors de la recherche.');
+    }
+  }
+};
+🔥 2. Ce que cette commande fait exactement
+✔ Recherche TMDB
+Films
+
+Séries
+
+Anime (redirigé vers TMDB TV car TMDB n’a pas de catégorie “anime”)
+
+✔ Renvoie un embed premium
+Titre
+
+Image
+
+Description
+
+Footer propre
+
+✔ Bouton cliquable
+Le bouton envoie vers :
+
+Code
+https://ton-site.com/watch/{type}/{id}
+Tu remplaces ton-site.com par ton domaine.
+
+✔ Ultra rapide
+Réponse en moins d’une seconde.
+
+🧩 3. Variables nécessaires
+Dans ton .env :
+
+Code
+TMDB_KEY=ta_clef_tmdb
+🚀 4. Si tu veux, je peux aussi te faire :
+/search advanced → plusieurs résultats + pagination
+
+/random → film/série/anime aléatoire
+
+/trending → tendances TMDB
+
+/actor → recherche d’acteurs
+
+/watch → ouvrir directement un ID CStream
+
+/anime → recherche spécialisée anime (Anilist + TMDB mix)

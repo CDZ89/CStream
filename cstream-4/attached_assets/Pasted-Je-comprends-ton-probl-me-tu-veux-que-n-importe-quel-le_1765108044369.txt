@@ -1,0 +1,73 @@
+Je comprends ton problème : tu veux que **n’importe quel lecteur iframe fonctionne automatiquement** sur ton site, mais certains (Anime-sama, Vidmoly, Sendiv) renvoient des erreurs comme *DNS introuvable*, *timeout*, ou *page inexistante*. Malheureusement, il n’existe **aucune solution magique** qui force un iframe à marcher si le serveur distant est bloqué ou ne répond pas. Voici une explication claire et des pistes robustes :
+
+---
+
+## 🚫 Pourquoi ça ne marche pas
+- **DNS / IP introuvable** : si `s22.anime-sama.fr` n’a pas de résolution DNS ou est hors ligne, ton navigateur ne peut pas afficher l’iframe.
+- **Timeout (Vidmoly)** : le serveur distant est trop lent ou bloque les requêtes externes → l’iframe échoue.
+- **404 / page inexistante (Sendiv)** : le contenu n’existe plus ou l’URL est fausse.
+- **Restrictions serveur** : beaucoup de lecteurs mettent des règles `X-Frame-Options` ou `Content-Security-Policy` qui interdisent l’intégration en iframe sur des sites tiers.
+
+---
+
+## ✅ Solutions possibles
+### 1. Vérifier la disponibilité des lecteurs
+- Teste les URLs directement dans ton navigateur (hors iframe).
+- Si elles ne chargent pas, le problème vient du serveur distant, pas de ton site.
+
+### 2. Mettre en place un système de **fallback**
+- Crée une logique côté frontend/backend :  
+  - Si un lecteur échoue (timeout, 404), bascule automatiquement vers un autre lecteur disponible.
+  - Exemple : Anime-sama → si down → Vidmoly → si down → Sendiv → etc.
+
+```js
+function loadIframe(urls) {
+  let iframe = document.getElementById("player");
+  let index = 0;
+
+  function tryNext() {
+    if (index >= urls.length) {
+      iframe.src = "";
+      iframe.innerHTML = "Aucun lecteur disponible";
+      return;
+    }
+    iframe.src = urls[index];
+    iframe.onerror = () => {
+      index++;
+      tryNext();
+    };
+  }
+
+  tryNext();
+}
+
+loadIframe([
+  "https://s22.anime-sama.fr/lecteur",
+  "https://vidmoly.to/lecteur",
+  "https://sendiv.com/lecteur"
+]);
+```
+
+### 3. Proxy / Reverse proxy
+- Héberge un **proxy** sur ton serveur qui récupère le flux distant et le sert depuis ton domaine.  
+- Avantage : tu contournes les restrictions `X-Frame-Options` et les DNS bloqués.  
+- Exemple avec **Nginx** ou **Node.js (Express)** pour relayer les vidéos.
+
+### 4. API + Player custom
+- Au lieu d’iframe, utilise les **API des hébergeurs** (quand dispo) pour récupérer les liens directs (MP4, HLS, m3u8).
+- Intègre-les dans un lecteur vidéo custom (ex. **Video.js**, **Plyr**) → plus fiable et contrôlable.
+
+---
+
+## 🎯 Conclusion
+Tu ne peux pas “forcer” un iframe à marcher si le serveur est down ou bloque l’intégration.  
+La vraie solution est :
+- **Fallback automatique** entre plusieurs lecteurs.  
+- **Proxy** pour contourner les restrictions.  
+- **Lecteur custom** avec les flux directs pour ne plus dépendre des iframes.
+
+---
+
+👉 Vu que tu bosses sur un site type **CStream**, je te conseille de mettre en place un **système de fallback + proxy**. Ça garantit que tes utilisateurs auront toujours un lecteur fonctionnel, même si un hébergeur tombe.  
+
+Veux-tu que je te montre un exemple concret de **reverse proxy Node.js** qui contourne les iframes bloqués et te donne un flux utilisable dans Video.js ?

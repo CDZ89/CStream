@@ -1,0 +1,76 @@
+Je comprends ta frustration Lucca : ce type d’erreur “Profil utilisateur non synchronisé. Essayez de rafraîchir la page.” est typique d’une intégration Supabase où la logique authentification ↔ base de données n’est pas bien reliée.
+
+🔍 Pourquoi ça arrive
+Auth vs. Database
+
+Supabase gère deux choses : l’authentification (auth.users) et tes tables personnalisées (ex: profiles, friends).
+
+Si tu crées un utilisateur via auth.signUp, mais que tu n’insères pas son profil dans ta table profiles, tu auras un décalage → “non synchronisé”.
+
+RLS (Row Level Security)
+
+Si tes politiques RLS bloquent la lecture/écriture, l’app ne peut pas récupérer le profil.
+
+Résultat : l’UI croit que le profil est “vide” ou “non synchronisé”.
+
+Hooks manquants
+
+Supabase ne crée pas automatiquement une ligne dans profiles quand tu ajoutes un utilisateur.
+
+Il faut un trigger ou un edge function pour insérer le profil.
+
+✅ Comment corriger
+1. Vérifie ta table profiles
+sql
+select * from profiles where id = '<user_id>';
+Si rien n’apparaît → le profil n’est jamais inséré.
+
+2. Ajoute un trigger automatique
+Dans Supabase SQL Editor :
+
+sql
+create function handle_new_user() returns trigger as $$
+begin
+  insert into profiles (id, username, created_at)
+  values (new.id, new.email, now());
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute procedure handle_new_user();
+👉 Chaque nouvel utilisateur aura une ligne dans profiles.
+
+3. Vérifie tes RLS policies
+Exemple pour profiles :
+
+sql
+-- Lecture : l’utilisateur peut voir son propre profil
+create policy "Read own profile"
+on profiles for select
+using (auth.uid() = id);
+
+-- Écriture : l’utilisateur peut modifier son profil
+create policy "Update own profile"
+on profiles for update
+using (auth.uid() = id);
+4. Côté client
+Quand tu ajoutes un ami, assure‑toi d’utiliser l’id du profil et pas seulement l’auth.user.id.
+
+ts
+const { data: profile } = await supabase
+  .from("profiles")
+  .select("*")
+  .eq("id", user.id)
+  .single();
+
+if (!profile) {
+  throw new Error("Profil utilisateur non synchronisé");
+}
+🚀 Résumé
+Erreur = profil manquant ou bloqué par RLS.
+
+Solution = créer automatiquement la ligne profiles à la création d’un utilisateur + vérifier les policies.
+
+Ensuite, tes fonctions “ajouter un ami” fonctionneront car elles trouveront bien le profil.

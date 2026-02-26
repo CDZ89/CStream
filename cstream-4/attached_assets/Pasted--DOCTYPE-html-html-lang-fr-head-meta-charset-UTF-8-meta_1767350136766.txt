@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CAi — Liquid Glass Chat</title>
+  <style>
+    :root {
+      --bg: #0a0b14;
+      --glass: rgba(167,139,250,0.08);
+      --card: rgba(167,139,250,0.12);
+      --stroke: rgba(167,139,250,0.25);
+      --text: #f5f3ff;
+      --text-dim: #c7bdf5;
+      --accent: #a78bfa;
+      --accent-2: #7c3aed;
+      --blur: 30px;
+      --shadow: rgba(50, 20, 80, 0.55);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ---------- Sidebar ---------- */
+    .sidebar {
+      width: 260px;
+      background: var(--glass);
+      backdrop-filter: blur(var(--blur));
+      border-right: 1px solid var(--stroke);
+      box-shadow: 0 0 20px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      transition: transform .3s ease;
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .sidebar h2 { margin: 0 0 12px; font-size: 16px; color: var(--accent); }
+    .convos { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .convo {
+      padding: 10px;
+      border-radius: var(--radius);
+      background: var(--card);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background .2s;
+    }
+    .convo:hover { background: rgba(167,139,250,0.18); }
+    .convo span { flex: 1; }
+    .convo button {
+      background: transparent; border: none; color: var(--text-dim);
+      cursor: pointer; margin-left: 6px;
+    }
+    .new-convo {
+      margin-top: 12px; padding: 10px; border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,201,255,0.18));
+      border: 1px solid var(--stroke); cursor: pointer; text-align: center;
+    }
+
+    /* ---------- Main ---------- */
+    .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+    .toggleSidebar {
+      position: absolute; top: 16px; left: 16px;
+      background: var(--glass); border: 1px solid var(--stroke);
+      border-radius: var(--radius); padding: 6px 10px; cursor: pointer;
+      backdrop-filter: blur(var(--blur));
+    }
+
+    /* ---------- Accueil ---------- */
+    .welcome {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; gap: 20px;
+    }
+    .welcome h1 { font-size: 28px; color: var(--accent); }
+    .welcome input {
+      padding: 12px 16px; border-radius: var(--radius);
+      border: 1px solid var(--stroke); background: var(--glass);
+      backdrop-filter: blur(var(--blur)); color: var(--text);
+      width: 60%; max-width: 400px;
+    }
+
+    /* ---------- Chat ---------- */
+    .chat { flex: 1; display: flex; flex-direction: column; padding: 20px; }
+    .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+    .bubble {
+      max-width: 80%; padding: 14px 18px; border-radius: var(--radius);
+      background: var(--card); backdrop-filter: blur(var(--blur));
+      border: 1px solid var(--stroke); box-shadow: 0 8px 26px var(--shadow);
+      line-height: 1.6; animation: fadeIn .4s ease;
+    }
+    .bubble.user { align-self: flex-end; background: linear-gradient(180deg, rgba(124,201,255,0.14), rgba(255,255,255,0.05)); }
+    .bubble.ai { align-self: flex-start; background: linear-gradient(180deg, rgba(167,139,250,0.14), rgba(255,255,255,0.05)); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+
+    .composer {
+      display: flex; gap: 12px; padding: 14px; border-radius: var(--radius);
+      background: var(--glass); backdrop-filter: blur(var(--blur));
+      border: 1px solid var(--stroke); box-shadow: 0 12px 28px var(--shadow);
+    }
+    .input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 16px; }
+    .send {
+      padding: 10px 16px; border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(167,139,250,0.18), rgba(124,201,255,0.18));
+      border: 1px solid var(--stroke); cursor: pointer;
+    }
+    .send:hover { transform: translateY(-1px); filter: brightness(1.1) drop-shadow(0 0 6px var(--accent)); }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar hidden" id="sidebar">
+    <h2>Conversations</h2>
+    <div class="convos" id="convos"></div>
+    <div class="new-convo" id="newConvo">+ Nouvelle conversation</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <button class="toggleSidebar" id="toggleSidebar">☰</button>
+    <div class="welcome" id="welcome">
+      <h1>Bienvenue dans CAi ✨</h1>
+      <p>Ton compagnon premium en verre liquide</p>
+      <input type="text" placeholder="Commence une nouvelle conversation..." id="startInput"/>
+    </div>
+    <div class="chat" id="chat" style="display:none;">
+      <div class="messages" id="messages"></div>
+      <div class="composer">
+        <input id="input" class="input" type="text" placeholder="Écris ton message…"/>
+        <button class="send" id="send">Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const convos = document.getElementById('convos');
+    const newConvoBtn = document.getElementById('newConvo');
+    const welcome = document.getElementById('welcome');
+    const chat = document.getElementById('chat');
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const send = document.getElementById('send');
+    const startInput = document.getElementById('startInput');
+
+    let conversations = [];
+    let currentConvo = null;
+
+    toggleSidebarBtn.onclick = () => sidebar.classList.toggle('hidden');
+
+    function formatTime() {
+      const now = new Date();
+      return now.toLocaleDateString('fr-FR') + " • " + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    }
+
+    function addMessage(text, role='user') {
+      const bubble = document.createElement('div');
+      bubble.className = `bubble ${role}`;
+            bubble.innerHTML = `
+        <strong>${role === 'user' ? 'Moi' : 'CAi'}</strong> 
+        • <small>${formatTime()}</small><br>${text}
+      `;
+      messages.appendChild(bubble);
+      messages.scrollTop = messages.scrollHeight;
+      if (currentConvo) {
+        currentConvo.msgs.push({ role, text, time: formatTime() });
+      }
+    }
+
+    function renderConvos() {
+      convos.innerHTML = '';
+      conversations.forEach((c, i) => {
+        const div = document.createElement('div');
+        div.className = 'convo';
+        div.innerHTML = `
+          <span>${c.name}</span>
+          <button onclick="renameConvo(${i})">✏️</button>
+          <button onclick="deleteConvo(${i})">🗑️</button>
+        `;
+        div.onclick = () => loadConvo(i);
+        convos.appendChild(div);
+      });
+    }
+
+    function newConvo(name = null) {
+      const convo = { name: name || 'Conversation ' + (conversations.length + 1), msgs: [] };
+      conversations.push(convo);
+      currentConvo = convo;
+      messages.innerHTML = '';
+      welcome.style.display = 'none';
+      chat.style.display = 'flex';
+      renderConvos();
+    }
+
+    function loadConvo(i) {
+      currentConvo = conversations[i];
+      messages.innerHTML = '';
+      welcome.style.display = 'none';
+      chat.style.display = 'flex';
+      currentConvo.msgs.forEach(m => {
+        const bubble = document.createElement('div');
+        bubble.className = `bubble ${m.role}`;
+        bubble.innerHTML = `
+          <strong>${m.role === 'user' ? 'Moi' : 'CAi'}</strong> 
+          • <small>${m.time}</small><br>${m.text}
+        `;
+        messages.appendChild(bubble);
+      });
+    }
+
+    function renameConvo(i) {
+      const newName = prompt("Nouveau nom :", conversations[i].name);
+      if (newName) {
+        conversations[i].name = newName;
+        renderConvos();
+      }
+    }
+
+    function deleteConvo(i) {
+      conversations.splice(i, 1);
+      currentConvo = null;
+      messages.innerHTML = '';
+      chat.style.display = 'none';
+      welcome.style.display = 'flex';
+      renderConvos();
+    }
+
+    // Bouton nouvelle conversation
+    newConvoBtn.onclick = () => newConvo();
+
+    // Input accueil
+    startInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const val = startInput.value.trim();
+        if (val) {
+          newConvo(val);
+          startInput.value = '';
+        }
+      }
+    });
+
+    // Envoi de message
+    send.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (!text) return;
+      addMessage(text, 'user');
+      input.value = '';
+      // Simuler réponse IA
+      setTimeout(() => {
+        addMessage("Réponse premium en verre liquide 💎", 'ai');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

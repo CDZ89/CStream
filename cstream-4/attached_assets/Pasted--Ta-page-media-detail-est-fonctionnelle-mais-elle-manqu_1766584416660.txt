@@ -1,0 +1,64 @@
+**Ta page media detail est fonctionnelle mais elle manque de cohérence visuelle, de données dynamiques fiables et d’optimisation UX. Les points clés à améliorer sont : fiabilité des sources (providers), design responsive, hiérarchie d’information, et intégration des thèmes.**
+
+---
+
+## 🔑 Améliorations prioritaires
+
+### 1. **Disponibilité des plateformes (“Available on”)**
+- Actuellement tu listes trop de plateformes (ex: “+86”), ce qui décrédibilise la page.  
+- **Solution** : utilise l’API TMDB `/watch/providers` pour afficher uniquement les plateformes réelles par pays.  
+- Ajoute un bouton “Voir plus” si >6 plateformes, plutôt que de tout afficher.
+
+### 2. **Thèmes et personnalisation**
+- Tu as déjà un système de thèmes, mais il ne s’applique pas visuellement.  
+- **Solution** : applique la classe du thème sur `<html>` et utilise des CSS variables pour les couleurs.  
+- Exemple :  
+  ```ts
+  document.documentElement.className = theme.name;
+  Object.entries(theme.tokens).forEach(([k,v]) =>
+    document.documentElement.style.setProperty(`--${k}`, v)
+  );
+  ```
+
+### 3. **Hiérarchie d’information**
+- Mets en avant **titre, date de sortie, durée, genres** en haut.  
+- Synopsis doit être lisible mais pas trop long → ajoute un bouton “Lire plus”.  
+- Cast : affiche les 3–4 principaux avec photos, puis un bouton “Voir tout”.
+
+### 4. **Design et micro‑interactions**
+- **Boutons Watch / Download / Favorite / Share** → rends-les cohérents (taille, couleur, hover).  
+- Ajoute des **animations légères** (fade, scale) pour donner un ressenti premium.  
+- Utilise des **icônes vectorielles** (Heroicons ou Lucide) pour uniformiser.
+
+### 5. **Engagement metrics**
+- Likes, vues, reviews → affiche avec icônes claires et format abrégé (`10.2k vues`).  
+- Ajoute un CTA “Écrire une review” pour inciter à l’interaction.
+
+### 6. **Performance et SEO**
+- Vérifie que les images (logos, posters) sont servies en **WebP** ou optimisées.  
+- Ajoute des balises meta (`og:title`, `og:image`, `description`) pour le partage social.  
+- Lazy‑load les sections longues (cast complet, reviews).
+
+---
+
+## 📊 Tableau comparatif : état actuel vs amélioré
+
+| Aspect                  | Actuel                          | Amélioré                          |
+|--------------------------|---------------------------------|-----------------------------------|
+| Providers                | Liste générique (+86)           | Données TMDB filtrées par pays     |
+| Thèmes                   | Logs OK mais pas visuel         | Classe `<html>` + CSS variables    |
+| Synopsis                 | Texte brut                      | Bouton “Lire plus” + truncation    |
+| Cast                     | Liste longue                    | Principaux + “Voir tout”           |
+| Boutons                  | Basique                         | Uniformes + hover animations       |
+| Metrics                  | Chiffres bruts                  | Icônes + format abrégé             |
+| SEO/Performance          | Non optimisé                    | WebP, meta tags, lazy‑load         |
+
+---
+
+## 🚀 Recommandation finale
+- **Corrige la logique “Available on”** avec TMDB providers → crédibilité immédiate.  
+- **Fixe ton système de thèmes** pour qu’il s’applique réellement.  
+- **Revois la hiérarchie visuelle** : titre + infos clés en haut, synopsis lisible, cast limité.  
+- **Ajoute des micro‑interactions premium** pour coller à ton branding festif/minimal.  
+
+Tu veux que je te code un composant `AvailableOn` complet (fetch TMDB + affichage responsive + “Voir plus”) prêt à coller dans ta page ?

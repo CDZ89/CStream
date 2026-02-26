@@ -1,0 +1,61 @@
+Implémente un système ultra fiable pour gérer les interactions utilisateur suivantes : favoris, historique, likes, reviews et commentaires. Chaque action doit être enregistrée de manière persistante, sans jamais être supprimée automatiquement, même après déconnexion, rafraîchissement ou mise à jour du site.
+
+1. Favoris
+   - Bouton “Ajouter aux favoris” visible sur chaque fiche média.
+   - Action persistante : une fois ajouté, le média reste dans les favoris jusqu’à suppression manuelle.
+   - Stockage en base de données lié à l’utilisateur (clé utilisateur + média).
+   - Affichage dans le profil utilisateur, triable par date ou titre.
+   - Aucun favori ne doit être supprimé automatiquement.
+
+2. Historique
+   - Chaque média consulté est enregistré dans l’historique de l’utilisateur.
+   - Stockage immédiat à l’ouverture de la fiche (événement `media.viewed`).
+   - Historique visible dans le profil, avec date et heure de consultation.
+   - Option “Effacer manuellement” disponible, mais jamais de suppression automatique.
+   - Historique synchronisé sur tous les appareils (via compte connecté).
+
+3. Likes
+   - Bouton “Like” sur chaque fiche média.
+   - Un utilisateur peut liker une seule fois par média.
+   - Stockage persistant : le like reste actif jusqu’à retrait manuel.
+   - Affichage du nombre total de likes + état personnel (liké ou non).
+   - Les likes ne sont jamais réinitialisés ou supprimés automatiquement.
+
+4. Reviews
+   - Formulaire de review sur chaque fiche média (note + texte).
+   - Une review par utilisateur par média, modifiable à tout moment.
+   - Stockage en base avec timestamp, note, texte, et ID utilisateur.
+   - Reviews affichées publiquement avec avatar, pseudo, date relative.
+   - Les reviews ne sont jamais supprimées sauf par l’utilisateur ou modération manuelle.
+
+5. Commentaires
+   - Section commentaires sous chaque fiche média.
+   - Saisie libre avec modération (filtrage anti-spam, anti-insulte).
+   - Stockage persistant avec ID utilisateur, média, timestamp, texte.
+   - Affichage en liste chronologique ou par popularité.
+   - Les commentaires ne sont jamais supprimés automatiquement.
+
+6. Sécurité et persistance
+   - Toutes les actions sont stockées dans une base de données relationnelle ou NoSQL avec index sur `user_id`, `media_id`, `timestamp`.
+   - Aucun nettoyage automatique des données utilisateur.
+   - Sauvegarde régulière des données (backup).
+   - Synchronisation sur tous les appareils via compte connecté.
+   - API REST ou GraphQL avec endpoints sécurisés :
+     - `POST /favorites`, `GET /history`, `POST /likes`, `POST /reviews`, `POST /comments`
+     - Authentification requise (JWT, OAuth2).
+
+7. Accessibilité et UX
+   - Feedback visuel immédiat après chaque action (toast “Ajouté aux favoris”, “Review enregistrée”).
+   - Icônes claires pour chaque action (❤️ pour like, ⭐ pour favoris, 📝 pour review).
+   - Navigation clavier et compatibilité mobile.
+   - Modals accessibles pour saisie de review/commentaire.
+
+8. Tests et validation
+   - Tests unitaires : ajout/suppression de favoris, likes, reviews, commentaires.
+   - Tests d’intégration : affichage dans profil, persistance après refresh/déconnexion.
+   - Tests E2E : utilisateur ajoute une review → reconnecte → review toujours présente.
+   - Critères d’acceptation :
+     - Aucune donnée supprimée automatiquement.
+     - Toutes les actions visibles dans le profil.
+     - Synchronisation multi-appareil.
+     - Temps de réponse API < 250ms.

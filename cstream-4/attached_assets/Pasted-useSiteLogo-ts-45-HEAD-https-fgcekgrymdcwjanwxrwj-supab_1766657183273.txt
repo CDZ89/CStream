@@ -1,0 +1,43 @@
+useSiteLogo.ts:45   HEAD https://fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png net::ERR_ABORTED 400 (Bad Request)
+fetchLogo @ useSiteLogo.ts:45
+initializeSiteLogo @ useSiteLogo.ts:118
+(anonymous) @ Navbar.tsx:175
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_settings?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserSettings.ts:156 user_settings table not available, using local storage only
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+Chat.tsx:482 [Chat] Pending requests: 0
+Chat.tsx:492 [Chat] Sent requests: 0
+Chat.tsx:614 [Chat] Before fetchAdminUsers, isAdminUser: true
+Chat.tsx:616 [Chat] Calling fetchAdminUsers
+Chat.tsx:520 [Chat] Found admin profiles: 2 (2) [{…}, {…}]
+Chat.tsx:889 [Chat] Sending message: {sender_id: 'dd4922c4-4691-4a29-b5a8-21d97a54f779', receiver_id: null, group_id: '5afd1225-b1ac-45bb-88fa-a5288e6abcb4', content: 'yo'}
+client:536  WebSocket connection to 'wss://36b797b4-bfd1-4e66-81ea-22390d352d14-00-uqfcdzccjenv.kirk.replit.dev:24678/?token=NeysBJF2tadr' failed: Error in connection establishment: net::ERR_CONNECTION_TIMED_OUT

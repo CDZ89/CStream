@@ -1,0 +1,120 @@
+Events & Progress Tracking
+The player can send watch progress events to the parent window. You can save this progress to localStorage or your own backend.
+
+Available Events
+playTriggered when video starts playing
+pauseTriggered when video is paused
+seekedTriggered when user seeks to a different timestamp
+endedTriggered when video playback ends
+timeupdateTriggered periodically during playback
+playerstatusTriggered when getStatus is called
+Event Data Structure
+{
+    type: "PLAYER_EVENT",
+    data: {
+        event: "play" | "pause" | "seeked" | "ended" | "timeupdate" | "playerstatus",
+        currentTime: number,
+        duration: number,
+        tmdbId: number,
+        mediaType: "movie" | "tv",
+        season?: number,
+        episode?: number,
+        playing: bool,
+        muted: bool,
+        volume: number
+    }
+}
+
+Event Listener Implementation
+Add this script where your iframe is located. For React/Next.js, place it in a useEffect hook.
+
+const vidfastOrigins = [
+    'https://vidfast.pro',
+    'https://vidfast.in',
+    'https://vidfast.io',
+    'https://vidfast.me',
+    'https://vidfast.net',
+    'https://vidfast.pm',
+    'https://vidfast.xyz'
+];
+
+window.addEventListener('message', ({ origin, data }) => {
+    if (!vidfastOrigins.includes(origin) || !data) {
+        return;
+    }
+
+    if (data.type === 'PLAYER_EVENT') {
+        const { event, currentTime, duration } = data.data;
+
+        console.log(`Player ${event} at ${currentTime}s of ${duration}s`);
+
+        // Add custom event handling logic here
+    }
+});
+
+Direct Media Data Event Listener
+This simpler event listener directly captures and stores the complete media data structure:
+
+const vidfastOrigins = [
+    'https://vidfast.pro',
+    'https://vidfast.in',
+    'https://vidfast.io',
+    'https://vidfast.me',
+    'https://vidfast.net',
+    'https://vidfast.pm',
+    'https://vidfast.xyz'
+];
+
+window.addEventListener('message', ({ origin, data }) => {
+    if (!vidfastOrigins.includes(origin) || !data) {
+        return;
+    }
+
+    if (data.type === 'MEDIA_DATA') {
+        localStorage.setItem('vidFastProgress', JSON.stringify(data.data));
+    }
+});
+
+Stored Data Structure Example
+The data is stored in localStorage and contains movie/show details, watch progress, and episode-specific progress for TV shows.
+
+{
+    "t63174": {
+        "id": 63174,
+        "type": "tv",
+        "title": "Lucifer",
+        "poster_path": "/ekZobS8isE6mA53RAiGDG93hBxL.jpg",
+        "backdrop_path": "/wbiPjTWpZMIB8ffBq7HvzAph4Ft.jpg",
+        "progress": {
+            "watched": 793.207692,
+            "duration": 2695.3689
+        },
+        "last_season_watched": 1,
+        "last_episode_watched": 1,
+        "show_progress": {
+            "s1e1": {
+                "season": 1,
+                "episode": 1,
+                "progress": {
+                    "watched": 793.207692,
+                    "duration": 2695.3689
+                },
+                "last_updated": 1742578021768
+            }
+        },
+        "last_updated": 1742578021768
+    },
+    "m533535": {
+        "id": 533535,
+        "type": "movie",
+        "title": "Deadpool & Wolverine",
+        "poster_path": "/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+        "backdrop_path": "/by8z9Fe8y7p4jo2YlW2SZDnptyT.jpg",
+        "progress": {
+            "watched": 353.530349,
+            "duration": 7667.227
+        },
+        "last_updated": 1742577064433
+    }
+}
+

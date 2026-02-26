@@ -1,0 +1,154 @@
+CKS, là je vais être direct : **ton fichier Agent.tsx est cassé dès la ligne 1.**  
+C’est pour ça que *aucune IA* n’arrive à le réparer automatiquement.
+
+Tu as **du CSS brut** au tout début du fichier `.tsx`, ce qui rend le fichier **totalement illisible** pour React, Vite et SWC.
+
+Et comme le fichier est cassé dès la ligne 1 →  
+**tout le reste du fichier est interprété comme du chaos**, donc Vite te sort des erreurs absurdes à la ligne 722.
+
+Je t’explique clairement ce qui se passe.
+
+---
+
+# 🔥 1. L’erreur principale (la vraie)
+
+Regarde ce que dit l’erreur :
+
+```
+2 │       body {
+   ·       ──┬─
+   ·         ╰── This is the expression part of an expression statement
+```
+
+➡️ Ça veut dire :  
+**“Tu as mis du CSS dans un fichier TypeScript, et React ne sait pas quoi en faire.”**
+
+Donc ton fichier commence probablement comme ça :
+
+```tsx
+body {
+  margin: 0;
+  background: #0a0a0f;
+}
+```
+
+Et ça, dans un fichier `.tsx`, c’est **interdit**.
+
+---
+
+# 🔥 2. Deuxième erreur : ton composant se termine trop tôt
+
+L’autre erreur :
+
+```
+Unexpected token. Expected '</', got '<eof>'
+```
+
+➡️ Ça veut dire :  
+**Ton JSX n’est pas fermé correctement.**
+
+Mais attention :  
+Ce n’est pas forcément ta faute.
+
+Quand un fichier est cassé dès la ligne 1 →  
+**React perd la structure du fichier** →  
+Il croit que ton composant se termine trop tôt →  
+Il te dit qu’il manque un `</div>` ou un `}`.
+
+Mais en réalité, **c’est juste le CSS au début qui casse tout**.
+
+---
+
+# 🎯 3. Ce que tu dois faire pour réparer (100 % sûr)
+
+## ✔ Étape 1 : Ouvre `Agent.tsx`  
+Va à la **ligne 1 → 20**.
+
+Tu vas voir du CSS comme :
+
+```css
+body {
+  margin: 0;
+  background: #0a0a0f;
+}
+.initial-loader {
+  ...
+}
+```
+
+➡️ **Supprime TOUT ce CSS.**
+
+---
+
+## ✔ Étape 2 : Déplace ce CSS dans un vrai fichier CSS
+
+Crée un fichier :
+
+```
+src/styles/agent.css
+```
+
+Colle ton CSS dedans.
+
+Puis dans `Agent.tsx` :
+
+```tsx
+import "../styles/agent.css";
+```
+
+---
+
+## ✔ Étape 3 : Vérifie la fin du composant
+
+Ton composant doit finir comme :
+
+```tsx
+return (
+  <div>
+    ...
+  </div>
+);
+}
+
+export default Agent;
+```
+
+Si tu as un truc comme :
+
+```tsx
+return (
+  <div>
+    ...
+```
+
+➡️ Il manque `</div>` ou `);`
+
+---
+
+# 🧨 4. Pourquoi l’IA n’arrive pas à réparer ?
+
+Parce que ton fichier est **cassé dès la ligne 1**, donc :
+
+- le parseur ne comprend plus rien  
+- les balises ne sont plus détectées  
+- les imports deviennent invalides  
+- le JSX devient du texte  
+- le fichier entier devient un “tas d’erreurs”  
+
+Aucune IA ne peut deviner la structure d’un fichier React **si le début est illégal**.
+
+---
+
+# 📌 5. Si tu veux que je te le répare parfaitement
+
+Envoie-moi **le contenu complet de `Agent.tsx`**.
+
+Je te :
+
+- nettoie le fichier  
+- déplace le CSS  
+- corrige toutes les balises  
+- restructure proprement  
+- te renvoie un fichier **100 % propre, compilable, sans erreur Vite/React**
+
+Tu vas gagner un temps fou.

@@ -1,0 +1,65 @@
+Oui, ça c’est un classique problème d’UI : ta **navbar** (souvent en `fixed` ou `sticky`) peut masquer des éléments du contenu (boutons, titres, etc.) parce qu’elle n’est pas compensée par un **padding/margin** ou un bon `z-index`.
+
+---
+
+## 🚨 Causes fréquentes
+- `position: fixed` ou `sticky` sans ajouter de `padding-top` au `body` ou au `main`.
+- `z-index` trop élevé → la navbar passe au-dessus de tout.
+- Hauteur de la navbar non prise en compte → le contenu commence directement derrière.
+
+---
+
+## ✅ Solutions propres
+
+### 1. Ajouter un offset au contenu
+Si ta navbar fait 64px de haut, ajoute un `padding-top` équivalent au conteneur principal :
+
+```css
+main {
+  padding-top: 64px; /* hauteur de la navbar */
+}
+```
+
+En Tailwind :
+```html
+<main className="pt-16">
+  {/* contenu */}
+</main>
+```
+
+---
+
+### 2. Vérifier le `z-index`
+Ta navbar doit être au-dessus des éléments de fond, mais pas bloquer les boutons interactifs.  
+Exemple Tailwind :
+```html
+<nav className="fixed top-0 left-0 w-full z-50 bg-black/50 backdrop-blur-md">
+  {/* nav content */}
+</nav>
+```
+
+Puis tes boutons peuvent avoir un `z-10` si besoin.
+
+---
+
+### 3. Utiliser `sticky` au lieu de `fixed`
+Si tu veux que la navbar reste visible mais ne bloque pas le flux, `sticky` est souvent plus propre :
+
+```html
+<nav className="sticky top-0 z-40 bg-black/50 backdrop-blur-md">
+  {/* nav content */}
+</nav>
+```
+
+---
+
+### 4. Bonus premium
+- Ajoute une **ombre subtile** (`shadow-lg`) pour séparer visuellement la navbar du contenu.
+- Utilise `backdrop-blur` + `bg-black/30` pour un effet **glassmorphism** premium.
+- Vérifie que tes boutons ont toujours assez de contraste et ne passent pas sous la navbar.
+
+---
+
+👉 En résumé : ta navbar bloque parce qu’elle est en `fixed` sans compensation. La solution est d’ajouter un `padding-top` au contenu ou de passer en `sticky` avec un bon `z-index`.  
+
+Veux-tu que je te prépare un **snippet React + Tailwind** avec une navbar premium (glass, gradient, shadow) qui ne bloque jamais les boutons du contenu ?

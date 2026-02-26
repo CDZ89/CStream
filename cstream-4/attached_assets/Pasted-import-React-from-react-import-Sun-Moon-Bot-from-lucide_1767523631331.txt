@@ -1,0 +1,119 @@
+import React from 'react';
+import { Sun, Moon, Bot } from 'lucide-react';
+
+interface ThemeShowcaseProps {
+  isDark: boolean;
+  onToggleTheme: () => void;
+}
+
+export function ThemeShowcase({ isDark, onToggleTheme }: ThemeShowcaseProps) {
+  return (
+    <aside className="w-96 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-950 p-8 flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-purple-100/20 dark:from-blue-900/10 dark:to-purple-900/10" />
+      
+      {/* Theme Toggle Buttons */}
+      <div className="absolute top-8 right-8 flex flex-col gap-3 z-10">
+        <button
+          onClick={onToggleTheme}
+          className={`flex items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-lg ${
+            !isDark
+              ? 'bg-blue-600 text-white shadow-blue-500/50'
+              : 'bg-white/10 backdrop-blur-sm text-gray-400 hover:bg-white/20'
+          }`}
+        >
+          <Sun className="w-6 h-6" />
+        </button>
+        <button
+          onClick={onToggleTheme}
+          className={`flex items-center justify-center w-14 h-14 rounded-2xl transition-all shadow-lg ${
+            isDark
+              ? 'bg-blue-600 text-white shadow-blue-500/50'
+              : 'bg-white/50 backdrop-blur-sm text-gray-600 hover:bg-white/80'
+          }`}
+        >
+          <Moon className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center space-y-6">
+        <h1 className="text-5xl text-gray-900 dark:text-white">
+          Customizable<br />Light and Dark
+        </h1>
+        
+        <p className="text-gray-600 dark:text-gray-400 max-w-sm">
+          Experience the flexibility of a fully customizable interface with both light and dark themes.
+        </p>
+
+        {/* Preview Cards */}
+        <div className="mt-12 space-y-4">
+          {/* Light Theme Preview */}
+          <div className="bg-white rounded-2xl shadow-xl p-6 text-left">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm">
+                <Bot className="w-4 h-4" />
+                <span>CAi</span>
+              </div>
+              <button className="ml-auto p-2 hover:bg-gray-100 rounded-lg">
+                <Sun className="w-4 h-4 text-gray-600" />
+              </button>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm">Hello, I'm CAi</p>
+                  <p className="text-xs text-gray-500 mt-0.5">How can I make things easier for you?</p>
+                </div>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-3 text-xs text-gray-600">
+                Message CAi...
+              </div>
+            </div>
+          </div>
+
+          {/* Dark Theme Preview */}
+          <div className="bg-[#1a1a1a] rounded-2xl shadow-xl p-6 text-left">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm">
+                <Bot className="w-4 h-4" />
+                <span>CAi</span>
+              </div>
+              <button className="ml-auto p-2 hover:bg-gray-800 rounded-lg">
+                <Moon className="w-4 h-4 text-gray-400" />
+              </button>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-white">Hello, I'm CAi</p>
+                  <p className="text-xs text-gray-400 mt-0.5">How can I make things easier for you?</p>
+                </div>
+              </div>
+              <div className="bg-[#2a2a2a] rounded-lg p-3 text-xs text-gray-400">
+                Message CAi...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative illustration */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 opacity-20">
+        <img 
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cpath d='M200 150 L300 250 L100 250 Z' fill='%236366f1'/%3E%3Ccircle cx='200' cy='100' r='60' fill='%238b5cf6'/%3E%3C/svg%3E"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      </div>
+    </aside>
+  );
+}

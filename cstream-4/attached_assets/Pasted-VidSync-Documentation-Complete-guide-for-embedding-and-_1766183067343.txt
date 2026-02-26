@@ -1,0 +1,143 @@
+VidSync : 
+Documentation
+Complete guide for embedding and customizing Vidsync player on your website.
+Endpoints
+Implementation
+Customization
+Movie Embed
+Endpoint
+bash
+
+https://vidsync.xyz/embed/movie/${id}?autoPlay=true
+Required Parameters
+id
+Movie identifier from TMDB
+
+Optional Parameters
+autoPlay
+Controls whether the media starts playing automatically
+
+theme
+Changes the player's color (hex code format)
+
+Examples
+bash
+
+https://vidsync.xyz/embed/movie/299534
+bash
+
+https://vidsync.xyz/embed/movie/278?theme=16A0B5
+TV Show Embed
+Endpoint
+bash
+
+https://vidsync.xyz/embed/tv/${id}/${season}/${episode}?autoPlay=true&autoNext=true
+Required Parameters
+id
+TV show identifier from TMDB
+
+season
+The season number (defaults to 1 if not specified)
+
+episode
+The episode number (defaults to 1 if not specified)
+
+Optional Parameters
+autoPlay
+Controls whether the media starts playing automatically
+
+theme
+Changes the player's color (hex code format)
+
+nextButton
+Displays the 'Next Episode' button when 90% of current episode has been watched
+
+autoNext
+Automatically plays the next episode when the current one ends (requires nextButton)
+
+Examples
+bash
+
+https://vidsync.xyz/embed/tv/66732/1/5
+bash
+
+https://vidsync.xyz/embed/tv/70523/1/5?nextButton=true&autoNext=true
+Basic Implementation
+Copy and paste this code into your HTML where you want the player to appear:
+iframe.html
+
+<iframe
+  src="https://vidsync.xyz/embed/movie/299534"
+  width="100%"
+  height="100%"
+  frameborder="0"
+  allowfullscreen
+  allow="encrypted-media"
+></iframe>
+Responsive Implementation
+Wrap the iframe in this container to maintain the correct 16:9 aspect ratio:
+iframe-responsive.jsx
+
+<!-- 16:9 Aspect Ratio Container -->
+<div style="position: relative; padding-bottom: 56.25%; height: 0;">
+  <iframe
+    src="https://vidsync.xyz/embed/movie/299534"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+    frameborder="0"
+    allowfullscreen
+    allow="encrypted-media"
+  ></iframe>
+</div>
+Responsive with Tailwind CSS
+iframe-responsive-tailwind.jsx
+
+<div className="relative w-full pt-[56.25%]">
+  <iframe
+    src="https://vidsync.xyz/embed/movie/299534"
+    className="absolute top-0 left-0 w-full h-full"
+    frameBorder="0"
+    allowFullScreen
+    allow="encrypted-media"
+  ></iframe>
+</div>
+Color Themes
+Customize the player's color by adding the theme parameter:
+Green Theme
+html
+
+<iframe
+src="https://vidsync.xyz/embed/movie/299534?theme=16A085"
+></iframe>
+#16A085
+Blue Theme
+html
+
+<iframe
+src="https://vidsync.xyz/embed/movie/299534?theme=2980B9"
+></iframe>
+#2980B9
+Purple Theme
+html
+
+<iframe
+src="https://vidsync.xyz/embed/movie/299534?theme=9B59B6"
+></iframe>
+#9B59B6
+Advanced Features
+Complete Example
+html
+
+<iframe
+  src="https://vidsync.xyz/embed/movie/278?autoPlay=true&autoNext=true&theme=16A085"
+  width="100%"
+  height="100%"
+  frameborder="0"
+  allowfullscreen
+  allow="encrypted-media"
+></iframe>
+Feature Support Table
+Feature	Movies	TV Shows
+Color Themes		
+AutoPlay		
+Next Episode Button		
+Auto Next		

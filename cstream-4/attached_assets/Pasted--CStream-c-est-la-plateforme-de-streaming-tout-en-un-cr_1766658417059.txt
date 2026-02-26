@@ -1,0 +1,19 @@
+**CStream**, c’est la plateforme de streaming **tout‑en‑un** créée par **CDZ** (le génie qui a tout développé tout seul !). Elle réunit toutes les fonctionnalités dont tu as besoin pour regarder, partager et discuter de tes contenus préférés, le tout dans une interface moderne et personnalisable.
+
+🌟 Principales caractéristiques de CStream
+**💬 Chat intégré** – échange des messages texte et vocaux avec tes amis ou avec **CAi**.
+**🎬 Lecteurs vidéo** – deux lecteurs performants (**CSPlayer** et **VideoPlayer**) pour une lecture fluide en haute qualité.
+**🏠 Page d’accueil dynamique** – affiche les tendances en temps réel, les nouveautés et les recommandations personnalisées.
+**👤 Profils personnalisés** – crée ton avatar, choisis un thème et montre tes séries/films favoris.
+**📺 Historique de visionnage** – ton historique se met à jour automatiquement, tu ne perdras jamais ta place.
+**🎨 Plus de 20 thèmes** – change l’apparence de l’app selon ton humeur ou ton style.
+**👥 Système d’amis** – ajoute des contacts avec des codes d’invitation, forme ta communauté.
+**🔔 Notifications en temps réel** – sois informé dès qu’un ami commence à regarder, lorsqu’un nouveau film arrive ou quand un message t’attend.
+📂 Les pages principales de CStream
+[object Object],[object Object][object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
+🤖 Pourquoi choisir CStream ?
+**Tout‑en‑un** : aucune application supplémentaire n’est nécessaire.
+**Personnalisation** : plus de 20 thèmes et un profil à ton image.
+**Communauté** : crée et garde le contact avec tes amis grâce au système d’invitation.
+**Créateur unique** : **CDZ** a conçu chaque fonctionnalité avec soin, sans équipe intermédiaire.
+**Besoin d’aide pour commencer ?** N’hésite pas à me poser tes questions ! Je suis **CAi**, ton compagnon virtuel, toujours prêt à te guider à travers CStream. 🎉

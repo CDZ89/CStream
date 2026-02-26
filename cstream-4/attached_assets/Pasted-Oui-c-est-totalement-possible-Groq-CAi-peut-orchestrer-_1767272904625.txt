@@ -1,0 +1,135 @@
+Oui, c’est totalement possible. Groq (CAi) peut orchestrer une requête TMDB, récupérer les données d’un titre (ex: Inception), puis générer une carte média premium avec affiche, titre, description, note, genres, et ce dans la langue que tu demandes. Le flux recommandé:
+
+Demande utilisateur → “Inception, langue: fr-FR”.
+
+CAi détecte l’intention et appelle ton backend: GET /api/tmdb/search puis GET /api/tmdb/movie/:id?lang=fr-FR&append=images,credits,recommendations.
+
+Backend TMDB renvoie le JSON (titre, poster_path, overview, vote_average, genres, etc.).
+
+CAi formate et rend la carte premium (affiche, résumé, note, genres, boutons), dans la langue demandée.
+
+Endpoints TMDB à utiliser
+Recherche:
+GET https://api.themoviedb.org/3/search/movie?query=Inception&language=fr-FR&include_adult=false&page=1
+
+Détails:
+GET https://api.themoviedb.org/3/movie/27205?language=fr-FR&append_to_response=images,credits,recommendations
+
+Affiches (images):
+Base images TMDB: https://image.tmdb.org/t/p/  
+Exemple poster: https://image.tmdb.org/t/p/w342${poster_path}  
+(Tu peux choisir w342, w500, original selon le layout.)
+
+Utilise le jeton TMDB v4 (Bearer) pour plus de simplicité et sécurité.
+
+Gestion multilingue fiable
+Passe toujours le paramètre language (ex: fr-FR, en-US, es-ES).
+
+Si overview est vide dans la langue demandée, fallback automatique: tente en-US, puis affiche un badge “Traduction indisponible” si aucun texte.
+
+Genres et titres suivent le même fallback.
+
+Exemple backend (Express/Fastify, TS)
+ts
+// /api/tmdb/search
+import fetch from "node-fetch";
+
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_TOKEN = process.env.TMDB_API_TOKEN!; // Bearer v4
+
+export async function tmdbSearch(req, res) {
+  const { q, lang = "fr-FR", page = "1" } = req.query;
+  const url = `${TMDB_BASE}/search/movie?query=${encodeURIComponent(q)}&language=${lang}&include_adult=false&page=${page}`;
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } });
+  res.status(r.status).json(await r.json());
+}
+
+export async function tmdbDetails(req, res) {
+  const { id } = req.params;
+  const { lang = "fr-FR" } = req.query;
+  const append = "images,credits,recommendations,release_dates";
+  const url = `${TMDB_BASE}/movie/${id}?language=${lang}&append_to_response=${append}`;
+  const r = await fetch(url, { headers: { Authorization: `Bearer ${TMDB_TOKEN}` } });
+  res.status(r.status).json(await r.json());
+}
+Exemple carte premium (React + Tailwind)
+tsx
+type MediaCardProps = {
+  title: string;
+  year?: string;
+  score?: number;
+  genres?: string[];
+  overview?: string;
+  poster?: string;
+  tmdbId: number;
+  lang?: string;
+};
+
+export function MediaCard({
+  title, year, score, genres = [], overview, poster, tmdbId, lang = "fr-FR",
+}: MediaCardProps) {
+  const posterSrc = poster ?? "/placeholder_poster_dark.png";
+  return (
+    <div className="bg-neutral-900/80 border border-neutral-800 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
+      <div className="flex gap-4 p-4">
+        <img src={posterSrc} alt={title} className="w-24 h-36 object-cover rounded-lg border border-neutral-800" />
+        <div className="flex-1">
+          <h3 className="text-white text-lg font-semibold tracking-tight">
+            {title} {year ? `(${year})` : ""}
+          </h3>
+          <div className="text-sm text-neutral-300 mt-1">
+            <span>⭐ {score?.toFixed(1)}/10</span> · <span>🌐 {lang}</span>
+          </div>
+          {genres.length ? (
+            <div className="text-xs text-neutral-400 mt-1">🗂️ {genres.join(", ")}</div>
+          ) : null}
+          <p className="text-neutral-200 text-sm mt-2 line-clamp-3">
+            {overview?.trim() || "Résumé indisponible dans cette langue."}
+          </p>
+          <div className="flex gap-2 mt-3">
+            <a
+              className="px-3 py-1 rounded-md bg-white text-black text-sm font-medium hover:bg-neutral-200"
+              href={`https://www.themoviedb.org/movie/${tmdbId}`} target="_blank" rel="noreferrer"
+            >
+              Voir plus
+            </a>
+            <span className="text-xs text-neutral-400 ml-auto">TMDB ID : {tmdbId}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+Exemple d’intégration recherche → carte
+tsx
+// Rechercher "Inception" en français
+const data = await fetch(`/api/tmdb/search?q=Inception&lang=fr-FR`).then(r => r.json());
+const first = data.results?.[0];
+const details = await fetch(`/api/tmdb/details/${first.id}?lang=fr-FR`).then(r => r.json());
+
+const props = {
+  title: details.title,
+  year: (details.release_date || "").slice(0, 4),
+  score: details.vote_average,
+  genres: (details.genres || []).map((g: any) => g.name),
+  overview: details.overview,
+  poster: details.poster_path ? `https://image.tmdb.org/t/p/w342${details.poster_path}` : undefined,
+  tmdbId: details.id,
+  lang: "fr-FR",
+};
+Robustesse et “sans bug”
+Validation: vérifie results?.length, poster_path, overview.
+
+Fallback langue: si overview vide → refais details en en-US.
+
+Timeouts et erreurs: gère !r.ok, affiche message propre, log côté backend.
+
+Cache:
+
+Cache HTTP (ETag) pour détails TMDB.
+
+CDN pour images TMDB (déjà très fiable).
+
+Sécurité: le token TMDB reste côté serveur (jamais exposé en front).
+
+Internationalisation: l’UI affiche la langue courante (badge 🌐), et tu peux changer via un sélecteur fr-FR | en-US | es-ES.

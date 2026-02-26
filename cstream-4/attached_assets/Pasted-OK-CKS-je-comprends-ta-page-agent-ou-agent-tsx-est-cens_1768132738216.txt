@@ -1,0 +1,123 @@
+OK CKS, je comprends : ta page `/agent` (ou `agent.tsx`) est censée afficher des **MediaCard** en bas, avec des liens cliquables vers les pages de films, mais **ça ne marche plus**.
+
+Je vais t’aider à diagnostiquer et corriger ça proprement.
+
+---
+
+# 🔍 Étapes pour corriger les MediaCard qui ne redirigent plus
+
+## ✅ 1. Vérifie le composant `MediaCard`
+
+Dans ton code, tu dois avoir un composant comme :
+
+```tsx
+<MediaCard
+  title={movie.title}
+  image={movie.poster_path}
+  id={movie.id}
+/>
+```
+
+Ou un lien autour :
+
+```tsx
+<Link href={`/movie/${movie.id}`}>
+  <MediaCard ... />
+</Link>
+```
+
+👉 **Assure-toi que le lien est bien là.**  
+Si tu n’as plus de `<Link>` autour, la carte ne redirige plus.
+
+---
+
+## ✅ 2. Vérifie que `movie.id` est bien transmis
+
+Si `movie.id` est `undefined`, alors le lien devient :
+
+```
+/movie/undefined
+```
+
+Et ça casse.
+
+### Test rapide :
+Ajoute un `console.log(movie)` juste avant la carte :
+
+```tsx
+console.log(movie)
+```
+
+Et regarde dans la console si `id` est bien présent.
+
+---
+
+## ✅ 3. Vérifie que la route `/movie/[id].tsx` existe
+
+Tu dois avoir une page dynamique comme :
+
+```
+pages/movie/[id].tsx
+```
+
+Et dans cette page :
+
+```tsx
+const router = useRouter()
+const { id } = router.query
+```
+
+Si cette page n’existe plus ou a été renommée, le lien ne fonctionne plus.
+
+---
+
+## ✅ 4. Vérifie que le `href` est bien formé
+
+Dans ton `Link`, tu dois avoir :
+
+```tsx
+<Link href={`/movie/${movie.id}`}>
+```
+
+Pas :
+
+```tsx
+<Link href={`/movie?id=${movie.id}`}> // ❌
+```
+
+Et surtout pas :
+
+```tsx
+<Link href={movie.url}> // ❌ si `url` est vide
+```
+
+---
+
+## ✅ 5. Vérifie que TMDB renvoie bien les données
+
+Si ton appel Groq + TMDB ne renvoie plus les bons films, tu peux avoir :
+
+- des `undefined`  
+- des objets incomplets  
+- des erreurs silencieuses
+
+Ajoute un log sur la réponse :
+
+```ts
+const response = await groqQuery(...)
+console.log(response)
+```
+
+---
+
+# 🛠 Si tu veux, je peux te corriger ton composant `MediaCard` et ta boucle d’affichage
+
+Envoie-moi :
+
+- le code de `agent.tsx`  
+- le composant `MediaCard`  
+- le lien vers la page dynamique `/movie/[id].tsx`  
+
+Et je te corrige tout pour que ça refonctionne.
+
+Tu veux qu’on commence par le composant `MediaCard` ?

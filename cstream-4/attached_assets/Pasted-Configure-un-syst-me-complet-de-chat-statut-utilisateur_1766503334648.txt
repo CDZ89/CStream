@@ -1,0 +1,87 @@
+Configure un système complet de chat + statut utilisateur + gestion d’amis dans mon app CStream (React/Vite/TS + Tailwind + Supabase).
+Je veux une expérience inspirée de Discord mais adaptée à mon branding premium.
+
+🔐 Authentification & Profil
+Utiliser Supabase pour l’authentification et les profils (nom, email, avatar).
+
+Chaque utilisateur doit avoir un UUID unique qui sert de clé primaire dans toutes les tables.
+
+Stocker les préférences de thème (dark/light) dans Supabase.
+
+🟢 Statuts utilisateur
+Ajouter un système de présence en temps réel :
+
+🟢 Vert = En ligne
+
+🟠 Orange = Ne pas déranger
+
+🟣 Violet = Regarde un stream
+
+🔵 Trois petits points animés = Écrit dans le chat
+
+Le badge doit apparaître à côté de l’avatar dans la navbar (mobile et desktop).
+
+Statuts synchronisés via WebSocket ou PubNub/Sendbird SDK.
+
+💬 Chat en direct
+Intégrer un composant de chat avec :
+
+Liste des salons (global, privé, par film/série).
+
+Messages en temps réel.
+
+Indicateur "X est en train d’écrire…".
+
+Utiliser PubNub ou Sendbird pour la gestion des messages et statuts.
+
+UI stylisée avec Tailwind, responsive mobile/desktop.
+
+👥 Gestion d’amis
+Tables Supabase :
+
+friend_requests (id, sender_id, receiver_id, status).
+
+friends (id, user_id, friend_id).
+
+Fonctionnalités :
+
+Envoyer une demande d’ami.
+
+Accepter/refuser.
+
+Liste d’amis avec statuts en temps réel.
+
+Notifications en cas de nouvelle demande.
+
+🧭 Admin & Monitoring
+Si l’utilisateur est admin → badge "Admin" dans la navbar.
+
+Admin peut voir tous les membres connectés avec leur statut.
+
+Dashboard admin pour gérer les utilisateurs, amis, et salons.
+
+🎨 UI & Thèmes
+Respecter les thèmes dark/light existants.
+
+Utiliser tokens Tailwind (bg-dark-bg, text-dark-text, etc.).
+
+Transitions fluides (transition-colors duration-300).
+
+Micro-interactions (hover, focus, animations).
+
+📱 Responsive
+Sur mobile → bouton "Recherche" + overlay pour chat et amis.
+
+Sur desktop → barre de recherche et chat intégrés dans la navbar.
+
+Pas de bug d’empilement (z-index bien géré).
+
+🚀 Résultat attendu
+Un système complet, stable et premium.
+
+Statuts utilisateurs visibles en temps réel.
+
+Chat fluide, responsive et sans bug.
+
+Gestion d’amis intégrée et fonctionnelle.
+

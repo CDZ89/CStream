@@ -1,0 +1,288 @@
+# Bot discord avancé pour CStream
+
+Tu veux un bot vraiment intégré, configurable depuis ton admin, qui accueille et quitte proprement, crée des vocaux privés, annonce les médias du site, parle sans slash, et offre un gros catalogue de commandes fiables. Voici un design complet, prêt à implémenter, orienté zéro bug et contrôle total.
+
+---
+
+## Configuration admin côté site
+
+- **Choix des salons système:** champs pour définir le canal de bienvenue, canal des départs, canal des annonces médias, canal des annonces mises à jour.
+- **Templates de messages:** texte personnalisable pour bienvenue et départ, avec variables.
+  - Variables dispo: `{username}`, `{userId}`, `{serverName}`, `{mediaTitle}`, `{mediaUrl}`, `{updateTitle}`, `{updateSummary}`.
+- **Règles vocal privé:** toggle “créer salon vocal privé”, modèle de nom, durée max inactive, rôle autorisé à y entrer.
+- **IA conversationnelle sans slash:** toggle “répondre aux messages”, choix du préfixe (ex. `!`), réponse aux mentions (`@CStreamBot`), salon(s) autorisés.
+- **Sécurité et permissions:** bouton “Test de permissions” qui vérifie lecture/écriture/gestion des salons/rôles dans les canaux choisis.
+- **Webhook interne/API bot:** URL et token internes pour pousser événements du site → bot (nouveau média, update, etc.).
+
+---
+
+## Fonctionnalités clés
+
+- **Bienvenue et départ personnalisés:**
+  - À l’arrivée, poste un message dans le canal choisi: “Bienvenue {username} sur {serverName} !”.
+  - À la sortie, poste un message de départ propre dans le canal dédié.
+- **Création de salon vocal privé:**
+  - Commande ou auto-création: génère un vocal temporaire “🔒 {username}” accessible au membre + staff, masque pour les autres.
+  - Auto-suppression si vide pendant X minutes.
+- **Annonces médias et mises à jour du site:**
+  - Quand tu ajoutes un lecteur/media/update, le site appelle l’API bot → annonce formatée dans le canal dédié.
+- **IA sans slash:**
+  - Répond aux mentions directes ou préfixe (`!ask`, `!help`, `!summarize`) dans les salons autorisés.
+  - Option threads auto: crée un fil par conversation pour éviter le spam du canal principal.
+- **Rôles et badges persistants:**
+  - Lecture/écriture en DB (users/roles/badges) et vérification serveur avant chaque action.
+- **Audit et logs:**
+  - Journalise toutes les actions (welcome, leave, create/delete vocal, annonce, commande) avec contexte et résultat.
+
+---
+
+## Catalogue de commandes suggérées
+
+- **Système**
+  - **`/ping`:** latence et statut du bot.
+  - **`/status`:** santé (uptime, mémoire, ping API site).
+  - **`/restart` (admin):** relance contrôlée.
+
+- **Configuration (admin)**
+  - **`/config set-welcome <channel>`**
+  - **`/config set-leave <channel>`**
+  - **`/config set-media <channel>`**
+  - **`/config set-updates <channel>`**
+  - **`/config set-prefix <char>`**
+  - **`/config toggle-ai <on|off>`**
+  - **`/config set-voice-role <role>`**
+  - **`/config set-voice-timeout <minutes>`**
+  - **`/config show`:** affiche configuration active.
+
+- **Modération / rôles**
+  - **`/role add <username> <role>`**
+  - **`/role remove <username> <role>`**
+  - **`/ban` / `/kick` / `/mute`** (avec raisons et durée).
+  - **`/clear <amount>`** supprimer messages récents.
+
+- **Médias et updates**
+  - **`/media add <title> <url> <type>`**
+  - **`/media list`**
+  - **`/media announce <id>`**
+  - **`/update post <title> <summary>`**
+  - **`/update latest`**
+
+- **Vocal privé**
+  - **`/voice create [name]`:** crée un vocal privé pour l’utilisateur.
+  - **`/voice add <user>` / `/voice remove <user>`**
+  - **`/voice close`:** supprime le vocal privé.
+
+- **Utilisateurs**
+  - **`/userinfo <username>`**
+  - **`/welcome test <username>`** test du message d’accueil.
+  - **`/leave test <username>`** test du message de départ.
+
+- **IA sans slash (messages)**
+  - **`!ask <question>`:** réponse IA.
+  - **Mention `@CStreamBot`:** conversation directe, avec limite de longueur et cooldown.
+
+---
+
+## Schéma et endpoints (DB + API)
+
+#### Tables
+
+- **users**
+  - id (uuid), username (unique), role_id (fk), created_at
+- **roles**
+  - id, name, permissions (json)
+- **badges**
+  - id, user_id (fk), type, created_at
+- **media**
+  - id, title, url, type, created_at, published_by
+- **updates**
+  - id, title, summary, created_at, published_by
+- **bot_config**
+  - id (singleton), welcome_channel_id, leave_channel_id, media_channel_id, updates_channel_id, prefix, ai_enabled, voice_role_id, voice_timeout_min
+
+#### API côté site → bot
+
+- **POST `/bot/announce/media`**
+  - body: { title, url, type }
+- **POST `/bot/announce/update`**
+  - body: { title, summary }
+- **POST `/bot/welcome`**
+  - body: { userId, username }
+- **POST `/bot/leave`**
+  - body: { userId, username }
+
+Sécurise avec **JWT** ou signature HMAC et IP allowlist.
+
+---
+
+## Blueprint d’implémentation (discord.js v14, Node.js)
+
+```js
+// index.js
+import 'dotenv/config';
+import { Client, GatewayIntentBits, Partials, Events, REST, Routes, ChannelType, PermissionsBitField } from 'discord.js';
+import express from 'express';
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates
+  ],
+  partials: [Partials.Channel, Partials.Message]
+});
+
+// Charge config depuis DB (mock ici)
+let cfg = {
+  welcome_channel_id: process.env.WELCOME_CH,
+  leave_channel_id: process.env.LEAVE_CH,
+  media_channel_id: process.env.MEDIA_CH,
+  updates_channel_id: process.env.UPDATES_CH,
+  prefix: '!',
+  ai_enabled: true,
+  voice_role_id: process.env.VOICE_ROLE,
+  voice_timeout_min: 15
+};
+
+// Ready
+client.once(Events.ClientReady, () => {
+  console.log(`Connecté en tant que ${client.user.tag}`);
+});
+
+// Bienvenue
+client.on(Events.GuildMemberAdd, async (member) => {
+  try {
+    const ch = client.channels.cache.get(cfg.welcome_channel_id);
+    if (ch) await ch.send(`Bienvenue ${member.user.username} sur ${member.guild.name} !`);
+  } catch (e) { console.error('Bienvenue error', e); }
+});
+
+// Départ
+client.on(Events.GuildMemberRemove, async (member) => {
+  try {
+    const ch = client.channels.cache.get(cfg.leave_channel_id);
+    if (ch) await ch.send(`${member.user?.username ?? 'Un membre'} a quitté le serveur.`);
+  } catch (e) { console.error('Leave error', e); }
+});
+
+// IA sans slash (préfixe + mention)
+client.on(Events.MessageCreate, async (msg) => {
+  if (msg.author.bot) return;
+  const mentioned = msg.mentions.has(client.user);
+  const prefixed = msg.content.startsWith(cfg.prefix);
+
+  if (cfg.ai_enabled && (mentioned || prefixed)) {
+    const question = mentioned ? msg.content.replace(/<@!?(\d+)>/, '').trim() : msg.content.slice(cfg.prefix.length).trim();
+    if (!question) return msg.reply('Pose ta question 😉');
+    // Ici, appelle ton backend IA (API interne), puis:
+    const answer = await getAIAnswer(question); // à implémenter
+    return msg.reply(answer.slice(0, 1800));
+  }
+
+  // Exemples commandes texte
+  if (prefixed) {
+    const [cmd, ...args] = msg.content.slice(cfg.prefix.length).trim().split(/\s+/);
+    if (cmd === 'voice') {
+      const channel = await msg.guild.channels.create({
+        name: `🔒 ${msg.author.username}`,
+        type: ChannelType.GuildVoice,
+        permissionOverwrites: [
+          { id: msg.guild.roles.everyone.id, deny: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ViewChannel] },
+          { id: msg.author.id, allow: [PermissionsBitField.Flags.Connect, PermissionsBitField.Flags.ViewChannel] }
+        ]
+      });
+      msg.reply(`Salon vocal privé créé: ${channel.name}`);
+      // Auto-suppression si vide: surveiller via GuildVoiceStates ou job setInterval
+    }
+  }
+});
+
+// REST pour slash commands
+const commands = [
+  { name: 'ping', description: 'Tester le bot', type: 1 },
+  { name: 'status', description: 'Statut du bot', type: 1 },
+  { name: 'config', description: 'Configurer les canaux', type: 1 }
+];
+const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+(async () => {
+  await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
+})();
+
+// API Express pour annonces depuis le site
+const app = express();
+app.use(express.json());
+
+// Sécurité simple (remplace par HMAC/JWT)
+app.use((req, res, next) => {
+  if (req.headers['x-api-key'] !== process.env.INTERNAL_KEY) return res.status(401).end();
+  next();
+});
+
+app.post('/bot/announce/media', async (req, res) => {
+  const { title, url, type } = req.body;
+  const ch = client.channels.cache.get(cfg.media_channel_id);
+  if (!ch) return res.status(400).json({ error: 'Channel manquant' });
+  await ch.send(`Nouveau média disponible: ${title} (${type})\n${url}`);
+  res.json({ ok: true });
+});
+
+app.post('/bot/announce/update', async (req, res) => {
+  const { title, summary } = req.body;
+  const ch = client.channels.cache.get(cfg.updates_channel_id);
+  if (!ch) return res.status(400).json({ error: 'Channel manquant' });
+  await ch.send(`📢 Mise à jour: ${title}\n${summary}`);
+  res.json({ ok: true });
+});
+
+app.post('/bot/welcome', async (req, res) => {
+  const { username } = req.body;
+  const ch = client.channels.cache.get(cfg.welcome_channel_id);
+  await ch?.send(`Bienvenue ${username} !`);
+  res.json({ ok: true });
+});
+
+app.post('/bot/leave', async (req, res) => {
+  const { username } = req.body;
+  const ch = client.channels.cache.get(cfg.leave_channel_id);
+  await ch?.send(`${username} a quitté le serveur.`);
+  res.json({ ok: true });
+});
+
+app.listen(process.env.PORT || 3000);
+
+// Stub IA — remplace par ton vrai appel
+async function getAIAnswer(q) {
+  return `Tu as dit: "${q}". (Réponse IA ici)`;
+}
+
+client.login(process.env.DISCORD_TOKEN);
+```
+
+---
+
+## Fiabilité, sécurité et “sans bug”
+
+- **Permissions admin:** donne “Administrateur” au bot pour accès à tous les salons; évite les erreurs de droits.
+- **Secrets en environnement:** DISCORD_TOKEN, CLIENT_ID, INTERNAL_KEY, jamais en clair.
+- **Gestion des erreurs:** try/catch systématiques, réponses claires aux API, logs structurés.
+- **Watchdog:** exécute avec PM2 ou Docker; auto-restart en cas de crash, healthchecks.
+- **Rate limits Discord:** espace les annonces si gros volume (queue interne avec setTimeout).
+- **Cleanup vocaux privés:** job toutes les 2–5 minutes pour supprimer salons vides dépassant le timeout.
+- **Validation inputs:** côté site, valide URLs, titres, tailles; côté bot, limite longueur messages.
+
+---
+
+## Prochaines étapes
+
+- **Dis-moi les IDs des salons** (bienvenue, départ, médias, updates) et le **préfixe** souhaité.
+- **Souhaites-tu des templates de messages** prêts pour bienvenue/départ/media/update avec variables?
+- **Veux-tu ajouter des commandes spécifiques** (ex: `/report`, `/feature-request`, `/media search`) adaptées à CStream?
+
+Je peux te livrer un pack final avec:
+- config admin JSON/DB,
+- commandes slash enregistrées,
+- moteur IA branché à ton backend,
+- jobs de nettoyage vocal,
+- et scripts de déploiement PM2/Docker.

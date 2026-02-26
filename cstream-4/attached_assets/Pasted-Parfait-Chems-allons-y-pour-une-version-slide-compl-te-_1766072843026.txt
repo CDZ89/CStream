@@ -1,0 +1,58 @@
+Parfait Chems 👌, allons-y pour une version **slide complète stylisée façon TMDB**, avec le titre intégré visuellement comme sur leurs affiches. L’idée est de reproduire le **look premium** : image de fond + titre massif + effet cinématographique.
+
+---
+
+## 🎬 Exemple Slide façon TMDB
+
+### ✅ HTML
+```html
+<div class="slide relative h-[600px] w-full overflow-hidden">
+  <!-- Image de fond -->
+  <div class="absolute inset-0 bg-cover bg-center" 
+       style="background-image: url('https://image.tmdb.org/t/p/original/olk64qLVBnCM0PNsXlT29Abbn0H.png');">
+  </div>
+
+  <!-- Overlay sombre pour lisibilité -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+
+  <!-- Contenu -->
+  <div class="absolute bottom-12 left-12 text-white">
+    <h1 class="text-6xl font-bold font-[Bebas Neue] drop-shadow-lg">
+      Zootopia 2
+    </h1>
+    <p class="mt-4 text-lg max-w-xl text-gray-200">
+      Judy Hopps et Nick Wilde découvrent que leur partenariat est mis à rude épreuve...
+    </p>
+    <button class="mt-6 px-6 py-3 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30 transition">
+      ▶ Regarder maintenant
+    </button>
+  </div>
+</div>
+```
+
+---
+
+### ✅ CSS / Tailwind Explications
+- `bg-cover bg-center` → image de fond bien cadrée.
+- `bg-gradient-to-t from-black/70` → dégradé sombre en bas pour faire ressortir le titre.
+- `font-[Bebas Neue]` → police ciné (importée via Google Fonts).
+- `drop-shadow-lg` → effet lumineux derrière le texte.
+- `backdrop-blur-md bg-white/20` → bouton style **liquid glass**.
+
+---
+
+### ✅ Import Police TMDB-like
+```html
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+```
+
+---
+
+## 🚀 Résultat
+- Le **titre apparaît intégré dans l’image**, massif et cinématographique.
+- Le **texte secondaire** reste lisible grâce au dégradé sombre.
+- Le **bouton** reprend ton style "liquid glass" pour la cohérence.
+
+---
+
+👉 Veux-tu que je te prépare une **version réutilisable en composant React/Tailwind** (genre `<TmdbSlide />`) pour que tu puisses l’intégrer directement dans ton site sans répéter le code à chaque fois ?

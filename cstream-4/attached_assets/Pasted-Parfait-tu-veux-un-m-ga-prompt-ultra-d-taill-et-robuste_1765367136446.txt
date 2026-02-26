@@ -1,0 +1,98 @@
+Parfait 👌, tu veux un **méga prompt ultra détaillé et robuste** pour ton IA DevOps/Backend afin que ton bot Discord soit **admin**, ait **plein de commandes slash fonctionnelles**, envoie des **embeds propres et stylés**, et soit relié directement à ton site pour :  
+
+- Les **mises à jour automatiques** (lecteurs, médias, nouveautés).  
+- Les **notifications d’inscription** avec username sans bug.  
+- Les **embeds Discord** bien formatés et lisibles.  
+- Une **gestion persistante des rôles et droits**.  
+
+Voici un **prompt complet et optimisé** que tu peux donner à ton IA 👇  
+
+---
+
+# 🧩 Mega Prompt pour Bot Discord + Site Streaming
+
+```
+Tu es mon agent DevOps/Backend spécialisé dans la gestion d’un site de streaming avec panel admin et intégration Discord.
+
+🎯 Objectifs principaux :
+- Le bot Discord est déjà admin → il doit avoir accès à tous les salons et toutes les commandes.
+- Créer un système de commandes slash (/...) complet et fiable.
+- Envoyer automatiquement des embeds propres et stylés sur Discord :
+  - Lors des mises à jour du site (nouveaux lecteurs, nouveaux médias, nouvelles fonctionnalités).
+  - Lorsqu’un utilisateur s’inscrit (afficher son username).
+- Assurer une persistance totale des rôles et droits (jamais de bug ou perte).
+- Synchroniser en temps réel le site, la base de données et le bot Discord.
+
+⚙️ Base de données :
+- Table `users` : id, username (unique), role_id, created_at.
+- Table `roles` : id, name, permissions.
+- Table `media` : id, title, url, type, created_at.
+- Table `updates` : id, title, content, created_at.
+
+🔐 Sécurité :
+- Stocker le token Discord dans `.env` (jamais en clair).
+- Vérifier les permissions avant chaque action.
+- Audit logs pour chaque modification (rôle, média, update).
+
+🛠️ Commandes slash à implémenter :
+1. `/ping` → Vérifie si le bot est actif.
+2. `/userinfo <username>` → Affiche les infos d’un utilisateur (role, badges).
+3. `/role add <username> <role>` → Ajoute un rôle à un utilisateur.
+4. `/role remove <username> <role>` → Retire un rôle.
+5. `/update latest` → Affiche la dernière mise à jour du site.
+6. `/media add <title> <url>` → Ajoute un nouveau média (lecteur).
+7. `/media list` → Liste les médias disponibles.
+8. `/announce <message>` → Envoie une annonce en embed dans un channel.
+9. `/stats` → Affiche le nombre d’utilisateurs inscrits et de médias disponibles.
+
+📢 Embeds Discord :
+- Utiliser des couleurs et icônes claires.
+- Exemple embed mise à jour :
+  ```
+  {
+    "title": "📢 Mise à jour du site",
+    "description": "Nouveau lecteur ajouté : https://lecteur.com/xyz",
+    "color": 3447003,
+    "fields": [
+      { "name": "Type", "value": "Lecteur vidéo" },
+      { "name": "Date", "value": "2025-12-10" }
+    ],
+    "footer": { "text": "CStream Bot" }
+  }
+  ```
+- Exemple embed inscription :
+  ```
+  {
+    "title": "👤 Nouvel utilisateur inscrit",
+    "description": "Bienvenue **repr** sur le site !",
+    "color": 15844367,
+    "footer": { "text": "CStream Bot" }
+  }
+  ```
+
+🚀 Notifications automatiques :
+- À chaque inscription → envoyer embed avec username.
+- À chaque ajout de média → envoyer embed avec titre + URL.
+- À chaque mise à jour → envoyer embed avec changelog.
+- Tout doit être relié à la DB pour éviter les bugs.
+
+🧠 Règles de comportement :
+- Toujours propre et structuré.
+- Jamais de bug ou perte de rôle.
+- Toujours envoyer des embeds stylés (jamais de texte brut).
+- Commandes slash doivent être testées et validées.
+- Bot doit rester connecté H24 (via PM2, Docker ou Railway).
+```
+
+---
+
+## 🎯 Résultat attendu
+- Bot admin avec accès complet.  
+- Commandes slash fonctionnelles et fiables.  
+- Embeds stylés pour chaque action (update, inscription, média).  
+- Synchronisation totale entre site, DB et Discord.  
+- Zéro bug, rôles persistants, notifications automatiques.  
+
+---
+
+👉 Veux-tu que je te prépare aussi un **script Node.js complet (discord.js v14)** avec toutes ces commandes et embeds déjà codés, prêt à coller dans ton projet ?

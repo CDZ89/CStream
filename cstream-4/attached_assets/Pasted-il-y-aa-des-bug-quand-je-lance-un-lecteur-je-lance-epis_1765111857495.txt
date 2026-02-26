@@ -1,0 +1,290 @@
+il y aa des bug quand je lance un lecteur je lance episode 2 sa me fait sa : Lecture S1E2 via Classroom of the Elite - Sendvid S01E01 repare que tu est bien classé et propre dans lecteur et dans admin et les badge : Createur c'est lui le createur du site c'est lui qui a tout fait il atout bref tout Super Admin Bras droit du createur admin sous le Super Admin ensuite le reste des role fait en sorte qu'il marche touse et fait le badge pour le chef : chemsdine.kachid@gmail.com sans bug et que les fonction son attribué sans bug et fait tout bien regarde que tout est place et sans bug et ameliore les page tendance avec plein de fonction propre sans probleme fix all aide moi Écrire un message à Copilot
+Afficher mes réflexions
+Contexte du bug lecteur et objectif
+Tu as un bug d’aiguillage: tu cliques S1E2, mais le lecteur affiche “Sendvid S01E01” (mauvais mapping entre l’épisode, le lecteur et la source). Tu veux aussi un système de rôles et badges propre (Créateur, Super Admin, Bras droit, Admin, etc.), attribuer les fonctions sans bug, et améliorer la page Tendances avec des features robustes. Voici une refonte claire et testable.
+
+Architecture propre pour le lecteur et le mapping des épisodes
+Modèle de données recommandé
+Label: Épisode canonique
+
+Utilise un ID canonique par épisode: contentId, season, episode, language, releaseDate.
+
+Stocke un tableau de sources par épisode, triées par priorité et état.
+
+json
+{
+  "contentId": "classroom-of-the-elite",
+  "season": 1,
+  "episode": 2,
+  "title": "Classroom of the Elite S01E02",
+  "languages": ["VF", "VOSTFR", "VO"],
+  "sources": [
+    { "id": "sendvid", "url": "https://sendvid.com/xyz-episode-2", "status": "ok", "priority": 1, "type": "iframe" },
+    { "id": "sibnet", "url": "https://video.sibnet.ru/xyz-episode-2", "status": "ok", "priority": 2, "type": "iframe" },
+    { "id": "hls", "url": "https://cdn.cstream.com/coe/s1/e2.m3u8", "status": "ok", "priority": 3, "type": "hls" }
+  ]
+}
+Contrats frontend/backend
+Label: Endpoint stable
+
+Backend: GET /api/episodes/:contentId/:season/:episode retourne l’entité ci-dessus.
+
+Backend: normalise les URLs et vérifie qu’elles pointent bien vers S1E2 (validation de schéma).
+
+Frontend: ne construit jamais une URL lecteur à la volée; utilise les URLs validées par l’API.
+
+Sélection et fallback des lecteurs
+Label: Sélection robuste
+
+Trie sources par priority, filtre status === "ok".
+
+Monte le lecteur avec la première source; si erreur de chargement, bascule sur la suivante.
+
+Logge l’échec côté frontend et le remonte à /api/telemetry/player-failure.
+
+ts
+type Source = { id: string; url: string; status: "ok"|"down"; priority: number; type: "iframe"|"hls"|"mp4" };
+type Episode = { contentId: string; season: number; episode: number; sources: Source[]; };
+
+async function initPlayer(ep: Episode) {
+  const sorted = ep.sources
+    .filter(s => s.status === "ok")
+    .sort((a, b) => a.priority - b.priority);
+
+  for (const src of sorted) {
+    const ok = await tryMountSource(src);
+    if (ok) {
+      recordPlaybackContext(ep, src); // pour l’historique et la reprise
+      return;
+    } else {
+      await sendFailure(ep, src);
+    }
+  }
+  showError("Aucune source disponible pour cet épisode.");
+}
+
+function tryMountSource(src: Source): Promise<boolean> {
+  return new Promise(resolve => {
+    if (src.type === "iframe") {
+      const iframe = document.getElementById("player") as HTMLIFrameElement;
+      iframe.src = src.url;
+      const timeout = setTimeout(() => resolve(false), 8000);
+      iframe.onload = () => { clearTimeout(timeout); resolve(true); };
+      iframe.onerror = () => { clearTimeout(timeout); resolve(false); };
+    } else {
+      // type hls/mp4 -> monte Video.js ou Plyr
+      mountCustomPlayer(src).then(() => resolve(true)).catch(() => resolve(false));
+    }
+  });
+}
+Prévention du bug “E2 affiche E1”
+Label: Verrouillage contextuel
+
+A chaque montage, compare la métadonnée locale (S1E2) avec un tag dans l’URL ou la réponse HEAD (si possible).
+
+Si divergence, marque la source down et passe à la suivante.
+
+Stocke currentEpisodeKey = "${contentId}-S${season}E${episode}" en state; toute navigation change la clé et force un remount.
+
+ts
+function assertEpisodeMatch(ep: Episode, src: Source): boolean {
+  // Exemple simple: l’URL doit contenir "s1/e2" ou "S01E02"
+  const patts = [`s${ep.season}/e${ep.episode}`, `s${ep.season}e${ep.episode}`, `S0${ep.season}E0${ep.episode}`];
+  return patts.some(p => src.url.toLowerCase().includes(p));
+}
+Système de rôles, permissions et badges (créateur, super admin, etc.)
+Rôles et hiérarchie
+Label: Rôles
+
+CREATOR
+
+SUPER_ADMIN
+
+ADMIN_LEAD (Bras droit du créateur)
+
+ADMIN
+
+MODERATOR
+
+EDITOR
+
+SUPPORT
+
+USER
+
+BANNED
+
+Modèle de permissions
+Label: Permissions atomiques
+
+manage_users, manage_roles, manage_content, publish_content, delete_content, view_admin, view_analytics, manage_feature_flags, manage_readers, override_playback, ban_user, unban_user.
+
+ts
+type Role =
+  | "CREATOR" | "SUPER_ADMIN" | "ADMIN_LEAD" | "ADMIN" | "MODERATOR" | "EDITOR" | "SUPPORT" | "USER" | "BANNED";
+
+type Permission =
+  | "manage_users" | "manage_roles" | "manage_content" | "publish_content" | "delete_content"
+  | "view_admin" | "view_analytics" | "manage_feature_flags" | "manage_readers"
+  | "override_playback" | "ban_user" | "unban_user";
+
+const ROLE_PERMS: Record<Role, Permission[]> = {
+  CREATOR: ["manage_users","manage_roles","manage_content","publish_content","delete_content","view_admin","view_analytics","manage_feature_flags","manage_readers","override_playback","ban_user","unban_user"],
+  SUPER_ADMIN: ["manage_users","manage_roles","manage_content","publish_content","delete_content","view_admin","view_analytics","manage_feature_flags","manage_readers","override_playback","ban_user","unban_user"],
+  ADMIN_LEAD: ["manage_users","manage_content","publish_content","delete_content","view_admin","view_analytics","manage_readers","override_playback","ban_user","unban_user"],
+  ADMIN: ["manage_content","publish_content","delete_content","view_admin","view_analytics","manage_readers"],
+  MODERATOR: ["manage_content","view_admin","ban_user","unban_user"],
+  EDITOR: ["manage_content","publish_content","view_admin"],
+  SUPPORT: ["view_admin"],
+  USER: [],
+  BANNED: []
+};
+Attribution des rôles et badge chef
+Label: Assignations
+
+Créateur: chemsdine.kachid@gmail.com → rôle CREATOR.
+
+Bras droit: USER spécifié → rôle ADMIN_LEAD.
+
+Super Admin: groupe sélectionné → rôle SUPER_ADMIN.
+
+ts
+type User = { id: string; email: string; roles: Role[]; badge?: string };
+
+function assignDefaultRoles(user: User): User {
+  if (user.email === "chemsdine.kachid@gmail.com") {
+    user.roles = ["CREATOR"];
+    user.badge = "Créateur";
+  }
+  return user;
+}
+
+function hasPermission(user: User, perm: Permission): boolean {
+  const roles = user.roles ?? [];
+  return roles.some(r => ROLE_PERMS[r].includes(perm));
+}
+Affichage des badges (UI propre)
+Label: Règles UI
+
+Un badge par rôle principal; si multi-rôles, affiche le badge le plus élevé selon une priorité.
+
+Badges stylés mais sobres, cohérents dans admin et frontend.
+
+ts
+const ROLE_PRIORITY: Role[] = ["CREATOR","SUPER_ADMIN","ADMIN_LEAD","ADMIN","MODERATOR","EDITOR","SUPPORT","USER","BANNED"];
+const ROLE_BADGE: Record<Role, string> = {
+  CREATOR: "Créateur",
+  SUPER_ADMIN: "Super Admin",
+  ADMIN_LEAD: "Bras droit",
+  ADMIN: "Admin",
+  MODERATOR: "Modérateur",
+  EDITOR: "Éditeur",
+  SUPPORT: "Support",
+  USER: "Membre",
+  BANNED: "Banni"
+};
+
+function primaryRole(user: User): Role {
+  const assigned = user.roles ?? ["USER"];
+  return ROLE_PRIORITY.find(r => assigned.includes(r)) ?? "USER";
+}
+
+function badgeLabel(user: User): string {
+  return ROLE_BADGE[primaryRole(user)];
+}
+Admin propre et fonctions sans bug
+Gardes de route et composants
+Label: Sécurisation
+
+Toute page admin requiert hasPermission(user, "view_admin").
+
+Actions sensibles (ban, roles, readers) nécessitent la permission spécifique, vérifiée frontend + backend.
+
+ts
+function requirePerm(user: User, perm: Permission) {
+  if (!hasPermission(user, perm)) throw new Error("Forbidden");
+}
+Cohérence des données
+Label: Invariants
+
+Un utilisateur ne peut pas avoir à la fois BANNED et des permissions actives.
+
+Le rôle CREATOR est unique et non supprimable.
+
+Les modifications de rôles sont auditées (log: who, when, what).
+
+Amélioration de la page Tendances (robuste et sans problèmes)
+Fonctionnalités
+Label: Algorithme
+
+Score tendance = combinaison normalisée de: vues récentes, taux de complétion, favoris ajoutés, partages, croissance hebdo.
+
+Anti-spike: lisse sur 24h avec un cap par IP/device.
+
+Multi-langues: agrège par titre canonique, expose “disponible en VF/VOSTFR/VO”.
+
+ts
+type TrendItem = { contentId: string; score: number; views24h: number; favAdds24h: number; completionRate: number; growth7d: number };
+
+function trendScore(t: TrendItem): number {
+  const w1 = 0.4, w2 = 0.2, w3 = 0.2, w4 = 0.2;
+  const normViews = Math.log(1 + t.views24h);
+  const normFavs = Math.log(1 + t.favAdds24h);
+  const normCompletion = t.completionRate; // 0..1
+  const normGrowth = t.growth7d; // -1..1
+  return w1*normViews + w2*normFavs + w3*normCompletion + w4*normGrowth;
+}
+UI/UX propres
+Label: Composants
+
+Cartes avec image, titre, badge langues, note TMDB, bouton “Continuer” si en cours, “Ajouter aux favoris”.
+
+Filtres: par type (anime/film/série), langue, période (24h/7j).
+
+Skeletons, pagination infinie, état vide clair.
+
+Performance et fiabilité
+Label: Caching
+
+Backend: calcule tendances chaque 5 minutes et met en cache.
+
+Frontend: SWR/RTK Query avec revalidation légère.
+
+Telemetry: erreurs de chargement des images ou lecteurs remontées et corrigées par fallback.
+
+Checklist “fix all” avant mise en prod
+Routing lecteur:
+
+Événement de navigation met à jour currentEpisodeKey et remonte la nouvelle entité.
+
+Validation d’URL assure correspondance SxEy.
+
+Fallback sources fonctionne avec timeout et onerror.
+
+Historique et reprise:
+
+Sauvegarde progress par contentId-SxEy-sourceId.
+
+Si source change, reprend au dernier timestamp mémorisé.
+
+Rôles et badges:
+
+chemsdine.kachid@gmail.com = CREATOR avec badge “Créateur”.
+
+Hiérarchie et permissions testées unitaires.
+
+Pages Admin protégées par view_admin et actions par permissions fines.
+
+Tendances:
+
+Algorithme de score normalisé.
+
+Caching et anti-spike.
+
+UI responsive, multi-langues, sans duplication.
+
+Telemetry et logs:
+
+player-failure, image-failure, permission-denied loggés et consultables dans l’admin.
+
+Si tu me donnes un exemple concret d’API actuel (schéma de tes endpoints et structure des épisodes/sources), je te fournis des snippets adaptés à ton stack (React/Vue/Nuxt, Node/Nest) pour corriger le bug S1E2→S1E1, brancher les permissions et afficher les badges proprement dans le lecteur et l’admin.

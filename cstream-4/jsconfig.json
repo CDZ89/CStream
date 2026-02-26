@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "jsx": "react-jsx",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "checkJs": false,
+        "baseUrl": ".",
+        "lib": [
+            "ESNext",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "paths": {
+            "@/*": [
+                "./project/src/*"
+            ]
+        }
+    },
+    "include": [
+        "types.d.ts",
+        "project/src",
+        "api"
+    ],
+    "exclude": [
+        "node_modules",
+        "project/node_modules"
+    ]
+}

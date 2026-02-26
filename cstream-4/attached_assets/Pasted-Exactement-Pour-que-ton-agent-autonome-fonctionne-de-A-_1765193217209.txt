@@ -1,0 +1,91 @@
+Exactement 👍. Pour que ton agent autonome fonctionne de A à Z, tu dois configurer et sécuriser plusieurs **clés API et secrets**. Voici la liste complète à chercher et mettre en place :
+
+---
+
+## 🔑 Clés API et secrets indispensables
+
+### 1. **GitHub**
+- **Personal Access Token (PAT)**  
+  - Sert à pousser du code, déclencher des workflows GitHub Actions, gérer les commits.  
+  - Crée-le dans **GitHub → Settings → Developer settings → Personal access tokens**.  
+  - Permissions minimales : `repo`, `workflow`.  
+  - Stocke-le dans ton dépôt sous **Settings → Secrets and variables → Actions** avec le nom `GITHUB_TOKEN`.
+
+---
+
+### 2. **Supabase**
+- **SUPABASE_URL**  
+  - URL de ton projet Supabase (ex: `https://xyzcompany.supabase.co`).  
+- **SUPABASE_ANON_KEY**  
+  - Clé publique pour les appels côté client (auth, DB, storage).  
+- **SUPABASE_SERVICE_ROLE_KEY**  
+  - Clé privée avec droits étendus (utilisée côté serveur ou agent).  
+  - ⚠️ Ne jamais exposer dans le front, uniquement dans ton backend/API.
+
+---
+
+### 3. **Discord**
+- **Webhook URL**  
+  - Crée un webhook dans ton serveur Discord (paramètres → intégrations → webhooks).  
+  - Sert à envoyer automatiquement les notifications (déploiements, changelogs, erreurs).  
+  - Stocke-le dans GitHub Actions sous `DISCORD_WEBHOOK`.
+
+---
+
+### 4. **Base de données / Cache (optionnel)**
+- **Redis / KeyDB** (si tu veux du cache rapide)  
+  - Clé de connexion (host, port, password).  
+- **Neon (Postgres serverless)** si tu veux remplacer/améliorer Supabase DB.  
+  - Clé API Neon + URL de connexion Postgres.
+
+---
+
+### 5. **CDN / Hébergement**
+- **Cloudflare API Token** (si tu utilises Cloudflare pour cache/CDN).  
+  - Sert à purger le cache, gérer DNS, optimiser la distribution.  
+- **Vercel / Netlify / Render API Key** (si tu déploies ton front via ces services).  
+  - Sert à déclencher des déploiements depuis ton agent.
+
+---
+
+### 6. **Monitoring / Logs**
+- **Sentry DSN** (si tu veux suivre les erreurs front/back).  
+- **LogRocket API Key** (pour rejouer les sessions utilisateurs).  
+
+---
+
+## 📂 Organisation des secrets
+- **GitHub Actions** → `Settings → Secrets and variables → Actions`  
+  - `GITHUB_TOKEN`  
+  - `DISCORD_WEBHOOK`  
+  - `SUPABASE_URL`  
+  - `SUPABASE_ANON_KEY`  
+  - `SUPABASE_SERVICE_ROLE_KEY`  
+  - (optionnel) `REDIS_URL`, `CLOUDFLARE_TOKEN`, `VERCEL_TOKEN`, `SENTRY_DSN`  
+
+- **.env (local/dev)**  
+  ```
+  SUPABASE_URL=https://xyzcompany.supabase.co
+  SUPABASE_ANON_KEY=xxxxxxxx
+  SUPABASE_SERVICE_ROLE_KEY=xxxxxxxx
+  GITHUB_TOKEN=xxxxxxxx
+  DISCORD_WEBHOOK=https://discord.com/api/webhooks/xxxxxx
+  REDIS_URL=redis://user:pass@host:6379
+  CLOUDFLARE_TOKEN=xxxxxxxx
+  VERCEL_TOKEN=xxxxxxxx
+  SENTRY_DSN=xxxxxxxx
+  ```
+
+---
+
+## 🎯 Résultat attendu
+Avec ces clés :
+- Ton agent peut **parler à GitHub** (commits, déploiements).  
+- Il peut **gérer Supabase** (auth, DB, storage).  
+- Il peut **notifier Discord** automatiquement.  
+- Il peut **optimiser via CDN/Cache** et **monitorer les erreurs**.  
+- Tout est sécurisé car stocké dans **secrets GitHub Actions** et `.env` côté serveur.  
+
+---
+
+👉 Veux-tu que je te prépare un **schéma visuel** qui montre comment chaque clé API s’intègre dans ton architecture (Admin Panel ↔ Agent ↔ GitHub ↔ Supabase ↔ Discord ↔ CDN) ?

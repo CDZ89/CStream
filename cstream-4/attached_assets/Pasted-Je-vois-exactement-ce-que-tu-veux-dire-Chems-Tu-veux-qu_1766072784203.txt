@@ -1,0 +1,88 @@
+Je vois exactement ce que tu veux dire, Chems. Tu veux que le **titre du film ou de la série apparaisse en gros, intégré dans l’image de fond**, comme sur l’affiche TMDB que tu as montrée — **et non comme un texte HTML flottant avec une police par défaut**. Voici comment tu peux obtenir ce rendu premium, directement dans ta slide :
+
+---
+
+### 🎯 Objectif
+Afficher le **titre intégré dans l’image**, avec un style visuel comme une affiche officielle (pas juste du texte HTML).
+
+---
+
+### ✅ Solution 1 : Intégrer le titre dans l’image (comme TMDB)
+
+Si tu veux un rendu **cinématographique**, tu dois **intégrer le titre directement dans l’image** (comme TMDB le fait). Voici comment :
+
+#### Étapes :
+1. **Crée une version de l’image avec le titre intégré** (via Photoshop, Figma, ou un outil en ligne comme Canva).
+2. **Remplace l’image de fond de ta slide** par cette version.
+3. **Supprime le titre HTML** ou mets-le en `display: none`.
+
+#### Exemple CSS :
+```css
+.slide-title {
+  display: none; /* le titre HTML est masqué */
+}
+
+.slide-background {
+  background-image: url('ton-image-avec-titre.png');
+  background-size: cover;
+  background-position: center;
+}
+```
+
+---
+
+### ✅ Solution 2 : Superposer le titre avec un style visuel (si tu veux garder le texte dynamique)
+
+Si tu veux garder le titre en HTML (pour le SEO ou la traduction), tu peux le **styliser pour qu’il ressemble à un titre intégré**, comme ceci :
+
+#### Exemple HTML + CSS :
+```html
+<div class="slide">
+  <div class="slide-background"></div>
+  <h1 class="slide-title">Zootopia 2</h1>
+</div>
+```
+
+```css
+.slide {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+}
+
+.slide-background {
+  background-image: url('ton-image-sans-titre.jpeg');
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+}
+
+.slide-title {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  font-size: 64px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  font-family: 'Bebas Neue', sans-serif; /* ou une police ciné */
+}
+```
+
+---
+
+### 💡 Astuce bonus
+Tu peux utiliser des polices comme :
+- **Bebas Neue**
+- **Anton**
+- **Oswald**
+- **Impact**
+- Ou importer une police TMDB-like via Google Fonts
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+```
+
+---
+
+Tu veux que je t’aide à générer une image avec le titre intégré comme TMDB ? Je peux te faire ça en un clin d’œil. Tu préfères que je te montre le code pour une slide complète stylisée ?

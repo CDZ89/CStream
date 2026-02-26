@@ -1,0 +1,93 @@
+Objectif :  
+Créer une interface d’AI Chatbot inspirée du design Figma partagé, avec un fond pastel flou, une typographie fine, des animations douces, et une disposition centrée sur l’expérience utilisateur. Le style doit évoquer Grok, ChatGPT Plus, Humane AI, avec une touche unique CAi.
+
+🎨 STYLE VISUEL
+Fond principal :
+
+linear-gradient(135deg, #F8F9FF, #EAF4FF)
+
+backdrop-filter: blur(12px)
+
+Option Dark Mode : linear-gradient(135deg, #0F0F0F, #1C1C1C) + blur
+
+Typographie :
+
+Fonte : Inter, SF Pro, ou Neue Haas Grotesk
+
+Poids : 300–400 (jamais gras)
+
+Taille : 16px à 22px selon hiérarchie
+
+Couleurs :
+
+Texte : #1A1A1A (clair), #EAEAEA (sombre)
+
+Accent : #6C6CFF ou #A0BFFF
+
+Hover : rgba(108,108,255,0.1) clair / rgba(108,108,255,0.2) sombre
+
+🧩 STRUCTURE UI
+1. Header
+plaintext
+✨ Ask our AI anything
+Icône sparkle animée (rotation lente ou pulsation)
+
+Centré, typographie fine
+
+Option switch Dark/Light à droite
+
+2. Suggestions
+3 phrases affichées sous forme de cards floues ou textes animés :
+
+“What can I ask you to do?”
+
+“What projects should I be concerned about right now?”
+
+“Ask me anything about your projects”
+
+Animation : fade-in + slide-up
+
+Espacement généreux, effet de respiration visuelle
+
+3. Zone de message
+plaintext
+╭────────────────────────────╮
+│ Message CAi...     ⤴︎      │
+╰────────────────────────────╯
+Fond flou, bord fin, icône d’envoi stylisée (papier avion pastel)
+
+Animation d’envoi : halo ou onde subtile
+
+4. Réponses IA
+Bulle semi-transparente, fond flou
+
+Typo fine, timestamp discret
+
+Boutons “Like” et “Share” stylisés (icônes ligne + animation au survol)
+
+5. Comportement intelligent
+Suggestions évolutives selon l’historique
+
+Réponses IA avec effet de “typing” fluide
+
+Mode compact pour utilisateurs avancés
+
+Accessibilité : contraste, taille de texte, navigation clavier
+
+✨ INTERACTIONS PREMIUM
+Hover : expansion douce + halo
+
+Transitions : fade, slide, scale
+
+Animations : pulsation lente, halo, onde
+
+Loading : cercle animé ou effet “neural scan”
+
+Réactions : cœur qui pulse, icône qui s’illumine
+
+📦 EXPORT / INTÉGRATION
+Compatible Figma, React, Tailwind, Webflow
+
+Composants réutilisables : Header, MessageBubble, InputBar, SuggestionCard
+
+Responsive : mobile-first, desktop fluide

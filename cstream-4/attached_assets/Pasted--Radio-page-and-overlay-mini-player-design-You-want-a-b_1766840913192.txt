@@ -1,0 +1,431 @@
+# Radio page and overlay mini player design
+
+You want a beautiful radio page plus a site‑wide mini overlay you can toggle in Settings. Here’s a premium, minimal, and robust architecture that keeps playback continuous, lets users pause/close/favorite, and works with your stream URLs.
+
+---
+
+## Architecture overview
+
+- **Global audio manager:** A single audio element shared across pages to keep playback uninterrupted.
+- **Radio page:** Grid of stations with live now/bitrate, hover micro‑animations, and one‑click play.
+- **Overlay mini player:** Floating glass control (play/pause, close, favorite, title) shown across the site if “Radio overlay” is enabled.
+- **Favorites & persistence:** Store favorites and overlay setting in localStorage or Supabase for sync.
+- **Autoplay compliance:** Start playback only after a user gesture to avoid browser blocks.
+
+---
+
+## Station catalog
+
+| Station | URL |
+|---|---|
+| Charts | https://listen.reyfm.de/reyfm-charts/ |
+| Dance | https://listen.reyfm.de/reyfm-dance/ |
+| Deutschrap | https://listen.reyfm.de/reyfm-deutschrap/ |
+| Hits | https://listen.reyfm.de/reyfm-hits/ |
+| Piano House | https://listen.reyfm.de/reyfm-piano_house/ |
+| Hip-Hop | https://listen.reyfm.de/reyfm-hip-hop/ |
+| Hits2K | https://listen.reyfm.de/reyfm-hits2k/ |
+| Summer | https://listen.reyfm.de/reyfm-summer/ |
+| Original | https://listen.reyfm.de/reyfm-original/ |
+| Deutschrap Gold | https://listen.reyfm.de/reyfm-deutschrap_gold/ |
+| Hip-Hop Gold | https://listen.reyfm.de/reyfm-hip-hop_gold/ |
+| Lo-Fi | https://listen.reyfm.de/reyfm-lofi/ |
+| Chill | https://listen.reyfm.de/reyfm-chill/ |
+| Gaming | https://listen.reyfm.de/reyfm-gaming/ |
+| XMAS | https://listen.reyfm.de/reyfm-party_unlimited/ |
+
+> Sources: your provided stream URLs
+
+---
+
+## React + Tailwind implementation
+
+### Global audio manager
+
+```tsx
+// lib/radioAudio.ts
+type RadioState = {
+  title: string;
+  url: string;
+  playing: boolean;
+  volume: number; // 0..1
+};
+
+class RadioAudio {
+  audio: HTMLAudioElement;
+  state: RadioState;
+  listeners: Set<(s: RadioState) => void>;
+
+  constructor() {
+    this.audio = new Audio();
+    this.audio.preload = "none";
+    this.audio.crossOrigin = "anonymous";
+    this.state = {
+      title: "",
+      url: "",
+      playing: false,
+      volume: parseFloat(localStorage.getItem("radio.volume") || "0.9"),
+    };
+    this.audio.volume = this.state.volume;
+    this.listeners = new Set();
+
+    this.audio.addEventListener("playing", () => this.publish({ playing: true }));
+    this.audio.addEventListener("pause", () => this.publish({ playing: false }));
+    this.audio.addEventListener("error", () => this.publish({ playing: false }));
+  }
+
+  on(fn: (s: RadioState) => void) { this.listeners.add(fn); fn(this.state); return () => this.listeners.delete(fn); }
+  publish(patch: Partial<RadioState>) { this.state = { ...this.state, ...patch }; this.listeners.forEach(l => l(this.state)); }
+
+  async play(url: string, title: string) {
+    if (this.state.url !== url) {
+      this.audio.src = url;
+      this.publish({ url, title });
+    }
+    try {
+      await this.audio.play();
+      this.publish({ playing: true });
+    } catch { /* user gesture required */ }
+  }
+  pause() { this.audio.pause(); }
+  stop() { this.audio.pause(); this.audio.src = ""; this.publish({ url: "", title: "", playing: false }); }
+  setVolume(v: number) { this.audio.volume = v; localStorage.setItem("radio.volume", String(v)); this.publish({ volume: v }); }
+}
+
+export const radioAudio = new RadioAudio();
+```
+
+---
+
+### Radio page grid
+
+```tsx
+// app/radio/page.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { radioAudio } from "@/lib/radioAudio";
+
+const STATIONS = [
+  { title: "Charts", url: "https://listen.reyfm.de/reyfm-charts/" },
+  { title: "Dance", url: "https://listen.reyfm.de/reyfm-dance/" },
+  { title: "Deutschrap", url: "https://listen.reyfm.de/reyfm-deutschrap/" },
+  { title: "Hits", url: "https://listen.reyfm.de/reyfm-hits/" },
+  { title: "Piano House", url: "https://listen.reyfm.de/reyfm-piano_house/" },
+  { title: "Hip-Hop", url: "https://listen.reyfm.de/reyfm-hip-hop/" },
+  { title: "Hits2K", url: "https://listen.reyfm.de/reyfm-hits2k/" },
+  { title: "Summer", url: "https://listen.reyfm.de/reyfm-summer/" },
+  { title: "Original", url: "https://listen.reyfm.de/reyfm-original/" },
+  { title: "Deutschrap Gold", url: "https://listen.reyfm.de/reyfm-deutschrap_gold/" },
+  { title: "Hip-Hop Gold", url: "https://listen.reyfm.de/reyfm-hip-hop_gold/" },
+  { title: "Lo-Fi", url: "https://listen.reyfm.de/reyfm-lofi/" },
+  { title: "Chill", url: "https://listen.reyfm.de/reyfm-chill/" },
+  { title: "Gaming", url: "https://listen.reyfm.de/reyfm-gaming/" },
+  { title: "XMAS", url: "https://listen.reyfm.de/reyfm-party_unlimited/" },
+];
+
+export default function RadioPage() {
+  const [state, setState] = useState(radioAudio.state);
+  const [favorites, setFavorites] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem("radio.favs") || "[]")
+  );
+
+  useEffect(() => radioAudio.on(setState), []);
+  const toggleFav = (url: string) => {
+    const next = favorites.includes(url) ? favorites.filter(u => u !== url) : [...favorites, url];
+    setFavorites(next);
+    localStorage.setItem("radio.favs", JSON.stringify(next));
+  };
+
+  const overlayEnabled = localStorage.getItem("radio.overlay") === "1";
+  const setOverlay = (v: boolean) => localStorage.setItem("radio.overlay", v ? "1" : "0");
+
+  return (
+    <div className="px-6 py-8">
+      <header className="mb-6 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-white/90">Radio</h1>
+        <label className="flex items-center gap-3 text-sm text-white/80">
+          <input
+            type="checkbox"
+            defaultChecked={overlayEnabled}
+            onChange={e => setOverlay(e.target.checked)}
+          />
+          Radio overlay global
+        </label>
+      </header>
+
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {STATIONS.map((s) => {
+          const active = state.url === s.url && state.playing;
+          const fav = favorites.includes(s.url);
+          return (
+            <div
+              key={s.url}
+              className="group rounded-xl p-4 bg-white/5 backdrop-blur-xl ring-1 ring-white/10
+                         hover:bg-white/10 transition-colors shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-white/90">{s.title}</h3>
+                <button
+                  className={`text-xs px-2 py-1 rounded-full ring-1 ${
+                    active ? "bg-emerald-500/20 text-emerald-300 ring-emerald-400/30" : "bg-white/10 text-white/70 ring-white/10"
+                  }`}
+                  onClick={() => (active ? radioAudio.pause() : radioAudio.play(s.url, s.title))}
+                >
+                  {active ? "Pause" : "Play"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  className={`text-[11px] px-2 py-1 rounded-full ${
+                    fav ? "bg-yellow-400/20 text-yellow-300 ring-1 ring-yellow-300/30" : "bg-white/10 text-white/70 ring-1 ring-white/10"
+                  }`}
+                  onClick={() => toggleFav(s.url)}
+                >
+                  {fav ? "Favori" : "Ajouter aux favoris"}
+                </button>
+                <span className="text-[11px] text-white/60">Live</span>
+              </div>
+            </div>
+          );
+        })}
+      </section>
+    </div>
+  );
+}
+```
+
+---
+
+### Overlay mini player
+
+```tsx
+// components/RadioOverlay.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { radioAudio } from "@/lib/radioAudio";
+
+export function RadioOverlay() {
+  const [state, setState] = useState(radioAudio.state);
+  const [visible, setVisible] = useState(localStorage.getItem("radio.overlay") === "1");
+
+  useEffect(() => {
+    const unsub = radioAudio.on(setState);
+    const onStorage = () => setVisible(localStorage.getItem("radio.overlay") === "1");
+    window.addEventListener("storage", onStorage);
+    return () => { unsub(); window.removeEventListener("storage", onStorage); };
+  }, []);
+
+  if (!visible || !state.url) return null;
+
+  return (
+    <div className="fixed bottom-16 right-16 z-50">
+      <div className="flex items-center gap-10 px-4 py-3 rounded-2xl bg-black/60 text-white/90
+                      backdrop-blur-xl ring-1 ring-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.45)]">
+        <div className="min-w-[160px]">
+          <p className="text-xs uppercase tracking-wide text-white/60">Radio en cours</p>
+          <p className="text-sm font-medium">{state.title || "—"}</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            aria-label={state.playing ? "Pause" : "Lire"}
+            className="w-9 h-9 rounded-full bg-white/10 ring-1 ring-white/10 hover:bg-white/15"
+            onClick={() => (state.playing ? radioAudio.pause() : radioAudio.play(state.url, state.title))}
+          >
+            {state.playing ? "❚❚" : "▶"}
+          </button>
+          <button
+            aria-label="Fermer"
+            className="w-9 h-9 rounded-full bg-white/10 ring-1 ring-white/10 hover:bg-white/15"
+            onClick={() => radioAudio.stop()}
+          >
+            ✕
+          </button>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            defaultValue={state.volume}
+            className="w-24 accent-emerald-400"
+            onChange={(e) => radioAudio.setVolume(parseFloat(e.target.value))}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Mount the overlay globally
+
+```tsx
+// app/layout.tsx
+import "./globals.css";
+import { RadioOverlay } from "@/components/RadioOverlay";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="fr">
+      <body>
+        {children}
+        <RadioOverlay />
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+## HTML + CSS only version (no React)
+
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Radio</title>
+<style>
+  body { background:#111; color:#fff; font-family:Inter,system-ui,sans-serif; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; padding:24px; }
+  .card { border-radius:16px; padding:16px; background:rgba(255,255,255,0.06); backdrop-filter:blur(12px); box-shadow:0 8px 32px rgba(0,0,0,0.35); }
+  .row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .btn { font-size:12px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.12); color:#fff; cursor:pointer; }
+  .overlay { position:fixed; right:24px; bottom:24px; z-index:50; display:none; }
+  .overlay.on { display:block; }
+  .panel { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:20px; background:rgba(0,0,0,0.6); backdrop-filter:blur(12px); box-shadow:0 24px 64px rgba(0,0,0,0.45); }
+  .title { min-width:180px; }
+</style>
+</head>
+<body>
+
+<header style="padding:24px; display:flex; justify-content:space-between; align-items:center;">
+  <h1 style="font-size:22px;">Radio</h1>
+  <label style="font-size:14px;">
+    <input id="toggleOverlay" type="checkbox" />
+    Radio overlay global
+  </label>
+</header>
+
+<main class="grid" id="grid"></main>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="title">
+      <div style="font-size:10px; opacity:.7; text-transform:uppercase;">Radio en cours</div>
+      <div id="nowTitle" style="font-size:14px; font-weight:600;">—</div>
+    </div>
+    <button id="playPause" class="btn">Play</button>
+    <button id="close" class="btn">Fermer</button>
+    <input id="vol" type="range" min="0" max="1" step="0.01" style="width:120px;" />
+  </div>
+</div>
+
+<script>
+const STATIONS = [
+  { title: "Charts", url: "https://listen.reyfm.de/reyfm-charts/" },
+  { title: "Dance", url: "https://listen.reyfm.de/reyfm-dance/" },
+  { title: "Deutschrap", url: "https://listen.reyfm.de/reyfm-deutschrap/" },
+  { title: "Hits", url: "https://listen.reyfm.de/reyfm-hits/" },
+  { title: "Piano House", url: "https://listen.reyfm.de/reyfm-piano_house/" },
+  { title: "Hip-Hop", url: "https://listen.reyfm.de/reyfm-hip-hop/" },
+  { title: "Hits2K", url: "https://listen.reyfm.de/reyfm-hits2k/" },
+  { title: "Summer", url: "https://listen.reyfm.de/reyfm-summer/" },
+  { title: "Original", url: "https://listen.reyfm.de/reyfm-original/" },
+  { title: "Deutschrap Gold", url: "https://listen.reyfm.de/reyfm-deutschrap_gold/" },
+  { title: "Hip-Hop Gold", url: "https://listen.reyfm.de/reyfm-hip-hop_gold/" },
+  { title: "Lo-Fi", url: "https://listen.reyfm.de/reyfm-lofi/" },
+  { title: "Chill", url: "https://listen.reyfm.de/reyfm-chill/" },
+  { title: "Gaming", url: "https://listen.reyfm.de/reyfm-gaming/" },
+  { title: "XMAS", url: "https://listen.reyfm.de/reyfm-party_unlimited/" },
+];
+
+const audio = new Audio();
+audio.preload = "none";
+audio.crossOrigin = "anonymous";
+audio.volume = parseFloat(localStorage.getItem("radio.volume") || "0.9");
+
+const grid = document.getElementById("grid");
+const overlay = document.getElementById("overlay");
+const nowTitle = document.getElementById("nowTitle");
+const playPause = document.getElementById("playPause");
+const closeBtn = document.getElementById("close");
+const vol = document.getElementById("vol");
+const toggleOverlay = document.getElementById("toggleOverlay");
+
+toggleOverlay.checked = localStorage.getItem("radio.overlay") === "1";
+toggleOverlay.addEventListener("change", () => {
+  localStorage.setItem("radio.overlay", toggleOverlay.checked ? "1" : "0");
+  refreshOverlayVisibility();
+});
+
+function refreshOverlayVisibility() {
+  overlay.classList.toggle("on", toggleOverlay.checked && !!audio.src);
+}
+function renderGrid() {
+  grid.innerHTML = "";
+  STATIONS.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="row">
+        <div style="font-size:14px; font-weight:600;">${s.title}</div>
+        <button class="btn play">Play</button>
+      </div>
+      <div class="row">
+        <button class="btn fav">Ajouter aux favoris</button>
+        <div style="font-size:11px; opacity:.7;">Live</div>
+      </div>
+    `;
+    card.querySelector(".play").addEventListener("click", async () => {
+      audio.src = s.url;
+      nowTitle.textContent = s.title;
+      try { await audio.play(); playPause.textContent = "Pause"; } catch {}
+      refreshOverlayVisibility();
+    });
+    card.querySelector(".fav").addEventListener("click", () => {
+      alert("Favori ajouté (démo).");
+    });
+    grid.appendChild(card);
+  });
+}
+renderGrid();
+
+playPause.addEventListener("click", () => {
+  if (audio.paused) { audio.play(); playPause.textContent = "Pause"; }
+  else { audio.pause(); playPause.textContent = "Play"; }
+});
+closeBtn.addEventListener("click", () => {
+  audio.pause(); audio.src = ""; nowTitle.textContent = "—"; playPause.textContent = "Play"; refreshOverlayVisibility();
+});
+vol.value = audio.volume;
+vol.addEventListener("input", () => { audio.volume = parseFloat(vol.value); localStorage.setItem("radio.volume", vol.value); });
+
+</script>
+</body>
+</html>
+```
+
+---
+
+## Design tips for premium feel
+
+- **Glass overlays:** Use subtle blur and low‑contrast rings for elegance.
+- **Micro‑interactions:** Scale and tint on hover; soft shadows, no harsh borders.
+- **State clarity:** Show “Radio en cours” and station title, plus a tiny live indicator.
+- **Non‑blocking overlay:** Bottom‑right placement with enough padding to avoid overlapping core UI.
+- **Accessibility:** Buttons with aria‑labels, keyboard focus styles, and clear contrast.
+
+---
+
+## Next steps
+
+- **Add real favorites:** Wire to Supabase with a simple table `radio_favorites(user_id, station_url, title)`.
+- **Add i18n:** Keys like `radio.play`, `radio.pause`, `radio.overlay`.
+- **Now‑playing metadata:** If the stream exposes ICY metadata, poll the `audio` tag or use a proxy to surface track titles.
+- **Settings integration:** Your existing Settings toggles can read/write `localStorage("radio.overlay")` to control the overlay globally.
+
+If you want, I can adapt this to your exact Tailwind v4 tokens and theme system so it snaps perfectly into your design language.

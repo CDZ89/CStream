@@ -1,0 +1,84 @@
+Ce que tu as collé est du code **Node.js** qui génère un fichier audio avec Groq.  
+Si tu veux que ça “marche dans ton site”, il faut distinguer deux cas :
+
+---
+
+## 🚀 Cas 1 : côté **Node.js (backend)**
+Ton snippet est correct mais il manque quelques détails :
+
+```js
+import fs from "fs";
+import path from "path";
+import Groq from "groq-sdk";
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+async function main() {
+  const speechFile = path.resolve("./speech.wav");
+
+  const wav = await groq.audio.speech.create({
+    model: "playai-tts",
+    voice: "Aaliyah-PlayAI",
+    response_format: "wav",
+    input: "yo",
+  });
+
+  const buffer = Buffer.from(await wav.arrayBuffer());
+  await fs.promises.writeFile(speechFile, buffer);
+
+  console.log("✅ Fichier généré :", speechFile);
+}
+
+main().catch(console.error);
+```
+
+- Ajoute `path` (`import path from "path";`).
+- Mets ton **clé API Groq** dans `process.env.GROQ_API_KEY`.
+- Exécute avec `node script.js`.
+
+---
+
+## 🌐 Cas 2 : côté **site web (frontend)**
+Tu ne peux pas utiliser `fs` ni `path` dans le navigateur.  
+Il faut soit :
+- **Appeler ton backend Node** qui génère le `.wav` et renvoie le fichier au navigateur.
+- Ou utiliser l’API Groq directement dans le navigateur, puis créer un `Blob` et un `<audio>`.
+
+Exemple minimal côté navigateur :
+
+```html
+<audio id="player" controls></audio>
+<script type="module">
+import Groq from "https://cdn.jsdelivr.net/npm/groq-sdk/dist/index.min.js";
+
+const groq = new Groq({ apiKey: "TON_API_KEY" });
+
+async function speak() {
+  const wav = await groq.audio.speech.create({
+    model: "playai-tts",
+    voice: "Aaliyah-PlayAI",
+    response_format: "wav",
+    input: "yo"
+  });
+
+  const buffer = await wav.arrayBuffer();
+  const blob = new Blob([buffer], { type: "audio/wav" });
+  const url = URL.createObjectURL(blob);
+  document.getElementById("player").src = url;
+}
+
+speak();
+</script>
+```
+
+👉 Ici, pas de `fs`, juste un `Blob` que tu attaches à un `<audio>`.
+
+---
+
+## ⚠️ Attention
+Mettre ta clé API directement dans le navigateur n’est pas recommandé (elle serait visible).  
+En production, fais un **backend proxy** qui appelle Groq avec ta clé, et ton site récupère le fichier audio via ce backend.
+
+---
+
+Tu veux que je te prépare un **flux complet** (backend Node + frontend HTML) pour que ton site affiche un bouton “Parler” et joue la voix générée en direct ?

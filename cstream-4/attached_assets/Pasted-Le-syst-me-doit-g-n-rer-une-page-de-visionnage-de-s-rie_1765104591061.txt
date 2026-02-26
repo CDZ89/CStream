@@ -1,0 +1,30 @@
+Le système doit générer une page de visionnage de série TV en utilisant les données de TMDB et les informations de l’admin interne (où sont importés les lecteurs et les épisodes).  
+
+Objectifs :
+- Afficher un sélecteur de saison clair et compact (exemple : Saison 1, Saison 2, …).
+- Pour chaque saison sélectionnée, afficher une liste de lecteurs disponibles (Lecteur 1, Lecteur 2, Lecteur 3, …).
+- Tous les lecteurs définis dans l’admin doivent apparaître automatiquement, y compris les nouveaux ajoutés, sans bug ni duplication.
+- Quand on clique sur un lecteur, afficher uniquement les épisodes de ce lecteur en dessous, avec :
+  - Le titre officiel de l’épisode (via TMDB).
+  - L’image officielle de l’épisode (still_path TMDB).
+  - La description de l’épisode.
+  - L’URL du lecteur correspondant (iframe ou vidéo).
+- Le nombre d’épisodes doit être synchronisé : pas de mélange entre lecteurs, chaque lecteur affiche exactement ses épisodes disponibles.
+- Les données TMDB (titre, overview, poster_path, still_path, vote_average, vote_count) doivent être utilisées pour enrichir l’affichage.
+- Les données de l’admin doivent être utilisées pour les URLs des lecteurs et la synchronisation avec TMDB (tv_id + saison + épisode).
+
+Comportement attendu :
+- Exemple : Saison 1 → Lecteur Sibnet / Lecteur Vidmoly / Lecteur Sendvid / Lecteur Anime-Sama.
+- Si l’utilisateur clique sur “Lecteur Sibnet”, la liste des épisodes Sibnet s’affiche en dessous avec leurs titres et images TMDB.
+- Si l’utilisateur change de lecteur, la liste se met à jour automatiquement avec les épisodes du nouveau lecteur.
+- Si l’utilisateur change de saison, les lecteurs et épisodes se mettent à jour avec les données de cette saison.
+- Si un nouveau lecteur est ajouté dans l’admin (ex: epsNew), il doit apparaître automatiquement dans le sélecteur et fonctionner sans bug.
+
+Contraintes :
+- Synchroniser TMDB et l’admin : chaque épisode doit correspondre au bon numéro et au bon lecteur.
+- Gérer les cas limites : si un lecteur a moins d’épisodes que TMDB, afficher uniquement ceux disponibles.
+- Fallback propre si une image ou description manque (afficher le poster de la saison ou un texte par défaut).
+- Le design doit être propre, responsive et sans bug : sélecteurs élégants, images nettes, textes lisibles.
+
+But final :
+Créer une expérience de visionnage intuitive et complète, où l’utilisateur peut choisir une saison, sélectionner un lecteur (ancien ou nouveau), voir les épisodes correspondants avec leurs infos officielles TMDB, et lancer le lecteur vidéo associé, le tout synchronisé avec l’admin.

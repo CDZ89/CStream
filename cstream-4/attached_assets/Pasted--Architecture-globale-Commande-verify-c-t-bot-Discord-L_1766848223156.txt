@@ -1,0 +1,94 @@
+⚙️ Architecture globale
+Commande /verify côté bot Discord
+
+Le bot envoie un embed permanent dans le salon choisi (par ex. #verify).
+
+L’embed contient un bouton « 🔒 Vérifier mon compte ».
+
+Ce bouton redirige vers ton site (page /verify).
+
+Page /verify sur ton site
+
+L’utilisateur doit se connecter ou s’inscrire (via email, Google, etc.).
+
+Une fois connecté, ton site demande l’autorisation Discord (OAuth2).
+
+Tu récupères son Discord ID et tu l’associes à son compte site.
+
+Lien compte ↔ Discord
+
+Dans le profil utilisateur de ton site, une section « Comptes liés » affiche Discord comme lié.
+
+Tu stockes l’ID Discord dans ta base (ex. Supabase ou autre DB).
+
+Retour vers Discord
+
+Après vérification, ton site redirige l’utilisateur vers Discord.
+
+Le bot reçoit un webhook ou une API call qui lui dit : « cet ID est vérifié ».
+
+Le bot ajoute le rôle Vérifié à l’utilisateur dans ton serveur.
+
+Synchronisation continue
+
+Si l’utilisateur se déconnecte ou supprime son compte, le rôle peut être retiré.
+
+Le bot et ton site restent synchronisés via API/webhooks.
+
+🖥️ Exemple code côté bot (Node.js + discord.js v14)
+ts
+import { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
+
+client.once("ready", () => {
+  console.log(`Bot connecté en tant que ${client.user?.tag}`);
+});
+
+// Commande /verify
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  if (interaction.commandName === "verify") {
+    const embed = new EmbedBuilder()
+      .setTitle("🔒 Vérification du compte")
+      .setDescription("Clique sur le bouton ci-dessous pour vérifier ton compte et obtenir le rôle **Vérifié**.")
+      .setColor(0x5865F2);
+
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setLabel("Vérifier mon compte")
+        .setStyle(ButtonStyle.Link)
+        .setURL("https://tonsite.com/verify") // lien vers ta page verify
+    );
+
+    await interaction.reply({ embeds: [embed], components: [row], ephemeral: false });
+  }
+});
+
+// Exemple endpoint côté site qui appelle le bot pour donner le rôle
+// Tu peux exposer une API REST sur ton bot ou utiliser un webhook
+🌍 Exemple côté site (Next.js / Express)
+Route /verify :
+
+Vérifie si l’utilisateur est connecté.
+
+Si non → redirige vers login.
+
+Si oui → lance OAuth2 Discord pour récupérer son ID.
+
+Associe l’ID Discord au compte.
+
+Appelle l’API du bot pour donner le rôle.
+
+Redirige vers Discord avec message « ✅ Compte vérifié ».
+
+🔑 Points critiques pour éviter les bugs
+Utiliser Discord OAuth2 pour récupérer l’ID utilisateur (garantie que c’est bien lui).
+
+Stocker l’ID dans ta DB et afficher dans « Comptes liés ».
+
+Utiliser un webhook/API sécurisée entre ton site et ton bot pour attribuer le rôle.
+
+Embed /verify reste permanent dans le salon, pas besoin de le renvoyer à chaque fois.
+
+Synchronisation bidirectionnelle : ton site sait si le compte est lié, ton bot sait si le rôle est attribué.

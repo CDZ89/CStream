@@ -1,0 +1,594 @@
+
+CDN TV en direct
+Qui sommes-nous
+Introduction
+Flux API
+Sport API
+Pays
+Intégration
+Tarification
+FAQ
+RusseAnglais
+API Documentation
+Intégrez facilement les chaînes TV et les événements sportifs dans vos projets grâce à notre API RESTful complète.
+
+Commencez
+Forfaits Premium
+Qui sommes-nous
+CDN Live TV est une plateforme de streaming en direct de premier plan qui propose des solutions de haute qualité pour les développeurs et les entreprises depuis 2018. Nous sommes spécialisés dans l’accès à plus de 700 Les chaînes TV et les événements sportifs grâce à des API robustes et facilement intégrées.
+
+Notre mission
+Démocratiser l’accès au contenu télévisé en direct grâce à de l’innovation et l’accessibilité Solutions technologiques pour les développeurs et les entreprises du monde entier.
+
+Notre vision
+Être la principale plateforme API pour les diffusions en direct, reconnue pour sa qualité et sa fiabilité et le soutien exceptionnel de nos clients.
+
+Pourquoi choisir CDN Live TV ?
+Haute performance
+Infrastructure CDN mondiale avec faible latence et transmission stable
+
+Fiabilité
+99,9 % de disponibilité avec surveillance 24h/24 et sauvegardes
+
+Intégration facile
+API RESTful bien documentées avec des exemples dans plusieurs langages de programmation
+
+Support certifié
+Équipe technique dédiée prête à vous aider
+
+700+
+Chaînes de télévision
+35+
+Pays
+5+
+Années d’expérience
+99.9%
+Horaires d’ouverture
+Introduction
+L’API CDN DE LIVE TV donne accès à une vaste collection de chaînes TV et d’événements sportifs. Notre API est RESTful et renvoie les données au format JSON, ce qui facilite son intégration dans toute application web ou mobile.
+
+Canaux en ligne
+Diffusions en direct
+Événements à venir
+Épreuves accomplies
+Flux API
+L’API des chaînes donne accès à toutes les chaînes disponibles sur la plateforme CDN Live TV.
+
+AVOIR
+https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free
+Affiche une liste complète de toutes les chaînes disponibles sur la plateforme, incluant des informations sur le nom, l’indicatif pays, l’URL du joueur, l’image, le statut et le nombre de spectateurs.
+
+Réponse API
+ Bien reçu
+{
+  "total_channels": 758,
+  "channels": [
+    {
+      "name": "ABC",
+      "code": "us",
+      "url": "https://cdn-live.tv/api/v1/channels/player/?name=abc&code=us&user=cdnlivetv&plan=free",
+      "image": "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/abc.png",
+      "status": "online",
+      "viewers": 0
+    },
+    {
+      "name": "ACC Network",
+      "code": "us",
+      "url": "https://cdn-live.tv/api/v1/channels/player/?name=acc+network&code=us&user=cdnlivetv&plan=free",
+      "image": "https://api.cdn-live.tv/api/v1/channels/images6318/united-states/acc-network.png",
+      "status": "online",
+      "viewers": 0
+    }
+  ]
+}
+Paramètres de réponse
+Paramètre	Type	Description
+total_channels	Entier	Nombre total de chaînes disponibles
+Chaînes	Réseau	Liste des objets de canal
+channels[].name	Corde	Nom de la chaîne
+channels[].code	Corde	Indicatif pays de la chaîne
+channels[].url	Corde	URL du lecteur de chaîne
+canaux[].image	Corde	URL de l’image du canal
+canaux[].statut	Corde	Statut de la chaîne (en ligne/hors ligne)
+channels[].viewers	Entier	Téléspectateurs actuels
+Exemples d’utilisation
+JavaScript
+PHP
+ Bien reçu
+// Получить список каналов с помощью JavaScript
+async function fetchChannels() {
+  try {
+    const response = await fetch('https://api.cdn-live.tv/api/v1/channels/?user=cdnlivetv&plan=free');
+    const data = await response.json();
+    
+    console.log(`Всего каналов: ${data.total_channels}`);
+    
+    data.channels.forEach(channel => {
+      console.log(`- ${channel.name} (${channel.code}): ${channel.status}`);
+    });
+    
+    return data;
+  } catch (error) {
+    console.error('Ошибка получения каналов:', error);
+  }
+}
+
+// Вызов функции
+fetchChannels();
+Sport API
+L’API sportive fournit des informations sur les diffusions en direct, les événements sportifs à venir et terminés.
+
+AVOIR
+https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free
+Retour de tous les événements sportifs disponibles organisés par catégorie (football, NFL, NBA, NHL). Inclut des informations détaillées sur chaque événement, équipes, calendrier et chaînes de diffusion.
+
+Réponse API
+ Bien reçu
+{
+  "cdn-live-tv": {
+    "Soccer": [
+      {
+        "gameID": "udmsGUHO",
+        "homeTeam": "Csikszereda",
+        "awayTeam": "Unirea Slobozia",
+        "homeTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/283972",
+        "awayTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/44259",
+        "time": "15:30",
+        "tournament": "Liga I",
+        "country": "Romania",
+        "countryIMG": "https://flagcdn.com/w40/ro.png",
+        "status": "finished",
+        "start": "2025-11-21 15:30",
+        "end": "2025-11-21 18:09",
+        "channels": [
+          {
+            "channel_name": "Arena Sport 2",
+            "channel_code": "hr",
+            "viewers": "0",
+            "url": "https://cdn-live.tv/api/v1/channels/player/?name=arena+sport+2&code=hr&user=cdnlivetv&plan=free",
+            "image": "https://api.cdn-live.tv/api/v1/channels/images6318/croatia/arena-sport-2.webp"
+          }
+        ]
+      }
+    ],
+    "NFL": [...],
+    "NBA": [...],
+    "NHL": [...],
+    "total_events": 47,
+    "total_events_soccer": 21,
+    "total_events_NFL": 13,
+    "total_events_nba": 9,
+    "total_events_nhl": 4
+  }
+}
+Paramètres de réponse
+Paramètre	Type	Description
+CDN-LIVE-TV. Football	Réseau	Liste des événements de football
+CDN-LIVE-TV. NBA	Réseau	Liste des événements NBA
+CDN-LIVE-TV. LNH	Réseau	Liste des événements de la LNH
+total_events	Entier	Total des événements dans toutes les catégories
+GameID	Corde	ID de jeu unique
+Équipe d’accueil	Corde	Nom de l’équipe locale
+Équipe visiteuse	Corde	Nom de l’équipe invitée
+Heure	Corde	Temps de jeu
+Tournoi	Corde	Nom du tournoi/championnat
+Pays	Corde	Pays d’événement
+Statut	Corde	État du match (en direct, à venir, terminé)
+Chaînes	Réseau	Chaînes qui diffusent l’événement
+Exemples d’utilisation
+JavaScript
+PHP
+ Bien reçu
+// Получить все спортивные события с помощью JavaScript
+async function fetchAllSports() {
+  try {
+    const response = await fetch('https://api.cdn-live.tv/api/v1/events/sports/?user=cdnlivetv&plan=free');
+    const data = await response.json();
+    
+    const sportsData = data['cdn-live-tv'];
+    
+    console.log(`Всего событий: ${sportsData.total_events}`);
+    console.log(`Футбольных событий: ${sportsData.total_events_soccer}`);
+    console.log(`Событий НБА: ${sportsData.total_events_nba}`);
+    console.log(`Событий НХЛ: ${sportsData.total_events_nhl}`);
+    
+    // Отобразить футбольные события
+    if (sportsData.Soccer && sportsData.Soccer.length > 0) {
+      console.log('\n--- ФУТБОЛЬНЫЕ СОБЫТИЯ ---');
+      sportsData.Soccer.forEach(event => {
+        console.log(`${event.homeTeam} vs ${event.awayTeam} (${event.status})`);
+      });
+    }
+    
+    return sportsData;
+  } catch (error) {
+    console.error('Ошибка получения событий:', error);
+  }
+}
+
+// Вызов функции
+fetchAllSports();
+AVOIR
+https://api.cdn-live.tv/api/v1/events/sports/soccer/?user=cdnlivetv&plan=free
+Ne revient que les événements de football avec des informations détaillées sur les matchs, les équipes et les chaînes de diffusion.
+
+Réponse API
+ Bien reçu
+{
+  "cdn-live-tv": {
+    "Soccer": [
+      {
+        "gameID": "udmsGUHO",
+        "homeTeam": "Csikszereda",
+        "awayTeam": "Unirea Slobozia",
+        "homeTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/283972",
+        "awayTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/44259",
+        "time": "15:30",
+        "tournament": "Liga I",
+        "country": "Romania",
+        "countryIMG": "https://flagcdn.com/w40/ro.png",
+        "status": "finished",
+        "start": "2025-11-21 15:30",
+        "end": "2025-11-21 18:09",
+        "channels": [
+          {
+            "channel_name": "Arena Sport 2",
+            "channel_code": "hr",
+            "viewers": "791",
+            "url": "https://cdn-live.tv/api/v1/channels/player/?name=arena+sport+2&code=hr&user=cdnlivetv&plan=free",
+            "image": "https://api.cdn-live.tv/api/v1/channels/images6318/croatia/arena-sport-2.webp"
+          }
+        ]
+      }
+    ],
+    "total_events": 21
+  }
+}
+AVOIR
+https://api.cdn-live.tv/api/v1/events/sports/nba/?user=cdnlivetv&plan=free
+Ne renvoie que les événements NBA avec des informations détaillées sur les matchs, les équipes et les chaînes de diffusion.
+
+Réponse API
+ Bien reçu
+{
+  "cdn-live-tv": {
+    "NBA": [
+      {
+        "gameID": "lhGiSMOh",
+        "homeTeam": "Cleveland Cavaliers",
+        "awayTeam": "Indiana Pacers",
+        "homeTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/3432",
+        "awayTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/3419",
+        "time": "00:00",
+        "tournament": "NBA",
+        "country": "United States",
+        "countryIMG": "https://flagcdn.com/w40/us.png",
+        "status": "live",
+        "start": "2025-11-21 00:00",
+        "end": "2025-11-21 02:39",
+        "channels": [
+          {
+            "channel_name": "TSN 4",
+            "channel_code": "ca",
+            "viewers": "8264",
+            "url": "https://cdn-live.tv/api/v1/channels/player/?name=tsn+4&code=ca&user=cdnlivetv&plan=free",
+            "image": "https://api.cdn-live.tv/api/v1/channels/images6318/canada/tsn-4.svg"
+          }
+        ]
+      }
+    ],
+    "total_events": 9
+  }
+}
+AVOIR
+https://api.cdn-live.tv/api/v1/events/sports/nhl/?user=cdnlivetv&plan=free
+Ne revient que les événements de la LNH avec des informations détaillées sur les matchs, les équipes et les chaînes de diffusion.
+
+Réponse API
+ Bien reçu
+{
+  "cdn-live-tv": {
+    "NHL": [
+      {
+        "gameID": "uTWacOOZ",
+        "homeTeam": "Chicago Blackhawks",
+        "awayTeam": "Buffalo Sabres",
+        "homeTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/3681",
+        "awayTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/3678",
+        "time": "00:00",
+        "tournament": "NHL",
+        "country": "United States",
+        "countryIMG": "https://flagcdn.com/w40/us.png",
+        "status": "live",
+        "start": "2025-11-21 00:00",
+        "end": "2025-11-21 02:39",
+        "channels": [
+          {
+            "channel_name": "Sportsnet Ontario",
+            "channel_code": "ca",
+            "viewers": "6487",
+            "url": "https://cdn-live.tv/api/v1/channels/player/?name=sportsnet+ontario&code=ca&user=cdnlivetv&plan=free",
+            "image": "https://api.cdn-live.tv/api/v1/channels/images6318/canada/sportsnet-ontario.png"
+          }
+        ]
+      }
+    ],
+    "total_events": 4
+  }
+}
+AVOIR
+https://api.cdn-live.tv/api/v1/events/sports/nfl/?user=cdnlivetv&plan=free
+Ne revient que les événements de la LNH avec des informations détaillées sur les matchs, les équipes et les chaînes de diffusion.
+
+Réponse API
+ Bien reçu
+{
+  "cdn-live-tv": {
+    "NFL": [
+      {
+        "gameID": "uTWacOOZ",
+        "homeTeam": "Kansas City Chiefs",
+        "awayTeam": "Indianapolis Colts",
+        "homeTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/4422",
+        "awayTeamIMG": "https://api.cdn-live.tv/api/v1/team/images/4421",
+        "time": "18:00",
+        "tournament": "NFL",
+        "country": "United States",
+        "countryIMG": "https://flagcdn.com/w40/us.png",
+        "status": "live",
+        "start": "2025-11-21 18:00",
+        "end": "2025-11-21 20:39",
+        "channels": [
+          {
+            "channel_name": "Sky Sports NFL",
+            "channel_code": "gb",
+            "viewers": "9163",
+            "url": "https://cdn-live.tv/api/v1/channels/player/?name=sky+sports+nfl&code=gb&user=cdnlivetv&plan=free",
+            "image": "https://api.cdn-live.tv/api/v1/channels/images6318/united-kingdom/sky-sports-nfl.png"
+          }
+        ]
+      }
+    ],
+    "total_events": 13
+  }
+}
+Chaînes par pays
+Explorez tous les canaux disponibles, organisés par pays. Cliquez sur un pays pour voir la liste des chaînes.
+
+666
+Total des chaînes
+44
+Pays
+516
+Canaux en ligne
+Cherche un pays ou une chaîne...
+États-Unis
+États-Unis
+103 chaînes
+Royaume-Uni
+Royaume-Uni
+53 chaînes
+Espagne
+Espagne
+53 chaînes
+France
+France
+45 chaînes
+Allemagne
+Allemagne
+33 chaînes
+Italie
+Italie
+28 chaînes
+Pologne
+Pologne
+27 chaînes
+Australie
+Australie
+23 chaînes
+Portugal
+Portugal
+20 chaînes
+Grèce
+Grèce
+19 chaînes
+Serbie
+Serbie
+19 chaînes
+Croatie (Hrvatska)
+Croatie (Hrvatska)
+18 chaînes
+Brésil
+Brésil
+18 chaînes
+Arabie Saoudite
+Arabie Saoudite
+18 chaînes
+Afrique du Sud
+Afrique du Sud
+17 chaînes
+Bulgarie
+Bulgarie
+13 chaînes
+Suède
+Suède
+12 chaînes
+Canada
+Canada
+11 chaînes
+Danemark
+Danemark
+11 chaînes
+République tchèque
+République tchèque
+11 chaînes
+Israël
+Israël
+11 chaînes
+Nouvelle-Zélande
+Nouvelle-Zélande
+10 chaînes
+Pays-Bas
+Pays-Bas
+10 chaînes
+Autriche
+Autriche
+9 chaînes
+Argentine
+Argentine
+9 chaînes
+Mexique
+Mexique
+9 chaînes
+Turquie
+Turquie
+9 chaînes
+Roumanie
+Roumanie
+8 canaux
+Inde
+Inde
+8 canaux
+Chypre
+Chypre
+7 chaînes
+Russie
+Russie
+5 canaux
+Belgique
+Belgique
+4 chaînes
+Émirats arabes unis
+Émirats arabes unis
+3 canaux
+PK
+PK
+2 canaux
+Hongrie
+Hongrie
+1 Chaînes
+Uruguay
+Uruguay
+1 Chaînes
+Chili
+Chili
+1 Chaînes
+Colombie
+Colombie
+1 Chaînes
+Égypte
+Égypte
+1 Chaînes
+QA
+QA
+1 каналов
+JP
+JP
+1 каналов
+KE
+KE
+1 каналов
+IR
+IR
+1 каналов
+VE
+VE
+1 каналов
+Intégration
+Les chaînes CDN Live TV peuvent être facilement intégrées sur n’importe quel site web à l’aide d’un iframe.
+
+Exemple d’intégration
+Utilisez le code suivant pour intégrer le flux sur votre site web :
+
+HTML
+PHP
+Premium
+ Bien reçu
+<iframe src="https://cdn-live.tv/api/v1/channels/player/?name=abc&code=us&user=cdnlivetv&plan=free" 
+        width="100%" 
+        height="100%" 
+        marginheight="0" 
+        marginwidth="0" 
+        scrolling="no" 
+        frameborder="0" 
+        allow="encrypted-media" 
+        allowfullscreen></iframe>
+Aperçu du joueur
+
+
+Tarification
+Choisissez le plan qui correspond le mieux à vos besoins. Nous proposons une version gratuite avec des publicités et une version premium avec des fonctionnalités exclusives.
+
+Plan gratuit
+0 €/mois
+Accès à tous les canaux
+API Sports Events
+Lecteur basique avec iframe
+Publicité intégrée
+Joueur personnalisable
+URL personnalisée
+Icône personnalisée
+Soutien prioritaire
+Commencez
+Recommandé
+Premium Plan
+500 €/mois
+Accès à tous les canaux
+API Sports Events
+Joueur personnalisable
+Pas de publicités
+URL personnalisée
+Icône personnalisée
+Ajouter vos propres publicités
+Support prioritaire 24h/24 et 7j/7
+Obtenez une prime
+Avantages du plan Premium
+// Пользовательский URL для премиум-клиентов
+https://cdn-live.tv/api/v1/channels/player/?name=abc&code=us&user=client_name&plan=client_plan
+
+// Настраиваемый плеер с вашими цветами и иконкой
+<iframe src="https://cdn-live.tv/api/v1/channels/player/?name=abc&code=us&user=client_name&plan=client_plan"></iframe>
+Fonction	Plan gratuit	Premium Plan
+Publicité	Intégré	Absent
+URL personnalisée	Non	Oui
+Joueur personnalisable	Non	Oui
+Icône personnalisée	Non	Oui
+Publicité propre	Non	Oui
+Soutien	Base	Priorité 24h/24 et 7j/7
+Использование на нескольких доменах	Нет	Да (только авторизованные домены)
+Часто задаваемые вопросы
+Найдите ответы на самые распространенные вопросы о нашем API и услугах.
+
+В чем разница между бесплатной и премиум версиями?
+
+Как работает пользовательский URL для премиум планов?
+
+Могу ли я настроить плеер в премиум плане?
+
+Сколько каналов доступно в API?
+
+Какие виды спорта доступны в API событий?
+
+Как интегрировать API на мой сайт?
+
+Нужен ли ключ API?
+
+CDN Live TV
+Высококачественные решения потоковой передачи для бизнеса и разработчиков.
+
+Быстрые ссылки
+Введение
+Каналы API
+Спорт API
+Ресурсы
+Встраивание
+Страны
+ЧаВО
+Контакты
+ cdn-live-tv@proton.me
+
+ Россия, Москва
+
+ Цены
+
+© 2025 CDN Live TV. Все права защищены.

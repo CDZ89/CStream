@@ -1,0 +1,98 @@
+# Désactiver ou configurer le sandbox pour afficher ton lecteur
+
+Le message “Please Disable Sandbox” veut dire que ta page est intégrée dans un iframe avec l’attribut sandbox, ce qui bloque les scripts, la lecture et certaines actions (navigation, popups, stockage). Il faut soit supprimer `sandbox`, soit le configurer avec les bonnes permissions. Et vérifier que le serveur autorise l’intégration (en-têtes sécurité).
+
+---
+
+## Correctif rapide
+
+```html
+<!-- Option 1: supprimer complètement le sandbox (plus permissif) -->
+<iframe
+  src="https://ton-domaine/lecteur"
+  width="100%"
+  height="600"
+  allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+</iframe>
+```
+
+- **À faire:** retire l’attribut `sandbox` de l’iframe où s’affiche ton lecteur CStream.
+- **À vérifier:** que le contenu vient d’une source sûre (ton domaine). Si c’est externe, préfère la configuration ci‑dessous.
+
+---
+
+## Configuration sandbox plus sûre (si tu veux garder une sécurité)
+
+```html
+<!-- Option 2: garder sandbox mais autoriser ce dont le lecteur a besoin -->
+<iframe
+  src="https://ton-domaine/lecteur"
+  width="100%"
+  height="600"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+  allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+</iframe>
+```
+
+- **allow-scripts:** autorise les scripts du lecteur.
+- **allow-same-origin:** nécessaire pour que le lecteur accède à son stockage/session.
+- **allow-popups / allow-popups-to-escape-sandbox:** autorise fenêtres contrôlées par l’app (éviter blocages).
+- **allow-top-navigation-by-user-activation:** autorise navigation initiée par l’utilisateur.
+- **allow:** donne les capacités média (autoplay, fullscreen, etc.).
+
+---
+
+## En-têtes serveur à corriger si l’iframe reste bloqué
+
+Même sans sandbox, ton lecteur peut être bloqué par les en-têtes HTTP de la page intégrée.
+
+- **X-Frame-Options:**  
+  - **À éviter:** `DENY` ou `SAMEORIGIN` si l’iframe est sur un sous-domaine différent.  
+  - **À faire:** ne pas envoyer cet en-tête, ou mettre `SAMEORIGIN` si l’iframe et le parent sont bien sur le même origin.
+
+- **Content-Security-Policy (CSP):**  
+  - **Directive:** `frame-ancestors 'self' https://ton-domaine https://*.ton-domaine;`  
+  - **But:** autoriser l’intégration par ton site (et sous-domaines).
+
+- **Cross-origin:**  
+  - **Si domaine différent:** garde `sandbox="allow-same-origin"` ou héberge le lecteur sur le même domaine pour éviter CORS/storage bloqués.
+
+---
+
+## Checklist de dépannage
+
+- **Code:** l’iframe a‑t‑il toujours `sandbox` sans permissions ? Retire ou ajoute les flags ci‑dessus.
+- **Console navigateur:** erreurs du type “Blocked by X-Frame-Options” ou “CSP frame-ancestors”. Corrige les en-têtes côté serveur.
+- **Lecteur externe:** si tu intègres un fournisseur externe, tu ne peux pas contourner ses en-têtes; utilise leur mode d’intégration officiel.
+- **Permissions média:** ajoute `allow="autoplay; fullscreen; encrypted-media; picture-in-picture"`.
+- **Même origine:** idéalement, parent et iframe partagent le même domaine pour éviter des restrictions.
+
+---
+
+## Exemple complet prêt à coller
+
+```html
+<!-- Variante sans sandbox (si contenu est sûr et même origine) -->
+<iframe
+  id="cstream-player"
+  src="https://app.cstream.example/player?mediaId=12345"
+  width="100%"
+  height="620"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+</iframe>
+```
+
+```html
+<!-- Variante avec sandbox configuré (sécurité + fonctionnalités) -->
+<iframe
+  id="cstream-player"
+  src="https://app.cstream.example/player?mediaId=12345"
+  width="100%"
+  height="620"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
+  allow="autoplay; fullscreen; encrypted-media; picture-in-picture">
+</iframe>
+```
+
+Si tu me dis comment ton site est hébergé (domaine/sous-domaine) et quels en-têtes de sécurité sont actifs, je te donne la configuration exacte des en-têtes et de l’iframe pour débloquer ton lecteur sans perdre la sécurité.

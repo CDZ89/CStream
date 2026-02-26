@@ -1,0 +1,109 @@
+afficher les reviews dans la page détail
+txt
+Dans la page de détails du film ou de la série, affiche une section dédiée aux avis utilisateurs ("Reviews"). Cette section doit inclure :
+
+1. Une zone de saisie pour que l’utilisateur puisse écrire son avis.
+2. Un système de notation (étoiles ou score sur 10).
+3. Une liste des avis existants avec :
+   - Nom ou pseudo de l’auteur
+   - Note donnée
+   - Texte du commentaire
+   - Date de publication
+4. Les avis doivent être triés par pertinence ou date.
+5. Le design doit rester premium : fond semi-transparent, typographie élégante, et bonne lisibilité en dark mode.
+6. Si aucun avis n’est disponible, afficher un message doux : "Aucun avis pour le moment. Soyez le premier à partager votre opinion."
+
+L’objectif est de renforcer l’engagement tout en gardant une esthétique propre et immersive.
+✨ Version condensée
+txt
+Ajoute une section "Reviews" dans la page détail avec saisie d’avis, notation, et affichage des commentaires existants. Design premium, lisible, et intégré au thème.
+Tu veux que je te prépare un composant React ReviewSection avec props dynamiques (reviews, note, auteur, etc.) et styles Tailwind premium (glass, dark mode, responsive) ?
+
+dit synchro avec supabase
+Parfait 👌 — si tu veux que ta section Reviews (ou n’importe quel élément dynamique de ta page détail) soit synchronisée avec Supabase, il faut penser en deux temps :
+
+Stockage des données (reviews, notes, auteur, date) dans une table Supabase.
+
+Connexion React ↔ Supabase pour lire/écrire en temps réel.
+
+🛠 Étape 1 : Créer la table Supabase
+Dans ton projet Supabase, crée une table reviews :
+
+sql
+create table reviews (
+  id uuid primary key default gen_random_uuid(),
+  media_id text not null, -- id du film ou série
+  user_id uuid references auth.users(id),
+  rating int check (rating >= 0 and rating <= 10),
+  comment text,
+  created_at timestamp default now()
+);
+🛠 Étape 2 : Configurer Supabase dans ton app
+Installe le client :
+
+bash
+npm install @supabase/supabase-js
+Puis configure :
+
+ts
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export default supabase;
+🛠 Étape 3 : Hook React pour Reviews
+tsx
+import { useEffect, useState } from "react";
+import supabase from "../lib/supabase";
+
+export function useReviews(mediaId: string) {
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("*")
+        .eq("media_id", mediaId)
+        .order("created_at", { ascending: false });
+
+      if (!error) setReviews(data || []);
+    }
+
+    fetchReviews();
+
+    // 🔴 Temps réel : écoute des nouvelles reviews
+    const channel = supabase
+      .channel("reviews-changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "reviews" },
+        (payload) => {
+          setReviews((prev) => [payload.new, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [mediaId]);
+
+  return reviews;
+}
+🛠 Étape 4 : Formulaire pour ajouter une review
+tsx
+async function addReview(mediaId: string, rating: number, comment: string) {
+  const { error } = await supabase.from("reviews").insert([
+    { media_id: mediaId, rating, comment }
+  ]);
+  if (error) console.error(error);
+}
+✨ Résultat
+Les reviews sont stockées dans Supabase.
+
+Elles s’affichent en temps réel sur ta page détail (films ou séries).
+

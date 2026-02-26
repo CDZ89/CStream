@@ -1,0 +1,62 @@
+Parfait ! Puisque tu n’as pas précisé de langage ou de fonctionnalité particulière, je te propose un petit exemple Python qui montre plusieurs concepts de base :
+
+pythonCopier
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Exemple de script Python simple :
+
+1. Affiche un message de bienvenue.
+2. Demande à l'utilisateur son nom.
+3. Calcule la somme de deux nombres.
+4. Sauvegarde le résultat dans un fichier texte.
+"""
+
+def demander_nom():
+    """Demande le nom de l'utilisateur et le renvoie."""
+    return input("Quel est ton prénom ? ").strip()
+
+def somme(a: float, b: float) -> float:
+    """Retourne la somme de deux nombres."""
+    return a + b
+
+def demander_nombres():
+    """Demande deux nombres à l'utilisateur et les renvoie sous forme de tuple."""
+    while True:
+        try:
+            x = float(input("Entrez le premier nombre : "))
+            y = float(input("Entrez le deuxième nombre : "))
+            return x, y
+        except ValueError:
+            print("⚠️  Veuillez entrer des valeurs numériques valides.")
+
+def sauvegarder_resultat(nom: str, resultat: float, chemin: str = "resultat.txt"):
+    """Écrit le résultat dans un fichier texte."""
+    with open(chemin, "w", encoding="utf-8") as f:
+        f.write(f"Bonjour {nom}, la somme que tu as calculée est : {resultat}\n")
+    print(f"✅  Résultat sauvegardé dans '{chemin}'")
+
+def main():
+    print("=== Bienvenue dans le petit script Python ===")
+    prenom = demander_nom()
+    a, b = demander_nombres()
+    total = somme(a, b)
+
+    print(f"\n🧮  {prenom}, le résultat de {a} + {b} est {total}")
+    sauvegarder_resultat(prenom, total)
+
+if __name__ == "__main__":
+    main()
+Que fait ce script ?
+[object Object],[object Object][object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
+Comment l’utiliser ?
+**Copie** le code ci‑dessus dans un fichier, par exemple `exemple.py`.
+**Exécute** le script depuis un terminal : ```bash python3 exemple.py ```
+Suis les invites (entre ton prénom, puis les deux nombres).
+Après l’exécution, un fichier `resultat.txt` contenant le résultat sera créé dans le même répertoire.
+Besoin d’autre chose ?
+Un autre langage ? (JavaScript, C, Bash, etc.)
+Une fonctionnalité plus avancée (lecture/écriture CSV, appel d’API, interface graphique…)
+Un projet complet (site web, bot Discord, analyse de données, …)
+Dis‑moi ce qui t’intéresse, et je t’adapte le code en conséquence !

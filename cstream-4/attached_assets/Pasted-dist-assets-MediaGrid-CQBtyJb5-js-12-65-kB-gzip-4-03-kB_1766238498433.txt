@@ -1,0 +1,76 @@
+dist/assets/MediaGrid-CQBtyJb5.js             12.65 kB │ gzip:   4.03 kB
+
+dist/assets/Footer-D952k1vy.js                14.80 kB │ gzip:   4.73 kB
+
+dist/assets/Creator-7LSEypl2.js               14.82 kB │ gzip:   4.60 kB
+
+dist/assets/Sports-BJeeKz78.js                17.53 kB │ gzip:   4.85 kB
+
+dist/assets/select-DMAT0R-F.js                22.14 kB │ gzip:   7.72 kB
+
+dist/assets/vendor-query-Dk7_7mxx.js          24.00 kB │ gzip:   7.22 kB
+dist/assets/Planning-ndVlrWIW.js              25.34 kB │ gzip:   7.05 kB
+
+dist/assets/WatchPage-D6ZqceFs.js             25.35 kB │ gzip:   7.14 kB
+dist/assets/Profile-BaUlIJlJ.js               31.01 kB │ gzip:   7.76 kB
+
+dist/assets/dialog-BiT7eE3d.js                31.40 kB │ gzip:  11.34 kB
+
+dist/assets/UniversalPlayer-BCibMAVe.js       33.37 kB │ gzip:   9.61 kB
+
+dist/assets/Settings-BTMTPSSS.js              37.63 kB │ gzip:   9.19 kB
+
+dist/assets/Agent-D10BUMnD.js                 41.15 kB │ gzip:  11.79 kB
+
+dist/assets/Home-K28haoqK.js                  47.97 kB │ gzip:  13.67 kB
+
+dist/assets/Chat-kLgwbCoO.js                  49.73 kB │ gzip:  13.54 kB
+
+dist/assets/MovieDetail-BGwNOzMK.js           51.89 kB │ gzip:  12.05 kB
+
+dist/assets/TVDetail-BufDk9Fb.js              83.14 kB │ gzip:  21.01 kB
+
+dist/assets/ContinueWatching-BLsofwcd.js     111.16 kB │ gzip:  32.93 kB
+dist/assets/Navbar-O_eh1h-7.js               126.53 kB │ gzip:  41.64 kB
+
+dist/assets/vendor-ui-dicPGWJg.js            149.66 kB │ gzip:  49.53 kB
+
+dist/assets/vendor-markdown-MWyaKfEt.js      156.42 kB │ gzip:  47.06 kB
+
+dist/assets/vendor-react-8FQasqUz.js         162.12 kB │ gzip:  53.03 kB
+
+dist/assets/vendor-supabase-B22S24K6.js      188.68 kB │ gzip:  49.38 kB
+
+dist/assets/Admin-CbNqesmz.js                198.09 kB │ gzip:  47.43 kB
+
+dist/assets/index-CwTONKoG.js                248.13 kB │ gzip:  79.72 kB
+
+dist/assets/PieChart-BTfQ08a9.js             398.12 kB │ gzip: 107.40 kB
+
+✓ built in 22.77s
+
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
+
+2025-12-20T13:42:04Z info: Pushing pid1 binary layer...
+2025-12-20T13:42:05Z info: Pushing hosting layer...
+2025-12-20T13:42:05Z info: Pushing Repl layer...
+2025-12-20T13:42:05Z info: Nix layers for this Repl are uncached.
+2025-12-20T13:42:05Z info: Pushing nix-0 layer...
+2025-12-20T13:42:05Z info: Created hosting layer
+2025-12-20T13:42:06Z info: Created pid1 binary layer
+2025-12-20T13:42:13Z info: Created nix-0 layer
+2025-12-20T13:42:13Z info: uploading image for cached layer
+2025-12-20T13:42:14Z info: pushed cache image manifest
+2025-12-20T13:42:14Z info: pushed cache soci index manifest
+2025-12-20T13:42:14Z info: uploading cached layer
+2025-12-20T13:42:14Z info: successfully uploaded cached layer
+2025-12-20T13:42:39Z info: Created Repl layer
+2025-12-20T13:42:41Z info: Pushed image manifest
+2025-12-20T13:42:42Z info: Pushed soci index manifest
+2025-12-20T13:44:02Z info: Creating Autoscale service
+main done, exiting
+2025-12-20T13:47:56Z error: The deployment is failing health checks. This can happen if the application isn't responding, responds with an error, or doesn't respond in time. Health checks are sent to the / endpoint by default and must respond as soon as possible. Make sure that the / endpoint is implemented and returns a 200 status code in a timely manner. Avoid doing expensive or long running operations on the / endpoint, prefer deferring them to a different route. Check the logs for more information.

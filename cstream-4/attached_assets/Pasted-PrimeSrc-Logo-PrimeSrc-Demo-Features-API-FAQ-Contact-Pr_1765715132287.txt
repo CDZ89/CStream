@@ -1,0 +1,129 @@
+PrimeSrc Logo
+PrimeSrc
+Demo
+Features
+API
+FAQ
+Contact
+PrimeSrc
+PrimeSrc is a video streaming API with a massive library of Movies and TV series.
+
+Demo
+Embed movies or episodes on your website simply with a IMDb, TMDB or TVMaze ID.
+
+Type
+
+Movie
+ID Type
+
+IMDb
+ID
+tt0110357
+Embed
+Features
+Massive Library
+We have over 75,000 movies and 240,000 episodes available for streaming.
+
+Fast Update
+New content is added as soon as it is released, faster than anyone else. We update to higher quality sources as soon as they become available.
+
+Quality
+We provide 1080p video and English subtitles for many items.
+
+Multiple Hosts
+For each movie and episode, we provide many options for streaming.
+
+Responsive
+The player is mobile friendly and can be resize however you want and it will still work.
+
+Websites using PrimeSrc
+Contact primesrc.inbox@protonmail.com to list your site here if PrimeSrc is your primary player.
+
+
+
+API Documentation
+Embed Movies API
+Embed a movie using an IMDb or TMDB ID.
+
+Endpoint: https://primesrc.me/embed/movie
+
+Query Parameter	Required?	Values
+imdb	Optional	IMDb ID (such as "tt0848228")
+tmdb	Optional	TMDB ID (such as 100)
+fallback	Optional	"true" or "false". Default is "true". If this is set to true, we will try to find third party sources if we have no servers.
+serverOrder	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". The servers will be ordered according to this list. You can use this to prioritize servers that you like best.
+whitelistServers	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". Only these servers will be displayed in the player.
+blacklistServers	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". These servers will be excluded from the player.
+startAt	Optional	Time to start the video at, in seconds
+Examples:
+
+https://primesrc.me/embed/movie?imdb=tt0848228
+
+https://primesrc.me/embed/movie?tmdb=123
+
+https://primesrc.me/embed/movie?imdb=tt0848228&fallback=false&serverOrder=PrimeVid,Voe,Dood
+
+Embed TV Shows API
+Embed an episode using an IMDb, TMDB, or TVMaze ID and an episode and season number. If no episode or season number is give, it defaults to the first episode. Note that we use TVMaze episode numberings, which is not always the same as TMDB
+
+Endpoint: https://primesrc.me/embed/tv
+
+Query Parameter	Required?	Values
+imdb	Optional	IMDb ID (such as "tt0848228")
+tmdb	Optional	TMDB ID (such as 100)
+tvmaze	Optional	TVMaze ID (such as 100)
+season	Required	Season number (such as "1" or "2")
+episode	Required	Episode number (such as "1" or "2")
+fallback	Optional	"true" or "false". Default is "true". If this is set to true, we will try to find third party sources if we have no servers.
+serverOrder	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". The servers will be ordered according to this list. You can use this to prioritize servers that you like best.
+whitelistServers	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". Only these servers will be displayed in the player.
+blacklistServers	Optional	A comma separated list of server names such as "PrimeVid,Voe,Dood". These servers will be excluded from the player.
+startAt	Optional	Time to start the video at, in seconds
+Examples:
+
+https://primesrc.me/embed/tv?tmdb=32726&season=1&episode=1
+
+https://primesrc.me/embed/tv?tvmaze=48090
+
+https://primesrc.me/embed/tv?tmdb=32726&season=1&episode=1&fallback=false&serverOrder=PrimeVid,Voe,Dood
+
+Info API
+Returns information and a list of servers for a movie or episode. Can be called from the frontend of your application to check if there are servers available for a movie or episode.
+
+Endpoint: GET https://primesrc.me/api/v1/list_servers
+
+Query Parameter	Required?	Values
+type	Required	Either "tv" or "movie"
+imdb	Optional	IMDb ID (such as "tt0848228")
+tmdb	Optional	TMDB ID (such as 100)
+tvmaze	Optional	TVMaze ID (such as 100)
+season	Optional	Season number (such as "1" or "2")
+episode	Optional	Episode number (such as "1" or "2")
+Examples:
+
+https://primesrc.me/api/v1/list_servers?type=movie&imdb=tt0848228
+
+https://primesrc.me/api/v1/list_servers?type=tv&tmdb=32726&season=1&episode=1
+
+Latest episodes
+Returns a list of episodes added in the last 24 hours.
+
+Endpoint: GET https://primesrc.me/api/v1/latest_episodes
+
+Latest movies
+Returns a list of movies added in the last 24 hours.
+
+Endpoint: GET https://primesrc.me/api/v1/latest_movies
+
+All movies and episodes
+Returns a gzipped json file that lists all movies or all episodes that we have, and their servers. It is updated every 8 hours.
+
+https://primesrc.me/dump/all_movies.json.gz
+
+https://primesrc.me/dump/all_episodes.json.gz
+
+FAQ
+
+Are your links protected from DMCA?
+Contact
+Contact us at primesrc.inbox@protonmail.com if you have any further qustions.

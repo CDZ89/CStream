@@ -1,0 +1,124 @@
+5. Bot H24 + contrôle via Admin Page
+Logique simple :
+
+Backend Node : un petit service qui lance/arrête le bot.
+
+Admin Page : deux boutons → “Démarrer le bot” / “Arrêter le bot”.
+
+Exemple d’API côté backend :
+
+js
+let botRunning = false;
+
+app.post('/admin/bot/start', async (req, res) => {
+  if (botRunning) return res.json({ ok: true, message: 'Bot déjà démarré' });
+  await client.login(process.env.DISCORD_TOKEN);
+  botRunning = true;
+  res.json({ ok: true });
+});
+
+app.post('/admin/bot/stop', async (req, res) => {
+  if (!botRunning) return res.json({ ok: true, message: 'Bot déjà arrêté' });
+  await client.destroy();
+  botRunning = false;
+  res.json({ ok: true });
+});
+Sur l’admin page, tu appelles ces routes avec fetch et tu affiches l’état (ON/OFF).
+
+Pour le H24, il faut que ton backend tourne en continu (VPS, service type Railway, etc.), pas juste Replit qui dort.
+
+6. Boosts → rôle + salon dédié
+Rôle à donner automatiquement : @Server Booster
+
+Salon boost uniquement : #boost (id: 1466080992627265648)
+
+Avec discord.js, tu peux écouter les boosts via guildMemberUpdate (ou guildMemberRoleAdd selon ta logique) et attribuer le rôle :
+
+js
+client.on('guildMemberUpdate', async (oldMember, newMember) => {
+  const guild = newMember.guild;
+  const boosterRole = guild.roles.cache.find(r => r.name === 'Server Booster');
+  if (!boosterRole) return;
+
+  // Si le membre vient de booster (a Nitro boost role)
+  const hadBoost = oldMember.premiumSince;
+  const hasBoost = newMember.premiumSince;
+
+  if (!hadBoost && hasBoost) {
+    await newMember.roles.add(boosterRole).catch(console.error);
+
+    const boostChannel = guild.channels.cache.get('1466080992627265648');
+    if (boostChannel && boostChannel.isTextBased()) {
+      boostChannel.send(`Merci pour le boost, ${newMember}! 💜`);
+    }
+  }
+});
+Pour que les messages de boost n’apparaissent que dans #boost, tu peux :
+
+Dans les paramètres du serveur, désactiver les messages système de boost dans les autres salons.
+
+Ou, si tu veux être extrême, supprimer automatiquement les messages de boost dans les autres salons (mais souvent la config serveur suffit).
+
+7. Slash commands TMDB → redirection vers CStream
+Idée : /search avec un paramètre query + type (movie / tv / anime).
+Le bot cherche sur TMDB, renvoie une liste, et chaque résultat contient un lien vers ton site.
+
+Exemple de commande (simplifiée) :
+
+js
+// Déclaration de la commande
+// /search query:"Fight Club" type:"movie|tv|anime"
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  if (interaction.commandName !== 'search') return;
+
+  const query = interaction.options.getString('query', true);
+  const type = interaction.options.getString('type', true); // movie / tv / anime
+
+  await interaction.deferReply();
+
+  const results = await searchTmdb(query, type); // ta fonction TMDB
+
+  if (!results.length) {
+    return interaction.editReply('Aucun résultat trouvé.');
+  }
+
+  const first = results[0];
+  const url = `https://ton-site.com/watch/${type}/${first.id}`; // adapte à ta route
+
+  await interaction.editReply({
+    content: `**${first.title || first.name}**\n${url}`
+  });
+});
+Tu peux ensuite améliorer avec des embeds, plusieurs choix, etc.
+
+8. Vérification /verify (site → Discord)
+Logique globale :
+
+Sur ton site, page /verify : l’utilisateur se connecte (compte CStream + Discord OAuth).
+
+Tu associes son user_id Discord à son compte CStream.
+
+Quand la vérification est OK, ton backend appelle le bot (ou directement l’API Discord) pour :
+
+Ajouter le rôle verified sur Discord
+
+Envoyer un DM :
+
+Texte du DM (FR + EN) :
+
+FR : Merci beaucoup, vous êtes maintenant vérifié sur Discord (rôle Verified) et sur CStream.
+EN : Thank you! You are now verified on Discord (role Verified) and on CStream.
+
+Tu peux aussi inclure l’URL du site (en variable, pour le jour où tu changes de domaine).
+
+Si tu veux, au prochain message tu peux m’envoyer ton fichier de bot principal (sans le token) et je te le nettoie pour :
+
+présence “regarde CStream”
+
+commandes /search
+
+gestion des boosts
+
+et un système propre ON/OFF via ton admin page.

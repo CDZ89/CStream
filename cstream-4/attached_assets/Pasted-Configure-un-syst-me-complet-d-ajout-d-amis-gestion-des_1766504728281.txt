@@ -1,0 +1,94 @@
+Configure un système complet d’ajout d’amis + gestion des statuts utilisateurs dans mon app CStream (React/Vite/TS + Supabase + Tailwind).
+Je veux une expérience premium, festive et sans bug, où les amis, les statuts et les profils sont parfaitement synchronisés.
+
+🔐 Profils
+Table profiles :
+
+id (UUID Supabase auth)
+
+username
+
+avatar
+
+status (enum : online, dnd, streaming, offline)
+
+Le champ status doit être mis à jour en temps réel (WebSocket ou Supabase Realtime).
+
+Afficher le statut dans la page profil et dans la navbar.
+
+👥 Ajout d’amis
+Tables Supabase :
+
+sql
+create table friend_requests (
+  id uuid primary key default uuid_generate_v4(),
+  sender_id uuid references profiles(id),
+  receiver_id uuid references profiles(id),
+  status text check (status in ('pending','accepted','rejected'))
+);
+
+create table friends (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references profiles(id),
+  friend_id uuid references profiles(id)
+);
+Fonctionnalités :
+
+Envoyer une demande d’ami (status = pending).
+
+Accepter/refuser (status = accepted ou rejected).
+
+Si accepté → insertion dans friends.
+
+Liste d’amis visible dans la page profil, avec leur statut en temps réel.
+
+🟢 Statuts en temps réel
+Statuts possibles :
+
+🟢 online
+
+🟠 dnd (ne pas déranger)
+
+🟣 streaming
+
+⚪ offline
+
+Affichage :
+
+Navbar → badge à côté de l’avatar.
+
+Page profil → statut visible sous le pseudo.
+
+Chat → badge visible à côté du nom dans les messages.
+
+💬 Chat intégré
+Quand un utilisateur écrit → statut temporaire typing.
+
+Les amis connectés apparaissent avec leur statut dans la sidebar du chat.
+
+Synchronisation en temps réel via Supabase Realtime ou PubNub.
+
+🛡️ Admin
+Admin peut voir tous les membres connectés + leurs statuts.
+
+Admin peut gérer les relations d’amis (supprimer, forcer acceptation).
+
+Admin peut attribuer des rôles/badges visibles dans le chat et la navbar.
+
+🎨 UI & Thèmes
+Dark/light complets, couvrant les badges et les listes d’amis.
+
+Utiliser Tailwind tokens (bg-dark-bg, text-dark-text, etc.).
+
+Transitions fluides (transition-colors duration-300).
+
+🚀 Résultat attendu
+Ajout d’amis fonctionne sans bug (demande, acceptation, rejet).
+
+Statuts visibles partout (navbar, profil, chat).
+
+Synchronisation en temps réel entre Supabase et l’UI.
+
+Admin peut monitorer et gérer les relations.
+
+Expérience premium, festive et cohérente.

@@ -1,0 +1,100 @@
+Parfait Chems — si tu veux que ta bannière tourne automatiquement avec des flèches de navigation (comme un carrousel cinématographique), et que tu as déjà l’intégration TMDb, voici comment structurer ça proprement en React avec un style premium :
+
+---
+
+### 🎞️ **Carrousel automatique avec flèches (React + TMDb)**
+
+#### 1. **Librairie recommandée : `swiper.js`**
+Ultra fluide, responsive, et personnalisable. Tu peux l’utiliser avec autoplay, navigation, pagination, etc.
+
+```bash
+npm install swiper
+```
+
+#### 2. **Exemple de composant React**
+
+```jsx
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+const MovieCarousel = ({ movies }) => {
+  return (
+    <Swiper
+      modules={[Navigation, Autoplay]}
+      navigation
+      autoplay={{ delay: 5000 }}
+      loop
+      slidesPerView={1}
+      className="movie-carousel"
+    >
+      {movies.map((movie) => (
+        <SwiperSlide key={movie.id}>
+          <div
+            className="banner"
+            style={{
+              backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`,
+            }}
+          >
+            <div className="overlay">
+              <h1>{movie.title}</h1>
+              <div className="metadata">
+                ⭐ {movie.vote_average.toFixed(1)} ({movie.vote_count}) • {movie.release_date.slice(0, 4)}
+              </div>
+              <p className="synopsis">{movie.overview}</p>
+            </div>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  );
+};
+```
+
+#### 3. **CSS stylisé façon "Border Hunters"**
+
+```css
+.movie-carousel .banner {
+  height: 80vh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 60px;
+}
+.overlay {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  border-radius: 8px;
+  max-width: 700px;
+}
+.metadata {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+.synopsis {
+  font-size: 1em;
+  line-height: 1.6;
+}
+```
+
+---
+
+### 🔌 **Récupération des films via TMDb**
+
+Si tu veux afficher plusieurs films automatiquement :
+
+```js
+const fetchMovies = async () => {
+  const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=YOUR_API_KEY&language=fr`);
+  const data = await res.json();
+  return data.results;
+};
+```
+
+---
+
+Tu veux que je t’aide à intégrer ça dans ton projet existant ou à styliser les flèches façon "Border Hunters" ? Je peux aussi t’aider à ajouter des effets de transition ou des overlays animés.

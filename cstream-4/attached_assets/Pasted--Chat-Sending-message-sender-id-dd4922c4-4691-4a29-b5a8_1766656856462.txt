@@ -1,0 +1,124 @@
+[Chat] Sending message: {sender_id: 'dd4922c4-4691-4a29-b5a8-21d97a54f779', receiver_id: null, group_id: '5afd1225-b1ac-45bb-88fa-a5288e6abcb4', content: 'yo'}
+useUserSettings.ts:129 Settings restored from localStorage
+themes.ts:435 [applyTheme] Applied theme: dark-pink {primary: '#EC4899', background: '#1A0A14'}
+2useWatchHistory.ts:217 [Watch History] Loading local history: 0 items
+useSiteLogo.ts:45   HEAD https://fgcekgrymdcwjanwxrwj.supabase.co/storage/v1/object/public/avatars/site-logo.png net::ERR_ABORTED 400 (Bad Request)
+fetchLogo @ useSiteLogo.ts:45
+initializeSiteLogo @ useSiteLogo.ts:118
+(anonymous) @ Navbar.tsx:175
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   HEAD https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_likes?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?select=status%2Cupdated_at&id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserStatus.ts:40  Error fetching user status: {code: '42703', details: null, hint: null, message: 'column profiles.status does not exist'}
+(anonymous) @ useUserStatus.ts:40
+await in (anonymous)
+(anonymous) @ useUserStatus.ts:98
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/user_likes?select=*&user_id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779&order=created_at.desc&limit=20 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+Profile.tsx:480  Error fetching likes: {code: 'PGRST205', details: null, hint: "Perhaps you meant the table 'public.user_roles'", message: "Could not find the table 'public.user_likes' in the schema cache"}
+(anonymous) @ Profile.tsx:480
+await in (anonymous)
+(anonymous) @ Profile.tsx:495
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?select=id%2Cusername%2Cavatar_url%2Cfriend_code%2Cstatus%2Cupdated_at%2Crole&id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+Profile.tsx:308  Error fetching profile: {code: '42703', details: null, hint: null, message: 'column profiles.status does not exist'}
+(anonymous) @ Profile.tsx:308
+await in (anonymous)
+(anonymous) @ Profile.tsx:492
+commitHookEffectListMount @ react-dom.development.js:23189
+commitPassiveMountOnFiber @ react-dom.development.js:24970
+commitPassiveMountEffects_complete @ react-dom.development.js:24930
+commitPassiveMountEffects_begin @ react-dom.development.js:24917
+commitPassiveMountEffects @ react-dom.development.js:24905
+flushPassiveEffectsImpl @ react-dom.development.js:27078
+flushPassiveEffects @ react-dom.development.js:27023
+performSyncWorkOnRoot @ react-dom.development.js:26115
+flushSyncCallbacks @ react-dom.development.js:12042
+commitRootImpl @ react-dom.development.js:26998
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:26020
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+fetch.ts:7   GET https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/site_notifications?select=*&order=created_at.desc&limit=50 404 (Not Found)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+client:536  WebSocket connection to 'wss://36b797b4-bfd1-4e66-81ea-22390d352d14-00-uqfcdzccjenv.kirk.replit.dev:24678/?token=qBvsGoCK8Qen' failed: Error in connection establishment: net::ERR_CONNECTION_TIMED_OUT
+setupWebSocket @ client:536
+(anonymous) @ client:531
+client:560 [vite] server connection lost. Polling for restart...
+fetch.ts:7   PATCH https://fgcekgrymdcwjanwxrwj.supabase.co/rest/v1/profiles?id=eq.dd4922c4-4691-4a29-b5a8-21d97a54f779 400 (Bad Request)
+(anonymous) @ fetch.ts:7
+(anonymous) @ fetch.ts:34
+await in (anonymous)
+then @ PostgrestBuilder.ts:122
+useUserStatus.ts:89  Error updating status: {code: 'PGRST204', details: null, hint: null, message: "Could not find the 'status' column of 'profiles' in the schema cache"}

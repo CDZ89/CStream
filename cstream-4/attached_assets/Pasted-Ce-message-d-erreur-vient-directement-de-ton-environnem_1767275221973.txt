@@ -1,0 +1,42 @@
+Ce message d’erreur vient directement de ton environnement Replit et il est assez clair :  
+
+```
+TypeError: Failed to fetch dynamically imported module: /src/pages/Agent.tsx
+```
+
+### 🔎 Pourquoi ça arrive
+- **Import dynamique cassé** : Vite/React utilise `import()` pour charger les pages. Si le fichier n’existe pas, est mal nommé ou mal placé, l’import échoue.  
+- **Chemin invalide** : `src/pages/Agent.tsx` n’est peut‑être pas au bon endroit ou le nom du fichier ne correspond pas (ex. `agent.tsx` au lieu de `Agent.tsx`).  
+- **Compilation/Rebuild** : Replit peut avoir raté la compilation si tu as déplacé ou renommé le fichier sans relancer.  
+- **Casse sensible** : Sur Replit, les chemins sont sensibles à la casse (`Agent.tsx` ≠ `agent.tsx`).  
+- **Export manquant** : Si ton fichier n’a pas de `export default` ou contient une erreur de syntaxe, le module ne peut pas être chargé.  
+
+---
+
+### ✅ Comment corriger
+1. **Vérifie le fichier**  
+   - Assure‑toi que `src/pages/Agent.tsx` existe bien.  
+   - Vérifie la casse exacte du nom du fichier.  
+
+2. **Vérifie l’export**  
+   - Ton composant doit avoir un `export default AgentPage` ou similaire.  
+   ```tsx
+   export default function AgentPage() {
+     return <div>Page Agent</div>;
+   }
+   ```
+
+3. **Vérifie ton routeur**  
+   - Si tu utilises React Router ou un système de pages auto‑importées, assure‑toi que la route correspond bien au fichier.  
+
+4. **Relance/Rebuild**  
+   - Arrête et relance ton serveur Replit pour forcer la recompilation.  
+
+5. **Inspecte la console**  
+   - Dans l’onglet Console de Replit ou du navigateur, regarde s’il y a une erreur de syntaxe dans `Agent.tsx`.  
+
+---
+
+👉 En résumé : l’erreur signifie que ton fichier `Agent.tsx` n’a pas pu être trouvé ou chargé correctement. La solution est de **vérifier son emplacement, son nom exact, et son export**, puis de relancer ton projet.  
+
+Veux‑tu que je te propose un **exemple minimal de `Agent.tsx` propre et premium** que tu peux coller pour tester si ça résout ton bug ?

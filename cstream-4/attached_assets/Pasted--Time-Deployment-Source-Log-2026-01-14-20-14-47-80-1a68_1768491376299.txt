@@ -1,0 +1,121 @@
+
+Time
+Deployment
+Source
+Log
+2026-01-14 20:14:47.80
+1a6841d4
+System
+starting up user application
+2026-01-14 20:14:47.80
+1a6841d4
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-14 20:14:47.80
+1a6841d4
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-14 20:14:49.30
+1a6841d4
+User
+> cd project && npm run start
+2026-01-14 20:14:49.46
+1a6841d4
+User
+> node server.js
+2026-01-14 20:14:49.46
+1a6841d4
+User
+> vite_react_shadcn_ts@0.0.0 start
+2026-01-14 20:14:49.53
+1a6841d4
+User
+at compileSourceTextModule (node:internal/modules/esm/utils:346:16)
+2026-01-14 20:14:49.53
+1a6841d4
+User
+{ id: "668", name: "Universal Kids USA", category: "USA" },
+2026-01-14 20:14:49.53
+1a6841d4
+User
+Node.js v20.19.3
+2026-01-14 20:14:49.53
+1a6841d4
+User
+at #translate (node:internal/modules/esm/loader:431:12)
+2026-01-14 20:14:49.53
+1a6841d4
+User
+SyntaxError: Unexpected token '{'
+2026-01-14 20:14:49.53
+1a6841d4
+User
+file:///home/runner/workspace/project/src/data/channels.js:899
+2026-01-14 20:14:49.53
+1a6841d4
+User
+at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:478:27)
+2026-01-14 20:14:49.53
+1a6841d4
+User
+^
+2026-01-14 20:14:49.53
+1a6841d4
+User
+at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:146:18)
+2026-01-14 20:14:49.55
+1a6841d4
+System
+command finished with error [sh -c npm run serve]: exit status 1
+2026-01-14 20:14:49.84
+1a6841d4
+User
+> cd project && npm run start
+2026-01-14 20:14:49.84
+1a6841d4
+User
+> workspace@1.0.0 serve
+2026-01-14 20:14:50.00
+1a6841d4
+User
+> node server.js
+2026-01-14 20:14:50.00
+1a6841d4
+User
+> vite_react_shadcn_ts@0.0.0 start
+2026-01-14 20:14:50.06
+1a6841d4
+User
+file:///home/runner/workspace/project/src/data/channels.js:899
+2026-01-14 20:14:50.06
+1a6841d4
+User
+at #translate (node:internal/modules/esm/loader:431:12)
+2026-01-14 20:14:50.06
+1a6841d4
+User
+at compileSourceTextModule (node:internal/modules/esm/utils:346:16)
+2026-01-14 20:14:50.06
+1a6841d4
+User
+SyntaxError: Unexpected token '{'
+2026-01-14 20:14:50.06
+1a6841d4
+User
+{ id: "668", name: "Universal Kids USA", category: "USA" },
+2026-01-14 20:14:50.09
+1a6841d4
+System
+command finished with error [sh -c npm run serve]: exit status 1
+2026-01-14 20:14:50.44
+1a6841d4
+User
+> cd project && npm run start
+2026-01-14 20:14:50.60
+1a6841d4
+User
+> vite_react_shadcn_ts@0.0.0 start
+2026-01-14 20:14:50.60
+1a6841d4
+User
+> node server.js

@@ -1,0 +1,56 @@
+Le message d’erreur que tu vois (`Failed to load resource: the server responded with a status of 500`) vient directement du serveur **sharecloudy.com**. Ça veut dire que ton lecteur ou ton sélecteur n’est pas en cause : c’est le serveur distant qui renvoie une erreur interne (HTTP 500).
+
+---
+
+### 🔍 Ce que ça implique
+- **Ton code frontend fonctionne** : il essaie bien de charger l’iframe.  
+- **Le serveur Sharecloudy est en erreur** : soit le lien est invalide, soit le service est down, soit l’ID `qWS1VKQBTc` n’est pas reconnu.
+
+---
+
+### ✅ Étapes de debug
+1. **Tester l’URL directement dans le navigateur**  
+   → Si tu ouvres `https://sharecloudy.com/iframe/qWS1VKQBTc` et que tu vois une erreur 500, c’est côté serveur.
+
+2. **Vérifier si l’ID est correct**  
+   - Peut-être que la ressource a été supprimée ou expirée.  
+   - Essaie un autre ID pour confirmer.
+
+3. **Logger côté frontend**  
+   - Ajoute un `console.log(url)` juste avant de charger l’iframe pour être sûr que c’est bien l’URL que tu passes.
+
+4. **Fallback dans ton lecteur**  
+   - Si une source renvoie une erreur 500, tu peux prévoir un message type :  
+     ```tsx
+     {error && <div className="text-red-500">Source indisponible (500)</div>}
+     ```
+
+---
+
+### 🛠️ Exemple de gestion d’erreur dans ton lecteur
+```tsx
+function Player({ sourceUrl }) {
+  const [error, setError] = useState(false);
+
+  return (
+    <div className="player">
+      {!error ? (
+        <iframe
+          src={sourceUrl}
+          onError={() => setError(true)}
+          className="w-full h-[600px]"
+        />
+      ) : (
+        <div className="text-red-500 p-4">
+          Cette source est indisponible (500). Essaie une autre.
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+👉 Conclusion : ton sélecteur admin marche, mais la source `sharecloudy.com` est HS côté serveur.  
+Tu veux que je te prépare un **système de fallback automatique** (si une source renvoie 500 → basculer sur une autre dispo) pour ton lecteur ?

@@ -1,0 +1,28 @@
+
+> vite_react_shadcn_ts@0.0.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32mÔ£ô[39m 4352 modules transformed.
+x Build failed in 11.45s
+error during build:
+[vite-plugin-pwa:build] There was an error during the build:
+  node_modules/@vercel/speed-insights/dist/next/index.mjs (151:9): "useParams" is not exported by "__vite-optional-peer-dep:next/navigation.js:@vercel/speed-insights", imported by "node_modules/@vercel/speed-insights/dist/next/index.mjs".
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  node_modules/@vercel/speed-insights/dist/next/index.mjs (151:9): "useParams" is not exported by "__vite-optional-peer-dep:next/navigation.js:@vercel/speed-insights", imported by "node_modules/@vercel/speed-insights/dist/next/index.mjs".
+file: C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/@vercel/speed-insights/dist/next/index.mjs:151:9
+
+149:   const setScriptRoute = useRef(null);
+150:   useEffect(() => {
+151:     if (!setScriptRoute.current) {
+              ^
+152:       const script = injectSpeedInsights({
+153:         framework: props.framework ?? "react",
+
+    at getRollupError (file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/rollup/dist/es/shared/node-entry.js:23418:39
+    at async catchUnfinishedHookActions (file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/rollup/dist/es/shared/node-entry.js:22876:16)
+    at async rollupInternal (file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/rollup/dist/es/shared/node-entry.js:23401:5)
+    at async build (file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:65709:14)
+    at async CAC.<anonymous> (file:///C:/Users/chems/Downloads/cstream-4/cstream-4/project/node_modules/vite/dist/node/cli.js:829:5)

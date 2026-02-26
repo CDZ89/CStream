@@ -1,0 +1,82 @@
+Bold markdown not rendering
+It looks like your text includes Markdown bold (the double asterisks), but your UI is showing it as plain text. That means the content isn’t being parsed as Markdown, or your styles/fonts are preventing bold from appearing.
+
+Quick fixes
+If you want to keep Markdown syntax in your content, you must parse it to HTML first.
+
+If you already have HTML but bold doesn’t look bold, ensure your font weights are available and not overridden.
+
+Parse markdown to HTML (works anywhere)
+html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Markdown -> HTML bold</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    .content b, .content strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="content" class="content"></div>
+
+  <script>
+    const md = `
+Salut ! 👋
+Je suis **CAi**, ton assistant IA dédié à **CStream**. Comment puis‑je t’aider aujourd’hui ? Que ce soit pour :
+
+- Découvrir les dernières tendances sur la page **Home**
+- Explorer le catalogue via **Explore**
+- Gérer ta **Library** ou ton profil
+- Utiliser le **chat** (texte ou vocal) avec tes amis
+- Personnaliser les thèmes (plus de 20 disponibles)
+- Configurer les notifications en temps réel
+
+N’hésite pas, je suis là pour répondre à toutes tes questions sur la plateforme créée par **CDZ** ! 🚀
+`;
+
+    const html = marked.parse(md, { gfm: true, breaks: true });
+    document.getElementById('content').innerHTML = DOMPurify.sanitize(html);
+  </script>
+</body>
+</html>
+This converts **bold** into <strong> and ensures it renders bold.
+
+If you’re in React
+tsx
+import { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
+
+export function Markdown({ md }: { md: string }) {
+  const html = useMemo(() => DOMPurify.sanitize(marked.parse(md, { gfm: true, breaks: true })), [md]);
+  return <div className="prose prose-invert" dangerouslySetInnerHTML={{ __html: html }} />;
+}
+Add Tailwind Typography for nicer defaults (optional): prose prose-invert.
+
+Ensure your CSS doesn’t set font-weight: 400 !important globally.
+
+Common causes when bold “doesn’t look bold”
+Font weight not loaded: make sure your font includes 600/700.
+
+If using Inter, load variable font or specify weights in your import.
+
+CSS override:
+
+Check for rules like strong, b { font-weight: 400; } or a global * { font-weight: 400; }.
+
+Markdown not parsed:
+
+If you see literal ** in the UI, you’re rendering plain text; parse it.
+
+Sanitizer stripping tags:
+
+Use DOMPurify and do not strip <strong>.
+
+Minimal CSS to enforce bold
+css
+strong, b { font-weight: 700; }
+If you paste your current rendering snippet (HTML/React/Tailwind), I’ll adapt the fix directly to your component so the bold works within your exact theme and typography.

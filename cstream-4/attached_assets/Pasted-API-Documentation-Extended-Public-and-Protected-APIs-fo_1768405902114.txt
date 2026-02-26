@@ -1,0 +1,131 @@
+API Documentation — Extended
+Public and Protected APIs for Schedule, Channels, and playable pages. This page shows how to build iframe embeds, how to parse schedule JSON, and the known folder patterns.
+
+Format: JSON / HTML
+Timezone: UK GMT in schedule responses
+Protected API (Key)
+Secure API endpoints requiring API key. Contact support to get your API key
+
+Protected API Base
+https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=ENDPOINT
+Replace YOUR_KEY with your assigned API key and ENDPOINT with: channels, schedule, or info
+Copy sample
+Get Channels (Protected)
+https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=channels
+Returns channels list, replace YOUR_KEY with your assigned API key
+Copy URL
+Channels JSON — `logo_url` (new)
+Channels returned by the API now include a logo_url field. This value is either:
+
+Local path relative to daddy domain, e.g. logos/espn.png
+Absolute URL e.g. https://example.com/logos/espn.png
+When using the API client-side, prepend daddy domain if the path is relative: https://dlhd.link/logos/
+// Sample response (channels endpoint)
+[
+  {
+    "channel_name": "beIN SPORTS Australia 1",
+    "channel_id": "491",
+    "logo_url": "logos/bein_sports_australia_1.png"
+  },
+  {
+    "channel_name": "Boomerang",
+    "channel_id": "648",
+    "logo_url": "https://cdn.example.com/logos/boomerang.png"
+  },
+  {
+    "channel_name": "TVO CA",
+    "channel_id": "401",
+    "logo_url": "logos/tvo_ca.svg"
+  }
+]
+Notes on logo handling:
+• The API tries to return a cached, server-hosted logo when available (preferred).
+• If an external logo is blocked or unavailable we may return the original external URL instead — clients should be resilient.
+• Logos may be PNG, JPG or SVG. When embedding into HTML, prefer using the <img> tag and set a width/height or CSS constraints.
+Get Schedule (Protected)
+https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=schedule
+returns schedule, replace YOUR_KEY with your assigned API key
+Copy URL
+API Information
+https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=info
+Returns API information, available endpoints, and authentication details.
+Copy URL
+Playable pages (multiple folders)
+https://dlhd.link/stream/stream-<id>.php
+Other valid folders with the same filename (stream-<id>.php): /cast/stream-<id>.php, /watch/stream-<id>.php, /plus/stream-<id>.php, /casting/stream-<id>.php, /player/stream-<id>.php.
+Copy sample
+How to construct a playable URL & embed (iframe)
+Use the channel channel_id and one of the supported folders. The player pages are full HTML pages that contain the video player.
+
+// server-side helper (example)
+function getStreamUrl($channel_id, $type = 'stream'){
+    $allowed = ['stream','cast','watch','plus','casting','player'];
+    $type = in_array($type, $allowed) ? $type : 'stream';
+    $baseUrl = 'https://dlhd.link'; // Your current domain
+    // Note: filename is always stream-.php inside each folder
+    return $baseUrl . "/{$type}/stream-{$channel_id}.php";
+}
+
+// iframe example (HTML)
+// Responsive wrapper is provided below — copy and paste into your site where you want the player to appear.
+<div class="preview-wrap">
+  <iframe src="https://dlhd.link/stream/stream-302.php" allowfullscreen loading="lazy"></iframe>
+</div>
+You can swap the folder name (stream, cast, watch, plus, casting, player) while keeping the filename stream-<id>.php (for example /cast/stream-302.php).
+Live preview (sample stream page)
+
+Protected API Authentication & Usage
+The protected API uses key.
+
+// Example: Get channels with authentication
+fetch('https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=channels')
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Channels:', data.data);
+      console.log('Total channels:', data.count);
+    } else {
+      console.error('API Error:', data.error, data.message);
+    }
+  })
+  .catch(error => console.error('Request failed:', error));
+
+// Example: Get schedule with authentication
+fetch('https://dlhd.link/daddyapi.php?key=YOUR_KEY&endpoint=schedule')
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Schedule days:', Object.keys(data.data));
+      console.log('Total days:', data.days_count);
+    } else {
+      console.error('API Error:', data.error, data.message);
+    }
+  })
+  .catch(error => console.error('Request failed:', error));
+Authentication Requirements:
+• Valid API key in the key parameter
+• Contact support to get your key
+Schedule JSON structure (details)
+The schedule JSON uses human readable day headers as top-level keys. Each header maps to an object of categories (e.g. "TV Shows", "Football"). Each category is an array of event objects.
+
+// Example event object
+{
+  "time": "07:37",
+  "event": "Big Brother 27 USA 2025 Live Cam Feeds",
+  "channels": [
+    {"channel_name": "MultiFeed", "channel_id": "277", "logo_url": "logos/multifeed.png"},
+    {"channel_name": "BBFeed 1", "channel_id": "261", "logo_url": "logos/bbfeed_1.png"}
+  ],
+  "channels2": []
+}
+Notes:
+
+Use the channels array for primary playable channels. channels2 may contain alternate sources or metadata — check for its presence before assuming it's empty.
+Channel IDs are strings in the JSON (e.g. "302"). Treat them as identifiers — do not assume numeric sorting order unless you cast to int.
+Category keys may contain punctuation and spaces. When parsing server-side, iterate through keys rather than attempting to split them on a specific format.
+Extra notes, folders & recommendations
+Folders & naming: the system supports multiple public player folders. When in doubt, try each folder using the same filename stream-<id>.php (for example: /stream/stream-302.php, /cast/stream-302.php, /watch/stream-302.php, etc.).
+If you plan to embed many players per page, open stream pages in a lightbox or only create an iframe when the user clicks to avoid many simultaneous connections.
+If a player page includes a cross-origin resource or requires cookies, ensure you add proper allow attributes on the iframe and CORS headers on the player page.
+Logos: cache logos on the server and return the server-hosted path whenever possible to avoid CORS/hotlinking issues and reduce external requests.
+If a channel's logo is missing a server-hosted copy, the API may return the original external URL — clients should handle both cases.

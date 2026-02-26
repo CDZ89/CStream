@@ -1,0 +1,265 @@
+# Player end screen with tmdb episode info and auto next
+
+Tu veux une fin de lecture propre: à la fin de l’iframe vidéo, afficher une animation “Prochain épisode” avec croix pour fermer, le numéro de saison/épisode, l’image TMDb, et pouvoir sélectionner le lecteur — sans bug. Voici une implémentation complète, prête à importer et étendre.
+
+---
+
+## Structure des données et mappage saison/épisode
+
+```js
+// 1) Enregistre tes lecteurs (tu colles tes tableaux existants ici)
+const lecteurs = {
+  sibnet: [/* ... tes URLs sibnet ... */],
+  oneupload: [/* ... tes URLs oneupload ... */],
+  vidmoly: [/* ... tes URLs vidmoly ... */],
+  smoothpre: [/* ... tes URLs smoothpre ... */],
+  sendvid: [/* ... tes URLs sendvid ... */]
+};
+
+// 2) Config TMDb pour une série
+const TMDB_API_KEY = "TA_CLE_API";
+const TV_ID = 123456; // l'ID TMDb de la série
+const LANG = "fr-FR";
+
+// 3) Mappage des épisodes -> saison/épisode
+// Option A: une seule saison (simple)
+function indexToSeasonEpisode(idx) {
+  return { season: 1, episode: idx + 1 };
+}
+
+// Option B: multi-saisons (décommente et adapte)
+// const episodesPerSeason = [10, 12, 8]; // S1:10, S2:12, S3:8
+// function indexToSeasonEpisode(idx) {
+//   let s = 1, i = idx;
+//   for (const count of episodesPerSeason) {
+//     if (i < count) return { season: s, episode: i + 1 };
+//     i -= count; s++;
+//   }
+//   // fallback: dernière saison + dernier épisode
+//   const last = episodesPerSeason.length;
+//   return { season: last, episode: episodesPerSeason[last - 1] };
+//}
+```
+
+---
+
+## HTML: player, overlay fin, et contrôles
+
+```html
+<div class="player-shell">
+  <div class="frame-wrap">
+    <iframe id="videoFrame" src="" allowfullscreen></iframe>
+
+    <!-- Overlay fin d'épisode -->
+    <div id="endOverlay" class="end-overlay hidden">
+      <button class="close-btn" onclick="hideEnd()">×</button>
+
+      <div class="end-left">
+        <div class="label">Prochain épisode</div>
+        <div id="episodeTitle" class="title"></div>
+        <div id="seasonEpisode" class="meta"></div>
+
+        <div class="actions">
+          <button class="btn primary" onclick="goNextEpisode()">Regarder</button>
+          <button class="btn" onclick="changeReader()">Changer de lecteur</button>
+          <button class="btn ghost" onclick="replay()">Revoir</button>
+        </div>
+
+        <div class="reader-row">
+          <span class="reader-label">Lecteur:</span>
+          <span id="readerName" class="reader-chip"></span>
+        </div>
+      </div>
+
+      <div class="end-right">
+        <img id="episodeImage" alt="Aperçu épisode">
+        <div class="tmdb-chip">
+          <span class="tmdb-logo">TMDb</span>
+          <span id="tmdbRating"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flèches navigation lecteur / épisode -->
+    <div class="arrow left" onclick="prevReader()">‹</div>
+    <div class="arrow right" onclick="nextReader()">›</div>
+    <div class="arrow bottom" onclick="goNextEpisode()">▼</div>
+  </div>
+
+  <div class="info-bar">
+    <span id="nowInfo"></span>
+  </div>
+</div>
+```
+
+---
+
+## CSS: style ciné propre, animation overlay
+
+```css
+.player-shell { max-width: 960px; margin: 24px auto; color: #fff; font-family: Inter, system-ui, sans-serif; }
+.frame-wrap { position: relative; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.4); background: #111; }
+iframe#videoFrame { width: 100%; height: 540px; border: none; background: #000; }
+
+.arrow { position: absolute; background: rgba(0,0,0,0.5); color: #0ff; width: 44px; height: 44px; border-radius: 50%; display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none; font-size: 24px; transition: transform .15s ease, background .2s ease; }
+.arrow:hover { transform: scale(1.06); background: rgba(0,255,255,0.18); }
+.arrow.left { left: 10px; top: 50%; transform: translateY(-50%); }
+.arrow.right { right: 10px; top: 50%; transform: translateY(-50%); }
+.arrow.bottom { left: 50%; bottom: 10px; transform: translateX(-50%); }
+
+.end-overlay { position:absolute; inset:0; display:flex; gap:24px; padding:24px; background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0.15) 100%); backdrop-filter: blur(6px); animation: fadeIn .24s ease-out; }
+.hidden { display: none; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.close-btn { position:absolute; top:14px; right:14px; background: rgba(255,255,255,0.12); color:#fff; border:none; width:36px; height:36px; border-radius:10px; cursor:pointer; font-size: 20px; }
+.close-btn:hover { background: rgba(255,255,255,0.2); }
+
+.end-left { flex: 1; display:flex; flex-direction:column; justify-content:center; }
+.label { font-weight:700; letter-spacing:.3px; opacity:.85; margin-bottom: 6px; }
+.title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.meta { font-size: 14px; opacity: .85; margin-bottom: 16px; }
+
+.actions { display:flex; gap: 10px; margin-bottom: 16px; }
+.btn { padding: 10px 14px; border-radius: 10px; border: none; cursor: pointer; background: rgba(255,255,255,0.12); color: #fff; }
+.btn:hover { background: rgba(255,255,255,0.2); }
+.btn.primary { background: #00d1ff; color: #001217; font-weight: 700; }
+.btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,0.24); }
+
+.reader-row { display:flex; align-items:center; gap: 8px; }
+.reader-label { opacity:.75; font-size: 13px; }
+.reader-chip { background: rgba(0,255,255,0.16); color:#0ff; padding: 6px 10px; border-radius: 999px; font-weight:700; }
+
+.end-right { width: 40%; position: relative; display:flex; align-items:center; justify-content:center; }
+.end-right img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.35); object-fit: cover; }
+.tmdb-chip { position: absolute; left: 12px; bottom: 12px; background: rgba(0,0,0,0.55); padding: 6px 10px; border-radius: 999px; display:flex; gap: 8px; align-items:center; }
+.tmdb-logo { background:#01D277; color:#002d1c; font-weight: 900; padding: 2px 6px; border-radius: 6px; }
+
+.info-bar { margin-top: 10px; opacity:.85; font-size: 14px; }
+```
+
+---
+
+## JS: logique du player, TMDb, fin automatique, sélection lecteur
+
+```js
+// État courant
+const readerKeys = Object.keys(lecteurs);
+let currentReaderIndex = 0;
+let currentEpisodeIndex = 0;
+
+// Init player
+function updateFrame() {
+  const reader = readerKeys[currentReaderIndex];
+  const url = lecteurs[reader][currentEpisodeIndex];
+  document.getElementById('videoFrame').src = url;
+
+  const { season, episode } = indexToSeasonEpisode(currentEpisodeIndex);
+  const nowInfo = `Lecteur: ${reader} • S${season}E${episode} • Épisode ${currentEpisodeIndex + 1}/${lecteurs[reader].length}`;
+  document.getElementById('nowInfo').textContent = nowInfo;
+  document.getElementById('readerName').textContent = reader;
+
+  // Prépare les données TMDb pour l’overlay “prochain épisode”
+  preloadNextEpisodeTMDB();
+}
+
+// Navigation lecteur/épisode
+function prevReader() { currentReaderIndex = (currentReaderIndex - 1 + readerKeys.length) % readerKeys.length; currentEpisodeIndex = 0; updateFrame(); }
+function nextReader() { currentReaderIndex = (currentReaderIndex + 1) % readerKeys.length; currentEpisodeIndex = 0; updateFrame(); }
+function changeReader() { nextReader(); }
+function replay() { showEnd(); /* laisse l’utilisateur rejouer manuellement ou recharge */ }
+
+function goNextEpisode() {
+  const reader = readerKeys[currentReaderIndex];
+  const episodes = lecteurs[reader];
+  if (currentEpisodeIndex < episodes.length - 1) {
+    currentEpisodeIndex++;
+    updateFrame();
+    hideEnd();
+  } else {
+    // Fin de la saison/reader
+    alert("Dernier épisode atteint sur ce lecteur.");
+  }
+}
+
+// Overlay fin
+function showEnd() { document.getElementById('endOverlay').classList.remove('hidden'); }
+function hideEnd() { document.getElementById('endOverlay').classList.add('hidden'); }
+
+// Détection de fin pour iframe tiers (approche robuste)
+// Comme les iframes de hosts tiers ne donnent pas l’événement “ended”,
+// on utilise 2 stratégies sûres:
+// 1) Un bouton “Terminé” (ici: on simule via showEnd() quand l’utilisateur clique).
+// 2) Un timer basé sur la durée TMDb (si disponible) avec marge de sécurité.
+
+let endTimer = null;
+function scheduleEndByRuntime(runtimeMinutes) {
+  clearTimeout(endTimer);
+  if (!runtimeMinutes) return;
+  // marge de sécurité (buffer + crédits): +2 minutes
+  const ms = (runtimeMinutes + 2) * 60 * 1000;
+  endTimer = setTimeout(() => showEnd(), ms);
+}
+
+// TMDb fetch pour l’épisode suivant (image, titre, rating, etc.)
+async function preloadNextEpisodeTMDB() {
+  const { season, episode } = indexToSeasonEpisode(currentEpisodeIndex + 1); // prochain
+  const url = `https://api.themoviedb.org/3/tv/${TV_ID}/season/${season}/episode/${episode}?api_key=${TMDB_API_KEY}&language=${LANG}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("TMDb non OK");
+    const data = await res.json();
+
+    // Remplissage overlay
+    document.getElementById('episodeTitle').textContent = data.name || `Épisode ${episode}`;
+    document.getElementById('seasonEpisode').textContent = `Saison ${season} • Épisode ${episode}`;
+    document.getElementById('tmdbRating').textContent = data.vote_average ? `${data.vote_average.toFixed(1)}` : '—';
+
+    const still = data.still_path ? `https://image.tmdb.org/t/p/w780${data.still_path}` : '';
+    const img = document.getElementById('episodeImage');
+    img.src = still || '';
+    img.style.display = still ? 'block' : 'none';
+
+    // Programmer l’overlay auto en fin via runtime (si dispo)
+    scheduleEndByRuntime(data.runtime);
+  } catch (e) {
+    // Fallback minimal (aucune donnée TMDb)
+    document.getElementById('episodeTitle').textContent = `Épisode ${episode}`;
+    document.getElementById('seasonEpisode').textContent = `Saison ${season} • Épisode ${episode}`;
+    document.getElementById('tmdbRating').textContent = '—';
+    document.getElementById('episodeImage').style.display = 'none';
+    // pas de timer runtime
+    clearTimeout(endTimer);
+  }
+}
+
+// Bouton “Terminé” optionnel pour l’utilisateur
+// Ajoute ceci là où tu veux: <button onclick="showEnd()">Terminé</button>
+
+// Init
+updateFrame();
+```
+
+---
+
+## Points clés pour éviter les bugs
+
+- Detection “fin de vidéo” pour iframes tiers n’est pas fiable sans API du host. La solution robuste:
+  - Utiliser le runtime TMDb pour programmer un overlay “prochain épisode” automatique avec une marge.
+  - Fournir en plus un bouton “Terminé” pour garder le contrôle utilisateur (anti faux-positifs si la vidéo a mis en pause).
+- Sélection du lecteur toujours reset sur l’épisode 1 pour éviter les décalages entre sources qui ont des épisodes manquants.
+- Mappage saison/épisode clair via `indexToSeasonEpisode`. Si multi-saisons, configure `episodesPerSeason`.
+- TMDb: utilise `still_path` pour l’image d’épisode, `name` pour le titre, `vote_average` pour la note. En fallback, affiche un libellé neutre.
+
+---
+
+## Extension: croix, animations, trois flèches
+
+- Croix “×” ferme l’overlay sans changer d’épisode.
+- Flèches:
+  - Gauche/Droite: changement de lecteur.
+  - Bas: passer à l’épisode suivant immédiatement.
+- Tu peux ajouter une micro-animation CSS sur `.end-overlay` (fade/slide) et sur `.btn.primary` (pulse léger).
+
+---
+
+Si tu veux, je te génère une version React/Next avec composants et gestion d’état, ou j’intègre le sélecteur de saison officiel TMDb (liste des saisons + épisodes avec images).

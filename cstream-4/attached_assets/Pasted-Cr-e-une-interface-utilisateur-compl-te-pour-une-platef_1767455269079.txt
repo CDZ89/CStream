@@ -1,0 +1,47 @@
+Crée une interface utilisateur complète pour une plateforme nommée "CAi", avec un design ultra-premium, minimaliste, et émotionnellement impactant. Le style doit s’inspirer des standards Apple, Tesla et Netflix, en version dark mode uniquement.
+
+🎨 **Style visuel global** :
+- Fond : dégradé sombre avec aurora violet/bleu
+- Cartes : compactes, arrondies, semi-transparentes (glassmorphism), avec flou liquide et bordures douces
+- Icônes : SVG minimalistes, visibles mais discrets, intégrés dans les boutons et titres
+- Typographie : moderne sans-serif, hiérarchie claire, `**gras**` pour les noms, `*italique*` pour les citations, markdown enrichi (`## titres`, listes, etc.)
+- Transitions : micro-animations au survol, apparition des messages en `fade-in` ou `slide-up`
+
+🧭 **Sidebar gauche** :
+- Boutons : `New Chat`, `CAi Generator`, `Explore CAi`
+- Sections : `Recent`, `Last 7 Days`, `Last 30 Days` avec snippets tronqués
+- Scroll fluide, `overflow-y-auto`, sans scrollbar visible
+
+💬 **Fenêtre principale de chat** :
+- Header : `"Hello, I'm CAi"` + sous-titre `"How can I make things easier for you?"`
+- Grille d’outils (sous le champ de saisie) :
+  - Image Generator
+  - Video Generator
+  - Audio Generator
+  - Photo Editor
+  - Education Feedback
+  - Get Advice
+  - Code Generator
+  - Help me write
+  - Summarize text
+  - Problem solving
+- Bulles de messages arrondies, timestamps discrets, markdown supporté
+
+🖊️ **Champ de saisie** :
+- Barre flottante en bas avec effet verre, placeholder stylé `"Type your message..."`, icône d’envoi SVG animé
+- **Flèche de scroll** : apparaît après réponse IA, au clic elle scroll vers le dernier message IA (`scrollIntoView({ behavior: 'smooth' })`)
+
+📱 **Responsive & accessibilité** :
+- Grille adaptative, sidebar collapsable sur mobile
+- Support RTL et internationalisation
+- Contraste élevé, navigation clavier
+
+🧠 **Comportement et interactions** :
+- Dark mode natif, sans switch
+- Hover sur cartes outils : `scale + glow léger`
+- Icônes SVG dans la navbar : **corriger leur visibilité sans ajouter de bruit**
+- Page Agent : **réduire la taille du contenu** pour une lecture fluide
+- Composant "Change Log" : **ne rien modifier**
+
+🎯 **Objectif final** :
+Une interface fluide, élégante, ultra-minimaliste, où chaque élément est lisible, utile et émotionnellement cohérent. Le tout doit être prêt pour une intégration React + Tailwind v4 avec composants modulaires et animations intégrées.

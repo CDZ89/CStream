@@ -1,0 +1,63 @@
+Améliore le design du site en version 3.2 pour qu’il soit ultra fluide, complet, détaillé et sans bug :
+
+1. Structure générale
+   - Layout responsive : grille fluide, adaptable à desktop, tablette et mobile.
+   - Hiérarchie claire : en-tête fixe, contenu central, pied de page compact.
+   - Espacements réguliers entre sections pour respirer.
+   - Navigation intuitive avec menus clairs et accessibles.
+
+2. Typographie
+   - Police principale élégante et lisible (sans-serif moderne).
+   - Titres (H1/H2/H3) avec tailles différenciées et espacement généreux.
+   - Texte courant avec interligne suffisant et largeur max pour éviter les lignes trop longues.
+   - Styles cohérents pour boutons, labels et métadonnées.
+
+3. Couleurs et visuels
+   - Palette neutre et cohérente (fond clair ou sombre selon mode).
+   - Contraste respectant WCAG 2.1 AA.
+   - Images et affiches en haute résolution, lazy loading pour performance.
+   - Icônes uniformes et vectorielles pour actions (favoris, watchlist, noter, partager).
+
+4. Interactions utilisateur
+   - Boutons d’action toujours visibles et accessibles.
+   - Feedback immédiat (toast, changement d’icône).
+   - Favoris, watchlist, likes, reviews et commentaires enregistrés de façon persistante, jamais supprimés automatiquement.
+   - Modal login clair et accessible, avec redirection après connexion.
+
+5. Navigation et fluidité
+   - Scroll fluide avec animation.
+   - Flèche de retour en haut (↑) apparaissant après 300px de scroll, position fixe en bas à droite.
+   - Indicateur circulaire de progression en bas à gauche, remplissage dynamique selon la position dans la page.
+   - Carrousels et galeries avec navigation par flèches et swipe mobile.
+
+6. Sections média
+   - Bloc principal : titre, affiche, score, actions.
+   - Métadonnées : date, durée, genres cliquables, production, réalisateurs.
+   - Overview : synopsis complet.
+   - Galerie d’images/backdrops : mosaïque responsive avec zoom au clic.
+   - Collection : autres titres liés avec affiche + année.
+   - Reviews : auteur, avatar, note, date, extrait + bouton “Lire plus”.
+   - Cast & Credits : grille de portraits, nom + rôle, bouton “Show All”.
+   - Recommendations & Similar : grille de suggestions avec affiche + titre, hover résumé.
+
+7. Accessibilité
+   - Navigation clavier complète (tab order logique).
+   - ARIA labels pour boutons, modals, images.
+   - Modals accessibles (focus piégé, fermeture par ESC).
+   - Contraste et lisibilité validés.
+
+8. Performances
+   - Minification CSS/JS.
+   - Cache navigateur pour images et scripts.
+   - CDN pour assets.
+   - Lazy load pour médias lourds.
+   - Préchargement des données critiques (titre, affiche, score).
+   - SEO optimisé : balises meta, structured data (schema.org Movie/TVSeries).
+
+9. Tests et validation
+   - Titre toujours visible et lisible, même sans affiche.
+   - Boutons toujours accessibles, jamais masqués.
+   - Flèche retour et indicateur circulaire fonctionnent sur tous les navigateurs.
+   - Responsive sur desktop, tablette, mobile.
+   - Temps de chargement < 3s, interactions < 250ms.
+   - Accessibilité validée (WCAG 2.1 AA).

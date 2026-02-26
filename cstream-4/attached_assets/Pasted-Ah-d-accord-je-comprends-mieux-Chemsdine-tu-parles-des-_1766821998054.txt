@@ -1,0 +1,71 @@
+Ah d’accord, je comprends mieux Chemsdine 👌 — tu parles des **lecteurs de streaming intégrés** (iframes, players externes, etc.) qui, quand tu cliques dessus, te redirigent vers une URL externe (souvent pub ou site tiers). C’est un comportement classique des players intégrés, mais tu peux le **bloquer côté front** sans toucher au sandbox.
+
+---
+
+## 🔑 Pourquoi ça redirige
+- Les lecteurs externes (souvent intégrés via `<iframe>` ou `<embed>`) injectent du JavaScript qui force un `window.location` ou ouvre une nouvelle fenêtre.
+- Certains utilisent des overlays invisibles qui captent le clic et déclenchent une redirection.
+
+---
+
+## ✅ Solutions pour bloquer les redirects des lecteurs stream
+
+### 1. **Sandbox sur l’iframe**
+Quand tu intègres un lecteur via `<iframe>`, ajoute l’attribut `sandbox` avec restrictions :
+```html
+<iframe src="..." sandbox="allow-scripts allow-same-origin" allowfullscreen></iframe>
+```
+👉 Ici, tu autorises le script mais **pas les redirections** (`allow-top-navigation` est absent).
+
+---
+
+### 2. **Désactiver la navigation forcée**
+Empêche l’iframe de changer ton `window.location` :
+```js
+document.querySelectorAll("iframe").forEach(frame => {
+  frame.contentWindow.location = null;
+});
+```
+⚠️ Attention : certains players bloquent si tu limites trop, donc teste.
+
+---
+
+### 3. **Intercepter les clics**
+Ajoute un overlay transparent au-dessus du lecteur pour neutraliser les clics directs :
+```html
+<div class="relative">
+  <iframe src="..." class="w-full h-[500px]"></iframe>
+  <div class="absolute inset-0 z-10" onclick="event.stopPropagation();"></div>
+</div>
+```
+👉 Tu gardes l’affichage du lecteur, mais les clics ne déclenchent plus de redirect.
+
+---
+
+### 4. **Bloquer les popups**
+Empêche l’ouverture de nouvelles fenêtres :
+```js
+window.open = function() {
+  return null;
+};
+```
+
+---
+
+## ✨ Prompt IA pour ton agent
+
+```txt
+Dans les pages Movie Detail et TV Detail, bloque toutes les redirections déclenchées par les lecteurs de streaming intégrés (iframes, embeds). 
+
+1. Ajoute l’attribut `sandbox="allow-scripts allow-same-origin"` sur les iframes pour empêcher `top-navigation`.
+2. Supprime toute permission `allow-top-navigation` ou `allow-popups`.
+3. Ajoute un overlay transparent au-dessus du lecteur pour neutraliser les clics qui déclenchent des redirections.
+4. Intercepte `window.open` et `window.location` forcés pour bloquer les popups et les redirects.
+5. Vérifie que le lecteur reste fonctionnel (lecture vidéo OK) mais qu’aucun clic ne renvoie vers une URL externe.
+```
+
+---
+
+👉 Avec ça, tu bloques **100 % des redirects des players stream** sans toucher au sandbox global de ton site.  
+
+Veux-tu que je te prépare un **snippet React/Tailwind** qui encapsule ton lecteur dans un composant `SafePlayer` avec ces protections intégrées ?
