@@ -34,11 +34,10 @@ const StatCard = ({ icon: Icon, label, value, unit = '', trend = null, color = '
             {unit && <p className="text-xs text-white/40 mt-1">{unit}</p>}
           </div>
           {trend && (
-            <div className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${
-              trend.positive
+            <div className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 ${trend.positive
                 ? 'bg-green-500/20 text-green-400'
                 : 'bg-red-500/20 text-red-400'
-            }`}>
+              }`}>
               <TrendingUp className="w-3 h-3" />
               {trend.value}%
             </div>
@@ -80,7 +79,7 @@ const Stats = () => {
           supabase.from('watchlist').select('id', { count: 'exact' }).limit(0),
           supabase.from('messages').select('id', { count: 'exact' }).limit(0),
           supabase.from('reviews').select('id, rating', { count: 'exact' }).limit(0),
-          supabase.from('recommendations').select('id', { count: 'exact' }).limit(0),
+          supabase.from('recommendations' as any).select('id', { count: 'exact' }).limit(0),
         ]);
 
         const totalUsers = usersRes.count || 34210;

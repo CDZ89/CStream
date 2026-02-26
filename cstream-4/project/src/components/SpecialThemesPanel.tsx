@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { THEMES, getAvailableThemes, isThemeSpecial } from '@/lib/themes';
+import { THEMES } from '@/lib/themes';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +25,16 @@ export const SpecialThemesPanel = ({
   const { settings, setTheme } = useUserSettings();
   const [applyToAll, setApplyToAll] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // Fallback implementations since these were missing from themes.ts
+  const specialThemeIds = ['premium-verified', 'premium-gold', 'premium-violet'];
+  const isThemeSpecial = (id: string) => specialThemeIds.includes(id);
+  const getAvailableThemes = (isAdmin: boolean, isCreator: boolean) => THEMES.filter(t => {
+    if (t.id === 'premium-verified' && !isAdmin && !isCreator) return false;
+    if (t.id === 'premium-violet' && !isAdmin && !isCreator) return false;
+    if (t.id === 'premium-gold' && !isAdmin) return false;
+    return true;
+  });
 
   const availableSpecialThemes = getAvailableThemes(isAdmin, isCreator).filter(t => isThemeSpecial(t.id));
 
@@ -97,11 +107,10 @@ export const SpecialThemesPanel = ({
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSpecialThemeSelect(theme.id)}
                 disabled={loading}
-                className={`relative p-3 rounded-lg border-2 transition-all ${
-                  selectedTheme === theme.id
+                className={`relative p-3 rounded-lg border-2 transition-all ${selectedTheme === theme.id
                     ? 'border-primary bg-primary/10 ring-2 ring-primary'
                     : 'border-white/20 hover:border-white/40 bg-white/5'
-                }`}
+                  }`}
               >
                 <div
                   className="w-full h-16 rounded mb-2"

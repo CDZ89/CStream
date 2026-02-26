@@ -38,8 +38,8 @@ const Actors = () => {
   const fetchPeople = async (pageNum: number) => {
     setLoading(true);
     try {
-      const data = await tmdbApi.getPopularPeople(pageNum);
-      
+      const data = await tmdbApi.getPopularPeople(pageNum) as unknown as any;
+
       if (pageNum === 1) {
         setPeople(data.results || []);
       } else {
@@ -68,11 +68,11 @@ const Actors = () => {
         {/* Animated background */}
         <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-background to-blue-600/20" />
         <HeroStars />
-        
+
         {/* Glow elements */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl" />
-        
+
         <div className="relative container mx-auto px-4 text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -85,7 +85,7 @@ const Actors = () => {
               <Users className="w-24 h-24 text-white relative z-10" />
             </div>
           </motion.div>
-          
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ const Actors = () => {
           >
             Acteurs & Célébrités
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -103,7 +103,7 @@ const Actors = () => {
           >
             Découvrez les plus grandes stars du cinéma et de la télévision mondiale
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -159,7 +159,7 @@ const Actors = () => {
                   </motion.div>
                 ))}
               </div>
-              
+
               {hasMore && (
                 <div className="flex justify-center mt-12">
                   <Button

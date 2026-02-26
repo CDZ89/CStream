@@ -1018,6 +1018,23 @@ const TVDetail = () => {
     (v) => v.type === "Trailer" && v.site === "YouTube",
   );
 
+  const uiStrings = {
+    fr: { fixDisplay: "RÉPARER L'AFFICHAGE", reloadStream: "RECHARGER LE FLUX", changeSource: "Changer de source", episodes: "Épisodes", synopsis: "Synopsis", loadMore: "Charger plus d'épisodes", interactions: "Interactions", tips: "Conseils", returnToDetails: "Retour aux détails", console: "Console de Visionnage", secure: "SÉCURISÉ", loading: "Chargement du lecteur..." },
+    en: { fixDisplay: "FIX DISPLAY", reloadStream: "RELOAD STREAM", changeSource: "Change source", episodes: "Episodes", synopsis: "Synopsis", loadMore: "Load more episodes", interactions: "Interactions", tips: "Tips", returnToDetails: "Back to details", console: "Viewing Console", secure: "SECURE", loading: "Loading player..." },
+    es: { fixDisplay: "REPARAR PANTALLA", reloadStream: "RECARGAR STREAM", changeSource: "Cambiar fuente", episodes: "Episodios", synopsis: "Sinopsis", loadMore: "Cargar más", interactions: "Interacciones", tips: "Consejos", returnToDetails: "Volver a detalles", console: "Consola de visualización", secure: "SEGURO", loading: "Cargando..." },
+    de: { fixDisplay: "ANZEIGE REPARIEREN", reloadStream: "STREAM NEU LADEN", changeSource: "Quelle ändern", episodes: "Episoden", synopsis: "Zusammenfassung", loadMore: "Mehr laden", interactions: "Interaktionen", tips: "Tipps", returnToDetails: "Zurück zu Details", console: "Anzeigekonsole", secure: "SICHER", loading: "Laden..." },
+    it: { fixDisplay: "RIPARA DISPLAY", reloadStream: "RICARICA STREAM", changeSource: "Cambia fonte", episodes: "Episodi", synopsis: "Sinossi", loadMore: "Carica altro", interactions: "Interazioni", tips: "Suggerimenti", returnToDetails: "Torna ai dettagli", console: "Console di visualizzazione", secure: "SICURO", loading: "Caricamento in corso..." },
+    pt: { fixDisplay: "CORRIGIR TELA", reloadStream: "RECARREGAR STREAM", changeSource: "Mudar fonte", episodes: "Episódios", synopsis: "Sinopse", loadMore: "Carregar mais", interactions: "Interações", tips: "Dicas", returnToDetails: "Voltar aos detalhes", console: "Console de visualização", secure: "SEGURO", loading: "Carregando..." },
+    ar: { fixDisplay: "إصلاح العرض", reloadStream: "إعادة تحميل البث", changeSource: "تغيير المصدر", episodes: "الحلقات", synopsis: "الملخص", loadMore: "تحميل المزيد", interactions: "تفاعلات", tips: "نصائح", returnToDetails: "العودة للتفاصيل", console: "وحدة التحكم", secure: "آمن", loading: "جار التحميل..." },
+    ko: { fixDisplay: "디스플레이 수정", reloadStream: "스트림 새로고침", changeSource: "소스 변경", episodes: "에피소드", synopsis: "시놉시스", loadMore: "더 보기", interactions: "상호작용", tips: "팁", returnToDetails: "세부정보로 돌아가기", console: "보기 콘솔", secure: "안전함", loading: "로딩 중..." },
+    ja: { fixDisplay: "表示を修正", reloadStream: "ストリームを再読み込み", changeSource: "ソースを変更", episodes: "エピソード", synopsis: "あらすじ", loadMore: "さらに読み込む", interactions: "インタラクション", tips: "ヒント", returnToDetails: "詳細に戻る", console: "コンソール", secure: "安全", loading: "読み込み中..." },
+    ru: { fixDisplay: "ИСПРАВИТЬ ОТОБРАЖЕНИЕ", reloadStream: "ПЕРЕЗАГРУЗИТЬ ПОТОК", changeSource: "Сменить источник", episodes: "Эпизоды", synopsis: "Синопсис", loadMore: "Загрузить больше", interactions: "Взаимодействия", tips: "Советы", returnToDetails: "К деталям", console: "Консоль просмотра", secure: "БЕЗОПАСНО", loading: "Загрузка..." }
+  };
+
+  const getUIString = (key: keyof typeof uiStrings.fr) => {
+    return (uiStrings[language as keyof typeof uiStrings]?.[key]) || uiStrings.fr[key];
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-20 overflow-x-hidden">
       <SEO
@@ -1084,7 +1101,7 @@ const TVDetail = () => {
                     className="absolute -top-12 left-0 z-20 text-muted-foreground hover:text-white transition-all group-hover:translate-x-[-4px]"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2" />
-                    Retour aux détails
+                    {getUIString('returnToDetails')}
                   </Button>
                   <div className="flex items-center gap-3">
                     <div className="relative flex h-2 sm:h-3 w-2 sm:w-3">
@@ -1092,7 +1109,7 @@ const TVDetail = () => {
                       <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
                     </div>
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
-                      Console de Visionnage
+                      {getUIString('console')}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -1100,7 +1117,7 @@ const TVDetail = () => {
                       HD 1080P
                     </Badge>
                     <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
-                      SÉCURISÉ
+                      {getUIString('secure')}
                     </Badge>
                   </div>
                 </div>
@@ -1145,7 +1162,7 @@ const TVDetail = () => {
                   ) : (
                     <div className="text-gray-400 text-center">
                       <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                      <p className="text-sm">Chargement du lecteur...</p>
+                      <p className="text-sm">{getUIString('loading')}</p>
                     </div>
                   )}
                 </div>
@@ -1181,7 +1198,7 @@ const TVDetail = () => {
                           className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
                         >
                           <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
-                          RÉPARER L'AFFICHAGE
+                          {getUIString('fixDisplay')}
                         </Button>
                       </div>
 
@@ -1195,7 +1212,7 @@ const TVDetail = () => {
                         className="text-[10px] sm:text-xs font-bold text-white/50 hover:text-white hover:bg-white/5 h-9 sm:h-10 rounded-xl"
                       >
                         <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2" />
-                        RECHARGER LE FLUX
+                        {getUIString('reloadStream')}
                       </Button>
                     </div>
                   </div>
@@ -1242,13 +1259,13 @@ const TVDetail = () => {
                         value="episodes"
                         className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300 py-2.5"
                       >
-                        Épisodes
+                        {getUIString('episodes')}
                       </TabsTrigger>
                       <TabsTrigger
                         value="info"
                         className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300 py-2.5"
                       >
-                        Synopsis
+                        {getUIString('synopsis')}
                       </TabsTrigger>
                     </TabsList>
 
@@ -1368,7 +1385,7 @@ const TVDetail = () => {
                               onClick={handleShowMoreEpisodes}
                               className="px-8 rounded-xl bg-secondary/30 border-white/10 hover:bg-primary hover:border-primary transition-all duration-300"
                             >
-                              Charger plus d'épisodes
+                              {getUIString('loadMore')}
                             </Button>
                           </div>
                         )}

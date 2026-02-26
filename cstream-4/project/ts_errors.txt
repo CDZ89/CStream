@@ -1,0 +1,39 @@
+src/components/admin/RoleManagementPanel.tsx(75,5): error TS2322: Type '"reine"' is not assignable to type 'UserRole'.
+src/components/PresenceBadge.tsx(5,7): error TS2741: Property 'streaming' is missing in type '{ online: { bg: string; ring: string; }; away: { bg: string; ring: string; }; dnd: { bg: string; ring: string; }; offline: { bg: string; ring: string; }; watching: { bg: string; ring: string; }; typing: { bg: string; ring: string; }; }' but required in type 'Record<UserPresenceStatus, { bg: string; ring: string; }>'.
+src/components/ReviewsSection.tsx(137,39): error TS2589: Type instantiation is excessively deep and possibly infinite.
+src/components/SiteHealth.tsx(501,11): error TS2322: Type '"info"' is not assignable to type '"error" | "warning" | "ok"'.
+src/components/SiteHealth.tsx(903,54): error TS2345: Argument of type 'string' is not assignable to parameter of type '"error" | "warning" | "ok"'.
+src/components/SpecialThemesPanel.tsx(2,18): error TS2305: Module '"@/lib/themes"' has no exported member 'getAvailableThemes'.
+src/components/SpecialThemesPanel.tsx(2,38): error TS2305: Module '"@/lib/themes"' has no exported member 'isThemeSpecial'.
+src/components/ui/meteors.tsx(3,24): error TS2307: Cannot find module 'motion/react' or its corresponding type declarations.
+src/components/VoiceChat.tsx(15,37): error TS2304: Cannot find name 'SpeechRecognition'.
+src/pages/Actors.tsx(44,24): error TS2339: Property 'results' does not exist on type 'unknown'.
+src/pages/Actors.tsx(46,46): error TS2339: Property 'results' does not exist on type 'unknown'.
+src/pages/Actors.tsx(48,34): error TS2339: Property 'total_pages' does not exist on type 'unknown'.
+src/pages/Admin.tsx(671,34): error TS2322: Type '"reine"' is not assignable to type 'UserRole'.
+src/pages/Admin.tsx(701,7): error TS2304: Cannot find name 'setUsers'.
+src/pages/Admin.tsx(1490,16): error TS2345: Argument of type '{ auto_translate: boolean; avatar_url: string; banner_url: string; created_at: string; friend_code: string; friend_code_refreshes: number; id: string; is_admin: boolean; last_friend_code_refresh: string; ... 6 more ...; username: string; }[]' is not assignable to parameter of type 'SetStateAction<UserData[]>'.
+  Type '{ auto_translate: boolean; avatar_url: string; banner_url: string; created_at: string; friend_code: string; friend_code_refreshes: number; id: string; is_admin: boolean; last_friend_code_refresh: string; ... 6 more ...; username: string; }[]' is not assignable to type 'UserData[]'.
+    Type '{ auto_translate: boolean; avatar_url: string; banner_url: string; created_at: string; friend_code: string; friend_code_refreshes: number; id: string; is_admin: boolean; last_friend_code_refresh: string; ... 6 more ...; username: string; }' is not assignable to type 'UserData'.
+      Types of property 'status' are incompatible.
+        Type 'string' is not assignable to type 'UserStatus'.
+src/pages/Admin.tsx(6222,67): error TS2304: Cannot find name 'dualLangVostfrData'.
+src/pages/Admin.tsx(6222,97): error TS2304: Cannot find name 'dualLangVfData'.
+src/pages/MovieDetail.tsx(37,26): error TS2307: Cannot find module '@/components/Comments' or its corresponding type declarations.
+src/pages/MovieDetail.tsx(1104,23): error TS2322: Type '{ tmdbId: number; mediaType: "movie"; title: string; posterPath: string; currentSource: any; setCurrentSource: (sourceId: PlayerSource) => void; autoPlay: boolean; onProgressUpdate: (progress: number, currentTime: number, duration: number) => void; onVideoEnd: () => void; className: string; }' is not assignable to type 'IntrinsicAttributes & UniversalPlayerProps'.
+  Property 'autoPlay' does not exist on type 'IntrinsicAttributes & UniversalPlayerProps'.
+src/pages/MovieDetail.tsx(1191,41): error TS2304: Cannot find name 'extractTrailerUrl'.
+src/pages/MovieDetail.tsx(1193,31): error TS2304: Cannot find name 'setTrailerUrl'.
+src/pages/MovieDetail.tsx(1194,31): error TS2304: Cannot find name 'setShowTrailer'.
+src/pages/PlayerPage.tsx(691,20): error TS2304: Cannot find name 'SourceSelectorList'.
+src/pages/Stats.tsx(83,25): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(relation: "chat_sessions" | "comments" | "seasons" | "tv_shows" | "custom_media" | "users" | "groups" | "actors" | "support_tickets" | "admin" | "analytics" | "chat_messages" | "contact_messages" | ... 18 more ... | "watchlist"): PostgrestQueryBuilder<...>', gave the following error.
+    Argument of type '"recommendations"' is not assignable to parameter of type '"chat_sessions" | "comments" | "seasons" | "tv_shows" | "custom_media" | "users" | "groups" | "actors" | "support_tickets" | "admin" | "analytics" | "chat_messages" | "contact_messages" | ... 18 more ... | "watchlist"'.
+  Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: "13.0.5"; }, { Tables: { actors: { Row: { biography: string; birthday: string; created_at: string; id: string; name: string; place_of_birth: string; popularity: number; profile_path: string; tmdb_id: number; updated_at: string; }; Insert: { ...; }; Update: { ...; }; Relationships: []; }; ... 30 more ...; watchlist: { ...; }; }; Views: {}; Functions: { ...; }; Enums: { ...; }; CompositeTypes: {}; }, never, never, never>', gave the following error.
+    Argument of type '"recommendations"' is not assignable to parameter of type 'never'.
+src/pages/test/MangaScraper.tsx(44,30): error TS2339: Property 'match' does not exist on type 'never'.
+src/pages/TestPage.tsx(121,20): error TS2322: Type '{ children: string; jsx: true; global: true; }' is not assignable to type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+  Property 'jsx' does not exist on type 'DetailedHTMLProps<StyleHTMLAttributes<HTMLStyleElement>, HTMLStyleElement>'.
+src/pages/TVDetail.tsx(527,48): error TS2589: Type instantiation is excessively deep and possibly infinite.
+src/pages/TVDetail.tsx(1017,9): error TS2451: Cannot redeclare block-scoped variable 'trailer'.
+src/pages/TVDetail.tsx(1021,9): error TS2451: Cannot redeclare block-scoped variable 'trailer'.

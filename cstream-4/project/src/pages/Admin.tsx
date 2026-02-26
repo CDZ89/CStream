@@ -1487,7 +1487,7 @@ const Admin = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      setUsers((data || []) as unknown as UserData[]);
     } catch (err: any) {
       console.error('Error fetching users:', err);
       toast.error('Erreur lors du chargement des utilisateurs');
@@ -6219,7 +6219,7 @@ Le lecteur sera détecté automatiquement depuis l'URL (sibnet, vidomly, etc.)`}
             </Button>
             <Button
               onClick={handleDualLanguageImport}
-              disabled={dualLangImporting || !dualLangTmdbId || (!dualLangVostfrData.trim() && !dualLangVfData.trim())}
+              disabled={dualLangImporting || !dualLangTmdbId || dualLangInputs.filter(i => i.data.trim()).length === 0}
               className="gap-2 bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
             >
               {dualLangImporting ? (

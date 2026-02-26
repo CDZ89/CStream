@@ -34,7 +34,7 @@ import { ScoreCircle } from '@/components/ScoreCircle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Comments } from '@/components/Comments';
+
 import { useWatchHistory } from '@/hooks/useWatchHistory';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocalAndSyncSources } from '@/hooks/useLocalAndSyncSources';
@@ -889,6 +889,24 @@ const MovieDetail = () => {
   const seoDescription = movie.overview
     ? movie.overview.substring(0, 160) + '...'
     : `Regarder ${movie.title} en streaming gratuit sur CStream`;
+
+  const uiStrings = {
+    fr: { watch: 'Regarder', searching: 'Recherche...', trailer: 'Bande-annonce', download: 'Télécharger', downloadMsg: 'Le téléchargement sera bientôt disponible.', noTrailer: 'Aucune bande-annonce disponible' },
+    en: { watch: 'Watch', searching: 'Searching...', trailer: 'Trailer', download: 'Download', downloadMsg: 'Download will be available soon.', noTrailer: 'No trailer available' },
+    es: { watch: 'Ver', searching: 'Buscando...', trailer: 'Tráiler', download: 'Descargar', downloadMsg: 'La descarga estará disponible pronto.', noTrailer: 'Tráiler no disponible' },
+    de: { watch: 'Ansehen', searching: 'Suchen...', trailer: 'Trailer', download: 'Herunterladen', downloadMsg: 'Der Download wird bald verfügbar sein.', noTrailer: 'Kein Trailer verfügbar' },
+    it: { watch: 'Guarda', searching: 'Ricerca...', trailer: 'Trailer', download: 'Scarica', downloadMsg: 'Il download sarà presto disponibile.', noTrailer: 'Nessun trailer disponibile' },
+    pt: { watch: 'Assistir', searching: 'Buscando...', trailer: 'Trailer', download: 'Baixar', downloadMsg: 'O download estará disponível em breve.', noTrailer: 'Nenhum trailer disponível' },
+    ar: { watch: 'شاهد', searching: 'جاري البحث...', trailer: 'مقطع دعائي', download: 'تحميل', downloadMsg: 'التحميل سيكون متاحا قريبا.', noTrailer: 'لا يوجد مقطع دعائي' },
+    ko: { watch: '시청하기', searching: '검색 중...', trailer: '예고편', download: '다운로드', downloadMsg: '다운로드가 곧 제공될 예정입니다.', noTrailer: '예고편 없음' },
+    ja: { watch: '見る', searching: '検索中...', trailer: '予告編', download: 'ダウンロード', downloadMsg: 'ダウンロードはまもなく利用可能になります。', noTrailer: '予告編はありません' },
+    ru: { watch: 'Смотреть', searching: 'Поиск...', trailer: 'Трейлер', download: 'Скачать', downloadMsg: 'Скачивание скоро будет доступно.', noTrailer: 'Трейлер недоступен' }
+  };
+
+  const getUIString = (key: keyof typeof uiStrings.fr) => {
+    return (uiStrings[language as keyof typeof uiStrings]?.[key]) || uiStrings.fr[key];
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -1083,7 +1101,6 @@ const MovieDetail = () => {
                           setCurrentSource(undefined as any);
                         }
                       }}
-                      autoPlay={true}
                       onProgressUpdate={handleProgressUpdate}
                       onVideoEnd={handleVideoEnd}
                       className="rounded-none w-full h-full object-cover"
@@ -1166,23 +1183,6 @@ const MovieDetail = () => {
                 <CardContent className="p-3 sm:p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-0">
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-
-                      {movie.videos?.results?.length > 0 && (
-                        <Button
-                          onClick={() => {
-                            const url = extractTrailerUrl(movie.videos);
-                            if (url) {
-                              setTrailerUrl(url);
-                              setShowTrailer(true);
-                            }
-                          }}
-                          variant="secondary"
-                          className="h-10 sm:h-11 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all sm:text-base text-sm"
-                        >
-                          <PlayCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                          Bande-annonce
-                        </Button>
-                      )}
 
                       <DownloadActions tmdbId={movie.id} title={movie.title} mediaType="movie" />
 
@@ -1776,35 +1776,41 @@ const MovieDetail = () => {
                     </div>
                   )}
                   {/* Boutons Watch / Download / Trailer */}
-                  <div className="flex flex-wrap gap-4 pt-4 items-center">
+                  <div className="flex flex-wrap gap-3 pt-4 items-center">
                     <Button
-                      size="lg"
-                      className="gap-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_40px_rgba(147,51,234,0.6)] min-h-[56px] px-10 rounded-full font-bold text-lg transition-all scale-100 hover:scale-105 border border-white/10"
+                      size="default"
+                      className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.5)] h-11 px-6 pl-5 rounded-full font-bold text-sm transition-all scale-100 hover:scale-105 border border-white/10"
                       onClick={handleWatchQuick}
                       disabled={findingSource}
                     >
-                      <Play className="w-5 h-5 fill-white" />
-                      {findingSource ? 'Recherche...' : 'Regarder'}
+                      <Play className="w-4 h-4 fill-white" />
+                      {findingSource ? getUIString('searching') : getUIString('watch')}
                     </Button>
 
                     <Button
-                      size="lg"
+                      size="default"
                       variant="outline"
-                      onClick={() => setTrailerOpen(true)}
-                      className="gap-2.5 border-white/20 text-white hover:bg-white/10 hover:border-white/40 min-h-[56px] px-8 rounded-full backdrop-blur-md transition-all text-base font-semibold"
+                      onClick={() => {
+                        if (trailer?.key) {
+                          setTrailerOpen(true);
+                        } else {
+                          toast.error(getUIString('noTrailer'));
+                        }
+                      }}
+                      className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
                     >
-                      <Film className="w-5 h-5" />
-                      Bande-annonce
+                      <Film className="w-4 h-4" />
+                      {getUIString('trailer')}
                     </Button>
 
                     <Button
-                      size="lg"
+                      size="default"
                       variant="outline"
-                      onClick={openSourcesModal}
-                      className="gap-2.5 border-white/20 text-white hover:bg-white/10 hover:border-white/40 min-h-[56px] px-8 rounded-full backdrop-blur-md transition-all text-base font-semibold"
+                      onClick={() => toast.info(getUIString('downloadMsg'))}
+                      className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
                     >
-                      <Download className="w-5 h-5" />
-                      Télécharger
+                      <Download className="w-4 h-4" />
+                      {getUIString('download')}
                     </Button>
                     {movie && (
                       <ImportedSourceSelector
@@ -1812,7 +1818,7 @@ const MovieDetail = () => {
                         onSelect={handleImportedSourceSelect}
                         currentSource={currentImportedSource}
                         loading={sourcesLoading}
-                        className="min-h-[56px] rounded-full border-white/20 bg-white/5 hover:bg-white/10"
+                        className="h-11 rounded-full border-white/20 bg-white/5 hover:bg-white/10"
                       />
                     )}
                   </div>

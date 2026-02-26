@@ -353,8 +353,8 @@ export const ReviewsSection = ({
                         </AvatarFallback>
                       </Avatar>
                       {review.badge && (
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1a1a1a] flex items-center justify-center">
-                          <span className="sr-only">{review.badge}</span>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#1a1a1a] flex items-center justify-center title={typeof review.badge === 'string' ? review.badge : 'Badge'}">
+                          <span className="sr-only">{typeof review.badge === 'string' ? review.badge : (review.badge as any)?.name || 'Badge'}</span>
                         </div>
                       )}
                     </div>

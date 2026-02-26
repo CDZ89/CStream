@@ -9,6 +9,7 @@ const STATUS_COLORS: Record<UserPresenceStatus, { bg: string; ring: string }> = 
   offline: { bg: 'bg-gray-400', ring: 'ring-gray-400' },
   watching: { bg: 'bg-purple-500', ring: 'ring-purple-500' },
   typing: { bg: 'bg-blue-500', ring: 'ring-blue-500' },
+  streaming: { bg: 'bg-indigo-500', ring: 'ring-indigo-500' },
 };
 
 export const PresenceBadge: React.FC<{ userId: string; size?: 'sm' | 'md' | 'lg' }> = ({ userId, size = 'md' }) => {

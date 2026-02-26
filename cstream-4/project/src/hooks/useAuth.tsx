@@ -6,7 +6,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { updateLoginStreak } from './useStreak';
 
-export type UserRole = 'creator' | 'super_admin' | 'admin' | 'moderator' | 'editor' | 'member';
+export type UserRole = 'creator' | 'reine' | 'super_admin' | 'admin' | 'moderator' | 'editor' | 'member';
 
 interface UserProfile {
   id: string;

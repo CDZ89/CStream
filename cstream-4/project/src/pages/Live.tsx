@@ -143,7 +143,16 @@ export default function LivePage() {
           title: m.title,
           category: m.sport || 'Sport',
           date: m.date ? new Date(m.date).getTime() : Date.now(),
-          teams: { home: { name: m.teams?.home || 'Home', badge: null }, away: { name: m.teams?.away || 'Away', badge: null } },
+          teams: {
+            home: {
+              name: typeof m.teams?.home === 'string' ? m.teams.home : (m.teams?.home?.name || 'Home'),
+              badge: m.teams?.home?.badge || null
+            },
+            away: {
+              name: typeof m.teams?.away === 'string' ? m.teams.away : (m.teams?.away?.name || 'Away'),
+              badge: m.teams?.away?.badge || null
+            }
+          },
           poster: m.poster || null,
           popular: false,
           sources: m.sources || [],

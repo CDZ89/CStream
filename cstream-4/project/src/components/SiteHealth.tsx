@@ -7,13 +7,13 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Database, 
-  CheckCircle2, 
-  AlertCircle, 
-  RefreshCw, 
-  Tv, 
-  Film, 
+import {
+  Database,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  Tv,
+  Film,
   Star,
   ChevronDown,
   ChevronRight,
@@ -121,7 +121,7 @@ const findDuplicates = (readers: Reader[]): Map<string, Reader[]> => {
     existing.push(reader);
     grouped.set(key, existing);
   });
-  
+
   const duplicates = new Map<string, Reader[]>();
   grouped.forEach((readers, key) => {
     if (readers.length > 1) {
@@ -245,7 +245,7 @@ const SiteHealth = memo(() => {
         season_number: r.season_number,
         created_at: r.created_at
       }));
-      
+
       setReaders(readerList);
 
       const enabledReaders = readerList.filter(r => r.enabled);
@@ -434,7 +434,7 @@ const SiteHealth = memo(() => {
           status: 'warning',
           message: `${duplicateCount} entrée(s) en double détectée(s)`
         });
-        
+
         duplicateGroups.forEach((group, key) => {
           newProblems.push({
             id: `duplicate-${key}`,
@@ -457,11 +457,11 @@ const SiteHealth = memo(() => {
         });
       }
 
-      const tvWithSeasons = readerList.filter(r => 
-        (r.media_type === 'tv' || r.media_type === 'series' || r.media_type === 'anime') && 
+      const tvWithSeasons = readerList.filter(r =>
+        (r.media_type === 'tv' || r.media_type === 'series' || r.media_type === 'anime') &&
         r.tmdb_id !== null
       );
-      
+
       const groupedByShow = new Map<number, Reader[]>();
       tvWithSeasons.forEach(r => {
         if (r.tmdb_id) {
@@ -481,12 +481,12 @@ const SiteHealth = memo(() => {
             seasons.set(r.season_number, eps);
           }
         });
-        
+
         seasons.forEach((episodes, season) => {
           const episodeArray = Array.from(episodes).sort((a, b) => a - b);
           if (episodeArray.length > 1) {
             for (let i = 1; i < episodeArray.length; i++) {
-              const gap = episodeArray[i] - episodeArray[i-1];
+              const gap = episodeArray[i] - episodeArray[i - 1];
               if (gap > 1) {
                 missingEpisodesCount += gap - 1;
               }
@@ -498,7 +498,7 @@ const SiteHealth = memo(() => {
       if (missingEpisodesCount > 0) {
         newDiagnostics.push({
           check: 'Épisodes Manquants',
-          status: 'info',
+          status: 'ok',
           message: `~${missingEpisodesCount} épisode(s) potentiellement manquant(s)`
         });
         newProblems.push({
@@ -523,10 +523,10 @@ const SiteHealth = memo(() => {
 
       const historyEntry: HealthHistoryEntry = {
         timestamp: new Date(),
-        overallStatus: newProblems.some(p => p.severity === 'critical') 
-          ? 'error' 
-          : newProblems.some(p => p.severity === 'warning') 
-            ? 'warning' 
+        overallStatus: newProblems.some(p => p.severity === 'critical')
+          ? 'error'
+          : newProblems.some(p => p.severity === 'warning')
+            ? 'warning'
             : 'ok',
         problemCount: newProblems.length,
         criticalCount: newProblems.filter(p => p.severity === 'critical').length,
@@ -594,7 +594,7 @@ const SiteHealth = memo(() => {
 
   const handleBatchFix = async (type: 'enable' | 'disable' | 'delete') => {
     if (selectedProblems.size === 0) return;
-    
+
     setFixing(true);
     try {
       const selectedProblemsList = problems.filter(p => selectedProblems.has(p.id));
@@ -629,7 +629,7 @@ const SiteHealth = memo(() => {
 
   const handleQuickFix = async (problem: Problem) => {
     if (!problem.fixAction) return;
-    
+
     setFixing(true);
     try {
       if (problem.fixAction.type === 'enable') {
@@ -661,10 +661,10 @@ const SiteHealth = memo(() => {
     const report = {
       exportDate: new Date().toISOString(),
       lastCheck: lastCheck?.toISOString(),
-      overallStatus: problems.some(p => p.severity === 'critical') 
-        ? 'critical' 
-        : problems.some(p => p.severity === 'warning') 
-          ? 'warning' 
+      overallStatus: problems.some(p => p.severity === 'critical')
+        ? 'critical'
+        : problems.some(p => p.severity === 'warning')
+          ? 'warning'
           : 'healthy',
       stats,
       diagnostics,
@@ -714,15 +714,15 @@ const SiteHealth = memo(() => {
 
   const get24hSummary = () => {
     const now = new Date();
-    const last24h = healthHistory.filter(h => 
+    const last24h = healthHistory.filter(h =>
       now.getTime() - h.timestamp.getTime() < 24 * 60 * 60 * 1000
     );
-    
+
     if (last24h.length < 2) return null;
 
     const first = last24h[last24h.length - 1];
     const last = last24h[0];
-    
+
     const problemTrend = last.problemCount - first.problemCount;
     const criticalTrend = last.criticalCount - first.criticalCount;
 
@@ -731,18 +731,18 @@ const SiteHealth = memo(() => {
       avgProblems: Math.round(last24h.reduce((a, b) => a + b.problemCount, 0) / last24h.length),
       problemTrend,
       criticalTrend,
-      worstStatus: last24h.some(h => h.overallStatus === 'error') 
-        ? 'error' 
-        : last24h.some(h => h.overallStatus === 'warning') 
-          ? 'warning' 
+      worstStatus: last24h.some(h => h.overallStatus === 'error')
+        ? 'error'
+        : last24h.some(h => h.overallStatus === 'warning')
+          ? 'warning'
           : 'ok'
     };
   };
 
-  const overallStatus = problems.some(p => p.severity === 'critical') 
-    ? 'error' 
-    : problems.some(p => p.severity === 'warning') 
-      ? 'warning' 
+  const overallStatus = problems.some(p => p.severity === 'critical')
+    ? 'error'
+    : problems.some(p => p.severity === 'warning')
+      ? 'warning'
       : 'ok';
 
   const criticalCount = problems.filter(p => p.severity === 'critical').length;
@@ -776,7 +776,7 @@ const SiteHealth = memo(() => {
                 {overallStatus === 'ok' ? 'Sain' : overallStatus === 'warning' ? 'Attention' : 'Critique'}
               </span>
             </Badge>
-            
+
             <div className="flex items-center gap-2 text-sm">
               <Switch
                 checked={autoMonitoring}
@@ -788,9 +788,9 @@ const SiteHealth = memo(() => {
               </label>
             </div>
 
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => runHealthCheck()}
               disabled={refreshing}
             >
@@ -808,7 +808,7 @@ const SiteHealth = memo(() => {
             </Button>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-3">
             {lastCheck && (
@@ -900,7 +900,7 @@ const SiteHealth = memo(() => {
                     <p className="text-xs text-muted-foreground">Tendance</p>
                   </div>
                   <div className="text-center">
-                    <Badge className={getStatusColor(summary24h.worstStatus)}>
+                    <Badge className={getStatusColor(summary24h.worstStatus as "ok" | "warning" | "error")}>
                       {summary24h.worstStatus === 'ok' ? 'Stable' : summary24h.worstStatus === 'warning' ? 'Attention' : 'Critique'}
                     </Badge>
                     <p className="text-xs text-muted-foreground mt-1">Pire état</p>
@@ -911,8 +911,8 @@ const SiteHealth = memo(() => {
 
             <div className="space-y-2">
               {diagnostics.map((d, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className={`flex items-center gap-2 p-2 rounded-md border ${getStatusColor(d.status)}`}
                 >
                   {getStatusIcon(d.status)}
@@ -1051,7 +1051,7 @@ const SiteHealth = memo(() => {
                     {['critical', 'warning', 'info'].map(severity => {
                       const severityProblems = problems.filter(p => p.severity === severity);
                       if (severityProblems.length === 0) return null;
-                      
+
                       return (
                         <div key={severity} className="space-y-2">
                           <h4 className="text-sm font-medium flex items-center gap-2">
@@ -1061,9 +1061,9 @@ const SiteHealth = memo(() => {
                               {severityProblems.length}
                             </Badge>
                           </h4>
-                          
+
                           {severityProblems.map(problem => (
-                            <div 
+                            <div
                               key={problem.id}
                               className={`p-3 rounded-lg border ${getSeverityColor(problem.severity)} flex items-start gap-3`}
                             >
@@ -1128,8 +1128,8 @@ const SiteHealth = memo(() => {
                       <span>Sources actives</span>
                       <span className="font-medium">{stats.enabledReaders}/{stats.totalReaders}</span>
                     </div>
-                    <Progress 
-                      value={stats.totalReaders > 0 ? (stats.enabledReaders / stats.totalReaders) * 100 : 0} 
+                    <Progress
+                      value={stats.totalReaders > 0 ? (stats.enabledReaders / stats.totalReaders) * 100 : 0}
                       className="h-2"
                     />
                   </div>
@@ -1138,8 +1138,8 @@ const SiteHealth = memo(() => {
                       <span>Liaison TMDB</span>
                       <span className="font-medium">{stats.readersWithTmdb}/{stats.totalReaders}</span>
                     </div>
-                    <Progress 
-                      value={stats.totalReaders > 0 ? (stats.readersWithTmdb / stats.totalReaders) * 100 : 0} 
+                    <Progress
+                      value={stats.totalReaders > 0 ? (stats.readersWithTmdb / stats.totalReaders) * 100 : 0}
                       className="h-2"
                     />
                   </div>
@@ -1193,8 +1193,8 @@ const SiteHealth = memo(() => {
                         .map(([lang, count]) => (
                           <div key={lang} className="flex items-center gap-2">
                             <span className="w-12 text-xs font-medium">{lang.toUpperCase()}</span>
-                            <Progress 
-                              value={(count / stats.totalReaders) * 100} 
+                            <Progress
+                              value={(count / stats.totalReaders) * 100}
                               className="flex-1 h-2"
                             />
                             <span className="w-8 text-xs text-right">{count}</span>
@@ -1239,7 +1239,7 @@ const SiteHealth = memo(() => {
             ) : (
               <div className="space-y-2 max-h-80 overflow-y-auto">
                 {healthHistory.map((entry, i) => (
-                  <div 
+                  <div
                     key={i}
                     className={`p-3 rounded-lg border ${getStatusColor(entry.overallStatus)} flex items-center gap-3`}
                   >

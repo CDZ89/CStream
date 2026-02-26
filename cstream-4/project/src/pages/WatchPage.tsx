@@ -94,6 +94,7 @@ const WatchPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { saveProgress } = useWatchHistory();
+  const { language } = useI18n();
 
   const [movie, setMovie] = useState<TMDBMovie | null>(null);
   const [loading, setLoading] = useState(true);
@@ -290,6 +291,23 @@ const WatchPage = () => {
     );
   }
 
+  const uiStrings = {
+    fr: { fixDisplay: "RÉPARER L'AFFICHAGE", reloadPage: "ACTUALISER LA PAGE", console: "Console de Visionnage", secure: "SÉCURISÉ", noComments: "Aucun commentaire", ratings: "Évaluations", upNext: "À voir ensuite", all: "Tout", loading: "Le film se charge..." },
+    en: { fixDisplay: "FIX DISPLAY", reloadPage: "REFRESH PAGE", console: "Viewing Console", secure: "SECURE", noComments: "No comments", ratings: "Ratings", upNext: "Up Next", all: "All", loading: "Movie is loading..." },
+    es: { fixDisplay: "REPARAR PANTALLA", reloadPage: "RECARGAR PÁGINA", console: "Consola de visualización", secure: "SEGURO", noComments: "Sin comentarios", ratings: "Calificaciones", upNext: "A continuación", all: "Todo", loading: "Cargando película..." },
+    de: { fixDisplay: "ANZEIGE REPARIEREN", reloadPage: "SEITE AKTUALISIEREN", console: "Anzeigekonsole", secure: "SICHER", noComments: "Keine Kommentare", ratings: "Bewertungen", upNext: "Als nächstes", all: "Alle", loading: "Film wird geladen..." },
+    it: { fixDisplay: "RIPARA DISPLAY", reloadPage: "AGGIORNA PAGINA", console: "Console di visualizzazione", secure: "SICURO", noComments: "Nessun commento", ratings: "Valutazioni", upNext: "Prossimamente", all: "Tutto", loading: "Caricamento film..." },
+    pt: { fixDisplay: "CORRIGIR TELA", reloadPage: "ATUALIZAR PÁGINA", console: "Console de visualização", secure: "SEGURO", noComments: "Sem comentários", ratings: "Avaliações", upNext: "A seguir", all: "Tudo", loading: "Carregando filme..." },
+    ar: { fixDisplay: "إصلاح العرض", reloadPage: "تحديث الصفحة", console: "وحدة التحكم", secure: "آمن", noComments: "لا توجد تعليقات", ratings: "التقييمات", upNext: "التالي", all: "الكل", loading: "جار تحميل الفيلم..." },
+    ko: { fixDisplay: "디스플레이 수정", reloadPage: "페이지 새로고침", console: "보기 콘솔", secure: "안전함", noComments: "댓글 없음", ratings: "평가", upNext: "다음 영상", all: "전체", loading: "영화 로딩 중..." },
+    ja: { fixDisplay: "表示を修正", reloadPage: "ページを更新", console: "コンソール", secure: "安全", noComments: "コメントなし", ratings: "評価", upNext: "次に見る", all: "すべて", loading: "映画を読み込んでいます..." },
+    ru: { fixDisplay: "ИСПРАВИТЬ ОТОБРАЖЕНИЕ", reloadPage: "ОБНОВИТЬ СТРАНИЦУ", console: "Консоль просмотра", secure: "БЕЗОПАСНО", noComments: "Нет комментариев", ratings: "Рейтинги", upNext: "Далее", all: "Все", loading: "Фильм загружается..." }
+  };
+
+  const getUIString = (key: keyof typeof uiStrings.fr) => {
+    return (uiStrings[language as keyof typeof uiStrings]?.[key]) || uiStrings.fr[key];
+  };
+
   return (
     <div className="min-h-screen bg-[#06080b] text-white selection:bg-zinc-500/30 overflow-x-hidden">
       <Navbar />
@@ -347,7 +365,7 @@ const WatchPage = () => {
                     <span className="relative inline-flex rounded-full h-2 sm:h-3 w-2 sm:w-3 bg-purple-500"></span>
                   </div>
                   <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-white/90">
-                    Console de Visionnage
+                    {getUIString('console')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -355,7 +373,7 @@ const WatchPage = () => {
                     HD 1080P
                   </Badge>
                   <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full">
-                    SÉCURISÉ
+                    {getUIString('secure')}
                   </Badge>
                 </div>
               </div>
@@ -395,7 +413,7 @@ const WatchPage = () => {
                         className="text-[10px] sm:text-xs font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 h-9 sm:h-10 px-4 rounded-xl transition-all"
                       >
                         <AlertTriangle className="w-3 h-3 mr-2 sm:w-3.5 sm:h-3.5 text-yellow-500" />
-                        RÉPARER L'AFFICHAGE
+                        {getUIString('fixDisplay')}
                       </Button>
                     </div>
 
@@ -406,7 +424,7 @@ const WatchPage = () => {
                       className="text-[10px] sm:text-xs font-bold text-white/50 hover:text-white hover:bg-white/5 h-9 sm:h-10 rounded-xl"
                     >
                       <RefreshCw className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2" />
-                      ACTUALISER LA PAGE
+                      {getUIString('reloadPage')}
                     </Button>
                   </div>
                 </div>
@@ -649,7 +667,7 @@ const WatchPage = () => {
                 ) : (
                   <div className="text-center py-12 border-2 border-dashed border-white/5 rounded-3xl">
                     <p className="text-white/20 font-bold uppercase tracking-widest text-xs">
-                      Aucun commentaire
+                      {getUIString('noComments')}
                     </p>
                   </div>
                 )}
@@ -668,7 +686,7 @@ const WatchPage = () => {
             {/* Ratings */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-5 sm:p-6 space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-widest text-white/30">
-                Évaluations
+                {getUIString('ratings')}
               </h4>
 
               <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 sm:p-5">
@@ -730,13 +748,13 @@ const WatchPage = () => {
             <div className="space-y-5">
               <div className="flex items-center justify-between px-1">
                 <h3 className="text-xs sm:text-sm font-black uppercase tracking-widest text-white/40">
-                  À voir ensuite
+                  {getUIString('upNext')}
                 </h3>
                 <Link
                   to="/movies"
                   className="text-[10px] font-black uppercase tracking-widest text-purple-500 hover:text-purple-400"
                 >
-                  Tout
+                  {getUIString('all')}
                 </Link>
               </div>
               <div className="space-y-3">
