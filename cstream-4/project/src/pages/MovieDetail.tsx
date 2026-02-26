@@ -1177,6 +1177,15 @@ const MovieDetail = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Downloads Section */}
+                <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6">
+                  <DownloadsSection
+                    mediaItem={movie}
+                    mediaType="movie"
+                    tmdbId={movie.id}
+                  />
+                </div>
               </div>
               {/* Interactions */}
               <Card>

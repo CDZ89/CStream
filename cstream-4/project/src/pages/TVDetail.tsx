@@ -1217,6 +1217,17 @@ const TVDetail = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Downloads Section */}
+                {show && (
+                  <div className="px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6">
+                    <DownloadsSection
+                      mediaItem={show}
+                      mediaType="tv"
+                      tmdbId={show.id}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-secondary/20 p-6 rounded-2xl border border-white/5 backdrop-blur-sm shadow-xl">

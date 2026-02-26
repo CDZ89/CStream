@@ -22,6 +22,32 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/image\.tmdb\.org\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'tmdb-images',
+              expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/api\.themoviedb\.org\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'tmdb-api',
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 2 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'CStream - Films & Séries en Streaming',
@@ -80,9 +106,32 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
+        // Better chunk splitting for faster initial load
+        manualChunks(id) {
+          // Core react vendor bundle - keep small
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/') || id.includes('node_modules/scheduler/')) {
+            return 'react-vendor';
+          }
+          // UI animation/icons bundle
+          if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {
+            return 'ui-vendor';
+          }
+          // Supabase client
+          if (id.includes('node_modules/@supabase/')) {
+            return 'supabase-vendor';
+          }
+          // Zustand state management
+          if (id.includes('node_modules/zustand/')) {
+            return 'state-vendor';
+          }
+          // Charts (recharts) are heavy, load separately
+          if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-')) {
+            return 'charts-vendor';
+          }
+          // Radix UI primitives
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'radix-vendor';
+          }
         },
       },
     },
@@ -91,6 +140,8 @@ export default defineConfig(({ mode }) => ({
   esbuild: {
     legalComments: 'none',
     treeShaking: true,
+    // Remove console.log in production
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
   },
   preview: {
     port: 5000,

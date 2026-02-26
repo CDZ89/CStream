@@ -12,11 +12,11 @@
   <meta name="keywords"
     content="streaming, films, séries, anime, gratuit, HD, VOSTFR, VF, regarder en ligne, nouveautés, CStream" />
   <meta name="author" content="CStream" />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="theme-color" content="#8B5CF6" />
   <meta name="color-scheme" content="dark" />
   <meta name="format-detection" content="telephone=no" />
-  <link rel="canonical" href="https://cstream.app" />
+  <link rel="canonical" href="https://cstream.fun" />
 
   <!-- Favicons -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -35,7 +35,7 @@
   <meta property="og:description"
     content="Regardez gratuitement des milliers de films, séries TV et animes en HD. Nouveautés quotidiennes, VF et VOSTFR disponibles." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://cstream.app" />
+  <meta property="og:url" content="https://cstream.fun" />
   <meta property="og:image" content="/android-chrome-512x512.png" />
   <meta property="og:image:width" content="512" />
   <meta property="og:image:height" content="512" />
@@ -50,48 +50,91 @@
   <meta name="twitter:image" content="/android-chrome-512x512.png" />
   <meta name="twitter:creator" content="@cstream" />
 
-  <!-- Preconnect for performance -->
-  <link rel="preconnect" href="https://api.themoviedb.org" />
-  <link rel="preconnect" href="https://image.tmdb.org" />
-  <link rel="dns-prefetch" href="https://api.themoviedb.org" />
-  <link rel="dns-prefetch" href="https://image.tmdb.org" />
-
-  <!-- Fonts with display=swap for faster loading -->
+  <!-- Critical Preconnect for LCP (connect early to image CDNs) -->
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin />
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap"
-    rel="stylesheet" />
+  <link rel="preconnect" href="https://xuzfdkkkklmrilcitsec.supabase.co" crossorigin />
 
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5360279662172887"
+  <!-- DNS Prefetch for secondary resources -->
+  <link rel="dns-prefetch" href="https://api.themoviedb.org" />
+  <link rel="dns-prefetch" href="https://image.tmdb.org" />
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+  <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+  <link rel="dns-prefetch" href="https://vidsrc.wtf" />
+  <link rel="dns-prefetch" href="https://player.videasy.net" />
+
+  <!-- Fonts: preload critical Inter weights then load non-blocking -->
+  <link rel="preload"
+    href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font"
+    type="font/woff2" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap"
+      rel="stylesheet" />
+  </noscript>
+
+  <!-- Google AdSense: deferred to avoid render-blocking -->
+  <script defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5360279662172887"
     crossorigin="anonymous"></script>
 
-  <!-- Structured Data -->
+  <!-- Structured Data: WebSite + VideoObject potential -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "CStream",
-      "url": "https://cstream.app",
+      "url": "https://cstream.fun",
       "description": "Plateforme de streaming pour films, séries et animes",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://cstream.app/search?q={search_term_string}",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://cstream.fun/search?q={search_term_string}"
+        },
         "query-input": "required name=search_term_string"
       }
     }
     </script>
 
+  <!-- Organization structured data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "CStream",
+      "url": "https://cstream.fun",
+      "logo": "https://cstream.fun/android-chrome-512x512.png",
+      "sameAs": []
+    }
+    </script>
+
+  <!-- Critical CSS: prevent CLS on initial load -->
   <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box
+    }
+
     body {
       margin: 0;
       background: #0a0a0f;
       color: #fff;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     #root {
       min-height: 100vh;
+    }
+
+    /* Reserve space for images to prevent CLS */
+    img {
+      max-width: 100%;
+      height: auto;
     }
 
     .initial-loader {
