@@ -12,6 +12,7 @@ interface PureIframePlayerProps {
   aspectRatio?: 'video' | 'custom';
   playerType?: 'vidking' | 'vidfast';
   allowPopup?: boolean;
+  posterPath?: string;
 }
 
 export const PureIframePlayer = ({
@@ -22,15 +23,17 @@ export const PureIframePlayer = ({
   aspectRatio = 'video',
   playerType = 'vidking',
   allowPopup = false,
+  posterPath,
 }: PureIframePlayerProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
 
   const iframeProps = useMemo(() => {
     const player = getPlayerFromUrl(src);
-    
+
     return {
       // Added sandbox to block top-navigation and popups while keeping scripts and same-origin
       sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation",
@@ -76,11 +79,11 @@ export const PureIframePlayer = ({
   // Prevent programmatic redirects and popups
   useEffect(() => {
     const originalOpen = window.open;
-    window.open = function() {
+    window.open = function () {
       console.warn('🛡️ Popup blocked for security');
       return null;
     };
-    
+
     return () => {
       window.open = originalOpen;
     };
@@ -96,7 +99,7 @@ export const PureIframePlayer = ({
 
   return (
     <div className="flex flex-col w-full">
-      <div 
+      <div
         className={cn(
           "relative w-full bg-black overflow-hidden",
           aspectRatio === 'video' ? "aspect-video" : "",
@@ -107,13 +110,43 @@ export const PureIframePlayer = ({
         )}
       >
         {/* Transparent overlay to catch clicks that might trigger redirects */}
-        <div 
-          className="absolute inset-0 z-[5] pointer-events-auto cursor-pointer" 
-          onClick={handleIframeClick}
+        <div
+          className="absolute inset-0 z-[5] pointer-events-auto cursor-pointer"
+          onClick={(e) => {
+            if (!isPlayerReady) setIsPlayerReady(true);
+            else handleIframeClick(e);
+          }}
         />
-        
+
         <AnimatePresence>
-          {isLoading && (
+          {!isPlayerReady ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-30 cursor-pointer flex items-center justify-center bg-zinc-900 group"
+              onClick={() => setIsPlayerReady(true)}
+            >
+              {posterPath ? (
+                <img
+                  src={posterPath.startsWith('http') ? posterPath : `https://image.tmdb.org/t/p/w1280${posterPath}`}
+                  alt="Video Poster"
+                  className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-40 transition-opacity"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+              <div className={cn(
+                "relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-sm",
+                playerType === 'vidfast' ? "bg-emerald-600/90 shadow-emerald-500/50" : "bg-purple-600/90 shadow-purple-500/50"
+              )}>
+                <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-white ml-1 sm:ml-2" />
+              </div>
+            </motion.div>
+          ) : null}
+
+          {isPlayerReady && isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -137,8 +170,8 @@ export const PureIframePlayer = ({
                   <motion.div
                     className={cn(
                       "w-12 h-12 rounded-full border-4 border-t-transparent border-l-transparent",
-                      playerType === 'vidfast' 
-                        ? "border-r-emerald-500 border-b-emerald-500/70" 
+                      playerType === 'vidfast'
+                        ? "border-r-emerald-500 border-b-emerald-500/70"
                         : "border-r-purple-500 border-b-purple-500/70"
                     )}
                     animate={{ rotate: 360 }}
@@ -181,8 +214,8 @@ export const PureIframePlayer = ({
                 <motion.div
                   className={cn(
                     "h-full rounded-full",
-                    playerType === 'vidfast' 
-                      ? "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600" 
+                    playerType === 'vidfast'
+                      ? "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600"
                       : "bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600"
                   )}
                   initial={{ width: "0%" }}
@@ -215,8 +248,8 @@ export const PureIframePlayer = ({
                   onClick={handleRetry}
                   className={cn(
                     "px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-all",
-                    playerType === 'vidfast' 
-                      ? "bg-emerald-500 hover:bg-emerald-400 text-white" 
+                    playerType === 'vidfast'
+                      ? "bg-emerald-500 hover:bg-emerald-400 text-white"
                       : "bg-purple-500 hover:bg-purple-400 text-white"
                   )}
                 >
@@ -235,19 +268,21 @@ export const PureIframePlayer = ({
           </div>
         )}
 
-        <iframe
-          ref={iframeRef}
-          key={`${src}-${retryCount}`}
-          src={src}
-          className="w-full h-full border-0 relative z-[1]"
-          allowFullScreen
-          sandbox={iframeProps.sandbox}
-          allow={iframeProps.allow}
-          referrerPolicy={iframeProps.referrerPolicy}
-          loading={iframeProps.loading}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
+        {isPlayerReady && (
+          <iframe
+            ref={iframeRef}
+            key={`${src}-${retryCount}`}
+            src={src}
+            className="w-full h-full border-0 relative z-[1]"
+            allowFullScreen
+            sandbox={iframeProps.sandbox}
+            allow={iframeProps.allow}
+            referrerPolicy={iframeProps.referrerPolicy}
+            loading={iframeProps.loading}
+            onLoad={handleLoad}
+            onError={handleError}
+          />
+        )}
       </div>
     </div>
   );

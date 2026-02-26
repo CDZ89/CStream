@@ -18,12 +18,12 @@ export default function Radio() {
   );
   const [activeTab, setActiveTab] = useState<'all' | 'radio' | 'music' | 'favs'>('all');
   const [chatOpen, setChatOpen] = useState(false);
-  const [localSongs, setLocalSongs] = useState<{title: string, url: string, logo?: string, language?: string, isPublic?: boolean, type?: string, genre?: string, owner?: string, playlist?: string}[]>(() => 
+  const [localSongs, setLocalSongs] = useState<{ title: string, url: string, logo?: string, language?: string, isPublic?: boolean, type?: string, genre?: string, owner?: string, playlist?: string }[]>(() =>
     JSON.parse(localStorage.getItem('radio.local') || '[]')
   );
   const [importOverlayOpen, setImportOverlayOpen] = useState(false);
   const [importData, setImportData] = useState({ title: '', url: '', logo: '', type: 'mp3', language: 'FR', isPublic: true, playlistName: '' });
-  const [chatMessages, setChatMessages] = useState<{text: string, me: boolean, username?: string, avatar?: string, badge?: string, timestamp: number}[]>(() => {
+  const [chatMessages, setChatMessages] = useState<{ text: string, me: boolean, username?: string, avatar?: string, badge?: string, timestamp: number }[]>(() => {
     try {
       return JSON.parse(localStorage.getItem('radio.chat') || '[]');
     } catch {
@@ -32,7 +32,7 @@ export default function Radio() {
   });
   const [chatInput, setChatInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [editingSong, setEditingSong] = useState<{idx: number, title: string, logo?: string, isPublic: boolean} | null>(null);
+  const [editingSong, setEditingSong] = useState<{ idx: number, title: string, logo?: string, isPublic: boolean } | null>(null);
   const [importPreview, setImportPreview] = useState<any[]>([]);
   const [isImporting, setIsImporting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -63,12 +63,12 @@ export default function Radio() {
       if (e.key === 'radio.chat') {
         try {
           setChatMessages(JSON.parse(e.newValue || '[]'));
-        } catch {}
+        } catch { }
       }
       if (e.key === 'radio.local') {
         try {
           setLocalSongs(JSON.parse(e.newValue || '[]'));
-        } catch {}
+        } catch { }
       }
       if (e.key === 'radio.overlay') {
         // Force refresh state for overlay if needed
@@ -80,9 +80,9 @@ export default function Radio() {
 
   const handleImport = () => {
     const username = getUsername();
-    const newSong = { 
-      title: importData.title || 'Imported ' + importData.type, 
-      url: importData.url, 
+    const newSong = {
+      title: importData.title || 'Imported ' + importData.type,
+      url: importData.url,
       logo: importData.logo || undefined,
       language: importData.language,
       isPublic: importData.isPublic,
@@ -96,7 +96,7 @@ export default function Radio() {
     localStorage.setItem('radio.local', JSON.stringify(updated));
     setImportOverlayOpen(false);
     setImportData({ title: '', url: '', logo: '', type: 'mp3', language: 'FR', isPublic: true, playlistName: '' });
-    
+
     play(newSong.url, newSong.title, newSong.logo);
     localStorage.setItem('radio.overlay', '1');
     window.dispatchEvent(new Event('storage'));
@@ -111,9 +111,9 @@ export default function Radio() {
       setUploadProgress(20);
       const reader = new FileReader();
       reader.onload = (event) => {
-        setImportData(prev => ({ 
-          ...prev, 
-          url: event.target?.result as string, 
+        setImportData(prev => ({
+          ...prev,
+          url: event.target?.result as string,
           title: file.name.replace(/\.[^/.]+$/, ""),
         }));
         setUploadProgress(100);
@@ -242,13 +242,13 @@ export default function Radio() {
     const updated = [...localSongs, ...importPreview];
     setLocalSongs(updated);
     localStorage.setItem('radio.local', JSON.stringify(updated));
-    
+
     // Auto-play first song and show overlay
     const first = importPreview[0];
     play(first.url, first.title, first.logo);
     localStorage.setItem('radio.overlay', '1');
     window.dispatchEvent(new Event('storage'));
-    
+
     setImportPreview([]);
     setImportOverlayOpen(false);
   };
@@ -372,8 +372,8 @@ export default function Radio() {
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             <div className="relative group">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600 group-focus-within:text-primary transition-colors" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Rechercher..."
@@ -416,7 +416,7 @@ export default function Radio() {
                 } : undefined}
                 onEdit={localSongs.some(s => s.url === item.url && s.owner === getUsername()) ? () => {
                   const s = localSongs.find(s => s.url === item.url);
-                  setEditingSong({idx: localSongs.findIndex(s => s.url === item.url), title: s!.title, logo: s!.logo, isPublic: s!.isPublic ?? true});
+                  setEditingSong({ idx: localSongs.findIndex(s => s.url === item.url), title: s!.title, logo: s!.logo, isPublic: s!.isPublic ?? true });
                 } : undefined}
                 onShare={() => {
                   const domain = window.location.origin;
@@ -439,15 +439,15 @@ export default function Radio() {
               <div className="space-y-5">
                 <div>
                   <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-widest">Titre</label>
-                  <input type="text" value={editingSong.title} onChange={e => setEditingSong({...editingSong, title: e.target.value})} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold" />
+                  <input type="text" value={editingSong.title} onChange={e => setEditingSong({ ...editingSong, title: e.target.value })} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold" />
                 </div>
                 <div>
                   <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-widest">Visibilité</label>
                   <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => setEditingSong({...editingSong, isPublic: true})} className={`py-3 rounded-xl text-[9px] font-black border transition-all flex items-center justify-center gap-2 uppercase tracking-widest ${editingSong.isPublic ? 'bg-white text-black border-white' : 'bg-black/40 border-white/10 text-zinc-500'}`}>
+                    <button onClick={() => setEditingSong({ ...editingSong, isPublic: true })} className={`py-3 rounded-xl text-[9px] font-black border transition-all flex items-center justify-center gap-2 uppercase tracking-widest ${editingSong.isPublic ? 'bg-white text-black border-white' : 'bg-black/40 border-white/10 text-zinc-500'}`}>
                       <Globe className="w-3 h-3" /> PUBLIC
                     </button>
-                    <button onClick={() => setEditingSong({...editingSong, isPublic: false})} className={`py-3 rounded-xl text-[9px] font-black border transition-all flex items-center justify-center gap-2 uppercase tracking-widest ${!editingSong.isPublic ? 'bg-white text-black border-white' : 'bg-black/40 border-white/10 text-zinc-500'}`}>
+                    <button onClick={() => setEditingSong({ ...editingSong, isPublic: false })} className={`py-3 rounded-xl text-[9px] font-black border transition-all flex items-center justify-center gap-2 uppercase tracking-widest ${!editingSong.isPublic ? 'bg-white text-black border-white' : 'bg-black/40 border-white/10 text-zinc-500'}`}>
                       <Lock className="w-3 h-3" /> PRIVÉ
                     </button>
                   </div>
@@ -473,19 +473,19 @@ export default function Radio() {
               <div className="space-y-6">
                 <div className="flex p-1 bg-black/40 rounded-xl border border-white/10">
                   {['mp3', 'link', 'playlist'].map(t => (
-                    <button key={t} onClick={() => setImportData(d => ({...d, type: t}))} className={`flex-1 py-2.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-widest ${importData.type === t ? 'bg-primary text-white' : 'text-zinc-500 hover:text-white'}`}>{t === 'playlist' ? 'Dossier' : t}</button>
+                    <button key={t} onClick={() => setImportData(d => ({ ...d, type: t }))} className={`flex-1 py-2.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-widest ${importData.type === t ? 'bg-primary text-white' : 'text-zinc-500 hover:text-white'}`}>{t === 'playlist' ? 'Dossier' : t}</button>
                   ))}
                 </div>
-                
+
                 <div className="space-y-4">
                   {isImporting ? (
                     <div className="bg-black/40 border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center gap-4">
                       <div className="relative w-16 h-16">
                         <div className="absolute inset-0 border-4 border-white/10 rounded-full" />
-                        <motion.div 
-                          className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent" 
-                          animate={{ rotate: 360 }} 
-                          transition={{ repeat: Infinity, duration: 1, ease: "linear" }} 
+                        <motion.div
+                          className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent"
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                         />
                         <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black tabular-nums">
                           {Math.round(uploadProgress)}%
@@ -501,7 +501,7 @@ export default function Radio() {
                       </div>
                       {importPreview.map((s, i) => (
                         <div key={i} className="flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/5">
-                          <img src={s.logo || 'https://placehold.co/40x40/09090B/ffffff?text=♫'} className="w-8 h-8 rounded-lg object-cover" alt="" />
+                          <img src={s.logo || 'https://placehold.co/40x40/09090B/ffffff?text=♫'} className="w-8 h-8 rounded-lg object-cover" alt={s.title || "Logo du morceau"} />
                           <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-bold truncate uppercase">{s.title}</p>
                             <p className="text-[8px] text-zinc-500 uppercase font-black">{s.playlist}</p>
@@ -514,11 +514,11 @@ export default function Radio() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-widest">Titre / Album</label>
-                          <input type="text" value={importData.title} onChange={e => setImportData(d => ({...d, title: e.target.value, playlistName: e.target.value}))} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold" placeholder="Nom..." />
+                          <input type="text" value={importData.title} onChange={e => setImportData(d => ({ ...d, title: e.target.value, playlistName: e.target.value }))} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold" placeholder="Nom..." />
                         </div>
                         <div>
                           <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-widest">Langue</label>
-                          <select value={importData.language} onChange={e => setImportData(d => ({...d, language: e.target.value}))} className="w-full h-[46px] bg-black/40 border border-white/10 rounded-xl px-4 text-[9px] font-black focus:border-primary outline-none appearance-none tracking-widest">
+                          <select value={importData.language} onChange={e => setImportData(d => ({ ...d, language: e.target.value }))} className="w-full h-[46px] bg-black/40 border border-white/10 rounded-xl px-4 text-[9px] font-black focus:border-primary outline-none appearance-none tracking-widest">
                             {['FR', 'EN', 'ES', 'DE', 'JP', 'KR'].map(l => <option key={l} value={l} className="bg-zinc-900">{l}</option>)}
                           </select>
                         </div>
@@ -527,12 +527,12 @@ export default function Radio() {
                       <div>
                         <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-widest">Lien Image Album (Optionnel)</label>
                         <div className="flex gap-2">
-                          <input 
-                            type="text" 
-                            value={importData.logo} 
-                            onChange={e => setImportData(d => ({...d, logo: e.target.value}))} 
-                            className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold" 
-                            placeholder="https://..." 
+                          <input
+                            type="text"
+                            value={importData.logo}
+                            onChange={e => setImportData(d => ({ ...d, logo: e.target.value }))}
+                            className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-xs focus:border-primary outline-none transition-all font-bold"
+                            placeholder="https://..."
                           />
                           <label className="px-4 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center cursor-pointer hover:bg-white/10 transition-all">
                             <ImageIcon className="w-4 h-4 text-zinc-400" />
@@ -540,7 +540,7 @@ export default function Radio() {
                               const file = e.target.files?.[0];
                               if (file) {
                                 const reader = new FileReader();
-                                reader.onload = (ev) => setImportData(d => ({...d, logo: ev.target?.result as string}));
+                                reader.onload = (ev) => setImportData(d => ({ ...d, logo: ev.target?.result as string }));
                                 reader.readAsDataURL(file);
                               }
                             }} />
@@ -571,11 +571,11 @@ export default function Radio() {
                           <label className="h-24 bg-black/40 border-2 border-dashed border-white/10 rounded-[24px] flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-all group">
                             <Folder className="w-6 h-6 text-zinc-700 group-hover:text-emerald-400 mb-2" />
                             <span className="text-[9px] font-black text-zinc-500 group-hover:text-white tracking-widest uppercase">Dossier</span>
-                            <input type="file" 
-                              {...({ webkitdirectory: "", directory: "" } as any)} 
-                              multiple 
-                              onChange={handleFolderUpload} 
-                              className="hidden" 
+                            <input type="file"
+                              {...({ webkitdirectory: "", directory: "" } as any)}
+                              multiple
+                              onChange={handleFolderUpload}
+                              className="hidden"
                             />
                           </label>
                           <label className="h-24 bg-black/40 border-2 border-dashed border-white/10 rounded-[24px] flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-all group">
@@ -585,7 +585,7 @@ export default function Radio() {
                           </label>
                         </div>
                       ) : (
-                        <input type="text" value={importData.url} onChange={e => setImportData(d => ({...d, url: e.target.value}))} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-xs focus:border-primary outline-none transition-all font-bold" placeholder="URL..." />
+                        <input type="text" value={importData.url} onChange={e => setImportData(d => ({ ...d, url: e.target.value }))} className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-xs focus:border-primary outline-none transition-all font-bold" placeholder="URL..." />
                       )}
                     </>
                   )}
@@ -595,9 +595,9 @@ export default function Radio() {
                   {importPreview.length > 0 && (
                     <button onClick={() => setImportPreview([])} className="flex-1 py-4 bg-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-700 transition-all">Retour</button>
                   )}
-                  <button 
-                    onClick={importPreview.length > 0 ? confirmImport : handleImport} 
-                    disabled={(!importData.url && importPreview.length === 0) || isImporting} 
+                  <button
+                    onClick={importPreview.length > 0 ? confirmImport : handleImport}
+                    disabled={(!importData.url && importPreview.length === 0) || isImporting}
                     className="flex-[2] py-4 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-primary/40 disabled:opacity-50 hover:scale-[1.02] transition-all active:scale-95"
                   >
                     {isImporting ? 'Traitement...' : importPreview.length > 0 ? 'Confirmer l\'import' : 'Importer'}
@@ -650,17 +650,17 @@ export default function Radio() {
 
 function StationCard({ station, isPlaying, isFavorite, onPlay, onPause, onToggleFav, onDelete, onEdit, onShare }: any) {
   return (
-    <motion.div 
+    <motion.div
       layout
       whileHover={{ y: -8 }}
       className="group"
     >
       <div className="bg-zinc-950/90 backdrop-blur-[40px] border border-white/10 rounded-[32px] p-3 md:p-4 shadow-2xl relative overflow-hidden group">
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-        
+
         <div className="relative aspect-square rounded-2xl overflow-hidden mb-4 shadow-xl border border-white/5 bg-zinc-900 flex items-center justify-center p-2">
           {station.logo ? (
-            <img src={station.logo} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" alt="" />
+            <img src={station.logo} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110" alt={station.title || "Logo de la station"} />
           ) : (
             <div className={`w-full h-full bg-gradient-to-br ${station.color || 'from-zinc-800 to-zinc-900'} flex items-center justify-center rounded-xl`}>
               <Music2 className="w-8 h-8 text-white/20" />
@@ -715,7 +715,7 @@ function RadioOverlay() {
 
   const toggleFav = () => {
     const favs = JSON.parse(localStorage.getItem('radio.favs') || '[]');
-    const next = isFavorite 
+    const next = isFavorite
       ? favs.filter((u: string) => u !== state.url)
       : [...favs, state.url];
     localStorage.setItem('radio.favs', JSON.stringify(next));
@@ -757,12 +757,12 @@ function RadioOverlay() {
         >
           <div ref={containerRef} className="relative rounded-[32px] p-5 bg-zinc-950/90 backdrop-blur-3xl border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.8)] overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-            
+
             <div className="relative z-10 flex flex-col gap-5">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center border border-white/5 overflow-hidden shadow-xl">
                   {state.logo ? (
-                    <img src={state.logo} className="w-full h-full object-cover" alt="" />
+                    <img src={state.logo} className="w-full h-full object-cover" alt={state.title || "Pochette de l'album"} />
                   ) : (
                     <div className="w-3 h-3 rounded-full bg-primary animate-pulse shadow-[0_0_12px_rgba(var(--primary),0.5)]" />
                   )}
@@ -787,7 +787,7 @@ function RadioOverlay() {
                     const percent = (e.clientX - rect.left) / rect.width;
                     seek(percent * state.duration);
                   }}>
-                    <motion.div 
+                    <motion.div
                       className="absolute inset-y-0 left-0 bg-primary shadow-[0_0_12px_rgba(var(--primary),0.5)]"
                       style={{ width: `${(state.currentTime / state.duration) * 100}%` }}
                     />

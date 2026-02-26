@@ -42,13 +42,18 @@ export const cachedQuery = async <T>(
     return { data: cached.data as T, error: null };
   }
 
-  const result = await queryFn();
+  try {
+    const result = await queryFn();
 
-  if (!result.error && result.data) {
-    queryCache.set(key, { data: result.data, timestamp: now, ttl: ttlMs });
+    if (!result.error && result.data) {
+      queryCache.set(key, { data: result.data, timestamp: now, ttl: ttlMs });
+    }
+
+    return result;
+  } catch (err: any) {
+    console.warn(`[Supabase] Cached query failed for ${key}:`, err);
+    return { data: null, error: err };
   }
-
-  return result;
 };
 
 export const invalidateCache = (keyPattern?: string) => {
@@ -103,16 +108,21 @@ export const withRetry = async <T>(
   retries: number = MAX_RETRIES
 ): Promise<{ data: T | null; error: any }> => {
   for (let i = 0; i < retries; i++) {
-    const result = await operation();
+    try {
+      const result = await operation();
 
-    if (!result.error) {
-      connectionRetries = 0;
-      return result;
-    }
+      if (!result.error) {
+        connectionRetries = 0;
+        return result;
+      }
 
-    if (result.error.code === 'PGRST301' || result.error.message?.includes('JWT')) {
-      await supabase.auth.refreshSession();
-      continue;
+      if (result.error?.code === 'PGRST301' || result.error?.message?.includes('JWT')) {
+        await supabase.auth.refreshSession();
+        continue;
+      }
+    } catch (err: any) {
+      console.warn(`[Supabase] Retry attempt ${i + 1} failed:`, err);
+      if (i === retries - 1) return { data: null, error: err };
     }
 
     if (i < retries - 1) {
@@ -120,8 +130,12 @@ export const withRetry = async <T>(
     }
   }
 
-  const result = await operation();
-  return result;
+  try {
+    const result = await operation();
+    return result;
+  } catch (err: any) {
+    return { data: null, error: err };
+  }
 };
 
 export const getConnectionStatus = () => {

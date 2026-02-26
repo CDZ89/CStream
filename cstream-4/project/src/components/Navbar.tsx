@@ -196,11 +196,11 @@ export const Navbar = () => {
     const baseClasses = "py-1.5 px-3 md:px-6 transition-all duration-500";
     const bgClass =
       mode === "dark"
-        ? "bg-[#0a0b14]/30 backdrop-blur-md"
+        ? "bg-[#0a0b14]/40 backdrop-blur-2xl saturate-[1.5] brightness-110"
         : isNavbarAttached
-          ? "bg-gradient-to-r from-gray-50/40 via-blue-50/40 to-gray-50/40 border-blue-300/20"
-          : "bg-gradient-to-r from-white/40 via-blue-50/30 to-white/40 backdrop-blur-md border-blue-300/15";
-    const shadowClass = "shadow-none";
+          ? "bg-gradient-to-r from-gray-50/60 via-blue-50/60 to-gray-50/60 backdrop-blur-xl border-blue-300/30"
+          : "bg-gradient-to-r from-white/50 via-blue-50/40 to-white/50 backdrop-blur-2xl saturate-150 border-blue-300/20";
+    const shadowClass = mode === "dark" ? "shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-primary/10 border-white/10 hover:border-white/20" : "shadow-xl shadow-blue-500/5 hover:border-blue-400/30";
     return `${baseClasses} ${bgClass} border ${shadowClass}`;
   }, [isNavbarAttached, mode]);
 
@@ -219,7 +219,7 @@ export const Navbar = () => {
         {(
           <motion.header
             {...animations.header}
-            className="fixed z-50 transition-all duration-500 ease-in-out"
+            className="fixed z-[60] transition-all duration-500 ease-in-out"
             exit={{ y: -100, opacity: 0 }}
             style={{
               top: isNavbarAttached ? "0" : "12px",
@@ -464,7 +464,7 @@ export const Navbar = () => {
                           {(isAdmin || isCreator || user?.email === 'chemsdine.kachid@gmail.com' || user?.email === 'laylamayacoub@gmail.com') && (
                             <>
                               <DropdownMenuSeparator className="my-2 bg-border/30" />
-                              {(isAdmin || user?.email === 'laylamayacoub@gmail.com') && (
+                              {(isAdmin || isCreator || user?.email === 'chemsdine.kachid@gmail.com' || user?.email === 'laylamayacoub@gmail.com') && (
                                 <DropdownMenuItem onClick={() => navigate("/admin")} className="rounded-lg cursor-pointer text-muted-foreground hover:text-foreground">
                                   <Shield className="w-4 h-4 mr-2" />
                                   {t("nav.admin")}
@@ -522,7 +522,6 @@ export const Navbar = () => {
                       {user && <RoleBadge role={role} size="sm" />}
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={closeMobileMenu} className="rounded-full bg-white/5 hover:bg-white/10"><X className="w-6 h-6 text-white" /></Button>
                 </div>
                 <div className="space-y-3">
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-2 mb-4">Navigation</p>

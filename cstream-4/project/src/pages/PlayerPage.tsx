@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { UniversalPlayer, SOURCES, type PlayerSource } from '@/components/UniversalPlayer';
-import { SourceSelectorList } from '@/components/SourceSelectorList';
 import { ImportedSourceSelector } from '@/components/ImportedSourceSelector';
 import { MediaCard } from '@/components/MediaCard';
 import { tmdbApi } from '@/lib/tmdb';

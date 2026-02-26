@@ -4,6 +4,7 @@ import { tmdbApi, TMDBMovie } from '@/lib/tmdb';
 import { MediaGrid } from '@/components/MediaGrid';
 import { Navbar } from '@/components/Navbar';
 import { LoadMoreButton } from '@/components/LoadMoreButton';
+import { MediaGridSkeleton } from '@/components/MediaGridSkeleton';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,9 +13,9 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { SEO } from '@/components/SEO';
 import { useI18n } from '@/lib/i18n';
-import { 
-  Film, TrendingUp, Star, Calendar, Clock, Filter, X, 
-  SlidersHorizontal, ChevronDown, Sparkles, Search 
+import {
+  Film, TrendingUp, Star, Calendar, Clock, Filter, X,
+  SlidersHorizontal, ChevronDown, Sparkles, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -27,7 +28,7 @@ const Movies = () => {
   const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const urlGenre = searchParams.get('genre');
-  
+
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
   const [category, setCategory] = useState('popular');
   const [page, setPage] = useState(1);
@@ -37,7 +38,7 @@ const Movies = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [genres, setGenres] = useState<Genre[]>([]);
-  
+
   const [selectedGenre, setSelectedGenre] = useState<string>(urlGenre || 'all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [minRating, setMinRating] = useState<number>(0);
@@ -74,13 +75,13 @@ const Movies = () => {
     }
     try {
       let data;
-      
+
       if (selectedGenre !== 'all' || selectedYear !== 'all' || minRating > 0) {
         const params: Record<string, string | number> = {
           page: pageNum,
           sort_by: sortBy,
         };
-        
+
         if (selectedGenre !== 'all') {
           params.with_genres = selectedGenre;
         }
@@ -90,7 +91,7 @@ const Movies = () => {
         if (minRating > 0) {
           params['vote_average.gte'] = minRating;
         }
-        
+
         data = await tmdbApi.discoverMovies(params);
       } else {
         switch (category) {
@@ -107,7 +108,7 @@ const Movies = () => {
             data = await tmdbApi.getPopularMovies(pageNum);
         }
       }
-      
+
       if (isLoadMore) {
         setMovies(prev => [...prev, ...(data.results || [])]);
       } else {
@@ -142,9 +143,9 @@ const Movies = () => {
 
   const filteredMovies = useMemo(() => {
     if (!searchQuery.trim()) return movies;
-    
+
     const query = searchQuery.toLowerCase();
-    return movies.filter(m => 
+    return movies.filter(m =>
       m.title?.toLowerCase().includes(query) ||
       m.original_title?.toLowerCase().includes(query)
     );
@@ -178,7 +179,7 @@ const Movies = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--text-color)] relative overflow-hidden transition-colors duration-500">
-      <SEO 
+      <SEO
         title="Films - CStream"
         description="Découvrez notre catalogue de films en streaming gratuit. Films d'action, comédie, drame, horreur et plus encore. Nouveautés quotidiennes en VF et VOSTFR."
         keywords="films streaming, films gratuit, films HD, action, comédie, drame, horreur, VF, VOSTFR"
@@ -196,7 +197,7 @@ const Movies = () => {
       <section className="relative pt-32 pb-16 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/10 via-[var(--background)] to-[var(--background)]" />
         <div className="absolute inset-0 bg-noise opacity-[0.02]" />
-        
+
         <div className="relative container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -206,8 +207,8 @@ const Movies = () => {
             <Film className="w-4 h-4 text-[var(--primary)]" />
             <span className="text-xs font-bold tracking-wider uppercase text-[var(--primary)]/80">Cinéma Premium</span>
           </motion.div>
-          
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-7xl font-black mb-6 tracking-tighter"
@@ -216,8 +217,8 @@ const Movies = () => {
               {t('movies.title')}
             </span>
           </motion.h1>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -252,8 +253,8 @@ const Movies = () => {
                     onClick={() => setCategory(cat.id)}
                     className={cn(
                       "gap-2 rounded-xl transition-all font-bold px-6",
-                      category === cat.id 
-                        ? "bg-[var(--primary)] text-white shadow-xl shadow-[var(--primary)]/20" 
+                      category === cat.id
+                        ? "bg-[var(--primary)] text-white shadow-xl shadow-[var(--primary)]/20"
                         : "hover:bg-[var(--primary)]/10 text-muted-foreground"
                     )}
                     style={category === cat.id ? { backgroundColor: 'var(--primary)' } : {}}
@@ -263,7 +264,7 @@ const Movies = () => {
                   </Button>
                 ))}
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="relative flex-1 lg:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -274,7 +275,7 @@ const Movies = () => {
                     className="pl-10 h-11 bg-secondary/30 border-white/5 rounded-xl focus:ring-primary/20 transition-all"
                   />
                 </div>
-                
+
                 <Button
                   variant={showFilters ? 'default' : 'outline'}
                   onClick={() => setShowFilters(!showFilters)}
@@ -315,7 +316,7 @@ const Movies = () => {
                         </Button>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium flex items-center gap-2">
@@ -445,19 +446,12 @@ const Movies = () => {
             {totalResults.toLocaleString()} {t('movies.found')}
           </div>
 
-          {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-4">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full"
-              />
-              <p className="text-muted-foreground">{t('common.loading')}</p>
-            </div>
+          {loading && movies.length === 0 ? (
+            <MediaGridSkeleton count={20} />
           ) : (
             <>
               <MediaGrid items={filteredMovies} mediaType="movie" />
-              
+
               {!searchQuery.trim() && page < totalPages && (
                 <LoadMoreButton
                   onClick={handleLoadMore}

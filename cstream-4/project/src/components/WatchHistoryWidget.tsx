@@ -50,10 +50,9 @@ const HistoryCard = memo(
     const title = item.enrichedTitle || item.title || "Titre inconnu";
     const progress = Math.min(item.progress || 0, 100);
     const isTV = item.media_type === "tv";
-    
-    // Format the time display (e.g., 27:12) if we had that info, 
-    // but we can at least show a better progress indicator
-    const progressText = progress >= 95 ? "Terminé" : `${Math.round(progress)}%`;
+
+    const remainingMins = item.runtime ? Math.max(0, Math.round(item.runtime * (1 - progress / 100))) : null;
+    const progressText = progress >= 95 ? "Terminé" : remainingMins ? `~${remainingMins}m restants` : `${Math.round(progress)}%`;
 
     const formatTimestamp = (progressPercent: number) => {
       // Show actual progress percentage as the primary indicator

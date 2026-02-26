@@ -29,9 +29,9 @@ const getGridClasses = (density: DisplayDensity): string => {
   }
 };
 
-export const MediaGrid = memo(({ 
-  items, 
-  mediaType, 
+export const MediaGrid = memo(({
+  items,
+  mediaType,
   emptyMessage = 'Aucun élément trouvé.',
   showTitle = false,
   title,
@@ -45,7 +45,7 @@ export const MediaGrid = memo(({
 
   const processedItems = useMemo(() => {
     if (!items || items.length === 0) return [];
-    
+
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     return items.map((item, index) => {
       const type: 'movie' | 'tv' | 'person' =
@@ -55,32 +55,32 @@ export const MediaGrid = memo(({
         'title' in item
           ? item.title
           : 'name' in item
-          ? item.name
-          : 'Sans titre';
+            ? item.name
+            : 'Sans titre';
 
       const posterPath =
         'poster_path' in item
           ? item.poster_path
           : 'profile_path' in item
-          ? item.profile_path
-          : null;
+            ? item.profile_path
+            : null;
 
       const releaseDate =
         'release_date' in item
           ? item.release_date
           : 'first_air_date' in item
-          ? item.first_air_date
-          : undefined;
+            ? item.first_air_date
+            : undefined;
 
       const voteAverage =
         'vote_average' in item ? item.vote_average : undefined;
 
       const popularity = 'popularity' in item ? (item as any).popularity : undefined;
-      
-      const isNew = showTrendingBadges && releaseDate 
-        ? new Date(releaseDate).getTime() > thirtyDaysAgo 
+
+      const isNew = showTrendingBadges && releaseDate
+        ? new Date(releaseDate).getTime() > thirtyDaysAgo
         : false;
-      
+
       const isHot = showTrendingBadges && voteAverage !== undefined && voteAverage >= 8;
 
       return {
@@ -98,7 +98,7 @@ export const MediaGrid = memo(({
       };
     });
   }, [items, mediaType, showTrendingBadges]);
-  
+
   const handleImageClick = useCallback((index: number) => {
     setSelectedImageIndex(index);
   }, []);
@@ -142,11 +142,11 @@ export const MediaGrid = memo(({
             <span className="text-sm text-muted-foreground">{items.length} résultats</span>
           </div>
         )}
-        
+
         <div className={`${getGridClasses(displayDensity)} animate-in fade-in duration-300`}>
           {processedItems.map((item, index) => (
-            <motion.div 
-              key={item.key} 
+            <motion.div
+              key={item.key}
               className="animate-in fade-in duration-200"
             >
               <MediaCard
@@ -178,11 +178,11 @@ export const MediaGrid = memo(({
                 className="relative w-full h-full flex items-center justify-center group"
               >
                 <img
-                  src={`https://image.tmdb.org/t/p/original${processedItems[selectedImageIndex].posterPath}`}
+                  src={`https://image.tmdb.org/t/p/w1280${processedItems[selectedImageIndex].posterPath}`}
                   alt={processedItems[selectedImageIndex].title}
                   className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
                 />
-                
+
                 <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button
                     variant="ghost"

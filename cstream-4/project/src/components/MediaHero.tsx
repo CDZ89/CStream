@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
+import {
   Play, Star, Calendar, Clock, Heart, Bookmark,
   Info, ChevronLeft, ThumbsUp, Eye
 } from 'lucide-react';
@@ -43,19 +43,19 @@ const useMediaLogo = (id: number, mediaType: 'movie' | 'tv') => {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    
+
     tmdbApi.getMediaImages(id, mediaType)
       .then((data: any) => {
         if (!mounted) return;
-        
+
         const logos = data.logos || [];
         const frLogo = logos.find((l: any) => l.iso_639_1 === 'fr');
         const enLogo = logos.find((l: any) => l.iso_639_1 === 'en');
         const nullLogo = logos.find((l: any) => l.iso_639_1 === null);
         const bestLogo = frLogo || enLogo || nullLogo || logos[0];
-        
+
         if (bestLogo?.file_path) {
-          setLogoUrl(tmdbApi.getLogoUrl(bestLogo.file_path, 'original'));
+          setLogoUrl(tmdbApi.getLogoUrl(bestLogo.file_path, 'w500'));
         }
         setLoading(false);
       })
@@ -110,21 +110,21 @@ export const MediaHero = ({
   const { t, language } = useI18n();
   const { logoUrl } = useMediaLogo(id, mediaType);
   const [logoError, setLogoError] = useState(false);
-  
+
   const score = voteAverage ? Math.round(voteAverage * 10) : 0;
   const year = formatYear(releaseDate);
   const duration = formatDuration(runtime);
   const showLogo = logoUrl && !logoError;
-  
-  const posterUrl = posterPath 
-    ? `https://image.tmdb.org/t/p/w500${posterPath}` 
+
+  const posterUrl = posterPath
+    ? `https://image.tmdb.org/t/p/w500${posterPath}`
     : null;
-  const backdropUrl = backdropPath 
-    ? `https://image.tmdb.org/t/p/original${backdropPath}` 
+  const backdropUrl = backdropPath
+    ? `https://image.tmdb.org/t/p/w1280${backdropPath}`
     : null;
 
   return (
-    <section 
+    <section
       className={cn("relative w-full", className)}
       aria-labelledby="media-title"
     >
@@ -150,9 +150,9 @@ export const MediaHero = ({
             animate={{ opacity: 1, x: 0 }}
             className="mb-4 sm:mb-6"
           >
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onBack}
               className="gap-2 text-white/80 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
               aria-label={language === 'fr' ? 'Retour' : 'Go back'}
@@ -184,7 +184,7 @@ export const MediaHero = ({
               </div>
             </div>
           ) : (
-            <h1 
+            <h1
               id="media-title"
               className={cn(
                 "text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black",
@@ -196,7 +196,7 @@ export const MediaHero = ({
               {title}
             </h1>
           )}
-          
+
           {tagline && (
             <p className="mt-3 text-lg sm:text-xl text-white/70 italic font-light">
               {tagline}
@@ -206,7 +206,7 @@ export const MediaHero = ({
 
         {/* Layout principal: responsive grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] xl:grid-cols-[280px_1fr] gap-6 lg:gap-10">
-          
+
           {/* Poster - visible sur desktop */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -233,8 +233,8 @@ export const MediaHero = ({
                   <div className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shadow-lg",
                     score >= 70 ? "bg-green-500 text-white" :
-                    score >= 50 ? "bg-yellow-500 text-black" :
-                    "bg-red-500 text-white"
+                      score >= 50 ? "bg-yellow-500 text-black" :
+                        "bg-red-500 text-white"
                   )}>
                     {score}%
                   </div>
@@ -245,7 +245,7 @@ export const MediaHero = ({
 
           {/* Contenu principal - Infos et actions */}
           <div className="flex flex-col gap-4 sm:gap-6">
-            
+
 
             {/* Score + Métadonnées */}
             <motion.div
@@ -260,14 +260,14 @@ export const MediaHero = ({
                   <div className={cn(
                     "w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shadow-lg",
                     score >= 70 ? "bg-green-500 text-white" :
-                    score >= 50 ? "bg-yellow-500 text-black" :
-                    "bg-red-500 text-white"
+                      score >= 50 ? "bg-yellow-500 text-black" :
+                        "bg-red-500 text-white"
                   )}>
                     {score}%
                   </div>
                 </div>
               )}
-              
+
               {/* Étoiles */}
               {voteAverage && voteAverage > 0 && (
                 <div className="flex items-center gap-1.5 text-yellow-400">
@@ -278,7 +278,7 @@ export const MediaHero = ({
                   )}
                 </div>
               )}
-              
+
               {/* Année */}
               {year && (
                 <div className="flex items-center gap-1.5 text-white/70">
@@ -286,7 +286,7 @@ export const MediaHero = ({
                   <span>{year}</span>
                 </div>
               )}
-              
+
               {/* Durée */}
               {duration && (
                 <div className="flex items-center gap-1.5 text-white/70">
@@ -294,7 +294,7 @@ export const MediaHero = ({
                   <span>{duration}</span>
                 </div>
               )}
-              
+
               {/* Nombre de saisons pour TV */}
               {mediaType === 'tv' && numberOfSeasons && (
                 <Badge variant="secondary" className="bg-white/10 text-white/80">
@@ -312,13 +312,13 @@ export const MediaHero = ({
                 className="flex flex-wrap gap-2"
               >
                 {genres.map((genre) => (
-                  <Link 
-                    key={genre.id} 
+                  <Link
+                    key={genre.id}
                     to={`/discover?genre=${genre.id}`}
                     className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-background rounded-full"
                   >
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className="bg-white/5 border-white/20 text-white/90 hover:bg-white/10 transition-colors cursor-pointer px-3 py-1"
                     >
                       {genre.name}
@@ -338,8 +338,8 @@ export const MediaHero = ({
               aria-label={language === 'fr' ? 'Actions du média' : 'Media actions'}
             >
               {/* Bouton Regarder - Principal */}
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={onWatch}
                 disabled={isLoading}
                 className={cn(
@@ -368,11 +368,11 @@ export const MediaHero = ({
                   "backdrop-blur-xl transition-all duration-300",
                   "rounded-xl border",
                   "focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-background",
-                  isFavorite 
-                    ? "bg-red-500/20 border-red-500/50 hover:bg-red-500/30 hover:border-red-500/70" 
+                  isFavorite
+                    ? "bg-red-500/20 border-red-500/50 hover:bg-red-500/30 hover:border-red-500/70"
                     : "bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40"
                 )}
-                aria-label={isFavorite 
+                aria-label={isFavorite
                   ? (language === 'fr' ? 'Retirer des favoris' : 'Remove from favorites')
                   : (language === 'fr' ? 'Ajouter aux favoris' : 'Add to favorites')
                 }
@@ -398,11 +398,11 @@ export const MediaHero = ({
                   "backdrop-blur-xl transition-all duration-300",
                   "rounded-xl border",
                   "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-background",
-                  isInWatchlist 
-                    ? "bg-blue-500/20 border-blue-500/50 hover:bg-blue-500/30 hover:border-blue-500/70" 
+                  isInWatchlist
+                    ? "bg-blue-500/20 border-blue-500/50 hover:bg-blue-500/30 hover:border-blue-500/70"
                     : "bg-white/5 border-white/20 hover:bg-white/10 hover:border-white/40"
                 )}
-                aria-label={isInWatchlist 
+                aria-label={isInWatchlist
                   ? (language === 'fr' ? 'Retirer de la watchlist' : 'Remove from watchlist')
                   : (language === 'fr' ? 'Ajouter à la watchlist' : 'Add to watchlist')
                 }

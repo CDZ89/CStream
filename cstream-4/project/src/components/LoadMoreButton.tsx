@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n';
+import { useEffect, useRef } from 'react';
 
 interface LoadMoreButtonProps {
   onClick: () => void;
@@ -19,11 +20,35 @@ export const LoadMoreButton = ({
   totalItems,
 }: LoadMoreButtonProps) => {
   const { t } = useI18n();
-  
+  const observerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          onClick();
+        }
+      },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+
+    const currentRef = observerRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, isLoading, onClick]);
+
   if (!hasMore) return null;
 
   return (
     <motion.div
+      ref={observerRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-4 py-8"
@@ -33,7 +58,7 @@ export const LoadMoreButton = ({
           {itemsShowing} / {totalItems} résultats
         </p>
       )}
-      
+
       <Button
         onClick={onClick}
         disabled={isLoading}

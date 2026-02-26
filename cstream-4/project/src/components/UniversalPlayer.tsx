@@ -19,12 +19,21 @@ import {
   SkipForward,
   SkipBack,
   Sparkles,
+  Server,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useI18n } from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { SubtitleSelector } from "./SubtitleSelector";
 import { SubtitleResult } from "@/lib/wyzieSubs";
 
@@ -96,6 +105,7 @@ interface PlayerSourceConfig {
   color: string;
   priority: number;
   reliable: boolean;
+  languages?: string[];
   buildUrl: (
     tmdbId: string | number,
     mediaType: "movie" | "tv",
@@ -743,6 +753,7 @@ export const UniversalPlayer = ({
   const [autoSwitching, setAutoSwitching] = useState(false);
   const [selectedSubtitle, setSelectedSubtitle] = useState<SubtitleResult | null>(null);
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -846,24 +857,6 @@ export const UniversalPlayer = ({
     return () => window.removeEventListener("message", handleMessage);
   }, [onProgressUpdate, onVideoEnd, onNextEpisode]);
 
-  useEffect(() => {
-    clearTimers();
-    setStatus("loading");
-    setLoadingProgress(0);
-
-    // Simulate initial loading progress
-    const interval = setInterval(() => {
-      setLoadingProgress(prev => {
-        if (prev >= 90) return prev;
-        return prev + 10;
-      });
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [videoUrl, clearTimers]);
-
   const handleIframeLoad = useCallback(() => {
     clearTimers();
     setStatus("ready");
@@ -884,7 +877,37 @@ export const UniversalPlayer = ({
     } else {
       setStatus("error");
     }
-  }, [currentSource, clearTimers]);
+  }, [currentSource, clearTimers, handleSourceChange]);
+
+  useEffect(() => {
+    clearTimers();
+    setStatus("loading");
+    setLoadingProgress(0);
+
+    // Simulate initial loading progress
+    const interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 90) return prev;
+        return prev + 10;
+      });
+    }, 500);
+
+    // Timeout fallback: if iframe still loading after 15s, trigger error
+    const timeout = setTimeout(() => {
+      setStatus(prev => {
+        if (prev === "loading") {
+          // Use setTimeout to avoid synchronous state update issues during render phase
+          setTimeout(handleIframeError, 10);
+        }
+        return prev;
+      });
+    }, 15000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [videoUrl, clearTimers, handleIframeError]);
 
   const handleRetry = useCallback(() => {
     setStatus("loading");
@@ -915,196 +938,209 @@ export const UniversalPlayer = ({
   const translations = getTranslations(lang);
   const { antiPubBeta } = useBetaSettings();
 
+  const [sourceStates, setSourceStates] = useState<Record<string, 'pending' | 'testing' | 'success' | 'failed'>>(() => {
+    const initial: Record<string, 'pending' | 'testing' | 'success' | 'failed'> = {};
+    SOURCES.forEach(s => initial[s.id] = 'pending');
+    return initial;
+  });
+
+  useEffect(() => {
+    setSourceStates(prev => {
+      const next = { ...prev };
+      if (status === 'loading' || autoSwitching) {
+        next[currentSource] = 'testing';
+      } else if (status === 'ready') {
+        next[currentSource] = 'success';
+      } else if (status === 'error') {
+        next[currentSource] = 'failed';
+      }
+      return next;
+    });
+  }, [currentSource, status, autoSwitching]);
+
   return (
-    <div className={cn("flex flex-col w-full", className)}>
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative flex items-center justify-between gap-2 p-3 sm:p-4 
-          bg-gradient-to-r from-zinc-900/98 via-zinc-900/95 to-zinc-900/98
-          backdrop-blur-2xl border border-white/10 border-b-0 rounded-t-2xl"
-      >
-        <div className="flex items-center gap-2 sm:gap-3 flex-1">
-          <Badge variant="outline" className={cn("px-2 py-1", currentSourceConfig.color)}>
-            {currentSourceConfig.icon} {currentSourceConfig.name}
-          </Badge>
-          {mediaType === "tv" && season && episode && (
-            <span className="text-xs text-white/60 font-mono">S{season} E{episode}</span>
-          )}
-        </div>
+    <div className={cn("flex flex-col lg:flex-row w-full gap-4", className)}>
+      <div className="flex-1 flex flex-col min-w-0 shadow-2xl rounded-2xl overflow-hidden ring-1 ring-white/10">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative flex items-center justify-between gap-2 p-3 sm:p-4 
+            bg-gradient-to-r from-zinc-900/98 via-zinc-900/95 to-zinc-900/98
+            backdrop-blur-2xl border-b border-white/10"
+        >
+          <div className="flex items-center gap-2 sm:gap-3 flex-1">
+            <Badge variant="outline" className={cn("px-2 py-1", currentSourceConfig.color)}>
+              {currentSourceConfig.icon} {currentSourceConfig.name}
+            </Badge>
+            {mediaType === "tv" && season && episode && (
+              <span className="text-xs text-white/60 font-mono">S{season} E{episode}</span>
+            )}
+          </div>
 
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSourcesOpen(true)}
-            className="h-10 px-4 gap-2 bg-white/5 hover:bg-white/10 text-white border-white/5 rounded-xl transition-all active:scale-95 group shadow-lg"
-          >
-            <div className="w-5 h-5 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-              <Monitor className="w-3 h-3 text-zinc-400 group-hover:text-white" />
-            </div>
-            <div className="flex flex-col items-start leading-tight">
-              <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">Source</span>
-              <span className="text-xs font-semibold">{currentSourceConfig.name}</span>
-            </div>
-            <ChevronDown className="w-3 h-3 text-zinc-500 group-hover:text-zinc-300 ml-0.5 transition-transform group-hover:translate-y-0.5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            {/* The dropdown menu is hidden here since we have a dedicated side panel now, but we keep the retry & fullscreen buttons */}
+            <Button variant="ghost" size="icon" onClick={handleRetry} title={translations.retry}>
+              <RotateCcw className="w-4 h-4" />
+            </Button>
 
-          <Button variant="ghost" size="icon" onClick={handleRetry} title={translations.retry}>
-            <RotateCcw className="w-4 h-4" />
-          </Button>
+            <SubtitleSelector
+              tmdbId={Number(tmdbId)}
+              mediaType={mediaType as any}
+              season={season}
+              episode={episode}
+              selectedSubtitle={selectedSubtitle}
+              onSubtitleSelect={setSelectedSubtitle}
+            />
 
-          <SubtitleSelector
-            tmdbId={Number(tmdbId)}
-            mediaType={mediaType as any}
-            season={season}
-            episode={episode}
-            selectedSubtitle={selectedSubtitle}
-            onSubtitleSelect={setSelectedSubtitle}
-          />
+            <Button variant="ghost" size="icon" onClick={togglePlayerFullscreen}>
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            </Button>
+          </div>
+        </motion.div>
 
-          <Button variant="ghost" size="icon" onClick={togglePlayerFullscreen}>
-            {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-          </Button>
-        </div>
-      </motion.div>
-
-      <div
-        ref={containerRef}
-        className="relative w-full aspect-video bg-black rounded-b-2xl overflow-hidden ring-1 ring-white/10"
-      >
-        <AnimatePresence>
-          {sourcesOpen && (
-            <>
+        <div
+          ref={containerRef}
+          className="relative w-full aspect-video bg-black rounded-none overflow-hidden"
+        >
+          <AnimatePresence>
+            {!isPlayerReady ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setSourcesOpen(false)}
-                className="absolute inset-0 bg-black/80 backdrop-blur-xl z-[100]"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="absolute inset-4 z-[110] flex flex-col pointer-events-none"
+                className="absolute inset-0 z-30 cursor-pointer flex items-center justify-center bg-zinc-900 group"
+                onClick={() => setIsPlayerReady(true)}
               >
-                <div className="relative w-full h-full max-w-4xl mx-auto bg-zinc-950/40 border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl pointer-events-auto flex flex-col">
-                  <div className="p-8 flex items-center justify-between border-b border-white/5">
-                    <div className="space-y-1">
-                      <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <Sparkles className="w-6 h-6 text-purple-500" />
-                        Serveurs de Streaming
-                      </h2>
-                      <p className="text-sm text-zinc-500">Choisissez une source pour une lecture optimale</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSourcesOpen(false)}
-                      className="rounded-full hover:bg-white/10"
-                    >
-                      <RotateCcw className="w-5 h-5 rotate-45" />
-                    </Button>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {SOURCES.sort((a, b) => (lang === 'fr' && a.id === 'frembed' ? -1 : 0)).map((source) => (
-                        <button
-                          key={source.id}
-                          onClick={() => handleSourceChange(source.id)}
-                          className={cn(
-                            "group p-5 rounded-2xl text-left transition-all duration-300 border relative overflow-hidden",
-                            currentSource === source.id
-                              ? "bg-white/10 border-white/20 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]"
-                              : "bg-zinc-900/40 border-zinc-800/50 hover:bg-zinc-900/60 hover:border-zinc-700"
-                          )}
-                        >
-                          <div className="flex items-center gap-4 relative z-10">
-                            <div className={cn(
-                              "w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all duration-500",
-                              currentSource === source.id ? "bg-white text-black scale-110" : "bg-zinc-800/50 grayscale group-hover:grayscale-0"
-                            )}>
-                              {source.icon}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <span className={cn(
-                                  "font-bold tracking-wide truncate",
-                                  currentSource === source.id ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"
-                                )}>
-                                  {source.name}
-                                </span>
-                                {source.reliable && (
-                                  <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                )}
-                              </div>
-                              <p className="text-[10px] uppercase truncate tracking-widest font-medium text-zinc-500 group-hover:text-zinc-400 transition-colors">
-                                {source.description}
-                              </p>
-                            </div>
-                            {currentSource === source.id && (
-                              <Check className="w-5 h-5 text-purple-500 shrink-0" />
-                            )}
-                          </div>
-                          {/* Hover effect highlight */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-zinc-900/50 border-t border-white/5 text-center">
-                    <p className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-bold">
-                      CStream v3.9 Premium Universal Engine
-                    </p>
-                  </div>
+                {posterPath && (
+                  <img
+                    src={posterPath.startsWith('http') ? posterPath : `https://image.tmdb.org/t/p/w1280${posterPath}`}
+                    alt="Video Poster"
+                    className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-40 transition-opacity"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+                <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-purple-600/90 flex items-center justify-center transform group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(139,92,246,0.5)] backdrop-blur-sm">
+                  <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-white ml-1 sm:ml-2" />
                 </div>
               </motion.div>
-            </>
-          )}
+            ) : null}
 
-          {(status === "loading" || autoSwitching) && !sourcesOpen && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950"
-            >
-              <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-white font-medium text-sm">{translations.loading}</p>
-            </motion.div>
-          )}
+            {isPlayerReady && (status === "loading" || autoSwitching) && (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950/90 backdrop-blur-sm"
+              >
+                <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
+                <p className="text-white font-medium text-sm animate-pulse">{autoSwitching ? translations.switching : translations.loading}</p>
+                <p className="text-zinc-500 text-xs mt-2 max-w-xs text-center">Test de la connexion... Si cela échoue, nous passerons automatiquement à la source suivante.</p>
+              </motion.div>
+            )}
 
-          {status === "error" && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center"
-            >
-              <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-              <h3 className="text-white font-bold mb-2">{translations.blocked}</h3>
-              <p className="text-white/60 text-sm mb-6 max-w-xs">{translations.blockedDesc}</p>
-              <Button onClick={switchToNextSource}>{translations.nextSource}</Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {isPlayerReady && status === "error" && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950 p-6 text-center"
+              >
+                <AlertTriangle className="w-12 h-12 text-red-500 mb-4 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" />
+                <h3 className="text-white font-bold mb-2">{translations.blocked}</h3>
+                <p className="text-white/60 text-sm mb-6 max-w-sm">{translations.blockedDesc}</p>
+                <Button onClick={switchToNextSource} className="bg-purple-600 hover:bg-purple-700">{translations.nextSource}</Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <iframe
-          ref={iframeRef}
-          key={iframeKey}
-          src={videoUrl}
-          className="absolute inset-0 w-full h-full border-0 z-10"
-          allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-          sandbox={antiPubBeta ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
-          referrerPolicy="no-referrer-when-downgrade"
-          onLoad={handleIframeLoad}
-          onError={handleIframeError}
-        />
+          {isPlayerReady && (
+            <iframe
+              ref={iframeRef}
+              key={iframeKey}
+              src={videoUrl}
+              className="absolute inset-0 w-full h-full border-0 z-10"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              sandbox={antiPubBeta ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
+              referrerPolicy="no-referrer-when-downgrade"
+              onLoad={handleIframeLoad}
+              onError={handleIframeError}
+              loading="lazy"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Auto-Fallback Side Menu */}
+      <div className="w-full lg:w-80 flex flex-col bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[500px] lg:h-auto">
+        <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between sticky top-0 z-10">
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Server className="w-4 h-4 text-purple-400" />
+              Serveurs Vidéo
+            </h3>
+            <p className="text-[10px] text-zinc-400 mt-0.5">Basculement auto en cas d'erreur</p>
+          </div>
+          <Badge variant="secondary" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px]">
+            Auto-Fallback Actif
+          </Badge>
+        </div>
+
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+          {SOURCES.sort((a, b) => (lang === 'fr' && a.id === 'frembed' ? -1 : 0)).map((source) => {
+            const state = sourceStates[source.id] || 'pending';
+            const isActive = currentSource === source.id;
+
+            return (
+              <button
+                key={source.id}
+                onClick={() => handleSourceChange(source.id)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left",
+                  isActive
+                    ? "bg-purple-500/10 border-purple-500/30 border shadow-inner"
+                    : "bg-transparent border border-transparent hover:bg-white/5",
+                  state === 'testing' && !isActive && "opacity-70"
+                )}
+              >
+                {/* Status Indicator */}
+                <div className="relative flex items-center justify-center w-6 h-6 shrink-0">
+                  {state === 'testing' && isActive && (
+                    <div className="w-4 h-4 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
+                  )}
+                  {state === 'success' && (
+                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                  )}
+                  {state === 'failed' && (
+                    <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
+                  )}
+                  {state === 'pending' && (!isActive) && (
+                    <div className="w-2 h-2 rounded-full bg-zinc-600" />
+                  )}
+                </div>
+
+                <div className="flex flex-col flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "font-semibold text-sm truncate",
+                      isActive ? "text-purple-400" : "text-zinc-300",
+                      state === 'failed' && "text-red-400 line-through opacity-70"
+                    )}>
+                      {source.name}
+                    </span>
+                    {source.reliable && (
+                      <Sparkles className="w-3 h-3 text-amber-500" />
+                    )}
+                  </div>
+                  <span className="text-[10px] text-zinc-500 truncate">
+                    {source.languages?.includes('fr') ? 'VF/VOSTFR' : 'VO/VOSTFR'} • {source.description}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

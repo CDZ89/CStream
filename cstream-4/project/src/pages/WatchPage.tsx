@@ -36,6 +36,7 @@ import { ImportedSourceSelector } from "@/components/ImportedSourceSelector";
 import { PayPalButton } from "@/components/PayPalButton";
 import { SecurityBanner } from "@/components/SecurityBanner";
 import { CloudHint } from "@/components/player/CloudHint";
+import { DownloadsSection } from "@/components/DownloadsSection";
 
 /* ============================ Types ============================ */
 interface Comment {
@@ -298,7 +299,7 @@ const WatchPage = () => {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-5 blur-[100px] scale-125"
           style={{
-            backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`,
+            backgroundImage: `url(https://image.tmdb.org/t/p/w1280${movie.backdrop_path})`,
           }}
         />
         <div className="absolute inset-0 bg-[#06080b]/80" />
@@ -380,30 +381,13 @@ const WatchPage = () => {
                   <div className="flex items-center justify-between border-b border-white/5 pb-4">
                     <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                       <Server className="w-4 h-4 text-purple-400" />
-                      Sélection de Source
+                      Actions du Lecteur
                     </h3>
                   </div>
-
-                  <SourceSelectorList
-                    currentSource={currentSource}
-                    onSelect={(id) => {
-                      setCurrentSource(id);
-                      toast.success(`Lecture via ${SOURCES.find(s => s.id === id)?.name}`);
-                    }}
-                  />
 
                   {/* Actions Row */}
                   <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2">
                     <div className="flex flex-wrap items-center gap-3">
-                      <ImportedSourceSelector
-                        tmdbId={movie.id}
-                        onSelect={(s) => {
-                          setCurrentSource(s.id as any);
-                          toast.success(`Lecture via ${s.label}`);
-                        }}
-                        currentSource={null}
-                        className="h-9 sm:h-10"
-                      />
                       <Button
                         variant="outline"
                         size="sm"
@@ -675,6 +659,12 @@ const WatchPage = () => {
 
           {/* Sidebar */}
           <aside className="space-y-6 lg:space-y-8">
+            <DownloadsSection
+              mediaItem={movie}
+              mediaType="movie"
+              tmdbId={movie.id}
+              imdbId={(movie as any).external_ids?.imdb_id}
+            />
             {/* Ratings */}
             <div className="bg-zinc-900/40 backdrop-blur-md border border-white/5 rounded-3xl p-5 sm:p-6 space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-widest text-white/30">

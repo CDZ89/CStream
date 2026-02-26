@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { MediaGrid } from '@/components/MediaGrid';
 import { TrailerModal } from '@/components/TrailerModal';
 import { UniversalPlayer, SOURCES } from "@/components/UniversalPlayer";
+import { DownloadsSection } from "@/components/DownloadsSection";
 import { SourceSelectorList } from "@/components/SourceSelectorList";
 import { cn } from '@/lib/utils';
 import { CinemaosPlayer } from '@/components/CinemaosPlayer';
@@ -22,12 +23,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MediaDownloadModal } from "@/components/MediaDownloadModal";
+import { DownloadActions } from "@/components/DownloadActions";
 import {
   Play, Star, Clock, Calendar, Heart, Bookmark, Share2,
   ChevronLeft, X, Loader2, ThumbsUp, Eye, MessageSquare,
   Send, Globe, User, ChevronDown, ExternalLink, AlertTriangle, RefreshCw, RotateCcw,
-  Film, Image as ImageIcon, Layers, Download, Zap, Server
+  Film, Image as ImageIcon, Layers, Download, Zap, Server, PlayCircle
 } from 'lucide-react';
 import { ScoreCircle } from '@/components/ScoreCircle';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -930,7 +931,7 @@ const MovieDetail = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={tmdbApi.getImageUrl(zoomedPoster, 'original')}
+                src={tmdbApi.getImageUrl(zoomedPoster, 'w780')}
                 alt="Poster zoomé"
                 className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
               />
@@ -1183,14 +1184,7 @@ const MovieDetail = () => {
                         </Button>
                       )}
 
-                      <Button
-                        variant="secondary"
-                        onClick={() => setShowDownloadModal(true)}
-                        className="h-10 sm:h-11 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 backdrop-blur-md transition-all sm:text-base text-sm"
-                      >
-                        <Download className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-                        <span className="hidden sm:inline">Télécharger</span>
-                      </Button>
+                      <DownloadActions tmdbId={movie.id} title={movie.title} mediaType="movie" />
 
                       <Button
                         variant={userLiked ? "default" : "outline"}
@@ -1454,6 +1448,12 @@ const MovieDetail = () => {
             </div>
             {/* Sidebar Info */}
             <aside className="lg:col-span-1 space-y-5 sm:space-y-7">
+              <DownloadsSection
+                mediaItem={movie}
+                mediaType="movie"
+                tmdbId={movie.id}
+                imdbId={(movie as any).external_ids?.imdb_id}
+              />
               {/* Système de Vote Double */}
               <Card>
                 <CardHeader className="pb-2">
@@ -1638,7 +1638,7 @@ const MovieDetail = () => {
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${tmdbApi.getImageUrl(movie.backdrop_path, 'original')})`,
+                  backgroundImage: `url(${tmdbApi.getImageUrl(movie.backdrop_path, 'w1280')})`,
                   filter: 'blur(25px) brightness(0.4)',
                   transform: 'scale(1.2)',
                 }}
@@ -1699,7 +1699,7 @@ const MovieDetail = () => {
                     {(movie.images as any)?.logos && (movie.images as any).logos.length > 0 ? (
                       <div className="max-w-[400px] mb-4">
                         <img
-                          src={tmdbApi.getImageUrl((movie.images as any).logos[0].file_path, 'original')}
+                          src={tmdbApi.getImageUrl((movie.images as any).logos[0].file_path, 'w500')}
                           alt={movie.title}
                           className="w-full h-auto drop-shadow-[0_8px_32px_rgba(0,0,0,0.8)]"
                           loading="eager"
@@ -2235,13 +2235,6 @@ const MovieDetail = () => {
           />
         </>
       )}
-
-      <MediaDownloadModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        mediaItem={movie}
-        mediaType="movie"
-      />
     </div>
   );
 };

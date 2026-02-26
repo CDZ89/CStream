@@ -17,7 +17,9 @@ export interface WatchHistoryItem {
   episode_name?: string;
   total_episodes?: number;
   language?: string;
+  runtime?: number;
 }
+
 
 const LOCAL_STORAGE_KEY = 'cstream_watch_history_v3';
 const LEGACY_STORAGE_KEY = 'cstream_watch_history_v2';
@@ -189,6 +191,7 @@ export const useWatchHistory = () => {
           backdrop_path: details?.backdrop_path || null,
           episode_name: episodeName,
           total_episodes: totalEpisodes,
+          runtime: details?.episode_run_time?.[0] || details?.runtime,
         };
       } else {
         const details = await tmdbApi.getMovieDetails(item.tmdb_id) as any;
@@ -199,6 +202,7 @@ export const useWatchHistory = () => {
           title: details?.title || '',
           poster_path: details?.poster_path || null,
           backdrop_path: details?.backdrop_path || null,
+          runtime: details?.runtime,
         };
       }
     } catch (e) {

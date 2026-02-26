@@ -145,21 +145,21 @@ export default function ConsumetTestPage() {
               <h1 className="text-5xl font-black italic tracking-tighter uppercase">Ultimate <span className="text-primary underline">Core</span></h1>
               <p className="text-white/30 font-bold uppercase tracking-widest text-xs">Propulsé par AniList GraphQL, Jikan & TMDB</p>
             </div>
-            
+
             <div className="flex flex-wrap bg-white/5 p-1 rounded-xl border border-white/5 gap-1 shadow-2xl">
-              <button 
+              <button
                 onClick={() => setApiSource('anilist')}
                 className={`px-4 h-9 rounded-lg text-[10px] font-black uppercase transition-all ${apiSource === 'anilist' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
               >
                 AniList (Elite)
               </button>
-              <button 
+              <button
                 onClick={() => setApiSource('jikan')}
                 className={`px-4 h-9 rounded-lg text-[10px] font-black uppercase transition-all ${apiSource === 'jikan' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
               >
                 Jikan (MAL)
               </button>
-              <button 
+              <button
                 onClick={() => setApiSource('tmdb')}
                 className={`px-4 h-9 rounded-lg text-[10px] font-black uppercase transition-all ${apiSource === 'tmdb' ? 'bg-primary text-white shadow-lg' : 'text-white/40 hover:text-white'}`}
               >
@@ -167,11 +167,11 @@ export default function ConsumetTestPage() {
               </button>
             </div>
           </div>
-          
+
           <div className="flex gap-2 bg-white/5 p-1 rounded-2xl border border-white/5 max-w-2xl shadow-2xl">
-            <Input 
-              value={query} 
-              onChange={(e) => setQuery(e.target.value)} 
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder={`Rechercher via ${apiSource.toUpperCase()}...`}
               className="bg-transparent border-none focus-visible:ring-0 text-lg h-12"
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -194,7 +194,7 @@ export default function ConsumetTestPage() {
                 {results.map((item) => (
                   <div key={item.id || item.mal_id} onClick={() => handleSelect(item)} className="group cursor-pointer">
                     <div className="aspect-[2/3] rounded-[32px] overflow-hidden border border-white/5 group-hover:border-primary/50 transition-all relative shadow-2xl">
-                      <img src={item.images?.webp?.large_image_url || item.coverImage?.large} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <img src={item.images?.webp?.large_image_url || item.coverImage?.large} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={item.title?.userPreferred || item.title?.romaji || "Anime Cover"} />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent opacity-80" />
                       <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                         <Badge className="bg-black/80 backdrop-blur-xl border-none font-black text-primary text-xs">{(item.score || 0).toFixed(1)}</Badge>
@@ -217,7 +217,7 @@ export default function ConsumetTestPage() {
                     {recs.map((rec: any) => (
                       <div key={rec.entry.id || rec.entry.mal_id} onClick={() => handleSelect(rec.entry)} className="group cursor-pointer">
                         <div className="aspect-[2/3] rounded-2xl overflow-hidden border border-white/5 group-hover:border-primary/50 transition-all">
-                          <img src={rec.entry.images?.webp?.large_image_url || rec.entry.coverImage?.large} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <img src={rec.entry.images?.webp?.large_image_url || rec.entry.coverImage?.large} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={rec.entry.title?.userPreferred || "Recommendation Cover"} />
                         </div>
                         <h4 className="mt-2 text-[9px] font-black line-clamp-1 opacity-40 group-hover:opacity-100 transition-opacity uppercase italic">{rec.entry.title}</h4>
                       </div>
@@ -231,15 +231,15 @@ export default function ConsumetTestPage() {
               {info && (
                 <div className="p-10 bg-white/5 rounded-[48px] border border-white/5 backdrop-blur-3xl space-y-8 sticky top-28 animate-in fade-in slide-in-from-right-8 overflow-hidden shadow-2xl">
                   <div className="absolute top-0 left-0 w-full h-64 opacity-20 blur-2xl">
-                    <img src={info.images?.webp?.large_image_url || info.bannerImage} className="w-full h-full object-cover" />
+                    <img src={info.images?.webp?.large_image_url || info.bannerImage} className="w-full h-full object-cover" alt={info.title?.userPreferred || "Anime Banner"} />
                   </div>
-                  
+
                   <div className="relative space-y-8">
                     <div className="space-y-6">
                       <div className="flex flex-wrap gap-2">
-                         <Badge className="bg-primary text-white border-none px-4 py-1.5 text-[10px] font-black italic shadow-lg shadow-primary/20 tracking-tighter uppercase">{info.type || info.format}</Badge>
-                         <Badge className="bg-white/10 text-white border-none px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">{info.status}</Badge>
-                         {info.rating && <Badge className="bg-white/10 text-white border-none px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">{info.rating?.split(' ')[0]}</Badge>}
+                        <Badge className="bg-primary text-white border-none px-4 py-1.5 text-[10px] font-black italic shadow-lg shadow-primary/20 tracking-tighter uppercase">{info.type || info.format}</Badge>
+                        <Badge className="bg-white/10 text-white border-none px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">{info.status}</Badge>
+                        {info.rating && <Badge className="bg-white/10 text-white border-none px-4 py-1.5 text-[10px] font-black uppercase tracking-widest">{info.rating?.split(' ')[0]}</Badge>}
                       </div>
                       <h2 className="text-4xl font-black leading-[0.9] italic tracking-tighter uppercase">{info.title}</h2>
                       <div className="flex items-center gap-6 text-white/40 py-3 border-y border-white/5">
@@ -279,7 +279,7 @@ export default function ConsumetTestPage() {
                         ))}
                       </div>
                     )}
-                    
+
                     <div className="flex gap-4 pt-4">
                       {info.trailer?.embed_url && (
                         <Button onClick={() => setShowTrailer(true)} className="flex-1 h-16 rounded-[24px] font-black italic text-xl bg-primary hover:bg-primary/80 shadow-2xl shadow-primary/20 group uppercase">
@@ -303,7 +303,7 @@ export default function ConsumetTestPage() {
           <div className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-3xl flex items-center justify-center p-4">
             <Button onClick={() => setShowTrailer(false)} className="absolute top-8 right-8 rounded-full w-14 h-14 bg-white/10 hover:bg-white/20 border-none transition-all hover:rotate-90"><X size={32} /></Button>
             <div className="w-full max-w-6xl aspect-video rounded-[56px] overflow-hidden border border-white/10 shadow-[0_0_150px_rgba(139,92,246,0.3)] animate-in zoom-in-95 duration-500">
-              <iframe 
+              <iframe
                 src={`${info.trailer.embed_url}?autoplay=1`}
                 className="w-full h-full"
                 allow="autoplay; fullscreen"

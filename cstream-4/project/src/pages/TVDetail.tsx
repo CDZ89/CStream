@@ -12,7 +12,8 @@ import { Navbar } from "@/components/Navbar";
 import { MediaGrid } from "@/components/MediaGrid";
 import { TrailerModal } from "@/components/TrailerModal";
 import { UniversalPlayer, SOURCES } from "@/components/UniversalPlayer";
-import { SourceSelectorList } from "@/components/SourceSelectorList";
+import { DownloadActions } from "@/components/DownloadActions";
+import { DownloadsSection } from "@/components/DownloadsSection";
 import { cn } from "@/lib/utils";
 import { CinemaosPlayer } from "@/components/CinemaosPlayer";
 import { CSPlayer } from "@/components/CSPlayer";
@@ -1051,7 +1052,7 @@ const TVDetail = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={tmdbApi.getImageUrl(zoomedPoster, "original")}
+                src={tmdbApi.getImageUrl(zoomedPoster, "w780")}
                 alt="Poster zoomé"
                 className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
               />
@@ -1151,14 +1152,9 @@ const TVDetail = () => {
 
                 {/* Hero Actions Bar */}
                 <div className="flex border-b border-white/5 bg-zinc-950/80 px-4 py-3 sm:px-6">
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowDownloadModal(true)}
-                    className="h-10 px-4 rounded-xl font-semibold bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 backdrop-blur-md transition-all text-sm w-full sm:w-auto"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Télécharger
-                  </Button>
+                  {show && (
+                    <DownloadActions tmdbId={show.id} title={show.name || "Serie"} mediaType="tv" />
+                  )}
                 </div>
 
                 {/* Sources Hub Container */}
@@ -1169,27 +1165,9 @@ const TVDetail = () => {
                     <div className="flex items-center justify-between border-b border-white/5 pb-4">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                         <Server className="w-4 h-4 text-purple-400" />
-                        Sélection de Source
+                        Actions du Lecteur
                       </h3>
                     </div>
-
-                    <SourceSelectorList
-                      currentSource={currentSource?.id as any}
-                      onSelect={(sourceId) => {
-                        const src = SOURCES.find(s => s.id === sourceId);
-                        if (src) {
-                          setCurrentSource({
-                            id: src.id as any,
-                            label: src.name,
-                            url: '',
-                            media_type: 'tv',
-                            language: 'FR',
-                          });
-                          setIframeKey(prev => prev + 1);
-                          toast.success(`Lecture via ${src.name}`);
-                        }
-                      }}
-                    />
 
                     {/* Actions Row */}
                     <div className="pt-4 flex flex-wrap items-center justify-between gap-4 mt-2">
@@ -1466,6 +1444,11 @@ const TVDetail = () => {
 
             <aside className="lg:col-span-3 space-y-6">
               <div className="sticky top-24 space-y-6">
+                <DownloadsSection
+                  mediaItem={show}
+                  mediaType="tv"
+                  tmdbId={show.id}
+                />
                 <Card className="bg-secondary/20 border-white/10 shadow-2xl backdrop-blur-sm rounded-2xl overflow-hidden">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -1552,7 +1535,7 @@ const TVDetail = () => {
               <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${tmdbApi.getImageUrl(show.backdrop_path, "original")})`,
+                  backgroundImage: `url(${tmdbApi.getImageUrl(show.backdrop_path, "w1280")})`,
                   filter: "blur(25px) brightness(0.4)",
                   transform: "scale(1.2)",
                 }}
@@ -2310,13 +2293,6 @@ const TVDetail = () => {
           onDismiss={() => setShowEndOverlay(false)}
         />
       )}
-
-      <MediaDownloadModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        mediaItem={show}
-        mediaType="tv"
-      />
     </div>
   );
 };

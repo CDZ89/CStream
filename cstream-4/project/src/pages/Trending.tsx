@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
+import {
   TrendingUp, Film, Tv, Sparkles, Clock, Calendar,
   ArrowUp, Flame, Star, ChevronLeft, ChevronRight, Loader2
 } from 'lucide-react';
@@ -36,10 +36,10 @@ const Trending = () => {
           tmdbApi.getTrending('tv', timeWindow),
         ]);
 
-        setTrending(allRes.results || []);
-        setTrendingMovies(moviesRes.results || []);
-        setTrendingTV(tvRes.results || []);
-        setTotalPages(Math.min(allRes.total_pages || 1, 20));
+        setTrending((allRes.results || []) as (TMDBMovie | TMDBTV)[]);
+        setTrendingMovies((moviesRes.results || []) as TMDBMovie[]);
+        setTrendingTV((tvRes.results || []) as TMDBTV[]);
+        setTotalPages(Math.min((allRes as any).total_pages || 1, 20));
       } catch (error) {
         console.error('Failed to fetch trending:', error);
       } finally {
@@ -89,10 +89,10 @@ const Trending = () => {
             transition={{ duration: 10, ease: 'easeOut' }}
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url(${tmdbApi.getImageUrl(featuredItem.backdrop_path, 'original')})`,
+              backgroundImage: `url(${tmdbApi.getImageUrl(featuredItem.backdrop_path, 'w1280')})`,
             }}
           />
-          
+
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
@@ -127,7 +127,7 @@ const Trending = () => {
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span>
-                    {'release_date' in featuredItem 
+                    {'release_date' in featuredItem
                       ? featuredItem.release_date?.slice(0, 4)
                       : (featuredItem as TMDBTV).first_air_date?.slice(0, 4)}
                   </span>
@@ -171,22 +171,20 @@ const Trending = () => {
             <div className="flex items-center gap-2 p-1 bg-secondary/50 rounded-lg">
               <button
                 onClick={() => setTimeWindow('day')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  timeWindow === 'day'
-                    ? 'bg-primary text-white shadow'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${timeWindow === 'day'
+                  ? 'bg-primary text-white shadow'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
               >
                 <Clock className="w-4 h-4 inline mr-2" />
                 Aujourd'hui
               </button>
               <button
                 onClick={() => setTimeWindow('week')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  timeWindow === 'week'
-                    ? 'bg-primary text-white shadow'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${timeWindow === 'week'
+                  ? 'bg-primary text-white shadow'
+                  : 'text-muted-foreground hover:text-foreground'
+                  }`}
               >
                 <Calendar className="w-4 h-4 inline mr-2" />
                 Cette semaine
@@ -250,8 +248,8 @@ const Trending = () => {
           </div>
         ) : (
           <>
-            <MediaGrid 
-              items={getDisplayItems()} 
+            <MediaGrid
+              items={getDisplayItems()}
               mediaType={mediaFilter === 'all' ? undefined : mediaFilter}
               showTrendingBadges={true}
             />

@@ -115,7 +115,7 @@ export const UnifiedSearch = () => {
 
         const searchResults = data.results?.slice(0, MAX_RESULTS) || [];
         setResults(searchResults);
-        setIsOpen(searchResults.length > 0);
+        setIsOpen(true);
       } catch (error: any) {
         if (error.name !== "AbortError") {
           console.error("[UnifiedSearch] Search error:", error);
@@ -258,11 +258,10 @@ export const UnifiedSearch = () => {
         }}
         onMouseEnter={() => setHoveredIndex(index)}
         onMouseLeave={() => setHoveredIndex(-1)}
-        className={`w-full flex items-center gap-4 p-2.5 rounded-xl text-left transition-all duration-300 group relative ${
-          isFocused
+        className={`w-full flex items-center gap-4 p-2.5 rounded-xl text-left transition-all duration-300 group relative ${isFocused
             ? "bg-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] border-white/20"
             : "hover:bg-white/5 border-transparent"
-        } border`}
+          } border`}
       >
         {isFocused && (
           <motion.div
@@ -409,7 +408,7 @@ export const UnifiedSearch = () => {
 
               {/* Desktop Results Dropdown */}
               <AnimatePresence mode="wait">
-                {isOpen && (results.length > 0 || loading) && (
+                {isOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: -15, scaleY: 0.85 }}
                     animate={{ opacity: 1, y: 0, scaleY: 1 }}
@@ -428,6 +427,15 @@ export const UnifiedSearch = () => {
                     {!loading && results.length > 0 && (
                       <div className="max-h-[500px] overflow-y-auto p-3 space-y-2">
                         {results.map((item, idx) => resultCard(item, idx, false))}
+                      </div>
+                    )}
+
+                    {!loading && query && results.length === 0 && (
+                      <div className="p-6 text-center">
+                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 border border-white/10 shadow-xl">
+                          <Search className="w-5 h-5 text-white/20" />
+                        </div>
+                        <p className="text-sm text-white/60 font-medium tracking-tight">Aucun résultat trouvé pour "{query}"</p>
                       </div>
                     )}
                   </motion.div>

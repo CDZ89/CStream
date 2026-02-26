@@ -158,7 +158,7 @@ const HeroSlide = memo(
     };
 
     const backdropUrl = item.backdrop_path
-      ? tmdbApi.getImageUrl(item.backdrop_path, "original")
+      ? tmdbApi.getImageUrl(item.backdrop_path, "w1280")
       : null;
 
     if (!backdropUrl) return null;

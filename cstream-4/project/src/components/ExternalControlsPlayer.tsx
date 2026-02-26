@@ -17,6 +17,7 @@ interface ExternalControlsPlayerProps {
   playerType?: 'vidking' | 'vidfast';
   showName?: string;
   initialServer?: string;
+  posterPath?: string;
 }
 
 const VIDKING_BASE_URL = 'https://www.vidking.net/embed';
@@ -37,6 +38,7 @@ export const ExternalControlsPlayer = ({
   playerType = 'vidking',
   showName,
   initialServer = 'auto',
+  posterPath,
 }: ExternalControlsPlayerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentServer, setCurrentServer] = useState(initialServer);
@@ -47,7 +49,7 @@ export const ExternalControlsPlayer = ({
   const buildPlayerUrl = useCallback(() => {
     const baseUrl = playerType === 'vidfast' ? VIDFAST_BASE_URL : VIDKING_BASE_URL;
     const color = playerType === 'vidfast' ? GREEN_THEME : PRIMARY_COLOR;
-    
+
     let url = '';
     if (mediaType === 'movie') {
       url = `${baseUrl}/movie/${tmdbId}`;
@@ -58,7 +60,7 @@ export const ExternalControlsPlayer = ({
     }
 
     const params = new URLSearchParams();
-    
+
     if (playerType === 'vidfast') {
       params.set('theme', color);
       params.set('title', 'true');
@@ -75,11 +77,11 @@ export const ExternalControlsPlayer = ({
         params.set('episodeSelector', 'true');
       }
     }
-    
+
     if (autoPlay) {
       params.set('autoPlay', 'true');
     }
-    
+
     if (progress && progress > 0) {
       params.set('progress', String(Math.round(progress)));
     }
@@ -87,7 +89,7 @@ export const ExternalControlsPlayer = ({
     if (currentServer && currentServer !== 'auto') {
       params.set('server', currentServer);
     }
-    
+
     params.set('hideServer', 'true');
 
     return `${url}?${params.toString()}`;
@@ -106,7 +108,7 @@ export const ExternalControlsPlayer = ({
       try {
         if (typeof event.data !== 'string') return;
         const data = JSON.parse(event.data);
-        
+
         if (data.type === 'PLAYER_EVENT' && data.data) {
           if (onProgressUpdate) {
             onProgressUpdate({
@@ -126,7 +128,7 @@ export const ExternalControlsPlayer = ({
             onVideoEnd();
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     };
 
     window.addEventListener('message', handleMessage);
@@ -146,9 +148,9 @@ export const ExternalControlsPlayer = ({
   const handleToggleFullscreen = useCallback(() => {
     if (containerRef.current) {
       if (!document.fullscreenElement) {
-        containerRef.current.requestFullscreen().catch(() => {});
+        containerRef.current.requestFullscreen().catch(() => { });
       } else {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => { });
       }
     }
   }, []);
@@ -183,6 +185,7 @@ export const ExternalControlsPlayer = ({
         src={buildPlayerUrl()}
         onLoad={handlePlayerLoad}
         playerType={playerType}
+        posterPath={posterPath}
       />
     </motion.div>
   );

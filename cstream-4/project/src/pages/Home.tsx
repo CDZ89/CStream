@@ -265,7 +265,7 @@ const ProviderContentRow = ({ items, isLoading }: { items: (TMDBMovie | TMDBTV)[
         const date = isMovie ? item.release_date : (item as TMDBTV).first_air_date;
         const year = date ? new Date(date).getFullYear() : '';
         const mediaType = isMovie ? 'movie' : 'tv';
-        
+
         return (
           <Link
             key={item.id}
@@ -334,10 +334,10 @@ const StreamingProvidersSection = () => {
           tmdbApi.discoverByProvider(selectedProvider, 'movie'),
           tmdbApi.discoverByProvider(selectedProvider, 'tv'),
         ]);
-        
+
         const movies = (moviesRes.results || []).slice(0, 12);
         const tvShows = (tvRes.results || []).slice(0, 12);
-        
+
         const combined = contentType === 'movie' ? movies : tvShows;
         setProviderContent(combined as (TMDBMovie | TMDBTV)[]);
       } catch (error) {
@@ -392,15 +392,15 @@ const StreamingProvidersSection = () => {
               <X className="w-5 h-5 text-zinc-400 hover:text-zinc-200" />
             </button>
           </motion.div>
-          
-          <div 
+
+          <div
             ref={scrollRef}
             className="flex flex-wrap gap-2 pb-2"
           >
             {visibleProviders.map((provider, index) => {
               const isSelected = selectedProvider === provider.id;
               const logoState = logoStates[provider.id] || 'loading';
-            
+
               return (
                 <motion.button
                   key={`${provider.id}-${index}`}
@@ -414,8 +414,8 @@ const StreamingProvidersSection = () => {
                     flex-shrink-0 relative overflow-hidden rounded-full cursor-pointer
                     flex items-center gap-2.5 px-3 py-2 sm:px-4 sm:py-2
                     transition-all duration-150 ease-out
-                    ${isSelected 
-                      ? 'bg-zinc-100 text-zinc-900' 
+                    ${isSelected
+                      ? 'bg-zinc-100 text-zinc-900'
                       : 'bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-300 hover:text-zinc-100'}
                     border ${isSelected ? 'border-zinc-200' : 'border-zinc-800 hover:border-zinc-700'}
                   `}
@@ -435,7 +435,7 @@ const StreamingProvidersSection = () => {
                       </span>
                     )}
                     {logoState !== 'error' && (
-                      <img 
+                      <img
                         src={`https://image.tmdb.org/t/p/original${provider.logo}`}
                         alt={provider.name}
                         className="w-full h-full object-cover"
@@ -451,7 +451,7 @@ const StreamingProvidersSection = () => {
                 </motion.button>
               );
             })}
-            
+
             {hasMoreProviders && (
               <motion.button
                 initial={{ opacity: 0, y: 8 }}
@@ -486,21 +486,19 @@ const StreamingProvidersSection = () => {
                     <div className="flex items-center gap-0.5 p-0.5 bg-zinc-900 rounded-full border border-zinc-800">
                       <button
                         onClick={() => setContentType('movie')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
-                          contentType === 'movie'
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${contentType === 'movie'
                             ? 'bg-zinc-100 text-zinc-900'
                             : 'text-zinc-500 hover:text-zinc-300'
-                        }`}
+                          }`}
                       >
                         Films
                       </button>
                       <button
                         onClick={() => setContentType('tv')}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${
-                          contentType === 'tv'
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${contentType === 'tv'
                             ? 'bg-zinc-100 text-zinc-900'
                             : 'text-zinc-500 hover:text-zinc-300'
-                        }`}
+                          }`}
                       >
                         Séries
                       </button>
@@ -517,7 +515,7 @@ const StreamingProvidersSection = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <ProviderContentRow items={providerContent} isLoading={isLoadingContent} />
               </motion.div>
             )}
@@ -575,8 +573,8 @@ const StreamingProvidersSection = () => {
                       className="group relative flex flex-col items-center gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/50 transition-all"
                     >
                       <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg border border-white/10">
-                        <img 
-                          src={`https://image.tmdb.org/t/p/original${provider.logo}`}
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${provider.logo}`}
                           alt={provider.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                         />
@@ -635,7 +633,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen relative bg-[#050505] text-foreground">
-      <div 
+      <div
         className="fixed inset-0 pointer-events-none transition-opacity duration-700"
         style={{
           background: `linear-gradient(180deg, 
@@ -651,16 +649,16 @@ export default function Home() {
       {/* Content */}
       <div className="relative">
         <HeroCarousel items={heroItems} />
-        
+
         <div className="container mx-auto px-4 sm:px-6 relative z-10 mt-8">
           <ContinueWatching />
-          
+
           <WelcomeMessageWidget />
-          
-          <LiveStatsSection 
-            movieCount={854320} 
-            tvCount={158450} 
-            animeCount={48200} 
+
+          <LiveStatsSection
+            movieCount={854320}
+            tvCount={158450}
+            animeCount={48200}
           />
 
           <div className="space-y-12 mt-12 pb-12">
@@ -675,7 +673,7 @@ export default function Home() {
             </section>
 
             <StreamingProvidersSection />
-            
+
             <section className="relative">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
@@ -780,29 +778,29 @@ export default function Home() {
                   className="max-w-2xl mx-auto"
                 >
                   <ShareWidget title="CStream Premium" type="tv" id={1} />
-          
-          <motion.a
-            href="https://ko-fi.com/cstream"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ 
-              scale: 1.05, 
-              backgroundColor: '#2a2a2a',
-              boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)'
-            }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-lg text-[15px] font-medium transition-all duration-250 border border-white/10 shadow-xl mt-6"
-          >
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            Soutenir sur Ko-fi
-          </motion.a>
+
+                  <motion.a
+                    href="https://ko-fi.com/cstream"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{
+                      scale: 1.05,
+                      backgroundColor: '#2a2a2a',
+                      boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)'
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-lg text-[15px] font-medium transition-all duration-250 border border-white/10 shadow-xl mt-6"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Soutenir sur Ko-fi
+                  </motion.a>
                 </motion.div>
               </div>
             </section>
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
@@ -822,7 +820,7 @@ const ReviewsMarquee = () => {
           .select('*')
           .order('created_at', { ascending: false })
           .limit(20);
-        
+
         if (error) {
           console.error('Error fetching global reviews:', error);
           // Fallback mock data if the table doesn't exist yet or is empty
