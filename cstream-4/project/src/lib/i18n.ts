@@ -3805,8 +3805,11 @@ const getStoredOrDetectedLanguage = (): SupportedLanguage => {
     return "en";
   }
 
-  // 1. Check if user has manually selected a language
+  // 0. Check if user has manually set a language - respect it unconditionally
   try {
+    const hasManualSelection = localStorage.getItem("cstream-language-manual");
+
+    // 1. Check if user has manually selected a language via zustand
     const stored = localStorage.getItem("cstream-language");
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -3819,16 +3822,22 @@ const getStoredOrDetectedLanguage = (): SupportedLanguage => {
       }
     }
 
-    // Fallback to simpler key if zustand key is missing or invalid
+    // Fallback to simpler key
     const simpleStored = localStorage.getItem("cstream_language") as SupportedLanguage;
     if (simpleStored && SUPPORTED_LANGUAGES.find(l => l.code === simpleStored)) {
       return simpleStored;
+    }
+
+    // If user has manually selected but stored state is gone, default to English rather than re-detecting
+    if (hasManualSelection) {
+      console.log("[i18n] Manual flag set but no stored language — defaulting to en");
+      return "en";
     }
   } catch (e) {
     console.warn("Could not read stored language:", e);
   }
 
-  // 2. Auto-detect from browser
+  // 2. Auto-detect from browser (only if no manual selection was ever made)
   const browserLang = detectBrowserLanguage();
   if (browserLang) {
     return browserLang;

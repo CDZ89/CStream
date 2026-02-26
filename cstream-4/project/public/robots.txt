@@ -1,16 +1,77 @@
+# CStream - Robots.txt
+# Generated: 2026-02-26
+# https://cstream.fun
+
+# ===== ALLOW ALL MAJOR CRAWLERS =====
 User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /player/
+Crawl-delay: 1
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Video
 Allow: /
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /player/
+Crawl-delay: 2
 
+User-agent: Slurp
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Crawl-delay: 5
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: Baiduspider
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+User-agent: YandexBot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# ===== SOCIAL MEDIA CRAWLERS =====
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
 
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# ===== DEFAULT =====
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /player/
+Disallow: /*.json$
+Disallow: /test/
+Crawl-delay: 5
+
+# ===== SITEMAPS =====
 Sitemap: https://cstream.fun/sitemap.xml

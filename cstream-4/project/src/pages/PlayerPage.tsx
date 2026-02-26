@@ -673,6 +673,20 @@ export default function PlayerPage() {
                     onVideoEnd={handleVideoEnd}
                     className="w-full h-full object-cover"
                   />
+                ) : mediaType === 'anilist' ? (
+                  <UniversalPlayer
+                    key={`${playerKey}-${selectedSource}`}
+                    tmdbId={parseInt(id!)}
+                    mediaType={"tv" as any}
+                    season={season}
+                    episode={episode}
+                    title={title}
+                    posterPath={media?.backdrop_path || media?.poster_path}
+                    currentSource={selectedSource}
+                    setCurrentSource={(sourceId) => handleSourceChange(sourceId as PlayerSource)}
+                    onVideoEnd={handleVideoEnd}
+                    className="w-full h-full object-cover"
+                  />
                 ) : null}
               </div>
 
