@@ -1669,8 +1669,8 @@ const MovieDetail = () => {
                       </div>
                     )}
 
-                    {/* Poster cliquable - Taille réduite */}
-                    <div className="w-full aspect-[2/3] overflow-hidden rounded-xl shadow-2xl cursor-zoom-in transition-transform duration-300 hover:scale-105 bg-black" onClick={() => setZoomedPoster(movie.poster_path || null)}>
+                    {/* Poster cliquable - Ultra premium */}
+                    <div className="w-full aspect-[2/3] overflow-hidden rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/10 cursor-zoom-in transition-all duration-500 hover:scale-105 hover:shadow-[0_20px_70px_rgba(168,85,247,0.4)] hover:ring-purple-500/50 bg-black" onClick={() => setZoomedPoster(movie.poster_path || null)}>
                       <img
                         src={movie.poster_path?.startsWith('http') ? movie.poster_path : tmdbApi.getImageUrl(movie.poster_path || '', 'w500')}
                         className="w-full h-full object-cover opacity-100"
@@ -1776,35 +1776,35 @@ const MovieDetail = () => {
                     </div>
                   )}
                   {/* Boutons Watch / Download / Trailer */}
-                  <div className="flex flex-wrap gap-3 pt-2 items-center">
+                  <div className="flex flex-wrap gap-4 pt-4 items-center">
                     <Button
                       size="lg"
-                      className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 min-h-[48px] px-8 rounded-full"
+                      className="gap-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_40px_rgba(147,51,234,0.6)] min-h-[56px] px-10 rounded-full font-bold text-lg transition-all scale-100 hover:scale-105 border border-white/10"
                       onClick={handleWatchQuick}
                       disabled={findingSource}
                     >
-                      <Play className="w-5 h-5 fill-current" />
-                      {findingSource ? 'Recherche...' : 'Watch'}
+                      <Play className="w-5 h-5 fill-white" />
+                      {findingSource ? 'Recherche...' : 'Regarder'}
                     </Button>
 
                     <Button
                       size="lg"
                       variant="outline"
                       onClick={() => setTrailerOpen(true)}
-                      className="gap-2 border-primary/50 text-primary hover:bg-primary/10 hover:border-primary min-h-[48px] px-8 rounded-full"
+                      className="gap-2.5 border-white/20 text-white hover:bg-white/10 hover:border-white/40 min-h-[56px] px-8 rounded-full backdrop-blur-md transition-all text-base font-semibold"
                     >
                       <Film className="w-5 h-5" />
-                      Trailer
+                      Bande-annonce
                     </Button>
 
                     <Button
                       size="lg"
                       variant="outline"
                       onClick={openSourcesModal}
-                      className="gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500 min-h-[48px] px-8 rounded-full"
+                      className="gap-2.5 border-white/20 text-white hover:bg-white/10 hover:border-white/40 min-h-[56px] px-8 rounded-full backdrop-blur-md transition-all text-base font-semibold"
                     >
-                      <ExternalLink className="w-5 h-5" />
-                      Download
+                      <Download className="w-5 h-5" />
+                      Télécharger
                     </Button>
                     {movie && (
                       <ImportedSourceSelector
@@ -1812,6 +1812,7 @@ const MovieDetail = () => {
                         onSelect={handleImportedSourceSelect}
                         currentSource={currentImportedSource}
                         loading={sourcesLoading}
+                        className="min-h-[56px] rounded-full border-white/20 bg-white/5 hover:bg-white/10"
                       />
                     )}
                   </div>

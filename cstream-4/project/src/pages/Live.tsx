@@ -265,11 +265,11 @@ export default function LivePage() {
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: Math.min(idx * 0.04, 0.6) }}
-        whileHover={{ y: -3, transition: { duration: 0.2 } }}
-        className="group relative bg-[#0c0c0e] rounded-2xl overflow-hidden border border-white/[0.06] hover:border-purple-500/40 transition-all duration-300 cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_rgba(168,85,247,0.15)]"
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ delay: Math.min(idx * 0.03, 0.4), duration: 0.4, ease: "easeOut" }}
+        whileHover={{ y: -6, scale: 1.02 }}
+        className="group relative bg-white/[0.02] backdrop-blur-xl rounded-[24px] overflow-hidden border border-white/[0.08] hover:border-purple-500/50 transition-all duration-500 cursor-pointer shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-[0_12px_50px_rgba(168,85,247,0.25)]"
         onClick={() => openPlayer(match)}
         onMouseEnter={() => setPreviewMatch(match)}
         onMouseLeave={() => setPreviewMatch(null)}
@@ -286,77 +286,78 @@ export default function LivePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-[#0c0c0e]/50 to-transparent" />
 
           {/* Top badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-            <div className="px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-sm text-[10px] font-bold text-white/80 border border-white/5">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            <div className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-[10px] font-bold text-white/90 border border-white/10 shadow-lg">
               {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
             {live && (
-              <div className="px-2 py-0.5 rounded-md bg-red-600 text-[9px] font-black text-white flex items-center gap-1 shadow-[0_0_12px_rgba(220,38,38,0.5)]">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                LIVE
+              <div className="px-2.5 py-1 rounded-lg bg-red-600/90 backdrop-blur-md text-[10px] font-black text-white flex items-center gap-1.5 shadow-[0_0_20px_rgba(220,38,38,0.6)] border border-red-500/50">
+                <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse" />
+                EN DIRECT
               </div>
             )}
           </div>
 
           {/* Viewers */}
           {match.viewers && (
-            <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-[9px] text-white/60 border border-white/5">
-              <Eye className="w-2.5 h-2.5" />
+            <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md text-[10px] text-white font-medium border border-white/10 shadow-lg">
+              <Eye className="w-3 h-3 text-purple-400" />
               {formatViewers(match.viewers)}
             </div>
           )}
 
           {/* Teams */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex items-center gap-4 scale-90 group-hover:scale-100 transition-transform duration-500">
-              <div className="flex flex-col items-center gap-1.5">
-                <div className="w-12 h-12 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:border-purple-500/40 transition-colors">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-2">
+            <div className="flex items-center gap-5 scale-95 group-hover:scale-105 transition-transform duration-500 ease-out">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:border-purple-500/60 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.3)] transition-all overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   {homeBadge ? (
-                    <img src={homeBadge} alt="" className="w-9 h-9 object-contain drop-shadow-lg" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                  ) : <Shield className="w-5 h-5 text-white/30" />}
+                    <img src={homeBadge} alt="" className="w-11 h-11 object-contain drop-shadow-2xl relative z-10" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  ) : <Shield className="w-6 h-6 text-white/30" />}
                 </div>
-                <span className="text-[9px] text-white font-bold uppercase tracking-tight max-w-[52px] text-center truncate drop-shadow-md">{match.teams?.home?.name}</span>
+                <span className="text-[10px] text-white font-extrabold uppercase tracking-widest max-w-[64px] text-center truncate drop-shadow-xl">{match.teams?.home?.name}</span>
               </div>
 
-              <div className="flex flex-col items-center gap-0.5">
+              <div className="flex flex-col items-center gap-1">
                 {match.score ? (
-                  <div className="text-white font-black text-xl tracking-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">
-                    {match.score.home} <span className="text-white/30">-</span> {match.score.away}
+                  <div className="text-white font-black text-2xl tracking-tighter drop-shadow-[0_0_20px_rgba(168,85,247,0.9)] bg-black/30 px-3 py-0.5 rounded-lg backdrop-blur-sm border border-white/5">
+                    {match.score.home} <span className="text-purple-400 mx-1">-</span> {match.score.away}
                   </div>
                 ) : (
-                  <span className="text-purple-400 font-black text-lg italic tracking-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">VS</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-br from-purple-400 to-indigo-500 font-black text-2xl italic tracking-tighter drop-shadow-[0_0_20px_rgba(168,85,247,0.6)]">VS</span>
                 )}
-                <div className="w-6 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
               </div>
 
-              <div className="flex flex-col items-center gap-1.5">
-                <div className="w-12 h-12 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group-hover:border-purple-500/40 transition-colors">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:border-indigo-500/60 group-hover:shadow-[0_0_25px_rgba(99,102,241,0.3)] transition-all overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   {awayBadge ? (
-                    <img src={awayBadge} alt="" className="w-9 h-9 object-contain drop-shadow-lg" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                  ) : <Shield className="w-5 h-5 text-white/30" />}
+                    <img src={awayBadge} alt="" className="w-11 h-11 object-contain drop-shadow-2xl relative z-10" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  ) : <Shield className="w-6 h-6 text-white/30" />}
                 </div>
-                <span className="text-[9px] text-white font-bold uppercase tracking-tight max-w-[52px] text-center truncate drop-shadow-md">{match.teams?.away?.name}</span>
+                <span className="text-[10px] text-white font-extrabold uppercase tracking-widest max-w-[64px] text-center truncate drop-shadow-xl">{match.teams?.away?.name}</span>
               </div>
             </div>
           </div>
 
           {/* Play overlay */}
-          <div className="absolute inset-0 flex items-end justify-center pb-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/90 backdrop-blur-sm text-white text-[10px] font-bold shadow-lg">
-              <Play className="w-3 h-3 fill-white" /> Regarder en direct
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black text-xs font-black shadow-[0_0_30px_rgba(255,255,255,0.4)] transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+              <Play className="w-3.5 h-3.5 fill-black" /> Lancer le flux
             </div>
           </div>
         </div>
 
         {/* Info footer */}
-        <div className="p-2.5">
-          <div className="flex items-center gap-1.5 mb-1">
-            <span className="text-[8px] font-black text-purple-400/70 uppercase tracking-widest">{match.category}</span>
+        <div className="p-3.5 bg-gradient-to-b from-transparent to-black/40">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-500/30 text-[9px] font-black text-purple-300 uppercase tracking-widest">{match.category}</span>
             {match.sources.length > 1 && (
-              <span className="text-[8px] text-zinc-600">{match.sources.length} sources</span>
+              <span className="text-[9px] text-zinc-500 font-medium">{match.sources.length} sources HD</span>
             )}
           </div>
-          <h3 className="text-[10px] font-bold text-white/90 line-clamp-1 uppercase tracking-tight">{match.title}</h3>
+          <h3 className="text-xs font-bold text-white/95 line-clamp-1 uppercase tracking-wider">{match.title}</h3>
         </div>
       </motion.div>
     );
@@ -370,23 +371,24 @@ export default function LivePage() {
 
       <main className="container mx-auto px-4 pt-28 pb-20">
         {/* Page Header */}
-        <div className="mb-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="mb-12 relative">
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none" />
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 relative z-10">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                  {liveMatches.length} LIVE EN COURS
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-black tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-pulse" />
+                  {liveMatches.length} DIRECTS
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-xs">
-                  <Activity className="w-3 h-3" />
-                  {matches.length} matchs
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.05] backdrop-blur-md border border-white/10 text-zinc-300 text-xs font-bold tracking-wide">
+                  <Activity className="w-3.5 h-3.5 text-purple-400" />
+                  {matches.length} MATCHS AU TOTAL
                 </div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-gradient-to-r from-white to-white/40 bg-clip-text text-transparent">
-                🏆 SPORTS LIVE
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent drop-shadow-sm uppercase">
+                🔴 Sports Live
               </h1>
-              <p className="text-white/40 text-sm mt-1">Streaming sportif en direct — Multi-langues & HD</p>
+              <p className="text-white/50 text-base md:text-lg mt-3 max-w-xl font-medium">L'ultime plateforme de streaming sportif. Football, Combat, F1 & NBA en Haute Définition. Toujours fluide, sans interruption.</p>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
@@ -464,8 +466,8 @@ export default function LivePage() {
                 whileTap={{ scale: 0.96 }}
                 onClick={() => setSelectedSport(sport.id)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 border ${selectedSport === sport.id
-                    ? 'bg-purple-600 text-white border-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)]'
-                    : 'bg-white/[0.04] text-white/50 hover:text-white border-white/[0.06] hover:bg-white/[0.08]'
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)]'
+                  : 'bg-white/[0.04] text-white/50 hover:text-white border-white/[0.06] hover:bg-white/[0.08]'
                   }`}
               >
                 {sport.name}
@@ -567,8 +569,8 @@ export default function LivePage() {
                       key={s.id}
                       onClick={() => setPlayerState(prev => prev ? { ...prev, selectedStream: s } : null)}
                       className={`flex-shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition-all border ${playerState.selectedStream.id === s.id
-                          ? 'bg-purple-600 text-white border-purple-500'
-                          : 'bg-white/5 text-white/50 border-white/8 hover:bg-white/10'
+                        ? 'bg-purple-600 text-white border-purple-500'
+                        : 'bg-white/5 text-white/50 border-white/8 hover:bg-white/10'
                         }`}
                     >
                       <span className="uppercase">{s.source} #{i + 1}</span>

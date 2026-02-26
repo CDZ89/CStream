@@ -1208,5 +1208,49 @@
     },
     "status": "pending",
     "timestamp": "2026-02-26T17:17:18.228Z"
+  },
+  {
+    "channelId": "1454425396303888426",
+    "embed": {
+      "title": "👤 Nouveau Visiteur !",
+      "description": "Un utilisateur a visité le site.\n\n**Utilisateur:** Inconnu\n**Visitor ID:** ccay5wl\n**Plateforme:** Win32\n**Langue:** fr-FR",
+      "color": "#10b981",
+      "timestamp": "2026-02-26T20:50:49.276Z"
+    },
+    "status": "pending",
+    "timestamp": "2026-02-26T20:50:49.277Z"
+  },
+  {
+    "channelId": "1454425396303888426",
+    "embed": {
+      "title": "👤 Nouveau Visiteur !",
+      "description": "Un utilisateur a visité le site.\n\n**Utilisateur:** Inconnu\n**Visitor ID:** ccay5wl\n**Plateforme:** Win32\n**Langue:** fr-FR",
+      "color": "#10b981",
+      "timestamp": "2026-02-26T20:50:52.746Z"
+    },
+    "status": "pending",
+    "timestamp": "2026-02-26T20:50:52.747Z"
+  },
+  {
+    "channelId": "1454425396303888426",
+    "embed": {
+      "title": "👤 Nouveau Visiteur !",
+      "description": "Un utilisateur a visité le site.\n\n**Utilisateur:** Inconnu\n**Visitor ID:** vvgeued\n**Plateforme:** Win32\n**Langue:** fr",
+      "color": "#10b981",
+      "timestamp": "2026-02-26T20:50:56.743Z"
+    },
+    "status": "pending",
+    "timestamp": "2026-02-26T20:50:56.743Z"
+  },
+  {
+    "channelId": "1454425396303888426",
+    "embed": {
+      "title": "👤 Nouveau Visiteur !",
+      "description": "Un utilisateur a visité le site.\n\n**Utilisateur:** Inconnu\n**Visitor ID:** vvgeued\n**Plateforme:** Win32\n**Langue:** fr",
+      "color": "#10b981",
+      "timestamp": "2026-02-26T20:51:13.432Z"
+    },
+    "status": "pending",
+    "timestamp": "2026-02-26T20:51:13.432Z"
   }
 ]
