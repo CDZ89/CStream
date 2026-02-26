@@ -6,7 +6,6 @@ import {
   Play,
   RotateCcw,
   RefreshCw,
-  ExternalLink,
   ChevronDown,
   Monitor,
   Check,
@@ -780,7 +779,6 @@ const getTranslations = (lang: string) => {
       switching: "BASCULEMENT DE SOURCE...",
       connecting: "CONNEXION SÉCURISÉE...",
       retry: "RÉESSAYER",
-      openExternal: "OUVRIR EXTERNE",
       blocked: "LECTURE BLOQUÉE ?",
       blockedDesc:
         "Certaines sources peuvent être bloquées par votre navigateur ou extensions. Essayez de changer de source ou utilisez un VPN.",
@@ -794,7 +792,6 @@ const getTranslations = (lang: string) => {
       switching: "SWITCHING SOURCE...",
       connecting: "SECURE CONNECTION...",
       retry: "RETRY",
-      openExternal: "OPEN EXTERNAL",
       blocked: "PLAYBACK BLOCKED?",
       blockedDesc:
         "Some sources may be blocked by your browser or extensions. Try switching sources or using a VPN.",
@@ -1021,9 +1018,6 @@ export const UniversalPlayer = ({
     setLoadingProgress(0);
   }, []);
 
-  const handleOpenExternal = useCallback(() => {
-    window.open(videoUrl, "_blank", "noopener,noreferrer");
-  }, [videoUrl]);
 
   const togglePlayerFullscreen = useCallback(() => {
     if (containerRef.current) {
