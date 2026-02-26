@@ -524,7 +524,7 @@ const TVDetail = () => {
                 avatarUrl = profile.avatar_url;
               }
 
-              const { data: userData } = await supabase
+              const { data: userData } = await (supabase as any)
                 .from("users")
                 .select("is_admin")
                 .eq("auth_id", review.user_id)

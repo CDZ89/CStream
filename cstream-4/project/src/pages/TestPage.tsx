@@ -118,7 +118,7 @@ export default function TestPage() {
               <div className="loader-bg-glow"></div>
             </div>
 
-            <style jsx global>{`
+            <style>{`
               .loader-content {
                 position: relative;
                 display: flex;

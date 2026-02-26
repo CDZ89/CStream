@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { SEO } from '@/components/SEO';
-import { 
+import {
   Zap, Loader2, BookOpen, ExternalLink, RefreshCw, Database, Search, AlertCircle, Sparkles
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -20,11 +20,11 @@ const MangaScraperTest = () => {
     setResults([]);
     try {
       toast.info("Démarrage du moteur foudroyant v3...");
-      
+
       const targetUrl = 'https://asuracomic.net';
       const jinaUrl = `https://r.jina.ai/${targetUrl}`;
       const proxyUrl = `/api/images/proxy?url=${encodeURIComponent(jinaUrl)}`;
-      
+
       let fetchedContent = '';
       try {
         const response = await fetch(proxyUrl);
@@ -36,10 +36,9 @@ const MangaScraperTest = () => {
       }
 
       const parsedResults: any[] = [];
-      
-      // Extraction améliorée (v3)
+
       if (fetchedContent) {
-        const markdownLinks = fetchedContent.match(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g) || [];
+        const markdownLinks: string[] = fetchedContent.match(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g) || [];
         markdownLinks.forEach(link => {
           const match = link.match(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/);
           if (match && match[1].length > 5 && !match[2].includes('google') && !match[2].includes('jina')) {
@@ -77,8 +76,8 @@ const MangaScraperTest = () => {
       });
 
       setResults(parsedResults);
-      setStats({ 
-        found: parsedResults.length, 
+      setStats({
+        found: parsedResults.length,
         source: fetchedContent ? "Hybrid Cloudflare Bypass" : "Direct Engine Core",
         version: "3.0.2"
       });
@@ -129,10 +128,10 @@ const MangaScraperTest = () => {
           <ScrollArea className="h-[500px] rounded-3xl border border-white/10 bg-black/40 backdrop-blur-md shadow-2xl">
             <div className="p-4 space-y-3">
               {results.map((item, idx) => (
-                <motion.div 
-                  key={idx} 
-                  initial={{ opacity: 0, x: -10 }} 
-                  animate={{ opacity: 1, x: 0 }} 
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.02 }}
                   className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between group hover:bg-white/10 hover:border-white/20 transition-all"
                 >

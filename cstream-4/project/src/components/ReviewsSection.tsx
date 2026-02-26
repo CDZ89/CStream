@@ -134,7 +134,7 @@ export const ReviewsSection = ({
       if (!mediaId) return;
       setReviewsLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("reviews")
           .select("id, user_id, username, profile_url, comment, rating, created_at, media_id, badge")
           .eq("media_id", mediaIdStr)
