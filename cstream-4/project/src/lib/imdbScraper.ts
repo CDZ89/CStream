@@ -1,6 +1,3 @@
-import { useAuth } from "@/hooks/useAuth";
-import { useLanguage } from "@/lib/i18n";
-import { useUserSettings } from "@/hooks/useUserSettings";
 
 interface IMDbMetadata {
   title?: string;

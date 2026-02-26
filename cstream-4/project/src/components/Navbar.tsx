@@ -194,15 +194,32 @@ export const Navbar = () => {
   // Dynamic class names
   const headerClasses = useMemo(() => {
     const baseClasses = "py-1.5 px-3 md:px-6 transition-all duration-500";
-    const bgClass =
-      mode === "dark"
-        ? "bg-[#0a0b14]/40 backdrop-blur-2xl saturate-[1.5] brightness-110"
-        : isNavbarAttached
-          ? "bg-gradient-to-r from-gray-50/60 via-blue-50/60 to-gray-50/60 backdrop-blur-xl border-blue-300/30"
-          : "bg-gradient-to-r from-white/50 via-blue-50/40 to-white/50 backdrop-blur-2xl saturate-150 border-blue-300/20";
-    const shadowClass = mode === "dark" ? "shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-primary/10 border-white/10 hover:border-white/20" : "shadow-xl shadow-blue-500/5 hover:border-blue-400/30";
+    const bgClass = isNavbarAttached
+      ? "backdrop-blur-xl border-b border-border shadow-md"
+      : "bg-background/60 backdrop-blur-2xl saturate-[1.2] border-white/10";
+    const shadowClass = isNavbarAttached ? "" : "shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-primary/10 hover:border-white/20";
     return `${baseClasses} ${bgClass} border ${shadowClass}`;
   }, [isNavbarAttached, mode]);
+
+  // Dynamic inline styles for custom gradient
+  const headerStyle = useMemo(() => {
+    const baseStyle = {
+      top: isNavbarAttached ? "0" : "12px",
+      left: "0",
+      right: "0",
+      width: "100%",
+      padding: isNavbarAttached ? "0" : "0 16px",
+    };
+
+    if (isNavbarAttached && settings.customGradient) {
+      return {
+        ...baseStyle,
+        background: `linear-gradient(to right, ${settings.customGradient.backgroundColor}, ${settings.customGradient.primaryColor}22, ${settings.customGradient.backgroundColor})`
+      };
+    }
+
+    return baseStyle;
+  }, [isNavbarAttached, settings.customGradient]);
 
   // User initials
   const userInitial = useMemo(
@@ -221,13 +238,7 @@ export const Navbar = () => {
             {...animations.header}
             className="fixed z-[60] transition-all duration-500 ease-in-out"
             exit={{ y: -100, opacity: 0 }}
-            style={{
-              top: isNavbarAttached ? "0" : "12px",
-              left: "0",
-              right: "0",
-              width: "100%",
-              padding: isNavbarAttached ? "0" : "0 16px",
-            }}
+            style={headerStyle as any}
           >
             <div
               className={`${isNavbarAttached ? "max-w-full" : "mx-auto max-w-[95%] xl:max-w-[1400px]"} ${headerClasses} ${isNavbarAttached ? "rounded-none" : "rounded-2xl"} overflow-visible transition-all duration-500 ease-in-out`}

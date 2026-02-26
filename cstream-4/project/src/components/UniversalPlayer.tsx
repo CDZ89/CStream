@@ -880,34 +880,37 @@ export const UniversalPlayer = ({
   }, [currentSource, clearTimers, handleSourceChange]);
 
   useEffect(() => {
+    if (!isPlayerReady) return;
+
     clearTimers();
     setStatus("loading");
     setLoadingProgress(0);
 
-    // Simulate initial loading progress
+    // Simulate initial loading progress ultra-fast
     const interval = setInterval(() => {
       setLoadingProgress(prev => {
-        if (prev >= 90) return prev;
-        return prev + 10;
+        if (prev >= 95) return prev;
+        return prev + 25;
       });
-    }, 500);
+    }, 150);
+    progressIntervalRef.current = interval;
 
-    // Timeout fallback: if iframe still loading after 15s, trigger error
+    // Timeout fallback: if iframe still loading after 3.5s, trigger error/switch
     const timeout = setTimeout(() => {
       setStatus(prev => {
         if (prev === "loading") {
-          // Use setTimeout to avoid synchronous state update issues during render phase
           setTimeout(handleIframeError, 10);
         }
         return prev;
       });
-    }, 15000);
+    }, 3500);
+    loadTimeoutRef.current = timeout;
 
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
     };
-  }, [videoUrl, clearTimers, handleIframeError]);
+  }, [videoUrl, clearTimers, handleIframeError, isPlayerReady]);
 
   const handleRetry = useCallback(() => {
     setStatus("loading");
@@ -938,28 +941,8 @@ export const UniversalPlayer = ({
   const translations = getTranslations(lang);
   const { antiPubBeta } = useBetaSettings();
 
-  const [sourceStates, setSourceStates] = useState<Record<string, 'pending' | 'testing' | 'success' | 'failed'>>(() => {
-    const initial: Record<string, 'pending' | 'testing' | 'success' | 'failed'> = {};
-    SOURCES.forEach(s => initial[s.id] = 'pending');
-    return initial;
-  });
-
-  useEffect(() => {
-    setSourceStates(prev => {
-      const next = { ...prev };
-      if (status === 'loading' || autoSwitching) {
-        next[currentSource] = 'testing';
-      } else if (status === 'ready') {
-        next[currentSource] = 'success';
-      } else if (status === 'error') {
-        next[currentSource] = 'failed';
-      }
-      return next;
-    });
-  }, [currentSource, status, autoSwitching]);
-
   return (
-    <div className={cn("flex flex-col lg:flex-row w-full gap-4", className)}>
+    <div className={cn("flex flex-col w-full gap-4", className)}>
       <div className="flex-1 flex flex-col min-w-0 shadow-2xl rounded-2xl overflow-hidden ring-1 ring-white/10">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -978,7 +961,33 @@ export const UniversalPlayer = ({
           </div>
 
           <div className="flex items-center gap-1">
-            {/* The dropdown menu is hidden here since we have a dedicated side panel now, but we keep the retry & fullscreen buttons */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Server className="w-4 h-4 text-purple-400" />
+                  <span className="hidden sm:inline">Sources</span>
+                  <ChevronDown className="w-4 h-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 max-h-[300px] overflow-y-auto">
+                <DropdownMenuLabel>Sélection de la source</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {SOURCES.map((s) => (
+                  <DropdownMenuItem
+                    key={s.id}
+                    onClick={() => handleSourceChange(s.id)}
+                    className={cn(
+                      "flex items-center gap-2 cursor-pointer",
+                      currentSource === s.id && "bg-purple-500/10 text-purple-400 font-bold"
+                    )}
+                  >
+                    <span className="flex-1">{s.name}</span>
+                    {currentSource === s.id && <Check className="w-4 h-4" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button variant="ghost" size="icon" onClick={handleRetry} title={translations.retry}>
               <RotateCcw className="w-4 h-4" />
             </Button>
@@ -1025,17 +1034,17 @@ export const UniversalPlayer = ({
               </motion.div>
             ) : null}
 
-            {isPlayerReady && (status === "loading" || autoSwitching) && (
+            {isPlayerReady && autoSwitching && (
               <motion.div
-                key="loading"
+                key="switching"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950/90 backdrop-blur-sm"
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-zinc-950/90 backdrop-blur-sm pointer-events-none"
               >
                 <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-                <p className="text-white font-medium text-sm animate-pulse">{autoSwitching ? translations.switching : translations.loading}</p>
-                <p className="text-zinc-500 text-xs mt-2 max-w-xs text-center">Test de la connexion... Si cela échoue, nous passerons automatiquement à la source suivante.</p>
+                <p className="text-white font-medium text-sm animate-pulse">{translations.switching}</p>
+                <p className="text-zinc-500 text-xs mt-2 max-w-xs text-center pointer-events-auto">Test de la connexion... Si cela échoue, nous passerons automatiquement à la source suivante.</p>
               </motion.div>
             )}
 
@@ -1069,77 +1078,6 @@ export const UniversalPlayer = ({
               loading="lazy"
             />
           )}
-        </div>
-      </div>
-
-      {/* Auto-Fallback Side Menu */}
-      <div className="w-full lg:w-80 flex flex-col bg-[#121212]/95 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[500px] lg:h-auto">
-        <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between sticky top-0 z-10">
-          <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Server className="w-4 h-4 text-purple-400" />
-              Serveurs Vidéo
-            </h3>
-            <p className="text-[10px] text-zinc-400 mt-0.5">Basculement auto en cas d'erreur</p>
-          </div>
-          <Badge variant="secondary" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px]">
-            Auto-Fallback Actif
-          </Badge>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
-          {SOURCES.sort((a, b) => (lang === 'fr' && a.id === 'frembed' ? -1 : 0)).map((source) => {
-            const state = sourceStates[source.id] || 'pending';
-            const isActive = currentSource === source.id;
-
-            return (
-              <button
-                key={source.id}
-                onClick={() => handleSourceChange(source.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left",
-                  isActive
-                    ? "bg-purple-500/10 border-purple-500/30 border shadow-inner"
-                    : "bg-transparent border border-transparent hover:bg-white/5",
-                  state === 'testing' && !isActive && "opacity-70"
-                )}
-              >
-                {/* Status Indicator */}
-                <div className="relative flex items-center justify-center w-6 h-6 shrink-0">
-                  {state === 'testing' && isActive && (
-                    <div className="w-4 h-4 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
-                  )}
-                  {state === 'success' && (
-                    <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                  )}
-                  {state === 'failed' && (
-                    <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
-                  )}
-                  {state === 'pending' && (!isActive) && (
-                    <div className="w-2 h-2 rounded-full bg-zinc-600" />
-                  )}
-                </div>
-
-                <div className="flex flex-col flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "font-semibold text-sm truncate",
-                      isActive ? "text-purple-400" : "text-zinc-300",
-                      state === 'failed' && "text-red-400 line-through opacity-70"
-                    )}>
-                      {source.name}
-                    </span>
-                    {source.reliable && (
-                      <Sparkles className="w-3 h-3 text-amber-500" />
-                    )}
-                  </div>
-                  <span className="text-[10px] text-zinc-500 truncate">
-                    {source.languages?.includes('fr') ? 'VF/VOSTFR' : 'VO/VOSTFR'} • {source.description}
-                  </span>
-                </div>
-              </button>
-            );
-          })}
         </div>
       </div>
     </div>
