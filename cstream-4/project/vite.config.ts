@@ -108,29 +108,24 @@ export default defineConfig(({ mode }) => ({
       output: {
         // Better chunk splitting for faster initial load
         manualChunks(id) {
-          // Core react vendor bundle - keep small
+          // Core react vendor bundle
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/') || id.includes('node_modules/scheduler/')) {
             return 'react-vendor';
-          }
-          // UI animation/icons bundle
-          if (id.includes('node_modules/framer-motion/') || id.includes('node_modules/lucide-react/')) {
-            return 'ui-vendor';
           }
           // Supabase client
           if (id.includes('node_modules/@supabase/')) {
             return 'supabase-vendor';
           }
-          // Zustand state management
-          if (id.includes('node_modules/zustand/')) {
-            return 'state-vendor';
-          }
-          // Charts (recharts) are heavy, load separately
-          if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-')) {
-            return 'charts-vendor';
-          }
-          // Radix UI primitives
-          if (id.includes('node_modules/@radix-ui/')) {
-            return 'radix-vendor';
+          // Large UI/Logic libraries that are stable when grouped
+          if (
+            id.includes('node_modules/framer-motion/') ||
+            id.includes('node_modules/lucide-react/') ||
+            id.includes('node_modules/zustand/') ||
+            id.includes('node_modules/@radix-ui/') ||
+            id.includes('node_modules/recharts/') ||
+            id.includes('node_modules/d3-')
+          ) {
+            return 'ui-vendor';
           }
         },
       },
