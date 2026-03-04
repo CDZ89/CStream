@@ -947,13 +947,16 @@ app.get("/api/sports/stream/:id", async (req, res) => {
 
 // ─── CHAT AI — Gemini Cascade + HF Llama 3.3 + Groq Safety Net ───────────────
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const HF_TOKEN_KEY = process.env.HF_TOKEN;
+const HF_TOKEN_KEY = process.env.HF_TOKEN || process.env.HF_TOKEN_KEY;
+const GROQ_KEY_GLOBAL = process.env.GROQ_API_KEY;
 
+// ✅ Up-to-date Gemini models (as of 2025)
 const GEMINI_MODELS_CASCADE = [
-  "gemini-2.0-flash-exp",
-  "gemini-1.5-pro",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
   "gemini-1.5-flash",
   "gemini-1.5-flash-8b",
+  "gemini-1.5-pro",
 ];
 
 const AI_PERSONAS = {
@@ -962,36 +965,61 @@ const AI_PERSONAS = {
   director: `Tu es un réalisateur passionné qui explique le cinéma du point de vue créatif: techniques de tournage, narration visuelle, choix artistiques, direction d'acteurs. Réponds en français avec passion.`
 };
 
-async function callGeminiCascade(messages, persona) {
+// Available models list for frontend selector
+const AVAILABLE_MODELS = [
+  { id: "auto", name: "🤖 Auto (cascade)", provider: "auto", description: "Essaie Gemini → HuggingFace → Groq" },
+  { id: "gemini-2.0-flash", name: "⚡ Gemini 2.0 Flash", provider: "gemini", description: "Rapide, intelligent" },
+  { id: "gemini-1.5-pro", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision" },
+  { id: "gemini-1.5-flash", name: "💨 Gemini 1.5 Flash", provider: "gemini", description: "Ultra rapide" },
+  { id: "llama-3.3-70b", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace" },
+  { id: "groq-llama", name: "⚡ Groq Llama 70B", provider: "groq", description: "Très rapide via Groq" },
+];
+
+app.get("/api/models", (req, res) => {
+  const withStatus = AVAILABLE_MODELS.map(m => ({
+    ...m,
+    available: m.provider === "gemini" ? !!GEMINI_API_KEY
+      : m.provider === "huggingface" ? !!HF_TOKEN_KEY
+        : m.provider === "groq" ? !!GROQ_KEY_GLOBAL
+          : true
+  }));
+  res.json({ models: withStatus });
+});
+
+async function callGeminiModel(messages, persona, modelId) {
   const systemText = AI_PERSONAS[persona] || AI_PERSONAS.cai;
+  if (!GEMINI_API_KEY) { console.warn("[AI] No GEMINI_API_KEY"); return null; }
   const history = messages.slice(-12).map(m => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content }]
   }));
+  try {
+    console.log(`[AI] Trying Gemini: ${modelId}`);
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(20000),
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemText }] },
+          contents: history,
+          generationConfig: { maxOutputTokens: 1500, temperature: 0.75 }
+        })
+      }
+    );
+    if (!resp.ok) { const err = await resp.text(); console.warn(`[AI] Gemini ${modelId} HTTP ${resp.status}:`, err); return null; }
+    const data = await resp.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (text) { console.log(`[AI] ✅ Gemini ${modelId} OK`); return text; }
+  } catch (e) { console.warn(`[AI] Gemini ${modelId} error:`, e.message); }
+  return null;
+}
 
+async function callGeminiCascade(messages, persona) {
   for (const model of GEMINI_MODELS_CASCADE) {
-    try {
-      console.log(`[AI] Trying Gemini: ${model}`);
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: AbortSignal.timeout(18000),
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: systemText }] },
-            contents: history,
-            generationConfig: { maxOutputTokens: 1500, temperature: 0.75 }
-          })
-        }
-      );
-      if (!resp.ok) { console.warn(`[AI] Gemini ${model} HTTP ${resp.status}`); continue; }
-      const data = await resp.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-      if (text) { console.log(`[AI] ✅ Gemini ${model} OK`); return text; }
-    } catch (e) {
-      console.warn(`[AI] Gemini ${model} error:`, e.message);
-    }
+    const text = await callGeminiModel(messages, persona, model);
+    if (text) return text;
   }
   return null;
 }
@@ -1048,21 +1076,38 @@ async function callGroqSafetyNet(messages, persona) {
 
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages = [], character = "cai" } = req.body;
+    const { messages = [], character = "cai", model = "auto" } = req.body;
+    console.log(`[AI] Chat request: model=${model} persona=${character} msgs=${messages.length}`);
 
-    // 1. Gemini cascade (2.0-flash → 1.5-pro → 1.5-flash → 1.5-flash-8b)
-    let response = await callGeminiCascade(messages, character);
+    let response = null;
 
-    // 2. HuggingFace Llama 3.3-70B
-    if (!response) response = await callHuggingFace(messages, character);
+    // Force-specific model if requested
+    if (model && model !== "auto") {
+      if (["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro", "gemini-1.5-flash", "gemini-1.5-flash-8b"].includes(model)) {
+        response = await callGeminiModel(messages, character, model);
+        if (!response) response = "⚠️ Ce modèle Gemini n'a pas répondu. Essayez un autre modèle.";
+        return res.json({ response, model_used: model });
+      }
+      if (model === "llama-3.3-70b") {
+        response = await callHuggingFace(messages, character);
+        if (!response) response = "⚠️ HuggingFace Llama n'a pas répondu. Essayez un autre modèle.";
+        return res.json({ response, model_used: model });
+      }
+      if (model === "groq-llama") {
+        response = await callGroqSafetyNet(messages, character);
+        if (!response) response = "⚠️ Groq n'a pas répondu. Essayez un autre modèle.";
+        return res.json({ response, model_used: model });
+      }
+    }
 
-    // 3. Groq safety net
-    if (!response) response = await callGroqSafetyNet(messages, character);
+    // Auto cascade: Gemini → HuggingFace → Groq
+    response = await callGeminiCascade(messages, character);
+    let model_used = "gemini";
+    if (!response) { response = await callHuggingFace(messages, character); model_used = "huggingface"; }
+    if (!response) { response = await callGroqSafetyNet(messages, character); model_used = "groq"; }
+    if (!response) { response = "⚠️ Tous les services IA sont temporairement indisponibles. Vérifiez vos clés API dans le fichier .env et réessayez."; model_used = "none"; }
 
-    // 4. Final fallback
-    if (!response) response = "⚠️ Tous les services IA sont temporairement indisponibles. Réessayez dans quelques instants.";
-
-    return res.json({ response });
+    return res.json({ response, model_used });
   } catch (error) {
     console.error("Chat API Error:", error);
     res.status(500).json({ response: "Erreur : " + error.message });

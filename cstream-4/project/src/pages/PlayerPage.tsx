@@ -4,6 +4,7 @@ import { Navbar } from '@/components/Navbar';
 import { UniversalPlayer, SOURCES, type PlayerSource } from '@/components/UniversalPlayer';
 import { ImportedSourceSelector } from '@/components/ImportedSourceSelector';
 import { MediaCard } from '@/components/MediaCard';
+import { SourceSelectorList } from '@/components/SourceSelectorList';
 import { tmdbApi } from '@/lib/tmdb';
 import { useAuth } from '@/hooks/useAuth';
 import { useWatchHistory } from '@/hooks/useWatchHistory';

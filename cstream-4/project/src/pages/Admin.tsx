@@ -676,7 +676,7 @@ const getUserRole = (userData: UserData): UserRole => {
   return 'member';
 };
 
-const UserRow = memo(({ userData, onManageRole }: { userData: UserData; onManageRole?: (user: UserData) => void }) => {
+const UserRow = memo(({ userData, onManageRole, onUpdateUser }: { userData: UserData; onManageRole?: (user: UserData) => void; onUpdateUser?: (user: UserData) => void }) => {
   const userRole = getUserRole(userData);
   const roleConfig = getRoleConfig(userRole);
 
@@ -698,7 +698,9 @@ const UserRow = memo(({ userData, onManageRole }: { userData: UserData; onManage
       toast.success('Niveau mis à jour');
 
       // Update local state to reflect change immediately
-      setUsers(prev => prev.map(u => u.id === userId ? { ...u, level: newLevel, xp: newXp } : u));
+      if (onUpdateUser) {
+        onUpdateUser({ ...userData, level: newLevel, xp: newXp });
+      }
     } catch (error: any) {
       toast.error('Erreur: ' + error.message);
     }
@@ -3591,6 +3593,7 @@ const Admin = () => {
             onMarkAllAsRead={markAllAsRead}
             onClear={clearNotifications}
           />
+          <OnlineUsersCounter users={[]} />
         </div>
       </div>
 
@@ -4154,84 +4157,18 @@ const Admin = () => {
                         <TableHead>Statut</TableHead>
                         <TableHead>Code ami</TableHead>
                         <TableHead>Inscrit le</TableHead>
+                        <TableHead>Niveau</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredUsers.map((userData) => (
-                        <TableRow key={userData.id} className="hover:bg-secondary/20 transition-colors">
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <div className="relative">
-                                {userData.avatar_url ? (
-                                  <img
-                                    src={userData.avatar_url}
-                                    alt={userData.username}
-                                    className="w-10 h-10 rounded-full object-cover shadow-md"
-                                  />
-                                ) : (
-                                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/50 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                                    {userData.username?.charAt(0).toUpperCase() || '?'}
-                                  </div>
-                                )}
-                                <div
-                                  className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-background ${getStatusColor(userData.status, userData.last_seen)} ${determineEffectiveStatus(userData.status, userData.last_seen) === 'online' ? 'animate-pulse shadow-sm shadow-green-500/50' : ''}`}
-                                  title={getStatusLabel(userData.status, userData.last_seen)}
-                                />
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">{userData.username}</span>
-                                  <RoleBadge role={getUserRole(userData)} size="sm" />
-                                </div>
-                                {userData.email ? (
-                                  <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Mail className="w-3 h-3" />
-                                    {userData.email}
-                                  </p>
-                                ) : (
-                                  <p className="text-xs text-muted-foreground font-mono">{userData.id.slice(0, 8)}...</p>
-                                )}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                <div className={`w-2.5 h-2.5 rounded-full ${getStatusColor(userData.status, userData.last_seen)} ${determineEffectiveStatus(userData.status, userData.last_seen) === 'online' ? 'animate-pulse' : ''}`} />
-                                <span className="text-sm font-medium">{getStatusLabel(userData.status, userData.last_seen)}</span>
-                              </div>
-                              {userData.last_seen && determineEffectiveStatus(userData.status, userData.last_seen) !== 'online' && (
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
-                                  {new Date(userData.last_seen).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="font-mono">{userData.friend_code}</Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-3 h-3" />
-                              {formatDate(userData.created_at)}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {userData.id !== user?.id && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openRoleDialog(userData)}
-                                className="gap-1"
-                              >
-                                <Shield className="w-3 h-3" />
-                                Gérer le rôle
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
+                        <UserRow
+                          key={userData.id}
+                          userData={userData}
+                          onManageRole={userData.id !== user?.id ? openRoleDialog : undefined}
+                          onUpdateUser={(updatedUser) => setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u))}
+                        />
                       ))}
                     </TableBody>
                   </Table>

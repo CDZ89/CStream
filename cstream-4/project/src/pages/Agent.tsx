@@ -1,862 +1,583 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Send, Bot, Trash2, Plus, Sparkles, User, MessageSquare,
-  Zap, Heart, Home, Star, Play, X, Settings, Search,
-  ChevronRight, Command, Cpu, Activity, ArrowUp, Mic, MicOff,
-  Copy, ThumbsUp, ThumbsDown, Download, Share2, Film,
-  Tv, Clapperboard, TrendingUp, Clock, Hash, Filter,
-  BookOpen, Globe, RotateCcw, ChevronDown, Check, Info,
-  Palette, ChevronLeft, Volume2, VolumeX, Layout, Pin
+  Bot, Plus, MessageSquare, Trash2, Search,
+  ArrowUp, Mic, MicOff, Copy, ThumbsUp, ThumbsDown,
+  Check, Film, Tv, Star, Play, Download, Sparkles,
+  ChevronRight, Zap, Heart, Globe, TrendingUp,
+  PanelLeft, ChevronDown, Cpu, Loader2
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { useNavigate } from "react-router-dom";
 
-const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
+const cn = (...c: (string | boolean | undefined | null)[]) => c.filter(Boolean).join(" ");
 
-interface ChatMessage {
+/* ─── Types ─────────────────────────────────────────────────────────────── */
+interface Msg {
   id: string;
   role: "user" | "assistant";
   content: string;
-  timestamp: Date;
-  elements?: Array<{ type: string; content: any }>;
-  reactions?: { thumbsUp: number; thumbsDown: number; userReaction?: "up" | "down" };
-  isTyping?: boolean;
+  ts: Date;
+  media?: any[];
+  modelUsed?: string;
+  reactions?: { up: number; down: number; mine?: "up" | "down" };
 }
+interface Conv { id: string; title: string; msgs: Msg[]; updatedAt: Date }
+interface AIModel { id: string; name: string; provider: string; description: string; available: boolean }
 
-interface Conversation {
-  id: string;
-  title: string;
-  messages: ChatMessage[];
-  lastUpdate: Date;
-  isPinned?: boolean;
-  category?: string;
-}
-
-// ─── Markdown-like rich text renderer ─────────────────────────────────────────
-function RichText({ text, messageId }: { text: string; messageId: string }) {
-  const hasAnimatedRef = useRef<Record<string, boolean>>({});
-  const isFirstRender = !hasAnimatedRef.current[messageId];
-
-  useEffect(() => { hasAnimatedRef.current[messageId] = true; }, [messageId]);
-
-  const renderWord = (word: string, i: number) => (
-    <motion.span
-      key={i}
-      initial={isFirstRender ? { opacity: 0, filter: "blur(6px)" } : { opacity: 1, filter: "blur(0)" }}
-      animate={{ opacity: 1, filter: "blur(0)" }}
-      transition={{ duration: 0.25, delay: isFirstRender ? i * 0.008 : 0 }}
-      className="inline-block mr-[0.25em]"
-    >
-      {word}
-    </motion.span>
+/* ─── Markdown renderer ─────────────────────────────────────────────────── */
+function MD({ text }: { text: string }) {
+  return (
+    <div className="text-[14.5px] leading-[1.7] space-y-1.5">
+      {text.split("\n").map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-1.5" />;
+        if (line.startsWith("## ")) return <p key={i} className="font-bold text-base text-white mt-3">{line.slice(3)}</p>;
+        if (line.startsWith("# ")) return <p key={i} className="font-black text-lg text-white mt-3">{line.slice(2)}</p>;
+        if (/^[-*]\s/.test(line)) {
+          const content = line.replace(/^[-*]\s/, "");
+          return <div key={i} className="flex gap-2 items-start"><span className="mt-[6px] w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" /><span>{renderInline(content)}</span></div>;
+        }
+        if (/^\d+\.\s/.test(line)) {
+          const [num, ...rest] = line.split(". ");
+          return <div key={i} className="flex gap-2 items-start"><span className="text-purple-400 font-bold shrink-0 w-4 text-right">{num}.</span><span>{renderInline(rest.join(". "))}</span></div>;
+        }
+        if (line.trim() === "---") return <hr key={i} className="border-white/10 my-2" />;
+        return <p key={i}>{renderInline(line)}</p>;
+      })}
+    </div>
   );
-
-  const renderLine = (line: string, lineIdx: number) => {
-    // Code block
-    if (line.startsWith("```") || line.startsWith("    ")) {
-      return (
-        <div key={lineIdx} className="font-mono text-xs bg-black/50 px-3 py-2 rounded-xl border border-white/10 my-2 overflow-x-auto text-green-300">
-          {line.replace(/^```\w*/, "").trim()}
-        </div>
-      );
-    }
-    // Headings
-    if (line.startsWith("## ")) return (
-      <h3 key={lineIdx} className="text-base font-bold text-white mb-1 mt-3">
-        {line.replace("## ", "")}
-      </h3>
-    );
-    if (line.startsWith("# ")) return (
-      <h2 key={lineIdx} className="text-lg font-black text-white mb-2 mt-3">
-        {line.replace("# ", "")}
-      </h2>
-    );
-    // Bold
-    if (line.includes("**")) {
-      const parts = line.split("**");
-      return (
-        <div key={lineIdx} className="mb-1 leading-relaxed">
-          {parts.map((part, idx) =>
-            idx % 2 === 1
-              ? <strong key={idx} className="text-purple-300 font-bold">{part.split(" ").map((w, i) => renderWord(w, i))}</strong>
-              : <span key={idx}>{part.split(" ").map((w, i) => renderWord(w, i))}</span>
-          )}
-        </div>
-      );
-    }
-    // Lists
-    if (line.trim().startsWith("- ") || line.trim().startsWith("* ") || /^\d+\.\s/.test(line.trim())) {
-      const isNumbered = /^\d+\.\s/.test(line.trim());
-      const content = line.replace(/^[-*]\s/, "").replace(/^\d+\.\s/, "");
-      return (
-        <div key={lineIdx} className="flex gap-2.5 mb-1.5 ml-1">
-          <span className={cn("flex-shrink-0 mt-1.5", isNumbered ? "text-purple-400 text-xs font-bold" : "w-1.5 h-1.5 rounded-full bg-purple-500 mt-2")}>
-            {isNumbered ? line.match(/^\d+/)?.[0] + "." : ""}
-          </span>
-          <span className="text-white/85 leading-relaxed">{content.split(" ").map((w, i) => renderWord(w, i))}</span>
-        </div>
-      );
-    }
-    // Separator
-    if (line.trim() === "---") return <hr key={lineIdx} className="border-white/10 my-3" />;
-    // Empty line
-    if (!line.trim()) return <div key={lineIdx} className="h-2" />;
-    // Regular
-    return (
-      <div key={lineIdx} className="mb-1.5 leading-relaxed text-white/88">
-        {line.split(" ").map((w, i) => renderWord(w, i))}
-      </div>
-    );
-  };
-
-  return <div>{text.split("\n").map((line, i) => renderLine(line, i))}</div>;
+}
+function renderInline(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return <>{parts.map((p, i) => p.startsWith("**") ? <strong key={i} className="text-white font-semibold">{p.slice(2, -2)}</strong> : <span key={i} className="text-zinc-300">{p}</span>)}</>;
 }
 
-// ─── Media Card ───────────────────────────────────────────────────────────────
+/* ─── MediaCard ─────────────────────────────────────────────────────────── */
 function MediaCard({ data }: { data: any }) {
-  const navigate = useNavigate();
+  const nav = useNavigate();
   if (!data) return null;
-
-  const getPosterUrl = () => {
-    const tmdbPath = data.image || data.poster || data.poster_path || data.backdrop_path;
-    if (typeof tmdbPath === "string" && tmdbPath.startsWith("/"))
-      return `https://image.tmdb.org/t/p/w500${tmdbPath}`;
-    if (typeof tmdbPath === "string" && (tmdbPath.startsWith("http") || tmdbPath.includes("tmdb.org")))
-      return tmdbPath;
-    return `https://placehold.co/500x750/1a1a2e/ffffff?text=${encodeURIComponent(data.title || data.name || "?")}`;
-  };
-
+  const poster = (() => {
+    const p = data.image || data.poster || data.poster_path || data.backdrop_path;
+    if (typeof p === "string" && p.startsWith("/")) return `https://image.tmdb.org/t/p/w300${p}`;
+    if (typeof p === "string" && p.startsWith("http")) return p;
+    return `https://placehold.co/300x450/111/fff?text=${encodeURIComponent(data.title || "?")}`;
+  })();
   const type = data.mediaType || data.type || (data.title ? "movie" : "tv");
   const rating = data.rating || data.vote_average;
   const year = data.year || data.release_date?.slice(0, 4) || data.first_air_date?.slice(0, 4);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.92, y: 8 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      className="group relative rounded-2xl overflow-hidden bg-black/50 border border-white/10 hover:border-purple-500/60 transition-all duration-300 hover:shadow-[0_8px_40px_rgba(168,85,247,0.2)] w-[150px] flex-shrink-0"
-    >
-      <div className="aspect-[2/3] relative overflow-hidden">
-        <img
-          src={getPosterUrl()}
-          alt={data.title || data.name}
-          onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/500x750/1a1a2e/ffffff?text=${encodeURIComponent(data.title || "?")}`; }}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-
+    <motion.div whileHover={{ y: -4, scale: 1.02 }}
+      onClick={() => nav(`/${type}/${data.tmdbId || data.id}`)}
+      className="w-[130px] flex-shrink-0 cursor-pointer group">
+      <div className="aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 relative mb-2">
+        <img src={poster} alt={data.title || data.name} loading="lazy" decoding="async"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
         {rating && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/70 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white">
-            <Star className="w-2.5 h-2.5 text-yellow-400 fill-yellow-400" />
-            {Number(rating).toFixed(1)}
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/70 backdrop-blur rounded-md px-1.5 py-0.5 text-[10px] font-bold text-white">
+            <Star className="w-2.5 h-2.5 text-yellow-400 fill-yellow-400" />{Number(rating).toFixed(1)}
           </div>
         )}
-
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-lg bg-purple-600/80 text-[9px] font-bold text-white uppercase">
-          {type === "movie" ? <Film className="w-3 h-3" /> : <Tv className="w-3 h-3" />}
+        <div className="absolute top-2 right-2 bg-purple-600/90 rounded-md p-1">
+          {type === "movie" ? <Film className="w-3 h-3 text-white" /> : <Tv className="w-3 h-3 text-white" />}
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button className="w-full flex items-center justify-center gap-1 bg-white text-black text-[10px] font-bold py-1.5 rounded-lg">
+            <Play className="w-3 h-3 fill-black" /> Voir
+          </button>
         </div>
       </div>
-
-      <div className="absolute bottom-0 left-0 right-0 p-2.5">
-        <h3 className="text-white font-bold text-[11px] mb-0.5 line-clamp-2 leading-tight">{data.title || data.name}</h3>
-        {year && <p className="text-[9px] text-white/50 mb-2">{year}</p>}
-        <button
-          onClick={() => navigate(`/${type}/${data.tmdbId || data.id}`)}
-          className="w-full bg-white/15 hover:bg-purple-600 text-white py-1.5 rounded-lg text-[9px] font-bold transition-all flex items-center justify-center gap-1 border border-white/10 hover:border-purple-500"
-        >
-          <Play size={10} className="fill-current" />
-          Regarder
-        </button>
-      </div>
+      <p className="text-xs font-medium text-white/80 line-clamp-2 leading-tight px-0.5">{data.title || data.name}</p>
+      {year && <p className="text-[10px] text-zinc-500 mt-0.5 px-0.5">{year}</p>}
     </motion.div>
   );
 }
 
-// ─── Suggestion Chip ──────────────────────────────────────────────────────────
-const SuggestionChip = ({ label, onClick, icon: Icon }: any) => (
-  <motion.button
-    whileHover={{ scale: 1.02, y: -2 }}
-    whileTap={{ scale: 0.98 }}
-    onClick={onClick}
-    className="group relative flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-purple-500/40 transition-all duration-200 text-left overflow-hidden backdrop-blur-sm"
-  >
-    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/15 to-indigo-500/15 flex items-center justify-center border border-white/5 flex-shrink-0">
-      <Icon className="w-4 h-4 text-purple-400" />
-    </div>
-    <span className="text-sm text-white/60 group-hover:text-white/90 transition-colors relative z-10 leading-snug">{label}</span>
-    <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-purple-400 ml-auto transition-all transform group-hover:translate-x-0.5 flex-shrink-0" />
-  </motion.button>
-);
+/* ─── Suggestion card ───────────────────────────────────────────────────── */
+function SuggCard({ icon: Icon, title, desc, onClick }: { icon: any; title: string; desc: string; onClick: () => void }) {
+  return (
+    <motion.button whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={onClick}
+      className="group text-left p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.07] hover:border-purple-500/30 transition-all overflow-hidden relative">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-indigo-500/0 group-hover:from-purple-500/5 group-hover:to-indigo-500/5 transition-all" />
+      <div className="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3 relative">
+        <Icon className="w-4 h-4 text-purple-400" />
+      </div>
+      <p className="text-[13px] font-semibold text-white/90 mb-1 leading-tight">{title}</p>
+      <p className="text-[11px] text-zinc-500 line-clamp-2 leading-relaxed">{desc}</p>
+      <ChevronRight className="absolute right-4 bottom-4 w-4 h-4 text-zinc-600 group-hover:text-purple-400 transition-colors" />
+    </motion.button>
+  );
+}
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+/* ─── Model Selector Dropdown ───────────────────────────────────────────── */
+function ModelSelector({ models, selected, onSelect }: { models: AIModel[]; selected: string; onSelect: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const cur = models.find(m => m.id === selected);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const providerColor = (p: string) => ({
+    gemini: "text-blue-400", huggingface: "text-yellow-400", groq: "text-green-400", auto: "text-purple-400"
+  })[p] || "text-zinc-400";
+
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen(p => !p)}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] transition-all text-[13px] font-medium">
+        <Cpu className={cn("w-3.5 h-3.5", providerColor(cur?.provider || "auto"))} />
+        <span className="text-white/80 max-w-[120px] truncate">{cur?.name || "Auto"}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 text-zinc-500 transition-transform", open && "rotate-180")} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, y: -6, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }} transition={{ duration: 0.12 }}
+            className="absolute top-full right-0 mt-2 w-64 bg-[#18181e] border border-white/[0.1] rounded-2xl shadow-2xl z-50 overflow-hidden">
+            <div className="p-2 max-h-80 overflow-y-auto">
+              {models.map(m => (
+                <button key={m.id} onClick={() => { onSelect(m.id); setOpen(false); }}
+                  disabled={!m.available && m.provider !== "auto"}
+                  className={cn("w-full flex items-start gap-3 px-3 py-2.5 rounded-xl text-left transition-all",
+                    selected === m.id ? "bg-purple-500/15" : "hover:bg-white/[0.05]",
+                    !m.available && m.provider !== "auto" ? "opacity-40 cursor-not-allowed" : "")}>
+                  <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                    m.provider === "gemini" ? "bg-blue-500/10" :
+                      m.provider === "huggingface" ? "bg-yellow-500/10" :
+                        m.provider === "groq" ? "bg-green-500/10" :
+                          "bg-purple-500/10"
+                  )}>
+                    <Cpu className={cn("w-3.5 h-3.5", providerColor(m.provider))} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("text-[13px] font-semibold", selected === m.id ? "text-white" : "text-white/80")}>{m.name}</span>
+                      {!m.available && m.provider !== "auto" && <span className="text-[9px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded-full font-bold">NO KEY</span>}
+                      {m.available && selected === m.id && <Check className="w-3 h-3 text-purple-400" />}
+                    </div>
+                    <p className="text-[11px] text-zinc-500">{m.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ─── MAIN ──────────────────────────────────────────────────────────────── */
 export default function AgentPage() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [currentId, setCurrentId] = useState<string | null>(null);
+  const [convs, setConvs] = useState<Conv[]>([]);
+  const [curId, setCurId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isListening, setIsListening] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [sidebar, setSidebar] = useState(true);
+  const [search, setSearch] = useState("");
+  const [persona, setPersona] = useState<"cai" | "critic" | "director">("cai");
+  const [selectedModel, setSelectedModel] = useState("auto");
+  const [models, setModels] = useState<AIModel[]>([
+    { id: "auto", name: "🤖 Auto (cascade)", provider: "auto", description: "Essaie Gemini → HuggingFace → Groq", available: true },
+    { id: "gemini-2.0-flash", name: "⚡ Gemini 2.0 Flash", provider: "gemini", description: "Rapide, intelligent", available: true },
+    { id: "gemini-1.5-pro", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision", available: true },
+    { id: "gemini-1.5-flash", name: "💨 Gemini 1.5 Flash", provider: "gemini", description: "Ultra rapide", available: true },
+    { id: "llama-3.3-70b", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace", available: true },
+    { id: "groq-llama", name: "⚡ Groq Llama 70B", provider: "groq", description: "Très rapide via Groq", available: true },
+  ]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
-  const [aiPersona, setAiPersona] = useState<"cai" | "critic" | "director">("cai");
-  const [showPersonaMenu, setShowPersonaMenu] = useState(false);
+  const [listening, setListening] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recRef = useRef<any>(null);
 
-  // ── Load conversations ─────────────────────────────────────────────────────
+  /* Fetch models from API */
+  useEffect(() => {
+    fetch("/api/models")
+      .then(r => r.json())
+      .then(d => { if (d.models) setModels(d.models); })
+      .catch(() => { }); // keep defaults if server not ready
+  }, []);
+
+  /* Load from localStorage */
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("cstream_ai_v16");
+      const saved = localStorage.getItem("cstream_aiconv_v3");
       if (saved) {
-        const parsed = JSON.parse(saved);
-        setConversations(parsed.map((c: any) => ({
-          ...c,
-          lastUpdate: new Date(c.lastUpdate),
-          messages: c.messages.map((m: any) => ({ ...m, timestamp: new Date(m.timestamp) })),
-        })));
+        const parsed = JSON.parse(saved).map((c: any) => ({
+          ...c, updatedAt: new Date(c.updatedAt),
+          msgs: c.msgs.map((m: any) => ({ ...m, ts: new Date(m.ts) }))
+        }));
+        setConvs(parsed);
+        if (parsed.length > 0) setCurId(parsed[0].id);
       }
-    } catch (e) { }
+    } catch { }
+    if (window.innerWidth < 768) setSidebar(false);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cstream_ai_v16", JSON.stringify(conversations));
-  }, [conversations]);
+    if (convs.length) localStorage.setItem("cstream_aiconv_v3", JSON.stringify(convs));
+  }, [convs]);
 
   const scrollToBottom = useCallback(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-    }
+    requestAnimationFrame(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    });
   }, []);
+  useEffect(() => { scrollToBottom(); }, [curId, busy]);
 
-  useEffect(() => { setTimeout(scrollToBottom, 80); }, [currentId, conversations, isTyping]);
-
-  // ── Voice ──────────────────────────────────────────────────────────────────
-  const toggleVoice = useCallback(() => {
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      alert("La reconnaissance vocale n'est pas supportée par ce navigateur.");
-      return;
-    }
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    const rec = new SpeechRecognition();
-    rec.lang = "fr-FR";
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript;
-      setInput(prev => prev + transcript);
-    };
-    rec.onend = () => setIsListening(false);
-    rec.onerror = () => setIsListening(false);
-    recognitionRef.current = rec;
-    rec.start();
-    setIsListening(true);
-  }, [isListening]);
-
-  // ── Chat handling ──────────────────────────────────────────────────────────
-  const createNewChat = () => {
-    const id = Date.now().toString();
-    setConversations(prev => [{ id, title: "Nouvelle Discussion", messages: [], lastUpdate: new Date() }, ...prev]);
-    setCurrentId(id);
+  const newConv = () => {
+    const id = crypto.randomUUID();
+    setConvs(p => [{ id, title: "Nouvelle discussion", msgs: [], updatedAt: new Date() }, ...p]);
+    setCurId(id);
     setInput("");
-    inputRef.current?.focus();
+    if (window.innerWidth < 768) setSidebar(false);
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  const personaLabels: Record<string, string> = {
-    cai: "🎬 CStream AI",
-    critic: "🎭 Critique Expert",
-    director: "🎥 Réalisateur",
-  };
-  const personaPrompts: Record<string, string> = {
-    cai: "cai",
-    critic: "critic",
-    director: "director",
-  };
-
-  const handleSendMessage = async (textToUse?: string) => {
-    const messageText = (textToUse || input).trim();
-    if (!messageText || isTyping) return;
-
-    let activeId = currentId;
-    if (!activeId) {
-      const id = Date.now().toString();
-      const newChat: Conversation = { id, title: messageText.slice(0, 35), messages: [], lastUpdate: new Date() };
-      setConversations(prev => [newChat, ...prev]);
-      setCurrentId(id);
-      activeId = id;
-    }
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString(), role: "user", content: messageText, timestamp: new Date(),
-    };
-
-    setConversations(prev => prev.map(c =>
-      c.id === activeId ? { ...c, messages: [...c.messages, userMsg], lastUpdate: new Date(), title: c.messages.length === 0 ? messageText.slice(0, 35) : c.title } : c
-    ));
-
-    if (!textToUse) setInput("");
-    setIsTyping(true);
-
-    const currentConv = conversations.find(c => c.id === activeId) || { messages: [] as ChatMessage[] };
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...(currentConv.messages || []), userMsg].map(m => ({ role: m.role, content: m.content })),
-          character: personaPrompts[aiPersona],
-          includeMedia: true,
-        }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        console.error("[Chat API Error]", response.status, errText);
-        throw new Error(`API a répondu avec le statut ${response.status}`);
-      }
-
-      const data = await response.json();
-      const rawContent = data.response || data.reply || data.choices?.[0]?.message?.content || "";
-
-      if (!rawContent) throw new Error("Réponse vide de l'API");
-
-      const assistantMsg: ChatMessage = {
-        id: (Date.now() + 1).toString(), role: "assistant",
-        content: rawContent || "Je suis là pour vous aider ! Posez-moi une question sur le cinéma.",
-        timestamp: new Date(), elements: [], reactions: { thumbsUp: 0, thumbsDown: 0 },
-      };
-
-      // Parse [MEDIA_DATA] tags
-      if (rawContent?.includes("[MEDIA_DATA]")) {
-        const parts = rawContent.split("[MEDIA_DATA]");
-        assistantMsg.content = parts[0].trim();
-        for (let i = 1; i < parts.length; i++) {
-          const endIdx = parts[i].indexOf("[/MEDIA_DATA]");
-          if (endIdx !== -1) {
-            try {
-              const mediaData = JSON.parse(parts[i].substring(0, endIdx));
-              assistantMsg.elements?.push({
-                type: "media",
-                content: {
-                  id: Number(mediaData.id), tmdbId: Number(mediaData.id),
-                  mediaType: mediaData.type || (mediaData.title ? "movie" : "tv"),
-                  title: mediaData.title || mediaData.name,
-                  poster: mediaData.poster || mediaData.poster_path || mediaData.image,
-                  poster_path: mediaData.poster_path || mediaData.image,
-                  rating: mediaData.rating || mediaData.vote_average,
-                  year: mediaData.year,
-                  overview: mediaData.overview,
-                },
-              });
-            } catch { }
-            const remaining = parts[i].substring(endIdx + 13).trim();
-            if (remaining) assistantMsg.content += "\n\n" + remaining;
-          }
-        }
-      }
-
-      setConversations(prev => prev.map(c =>
-        c.id === activeId ? { ...c, messages: [...c.messages, assistantMsg], lastUpdate: new Date() } : c
-      ));
-    } catch (err: any) {
-      console.error("Chat Fetch catch:", err);
-      setConversations(prev => prev.map(c =>
-        c.id === activeId ? {
-          ...c, messages: [...c.messages, {
-            id: (Date.now() + 1).toString(), role: "assistant" as const,
-            content: `Impossible d'obtenir une réponse actuellement (${err.message || 'Erreur réseau'}). L'IA de secours est peut-être hors-ligne. 🔄\n\nEssayez de vérifier que le port 5000 est en ligne.`,
-            timestamp: new Date(), elements: [], reactions: { thumbsUp: 0, thumbsDown: 0 },
-          }], lastUpdate: new Date(),
-        } : c
-      ));
-    } finally {
-      setIsTyping(false);
-      setTimeout(scrollToBottom, 50);
-    }
-  };
-
-  const deleteChat = (id: string, e: React.MouseEvent) => {
+  const deleteConv = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setConversations(prev => {
-      const filtered = prev.filter(c => c.id !== id);
-      if (currentId === id) setCurrentId(filtered.length > 0 ? filtered[0].id : null);
+    setConvs(p => {
+      const filtered = p.filter(c => c.id !== id);
+      if (curId === id) setCurId(filtered[0]?.id ?? null);
       return filtered;
     });
   };
 
-  const handleReaction = (msgId: string, reaction: "up" | "down") => {
-    setConversations(prev => prev.map(c =>
-      c.id === currentId ? {
-        ...c, messages: c.messages.map(m => {
-          if (m.id !== msgId) return m;
-          const prev = m.reactions?.userReaction;
-          return {
-            ...m, reactions: {
-              thumbsUp: (m.reactions?.thumbsUp || 0) + (reaction === "up" ? (prev === "up" ? -1 : 1) : 0),
-              thumbsDown: (m.reactions?.thumbsDown || 0) + (reaction === "down" ? (prev === "down" ? -1 : 1) : 0),
-              userReaction: prev === reaction ? undefined : reaction,
-            },
-          };
+  const toggleVoice = () => {
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) { alert("Reconnaissance vocale non supportée dans ce navigateur."); return; }
+    if (listening) { recRef.current?.stop(); setListening(false); return; }
+    const r = new SR();
+    r.lang = "fr-FR"; r.continuous = false; r.interimResults = false;
+    r.onresult = (e: any) => setInput(p => p + e.results[0][0].transcript + " ");
+    r.onend = () => setListening(false);
+    r.onerror = () => setListening(false);
+    recRef.current = r; r.start(); setListening(true);
+  };
+
+  const send = async (textOverride?: string) => {
+    const text = (textOverride ?? input).trim();
+    if (!text || busy) return;
+
+    let activeId = curId;
+    if (!activeId) {
+      const id = crypto.randomUUID();
+      setConvs(p => [{ id, title: text.slice(0, 40), msgs: [], updatedAt: new Date() }, ...p]);
+      setCurId(id); activeId = id;
+    }
+
+    const userMsg: Msg = { id: crypto.randomUUID(), role: "user", content: text, ts: new Date() };
+    setConvs(p => p.map(c => c.id === activeId
+      ? { ...c, msgs: [...c.msgs, userMsg], updatedAt: new Date(), title: c.msgs.length === 0 ? text.slice(0, 40) : c.title }
+      : c));
+    if (!textOverride) setInput("");
+    setBusy(true);
+
+    const history = convs.find(c => c.id === activeId)?.msgs ?? [];
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...history, userMsg].map(m => ({ role: m.role, content: m.content })),
+          character: persona,
+          model: selectedModel,
         }),
-      } : c
-    ));
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      let rawContent: string = data.response || data.reply || data.choices?.[0]?.message?.content || "";
+      if (!rawContent) throw new Error("Réponse vide du serveur");
+
+      const aMsg: Msg = { id: crypto.randomUUID(), role: "assistant", content: rawContent, ts: new Date(), media: [], reactions: { up: 0, down: 0 }, modelUsed: data.model_used };
+
+      if (rawContent.includes("[MEDIA_DATA]")) {
+        const parts = rawContent.split("[MEDIA_DATA]");
+        aMsg.content = parts[0].trim();
+        for (let i = 1; i < parts.length; i++) {
+          const end = parts[i].indexOf("[/MEDIA_DATA]");
+          if (end !== -1) {
+            try {
+              const md = JSON.parse(parts[i].slice(0, end));
+              aMsg.media!.push({ id: Number(md.id), tmdbId: Number(md.id), mediaType: md.type || (md.title ? "movie" : "tv"), title: md.title || md.name, poster: md.poster || md.poster_path || md.image, poster_path: md.poster_path || md.image, rating: md.rating || md.vote_average, year: md.year });
+            } catch { }
+          }
+        }
+      }
+
+      setConvs(p => p.map(c => c.id === activeId ? { ...c, msgs: [...c.msgs, aMsg], updatedAt: new Date() } : c));
+    } catch (err: any) {
+      const errMsg: Msg = {
+        id: crypto.randomUUID(), role: "assistant",
+        content: `⚠️ **Erreur :** ${err.message || "Service indisponible"}\n\n_Vérifiez que le serveur backend est démarré et que les clés API dans \`.env\` sont correctes._`,
+        ts: new Date()
+      };
+      setConvs(p => p.map(c => c.id === activeId ? { ...c, msgs: [...c.msgs, errMsg], updatedAt: new Date() } : c));
+    } finally {
+      setBusy(false);
+      setTimeout(scrollToBottom, 50);
+    }
   };
 
-  const copyMessage = (content: string, msgId: string) => {
-    navigator.clipboard.writeText(content).then(() => {
-      setCopiedId(msgId);
-      setTimeout(() => setCopiedId(null), 2000);
-    });
+  const copy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const exportConversation = () => {
-    const chat = conversations.find(c => c.id === currentId);
-    if (!chat) return;
-    const text = chat.messages.map(m => `[${m.role === "user" ? "Vous" : "CStream AI"}]\n${m.content}`).join("\n\n---\n\n");
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `${chat.title}.txt`; a.click();
-    URL.revokeObjectURL(url);
+  const react = (msgId: string, dir: "up" | "down") => {
+    setConvs(p => p.map(c => c.id === curId ? {
+      ...c, msgs: c.msgs.map(m => {
+        if (m.id !== msgId || !m.reactions) return m;
+        const prev = m.reactions.mine;
+        return { ...m, reactions: { up: m.reactions.up + (dir === "up" ? (prev === "up" ? -1 : 1) : 0), down: m.reactions.down + (dir === "down" ? (prev === "down" ? -1 : 1) : 0), mine: prev === dir ? undefined : dir } };
+      })
+    } : c));
   };
 
-  const currentChat = conversations.find(c => c.id === currentId);
-  const filteredConvos = conversations.filter(c =>
-    !searchQuery || c.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const cur = convs.find(c => c.id === curId);
+  const filtered = convs.filter(c => !search || c.title.toLowerCase().includes(search.toLowerCase()));
+  const personaNames: Record<string, string> = { cai: "🎬 CStream AI", critic: "🎭 Critique", director: "🎥 Réalisateur" };
 
   const suggestions = [
-    { icon: TrendingUp, label: "Films les plus populaires cette semaine", message: "Quels sont les films les plus populaires en ce moment ?" },
-    { icon: Heart, label: "Recommande-moi un film romantique sous-côté", message: "Recommande-moi un film romantique sous-côté et méconnu" },
-    { icon: Zap, label: "Meilleures séries animées 2024", message: "Quelles sont les meilleures séries animées sorties en 2024 ?" },
-    { icon: Film, label: "Films d'action avec des twists incroyables", message: "Donne-moi des films d'action avec des retournements de situation surprenants" },
-    { icon: Globe, label: "Chefs-d'œuvre du cinéma mondial", message: "Présente-moi des chefs-d'œuvre du cinéma international à voir absolument" },
-    { icon: Clapperboard, label: "Séries récentes à commencer ce soir", message: "Quelle série récente dois-je commencer ce soir ? Je veux quelque chose d'addictif" },
+    { icon: TrendingUp, title: "Films populaires", desc: "Quels films sont tendance cette semaine ?", msg: "Quels sont les films les plus populaires en ce moment ?" },
+    { icon: Heart, title: "Romantique méconnu", desc: "Un film romantique sous-coté à recommander", msg: "Recommande-moi un film romantique méconnu et sous-coté" },
+    { icon: Globe, title: "Cinéma Coréen", desc: "Les incontournables du cinéma coréen", msg: "Quels sont les meilleurs films et séries coréens à voir absolument ?" },
+    { icon: Zap, title: "Série addictive", desc: "Une série récente et ultra-addictive", msg: "Je cherche une nouvelle série hyper addictive avec beaucoup de suspense" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#030303] text-white flex flex-col font-sans selection:bg-purple-500/30">
+    <div className="h-[100dvh] bg-[#0d0d10] text-white flex flex-col overflow-hidden">
       <Navbar />
 
-      {/* Ambient Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] bg-purple-600/10 rounded-full blur-[160px] animate-pulse" />
-        <div className="absolute -bottom-40 -right-40 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[160px] animate-pulse" style={{ animationDelay: "2s" }} />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[120px]" />
-      </div>
+      <div className="flex flex-1 overflow-hidden pt-[64px]">
 
-      <div className="flex-1 flex pt-16 md:pt-20 h-screen overflow-hidden relative z-10">
-
-        {/* ── Sidebar Overlay (Static over main content) ── */}
+        {/* ── Sidebar ── */}
         <AnimatePresence>
-          {sidebarOpen && (
+          {sidebar && (
             <>
-              {/* Overlay sombre pour mobile (et cliquable pour fermer) */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSidebarOpen(false)}
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
-              />
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setSidebar(false)}
+                className="fixed inset-0 bg-black/60 z-30 md:hidden" />
 
-              <motion.aside
-                initial={{ x: "-100%", opacity: 0, filter: "blur(10px)" }}
-                animate={{ x: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ x: "-100%", opacity: 0, filter: "blur(10px)" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="absolute top-0 left-0 bottom-0 z-40 h-full w-[300px] border-r border-white/10 bg-[#0a0a0f]/95 backdrop-blur-3xl flex flex-col shadow-[20px_0_50px_rgba(0,0,0,0.5)] md:shadow-[0_0_80px_rgba(139,92,246,0.1)]"
-              >
-                {/* Header de la sidebar */}
-                <div className="flex items-center justify-between p-4 border-b border-white/[0.06]">
-                  <h3 className="text-sm font-bold text-white tracking-widest uppercase">CStream IA</h3>
-                  {/* Bouton pour cacher la sidebar (très pratique sur mobile et desktop) */}
-                  <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors">
-                    <X size={18} />
+              <motion.aside initial={{ x: -264 }} animate={{ x: 0 }} exit={{ x: -264 }}
+                transition={{ type: "spring", stiffness: 400, damping: 38 }}
+                className="fixed md:relative top-0 left-0 h-full z-40 md:z-auto w-[260px] bg-[#111114] border-r border-white/[0.06] flex flex-col shrink-0">
+                <div className="p-4 mt-16 md:mt-0 border-b border-white/[0.06]">
+                  <button onClick={newConv}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-sm font-medium text-white/80 hover:text-white transition-all">
+                    <Plus className="w-4 h-4" /> Nouveau chat
                   </button>
                 </div>
 
-                {/* New chat */}
-                <div className="p-4 border-b border-white/[0.04]">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={createNewChat}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.6)] transition-all border border-purple-400/30 group"
-                  >
-                    <Plus size={18} className="transition-transform group-hover:rotate-90 duration-300" /> Nouvelle Conversation
-                  </motion.button>
-                </div>
-
-                {/* Search */}
-                <div className="px-4 py-3">
-                  <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-black/50 border border-white/10 focus-within:border-purple-500/50 focus-within:ring-2 focus-within:ring-purple-500/20 transition-all">
-                    <Search className="w-4 h-4 text-zinc-400" />
-                    <input
-                      type="text" placeholder="Rechercher historique..."
-                      value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                      className="bg-transparent text-sm text-white placeholder-zinc-500 outline-none flex-1"
-                    />
+                <div className="px-3 py-3 border-b border-white/[0.04]">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+                    <input type="text" placeholder="Rechercher..." value={search} onChange={e => setSearch(e.target.value)}
+                      className="w-full bg-white/[0.04] border border-white/[0.06] rounded-xl py-2 pl-8 pr-3 text-[13px] text-white/70 placeholder-zinc-600 focus:outline-none focus:border-purple-500/40 transition-all" />
                   </div>
                 </div>
 
-                {/* Conversation list */}
-                <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1.5 scrollbar-thin scrollbar-thumb-white/10">
-                  {filteredConvos.length === 0 ? (
-                    <div className="text-center py-10 text-zinc-500 text-sm font-medium">Aucune conversation</div>
-                  ) : (
-                    filteredConvos.map(c => (
-                      <motion.div
-                        whileHover={{ scale: 1.01 }}
-                        key={c.id}
-                        onClick={() => setCurrentId(c.id)}
-                        className={cn(
-                          "group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border",
-                          currentId === c.id
-                            ? "bg-purple-500/10 border-purple-500/30 text-white shadow-[0_0_15px_rgba(147,51,234,0.15)]"
-                            : "bg-transparent border-transparent hover:bg-white/[0.04] text-zinc-400 hover:text-zinc-200"
-                        )}
-                      >
-                        <MessageSquare size={16} className={cn("flex-shrink-0", currentId === c.id ? "text-purple-400" : "text-zinc-500")} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{c.title || "Nouvelle discussion"}</p>
-                          <p className="text-[11px] text-zinc-500 tracking-wide mt-0.5">{c.messages.length} msg · {c.lastUpdate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
-                        </div>
-                        <button onClick={e => deleteChat(c.id, e)} className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 hover:text-red-400 transition-all text-zinc-500">
-                          <Trash2 size={14} />
-                        </button>
-                      </motion.div>
-                    ))
-                  )}
+                <div className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
+                  {filtered.length === 0 ? (
+                    <div className="text-center py-8 text-zinc-600 text-xs">Aucune discussion</div>
+                  ) : filtered.map(c => (
+                    <button key={c.id} onClick={() => { setCurId(c.id); if (window.innerWidth < 768) setSidebar(false); }}
+                      className={cn("group w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all",
+                        curId === c.id ? "bg-white/[0.07] text-white" : "text-zinc-400 hover:bg-white/[0.04] hover:text-white")}>
+                      <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                      <span className="flex-1 text-[13px] font-medium truncate">{c.title}</span>
+                      <button onClick={e => deleteConv(c.id, e)}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md hover:bg-red-500/20 text-zinc-600 hover:text-red-400 transition-all">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </button>
+                  ))}
                 </div>
 
-                {/* AI Info */}
-                <div className="p-4 border-t border-white/10 bg-black/40">
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-purple-900/40 to-indigo-900/40 border border-purple-500/20 shadow-inner">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
-                      <Bot size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-white tracking-wide">CStream AI</p>
-                      <p className="text-xs text-purple-300 font-medium">Gemini 2.0 Cascade</p>
-                    </div>
-                    <div className="ml-auto w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse" />
-                  </div>
+                {/* Persona selector */}
+                <div className="p-3 border-t border-white/[0.06]">
+                  <p className="text-[10px] uppercase font-bold text-zinc-600 px-2 mb-2 tracking-wider">Mode IA</p>
+                  {(Object.entries(personaNames) as [typeof persona, string][]).map(([k, v]) => (
+                    <button key={k} onClick={() => setPersona(k)}
+                      className={cn("w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] transition-all mb-0.5",
+                        persona === k ? "bg-purple-500/15 text-purple-300 font-semibold" : "text-zinc-400 hover:bg-white/[0.04] hover:text-white")}>
+                      {persona === k && <Check className="w-3.5 h-3.5" />}
+                      {v}
+                    </button>
+                  ))}
                 </div>
               </motion.aside>
             </>
           )}
         </AnimatePresence>
 
-        {/* ── Main Chat Area ── */}
-        <main className="flex-1 flex flex-col h-full w-full overflow-hidden relative">
+        {/* ── Main ── */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
 
-          {/* Header */}
-          <header className="h-[72px] border-b border-white/[0.08] bg-black/40 backdrop-blur-xl flex items-center justify-between px-4 lg:px-6 flex-shrink-0 z-20">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className={cn("p-2 rounded-xl border border-white/10 text-white transition-all shadow-lg", sidebarOpen ? "hidden" : "bg-white/5 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]")}
-              >
-                <Layout size={20} />
-              </button>
-
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-[0_0_20px_rgba(147,51,234,0.4)] border border-white/10">
-                  <Bot size={20} className="text-white" />
-                </div>
-                <div className="hidden sm:block">
-                  <div className="text-sm font-black text-white flex items-center gap-2">
-                    {personaLabels[aiPersona]}
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_5px_#4ade80]" />
-                  </div>
-                  <p className="text-xs text-zinc-400 font-medium tracking-wide">Assistant Cinéma Personnel</p>
-                </div>
-              </div>
+          {/* Topbar */}
+          <div className="h-12 border-b border-white/[0.05] bg-[#0d0d10]/90 backdrop-blur-xl flex items-center px-4 gap-3 shrink-0">
+            <button onClick={() => setSidebar(p => !p)}
+              className="p-2 rounded-xl text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors">
+              <PanelLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-2 text-[13px] font-semibold text-white/70">
+              <Bot className="w-4 h-4 text-purple-400" />
+              {personaNames[persona]}
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse ml-1" />
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Persona Selector */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowPersonaMenu(!showPersonaMenu)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-all hover:border-purple-500/40"
-                >
-                  <Palette size={16} className="text-purple-400" />
-                  <span className="hidden md:block">Changer de mode</span>
-                  <ChevronDown size={14} className="text-zinc-500" />
+            {/* Model selector — RIGHT side */}
+            <div className="ml-auto flex items-center gap-2">
+              <ModelSelector models={models} selected={selectedModel} onSelect={setSelectedModel} />
+              {cur && cur.msgs.length > 0 && (
+                <button onClick={() => {
+                  const t = cur.msgs.map(m => `[${m.role === "user" ? "Vous" : "AI"}]\n${m.content}`).join("\n\n---\n\n");
+                  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([t])); a.download = "chat.txt"; a.click();
+                }} className="p-2 rounded-xl text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors" title="Exporter">
+                  <Download className="w-4 h-4" />
                 </button>
-                <AnimatePresence>
-                  {showPersonaMenu && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 top-full mt-3 w-56 bg-zinc-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-50 overflow-hidden ring-1 ring-white/5"
-                    >
-                      {Object.entries(personaLabels).map(([key, label]) => (
-                        <button
-                          key={key}
-                          onClick={() => { setAiPersona(key as any); setShowPersonaMenu(false); }}
-                          className={cn("w-full flex items-center gap-3 px-4 py-3.5 text-sm text-left transition-colors font-medium border-b border-white/[0.02] last:border-0", aiPersona === key ? "bg-purple-500/20 text-purple-300" : "text-zinc-200 hover:bg-white/5")}
-                        >
-                          {aiPersona === key ? <Check size={16} className="text-purple-400" /> : <div className="w-4 h-4" />}
-                          {label}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {currentChat && currentChat.messages.length > 0 && (
-                <>
-                  <button onClick={exportConversation} title="Exporter" className="p-2 rounded-xl hover:bg-white/10 text-zinc-400 hover:text-white transition-colors border border-transparent hover:border-white/10">
-                    <Download size={18} />
-                  </button>
-                  <button onClick={() => { setConversations(prev => prev.map(c => c.id === currentId ? { ...c, messages: [] } : c)); }} title="Effacer" className="hidden sm:block p-2 rounded-xl hover:bg-red-500/20 text-zinc-400 hover:text-red-400 transition-colors border border-transparent hover:border-red-500/20">
-                    <Trash2 size={18} />
-                  </button>
-                </>
               )}
-              <button onClick={createNewChat} className="sm:hidden p-2 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/40 focus:ring-2 ring-purple-500/50">
-                <Plus size={20} />
-              </button>
             </div>
-          </header>
+          </div>
 
-          {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 scroll-smooth scrollbar-thin scrollbar-thumb-white/10">
-            {!currentChat || currentChat.messages.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, type: "spring", damping: 25 }}
-                className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center space-y-10 py-10 min-h-[60vh]"
-              >
-                {/* Logo & Glow */}
-                <div className="relative">
-                  <div className="absolute inset-0 scale-[1.8] bg-gradient-to-tr from-purple-600/30 to-indigo-600/30 blur-[80px] rounded-full" />
-                  <motion.div
-                    className="relative w-28 h-28 rounded-[2rem] bg-[#0a0a0f] border border-white/10 flex items-center justify-center mx-auto shadow-[0_0_80px_rgba(139,92,246,0.3)] ring-1 ring-purple-500/20 overflow-hidden"
-                    animate={{ rotateY: [0, 8, -8, 0] }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-500/20" />
-                    <Bot size={54} className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] relative z-10" />
-                    <motion.div
-                      className="absolute -right-1 -top-1 w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-[0_0_20px_#4ade80]"
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                    >
-                      <Sparkles size={18} className="text-white" />
-                    </motion.div>
-                  </motion.div>
+          {/* Messages or Welcome */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-white/5 scrollbar-track-transparent">
+            {(!cur || cur.msgs.length === 0) ? (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
+                className="flex flex-col items-center justify-center min-h-full px-6 py-10 text-center max-w-2xl mx-auto">
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-purple-500/20 blur-2xl rounded-full scale-150" />
+                  <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center shadow-xl shadow-purple-500/20">
+                    <Bot className="w-8 h-8 text-white" />
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/40">
+                      <Sparkles className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight bg-gradient-to-r from-white via-purple-200 to-indigo-400 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-                    Comment puis-je vous aider ?
-                  </h2>
-                  <p className="text-zinc-400/80 max-w-lg mx-auto text-sm md:text-base leading-relaxed font-medium">
-                    Je suis <span className="text-purple-400 font-bold">CStream AI</span>, votre expert cinéma personnel.
-                    Films, séries, anime, analyses — parlez-moi de tout ! ✨
-                  </p>
-                </div>
+                <h1 className="text-3xl sm:text-4xl font-black mb-2 tracking-tight">
+                  Bonjour, je suis <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">CStream AI</span>
+                </h1>
+                <p className="text-zinc-400 text-sm sm:text-base mb-10 max-w-md leading-relaxed">
+                  Votre assistant cinéma. Films, séries, animes — posez vos questions ou choisissez une suggestion.
+                </p>
 
-                {/* Suggestions grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                   {suggestions.map((s, i) => (
-                    <SuggestionChip
-                      key={i}
-                      icon={s.icon}
-                      label={s.label}
-                      onClick={() => handleSendMessage(s.message)}
-                    />
+                    <SuggCard key={i} icon={s.icon} title={s.title} desc={s.desc} onClick={() => send(s.msg)} />
                   ))}
-                </div>
-
-                {/* Quick stats */}
-                <div className="flex items-center gap-6 text-[11px] font-medium text-zinc-500 bg-white/5 py-2 px-6 rounded-full border border-white/5 shadow-inner backdrop-blur-sm">
-                  <div className="flex items-center gap-2"><Hash size={12} className="text-purple-400" /><span>{conversations.length} chats</span></div>
-                  <div className="flex items-center gap-2"><Cpu size={12} className="text-indigo-400" /><span>Gemini 2.0 Flash</span></div>
-                  <div className="flex items-center gap-2"><Globe size={12} className="text-emerald-400" /><span>Multi-langues</span></div>
                 </div>
               </motion.div>
             ) : (
-              currentChat.messages.map((msg, idx) => (
-                <motion.div
-                  key={msg.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className={cn("flex gap-3 group max-w-4xl", msg.role === "user" ? "flex-row-reverse ml-auto" : "flex-row")}
-                >
-                  {/* Avatar */}
-                  <div className={cn(
-                    "w-10 h-10 rounded-[0.8rem] flex items-center justify-center shrink-0 shadow-lg border relative overflow-hidden",
-                    msg.role === "assistant"
-                      ? "bg-gradient-to-br from-purple-800 to-indigo-900 border-purple-500/30 text-white shadow-[0_0_15px_rgba(147,51,234,0.3)]"
-                      : "bg-gradient-to-br from-zinc-800 to-zinc-900 border-white/10 text-zinc-300"
-                  )}>
-                    {msg.role === "assistant" && <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />}
-                    {msg.role === "assistant" ? <Bot size={20} className="relative z-10" /> : <User size={18} className="relative z-10" />}
-                  </div>
+              <div className="max-w-[760px] mx-auto px-4 py-6 space-y-6 pb-36">
+                {cur.msgs.map(msg => (
+                  <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    className={cn("flex gap-3 group", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
 
-                  {/* Bubble */}
-                  <div className={cn("flex flex-col gap-2 max-w-[85%] md:max-w-[75%]", msg.role === "user" ? "items-end" : "items-start")}>
-                    <div className={cn(
-                      "px-5 py-4 text-sm md:text-[15px] leading-relaxed tracking-wide shadow-2xl relative",
-                      msg.role === "assistant"
-                        ? "bg-[#101018]/90 backdrop-blur-xl border border-white/[0.08] text-zinc-200 rounded-[2rem] rounded-tl-sm"
-                        : "bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-[2rem] rounded-tr-sm shadow-[0_10px_40px_rgba(139,92,246,0.3)] ring-1 ring-white/10"
-                    )}>
-                      {msg.role === "assistant"
-                        ? <RichText text={msg.content} messageId={msg.id} />
-                        : <p className="leading-relaxed font-medium">{msg.content}</p>
-                      }
-                    </div>
-
-                    {/* Media cards */}
-                    {msg.elements && msg.elements.length > 0 && (
-                      <div className="flex flex-wrap gap-3 mt-1">
-                        {msg.elements.map((el, i) => el.type === "media" && <MediaCard key={i} data={el.content} />)}
+                    {msg.role === "assistant" && (
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-700 to-indigo-800 flex items-center justify-center shrink-0 mt-0.5 shadow-md shadow-purple-500/20">
+                        <Bot className="w-4 h-4 text-white" />
                       </div>
                     )}
 
-                    {/* Actions row */}
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-[10px] text-zinc-600 font-medium px-1">
-                        {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </span>
+                    <div className={cn("max-w-[80%] flex flex-col gap-2", msg.role === "user" ? "items-end" : "items-start")}>
+                      <div className={cn("px-4 py-3 rounded-2xl",
+                        msg.role === "user"
+                          ? "bg-white text-zinc-900 font-medium text-[14.5px] rounded-tr-sm"
+                          : "bg-[#1a1a20] border border-white/[0.07] text-zinc-200 rounded-tl-sm")}>
+                        {msg.role === "user" ? <p>{msg.content}</p> : <MD text={msg.content} />}
+                      </div>
+
+                      {msg.media && msg.media.length > 0 && (
+                        <div className="flex gap-3 flex-wrap mt-1">
+                          {msg.media.map((m, i) => <MediaCard key={i} data={m} />)}
+                        </div>
+                      )}
+
                       {msg.role === "assistant" && (
-                        <>
-                          <button onClick={() => copyMessage(msg.content, msg.id)} className={cn("p-1 rounded-md transition-colors text-zinc-600 hover:text-white", copiedId === msg.id ? "text-green-400" : "")}>
-                            {copiedId === msg.id ? <Check size={13} /> : <Copy size={13} />}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5">
+                          {msg.modelUsed && (
+                            <span className="text-[10px] text-zinc-600 bg-white/[0.04] px-2 py-0.5 rounded-full mr-1">
+                              {msg.modelUsed}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-zinc-600">{msg.ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                          <button onClick={() => copy(msg.content, msg.id)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.07] transition-colors">
+                            {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
-                          <button onClick={() => handleReaction(msg.id, "up")} className={cn("p-1 rounded-md transition-colors", msg.reactions?.userReaction === "up" ? "text-green-400" : "text-zinc-600 hover:text-white")}>
-                            <ThumbsUp size={13} />
-                            {(msg.reactions?.thumbsUp || 0) > 0 && <span className="text-[10px] ml-0.5">{msg.reactions?.thumbsUp}</span>}
+                          <button onClick={() => react(msg.id, "up")} className={cn("p-1.5 rounded-lg transition-colors hover:bg-white/[0.07]", msg.reactions?.mine === "up" ? "text-green-400" : "text-zinc-500 hover:text-white")}>
+                            <ThumbsUp className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => handleReaction(msg.id, "down")} className={cn("p-1 rounded-md transition-colors", msg.reactions?.userReaction === "down" ? "text-red-400" : "text-zinc-600 hover:text-white")}>
-                            <ThumbsDown size={13} />
+                          <button onClick={() => react(msg.id, "down")} className={cn("p-1.5 rounded-lg transition-colors hover:bg-white/[0.07]", msg.reactions?.mine === "down" ? "text-red-400" : "text-zinc-500 hover:text-white")}>
+                            <ThumbsDown className="w-3.5 h-3.5" />
                           </button>
-                          <button onClick={() => handleSendMessage(`Développe davantage : ${msg.content.slice(0, 100)}`)} className="p-1 rounded-md text-zinc-600 hover:text-white transition-colors" title="Développer">
-                            <RotateCcw size={13} />
-                          </button>
-                        </>
+                        </div>
                       )}
                     </div>
-                  </div>
-                </motion.div>
-              ))
-            )}
+                  </motion.div>
+                ))}
 
-            {/* Typing indicator */}
-            <AnimatePresence>
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="flex gap-3 max-w-4xl"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-900/60 to-indigo-900/60 border border-purple-500/20 flex items-center justify-center shrink-0 relative overflow-hidden">
-                    <motion.div
-                      animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 via-transparent to-indigo-500/20"
-                    />
-                    <Bot size={18} className="text-purple-400 relative z-10" />
-                  </div>
-                  <div className="bg-white/[0.04] border border-white/[0.08] px-5 py-4 rounded-2xl rounded-tl-none flex items-center gap-3 min-w-[140px]">
-                    <motion.div className="flex items-center gap-1.5">
-                      {[0, 0.2, 0.4].map((delay, i) => (
-                        <motion.div
-                          key={i}
-                          className="w-2 h-2 rounded-full bg-purple-500"
-                          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 1.2, repeat: Infinity, delay }}
-                        />
+                {busy && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-700 to-indigo-800 flex items-center justify-center shrink-0 mt-0.5">
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                    </div>
+                    <div className="bg-[#1a1a20] border border-white/[0.07] px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
+                      {[0, 0.2, 0.4].map(d => (
+                        <motion.span key={d} animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.2, 1] }}
+                          transition={{ duration: 1.2, repeat: Infinity, delay: d }}
+                          className="w-1.5 h-1.5 rounded-full bg-purple-400 block" />
                       ))}
-                    </motion.div>
-                    <span className="text-xs text-zinc-500">Réflexion en cours...</span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <div className="h-2" />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* ── Input Area ── */}
-          <div className="p-3 md:p-6 bg-black/60 backdrop-blur-3xl border-t border-white/[0.08] relative z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-3">
-                <div className="relative flex-1 bg-white/[0.03] hover:bg-white/[0.05] focus-within:bg-[#0a0a0f]/80 border border-white/[0.08] focus-within:border-purple-500/50 rounded-2xl transition-all duration-300 overflow-hidden shadow-inner focus-within:ring-4 ring-purple-500/10">
-                  <textarea
-                    ref={inputRef}
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                    placeholder={isListening ? "Écoute en cours..." : "Posez une question sur un film, une série..."}
-                    className="w-full bg-transparent text-white placeholder-zinc-500 text-[15px] p-4 pr-12 min-h-[56px] max-h-[160px] resize-none outline-none scrollbar-none font-medium transition-all"
-                    rows={1}
-                  />
-                  {input.length > 0 && (
-                    <button onClick={() => setInput("")} className="absolute right-3 bottom-3 p-1.5 rounded-full bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
-                      <X size={14} strokeWidth={3} />
-                    </button>
-                  )}
-                </div>
+          {/* ── Input area ── */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-gradient-to-t from-[#0d0d10] via-[#0d0d10]/95 to-transparent">
+            <div className="max-w-[760px] mx-auto">
+              <div className="relative flex items-end bg-[#1a1a20] border border-white/[0.08] rounded-2xl focus-within:border-purple-500/40 focus-within:ring-1 focus-within:ring-purple-500/20 transition-all shadow-xl shadow-black/30">
+                <button onClick={toggleVoice}
+                  className={cn("absolute left-3 bottom-3 p-2 rounded-xl transition-colors",
+                    listening ? "bg-red-500/20 text-red-400 animate-pulse" : "text-zinc-500 hover:text-white hover:bg-white/[0.06]")}>
+                  {listening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
 
-                {/* Voice */}
-                <motion.button
-                  whileTap={{ scale: 0.93 }}
-                  onClick={toggleVoice}
-                  className={cn(
-                    "h-[56px] w-[56px] shrink-0 rounded-2xl flex items-center justify-center transition-all border shadow-lg",
-                    isListening
-                      ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse"
-                      : "bg-white/[0.03] border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:border-white/20"
-                  )}
-                  title={isListening ? "Arrêter" : "Parler"}
-                >
-                  {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-                </motion.button>
+                <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+                  placeholder="Posez votre question à l'IA…"
+                  rows={1}
+                  className="flex-1 bg-transparent text-[14.5px] text-white placeholder-zinc-600 py-3.5 pl-12 pr-14 resize-none outline-none leading-relaxed min-h-[52px] max-h-[160px]"
+                  style={{ height: "auto" }}
+                  onInput={e => { const t = e.target as HTMLTextAreaElement; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 160) + "px"; }}
+                />
 
-                {/* Send */}
-                <motion.button
-                  whileTap={{ scale: 0.93 }}
-                  onClick={() => handleSendMessage()}
-                  disabled={!input.trim() || isTyping}
-                  className="h-[56px] w-[56px] shrink-0 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold hover:brightness-110 active:scale-95 transition-all disabled:opacity-30 disabled:hover:brightness-100 disabled:hover:scale-100 shadow-[0_0_30px_rgba(168,85,247,0.5)] border border-white/20"
-                >
-                  {isTyping ? <Cpu size={18} className="animate-spin" /> : <ArrowUp size={18} strokeWidth={2.5} />}
+                <motion.button whileTap={{ scale: 0.9 }} onClick={() => send()}
+                  disabled={!input.trim() || busy}
+                  className="absolute right-3 bottom-3 w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center disabled:opacity-30 disabled:bg-white/10 disabled:text-zinc-500 transition-all shadow-sm">
+                  {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" strokeWidth={2.5} />}
                 </motion.button>
               </div>
 
-              <div className="flex items-center justify-between mt-2 px-1">
-                <p className="text-[10px] text-zinc-700">⌨️ Entrée pour envoyer · Maj+Entrée pour sauter une ligne</p>
-                <p className="text-[10px] text-zinc-700">© CStream AI · {personaLabels[aiPersona]}</p>
-              </div>
+              <p className="text-center text-[11px] text-zinc-700 mt-2">
+                Entrée pour envoyer · Maj+Entrée pour nouvelle ligne · L'IA peut faire des erreurs.
+              </p>
             </div>
           </div>
-        </main>
+        </div>
       </div>
-
-      {/* Click outside persona menu */}
-      {showPersonaMenu && (
-        <div className="fixed inset-0 z-40" onClick={() => setShowPersonaMenu(false)} />
-      )}
     </div>
   );
 }

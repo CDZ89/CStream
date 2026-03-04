@@ -36,6 +36,7 @@ export const ALL_PERMISSIONS: Permission[] = [
 
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
     creator: ALL_PERMISSIONS.map(p => p.id),
+    reine: ALL_PERMISSIONS.map(p => p.id),
     super_admin: ALL_PERMISSIONS.map(p => p.id),
     admin: [
         'view_content', 'edit_content', 'delete_content',
@@ -79,6 +80,17 @@ export const roleConfig: Record<UserRole, {
         priority: 100,
         description: 'Créateur exclusive - Accès total',
         gradient: 'from-yellow-400 via-orange-500 to-red-500',
+    },
+    reine: {
+        label: '👸 REINE',
+        icon: Sparkles,
+        variant: 'default',
+        className: 'bg-gradient-to-r from-pink-400 via-rose-500 to-fuchsia-600 text-white font-black text-sm tracking-[0.2em] border-0 shadow-[0_0_25px_rgba(236,72,153,0.6)] ring-2 ring-pink-300/50 transition-all duration-300 hover:scale-110 uppercase',
+        glowColor: 'rgba(236, 72, 153, 0.8)',
+        borderGlow: 'shadow-[0_0_25px_rgba(236,72,153,0.6),0_0_50px_rgba(236,72,153,0.3)]',
+        priority: 95,
+        description: 'Reine - Accès total exclusif',
+        gradient: 'from-pink-400 via-rose-500 to-fuchsia-600',
     },
     super_admin: {
         label: 'Super Admin',

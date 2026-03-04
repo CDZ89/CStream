@@ -12,7 +12,8 @@ interface VoiceChatProps {
 
 declare global {
   interface Window {
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
   }
 }
 
@@ -52,7 +53,7 @@ export const VoiceChat = ({ onTranscript, isLoading, isAISpeaking }: VoiceChatPr
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const text = event.results[i][0].transcript;
         const confidence = event.results[i][0].confidence;
-        
+
         if (event.results[i].isFinal) {
           // Final results with high confidence
           if (confidence > 0.5) {
@@ -98,7 +99,7 @@ export const VoiceChat = ({ onTranscript, isLoading, isAISpeaking }: VoiceChatPr
       toast.error('Reconnaissance vocale non supportée');
       return;
     }
-    
+
     recognitionRef.current.start();
   };
 
@@ -247,7 +248,7 @@ export const playAudioResponse = async (text: string, characterName?: string) =>
     const audioBlob = await response.blob();
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
-    
+
     return new Promise((resolve) => {
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
