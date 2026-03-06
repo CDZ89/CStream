@@ -1084,6 +1084,32 @@ async function callGroqSafetyNet(messages, persona) {
   return await callOpenRouter(messages, persona, "meta-llama/llama-3.3-70b-instruct:free");
 }
 
+async function callPollinationsText(messages, persona) {
+  try {
+    const systemText = AI_PERSONAS[persona] || AI_PERSONAS.cai;
+    console.log("[AI] Trying Pollinations Text (Ultimate Fallback)...");
+    const resp = await fetch("https://text.pollinations.ai/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: AbortSignal.timeout(15000),
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: systemText },
+          ...messages.slice(-8).map(m => ({ role: m.role, content: m.content }))
+        ],
+        model: "openai"
+      })
+    });
+    if (!resp.ok) throw new Error("Pollinations " + resp.status);
+    const text = await resp.text();
+    if (text) { console.log("[AI] ✅ Pollinations Text OK"); return text; }
+    throw new Error("Réponse vide");
+  } catch (e) {
+    console.warn("[AI] Pollinations Text error:", e.message);
+    throw e;
+  }
+}
+
 async function callGroqCustom(messages, persona, modelId) {
   try {
     const GROQ_KEY = process.env.GROQ_API_KEY || "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";
@@ -1234,29 +1260,39 @@ app.post("/api/chat", async (req, res) => {
           return res.json({ response, model_used: model });
         }
       } catch (err) {
-        return res.json({ response: `⚠️ **Erreur API (${model})** : ${err.message}`, model_used: model });
+        console.error(`[AI] Modèle primaire ${model} a échoué:`, err.message);
+        // FALL THROUGH to auto cascade!
       }
     }
 
-    // Auto cascade: Gemini → HuggingFace → Groq
-    let cascadeErrors = [];
-    response = await callGeminiCascade(messages, character);
-    let model_used = "gemini";
+    // Auto cascade: Gemini → HuggingFace → Groq → Pollinations
+    if (!response) {
+      let cascadeErrors = [];
+      response = await callGeminiCascade(messages, character);
+      let model_used = "gemini";
 
-    if (!response) {
-      try { response = await callHuggingFace(messages, character); model_used = "huggingface"; }
-      catch (e) { cascadeErrors.push(e.message); }
-    }
-    if (!response) {
-      try { response = await callGroqSafetyNet(messages, character); model_used = "openrouter-safety"; }
-      catch (e) { cascadeErrors.push(e.message); }
-    }
-    if (!response) {
-      response = `⚠️ **Tous les services IA sont hors ligne.**\n\n**Détails des erreurs :**\n${cascadeErrors.map(e => `- ${e}`).join('\n')}\n\n*Vérifiez vos clés API dans le fichier .env et vos crédits (OpenRouter, HuggingFace).*`;
-      model_used = "none";
-    }
+      if (!response) {
+        try { response = await callHuggingFace(messages, character); model_used = "huggingface"; }
+        catch (e) { cascadeErrors.push(e.message); }
+      }
+      if (!response) {
+        try { response = await callGroqSafetyNet(messages, character); model_used = "openrouter-safety"; }
+        catch (e) { cascadeErrors.push(e.message); }
+      }
+      if (!response) {
+        try { response = await callPollinationsText(messages, character); model_used = "pollinations-text"; }
+        catch (e) { cascadeErrors.push(e.message); }
+      }
+      if (!response) {
+        response = `⚠️ **Tous les services IA sont hors ligne.**\n\n**Détails des erreurs :**\n${cascadeErrors.map(e => `- ${e}`).join('\n')}\n\n*Vérifiez vos clés API dans le fichier .env et vos crédits (OpenRouter, HuggingFace).*`;
+        model_used = "none";
+      } else if (model !== "auto") {
+        // We fell back from a specific model
+        response = `> ⚠️ *Le modèle sélectionné (${model}) est indisponible. Réponse générée par le modèle de secours (${model_used}).*\n\n` + response;
+      }
 
-    return res.json({ response, model_used });
+      return res.json({ response, model_used });
+    }
   } catch (error) {
     console.error("Chat API Error:", error);
     res.status(500).json({ response: "Erreur : " + error.message });
