@@ -35,8 +35,6 @@ export const PureIframePlayer = ({
     const player = getPlayerFromUrl(src);
 
     return {
-      // Added sandbox to block top-navigation and popups while keeping scripts and same-origin
-      sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation",
       allow: IFRAME_ALLOW_PERMISSIONS.replace('autoplay;', 'autoplay;'),
       referrerPolicy: 'no-referrer-when-downgrade' as const,
       loading: 'eager' as const,
@@ -275,7 +273,6 @@ export const PureIframePlayer = ({
             src={src}
             className="w-full h-full border-0 relative z-[1]"
             allowFullScreen
-            sandbox={iframeProps.sandbox}
             allow={iframeProps.allow}
             referrerPolicy={iframeProps.referrerPolicy}
             loading={iframeProps.loading}

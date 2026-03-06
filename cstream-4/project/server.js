@@ -218,7 +218,7 @@ client.on('interactionCreate', async interaction => {
 
     try {
       const searchType = type === 'anime' ? 'tv' : type;
-      const tmdbKey = process.env.VITE_TMDB_API_KEY;
+      const tmdbKey = process.env.VITE_TMDB_API_KEY || "d430c6c589f4549e780b7e1786f0ac9c";
       const res = await fetch(`https://api.themoviedb.org/3/search/${searchType}?api_key=${tmdbKey}&query=${encodeURIComponent(query)}&language=fr-FR`);
       const data = await res.json();
 
@@ -948,7 +948,8 @@ app.get("/api/sports/stream/:id", async (req, res) => {
 // ─── CHAT AI — Gemini Cascade + HF Llama 3.3 + Groq Safety Net ───────────────
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const HF_TOKEN_KEY = process.env.HF_TOKEN || process.env.HF_TOKEN_KEY;
-const GROQ_KEY_GLOBAL = process.env.GROQ_API_KEY;
+const GROQ_KEY_GLOBAL = process.env.GROQ_API_KEY || "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";
+
 
 // ✅ Up-to-date Gemini models (as of 2025)
 const GEMINI_MODELS_CASCADE = [
@@ -1042,7 +1043,10 @@ async function callHuggingFace(messages, persona) {
         temperature: 0.75
       })
     });
-    if (!resp.ok) throw new Error(`HF ${resp.status}`);
+    if (!resp.ok) {
+      const err = await resp.text();
+      throw new Error(`HF ${resp.status}: ${err}`);
+    }
     const data = await resp.json();
     const text = data.choices?.[0]?.message?.content?.trim();
     if (text) { console.log("[AI] ✅ HuggingFace OK"); return text; }
@@ -1054,7 +1058,7 @@ async function callHuggingFace(messages, persona) {
 
 async function callGroqSafetyNet(messages, persona) {
   try {
-    const GROQ_KEY = process.env.GROQ_API_KEY;
+    const GROQ_KEY = process.env.GROQ_API_KEY || "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";
     if (!GROQ_KEY) return null;
     const systemText = AI_PERSONAS[persona] || AI_PERSONAS.cai;
     console.log("[AI] Trying Groq safety net...");
@@ -1068,7 +1072,11 @@ async function callGroqSafetyNet(messages, persona) {
         max_tokens: 1024, temperature: 0.7
       })
     });
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      const err = await resp.text();
+      console.warn(`[AI] Groq error ${resp.status}:`, err);
+      return null;
+    }
     const data = await resp.json();
     return data.choices?.[0]?.message?.content?.trim() || null;
   } catch (e) { return null; }

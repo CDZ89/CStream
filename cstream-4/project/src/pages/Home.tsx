@@ -281,6 +281,7 @@ const ProviderContentRow = ({ items, isLoading }: { items: (TMDBMovie | TMDBTV)[
                 alt={title}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -436,10 +437,11 @@ const StreamingProvidersSection = () => {
                     )}
                     {logoState !== 'error' && (
                       <img
-                        src={`https://image.tmdb.org/t/p/original${provider.logo}`}
+                        src={`https://image.tmdb.org/t/p/w92${provider.logo}`}
                         alt={provider.name}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                         onLoad={() => setLogoStates(prev => ({ ...prev, [provider.id]: 'loaded' }))}
                         onError={() => setLogoStates(prev => ({ ...prev, [provider.id]: 'error' }))}
                       />
@@ -487,8 +489,8 @@ const StreamingProvidersSection = () => {
                       <button
                         onClick={() => setContentType('movie')}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${contentType === 'movie'
-                            ? 'bg-zinc-100 text-zinc-900'
-                            : 'text-zinc-500 hover:text-zinc-300'
+                          ? 'bg-zinc-100 text-zinc-900'
+                          : 'text-zinc-500 hover:text-zinc-300'
                           }`}
                       >
                         Films
@@ -496,8 +498,8 @@ const StreamingProvidersSection = () => {
                       <button
                         onClick={() => setContentType('tv')}
                         className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 ${contentType === 'tv'
-                            ? 'bg-zinc-100 text-zinc-900'
-                            : 'text-zinc-500 hover:text-zinc-300'
+                          ? 'bg-zinc-100 text-zinc-900'
+                          : 'text-zinc-500 hover:text-zinc-300'
                           }`}
                       >
                         Séries
@@ -574,9 +576,11 @@ const StreamingProvidersSection = () => {
                     >
                       <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg border border-white/10">
                         <img
-                          src={`https://image.tmdb.org/t/p/w500${provider.logo}`}
+                          src={`https://image.tmdb.org/t/p/w92${provider.logo}`}
                           alt={provider.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
                       <span className="text-sm font-medium text-white text-center">

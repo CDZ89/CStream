@@ -213,8 +213,10 @@ app.get("/api/tmdb/*", async (req, res) => {
 app.post("/api/chat", async (req, res) => {
   try {
     const { messages } = req.body;
-    const GROQ_API_KEY =
-      "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";
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (!GROQ_API_KEY) {
+      throw new Error("Missing GROQ_API_KEY in environment");
+    }
 
     const systemMessage = {
       role: "system",

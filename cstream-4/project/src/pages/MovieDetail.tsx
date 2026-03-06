@@ -16,6 +16,7 @@ import { DualVotingSystem } from '@/components/DualVotingSystem';
 import { SEO } from '@/components/SEO';
 import { PosterOverlay } from '@/components/PosterOverlay';
 import { ReviewsSection } from '@/components/ReviewsSection';
+import { CountdownTimer } from '@/components/CountdownTimer';
 import { ImportedSourceSelector } from '@/components/ImportedSourceSelector';
 import { AvailableOn } from '@/components/AvailableOn';
 import { Button } from '@/components/ui/button';
@@ -1684,6 +1685,9 @@ const MovieDetail = () => {
                         src={movie.poster_path?.startsWith('http') ? movie.poster_path : tmdbApi.getImageUrl(movie.poster_path || '', 'w500')}
                         className="w-full h-full object-cover opacity-100"
                         alt={movie.title}
+                        fetchPriority="high"
+                        loading="eager"
+                        decoding="sync"
                         onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/500x750?text=No+Poster')}
                       />
                     </div>
@@ -1785,52 +1789,59 @@ const MovieDetail = () => {
                     </div>
                   )}
                   {/* Boutons Watch / Download / Trailer */}
-                  <div className="flex flex-wrap gap-3 pt-4 items-center">
-                    <Button
-                      size="default"
-                      className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.5)] h-11 px-6 pl-5 rounded-full font-bold text-sm transition-all scale-100 hover:scale-105 border border-white/10"
-                      onClick={handleWatchQuick}
-                      disabled={findingSource}
-                    >
-                      <Play className="w-4 h-4 fill-white" />
-                      {findingSource ? getUIString('searching') : getUIString('watch')}
-                    </Button>
+                  {/* Boutons Watch / Download / Trailer logic */}
+                  {movie.release_date && new Date(movie.release_date).getTime() > Date.now() ? (
+                    <div className="pt-4 pb-6 w-full max-w-2xl">
+                      <CountdownTimer releaseDate={movie.release_date} title={movie.title} />
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-3 pt-4 items-center">
+                      <Button
+                        size="default"
+                        className="gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.5)] h-11 px-6 pl-5 rounded-full font-bold text-sm transition-all scale-100 hover:scale-105 border border-white/10"
+                        onClick={handleWatchQuick}
+                        disabled={findingSource}
+                      >
+                        <Play className="w-4 h-4 fill-white" />
+                        {findingSource ? getUIString('searching') : getUIString('watch')}
+                      </Button>
 
-                    <Button
-                      size="default"
-                      variant="outline"
-                      onClick={() => {
-                        if (trailer?.key) {
-                          setTrailerOpen(true);
-                        } else {
-                          toast.error(getUIString('noTrailer'));
-                        }
-                      }}
-                      className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
-                    >
-                      <Film className="w-4 h-4" />
-                      {getUIString('trailer')}
-                    </Button>
+                      <Button
+                        size="default"
+                        variant="outline"
+                        onClick={() => {
+                          if (trailer?.key) {
+                            setTrailerOpen(true);
+                          } else {
+                            toast.error(getUIString('noTrailer'));
+                          }
+                        }}
+                        className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
+                      >
+                        <Film className="w-4 h-4" />
+                        {getUIString('trailer')}
+                      </Button>
 
-                    <Button
-                      size="default"
-                      variant="outline"
-                      onClick={() => toast.info(getUIString('downloadMsg'))}
-                      className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
-                    >
-                      <Download className="w-4 h-4" />
-                      {getUIString('download')}
-                    </Button>
-                    {movie && (
-                      <ImportedSourceSelector
-                        tmdbId={movie.id}
-                        onSelect={handleImportedSourceSelect}
-                        currentSource={currentImportedSource}
-                        loading={sourcesLoading}
-                        className="h-11 rounded-full border-white/20 bg-white/5 hover:bg-white/10"
-                      />
-                    )}
-                  </div>
+                      <Button
+                        size="default"
+                        variant="outline"
+                        onClick={() => toast.info(getUIString('downloadMsg'))}
+                        className="gap-2 border-white/20 text-white hover:bg-white/10 hover:border-white/40 h-11 px-5 rounded-full backdrop-blur-md transition-all text-sm font-semibold"
+                      >
+                        <Download className="w-4 h-4" />
+                        {getUIString('download')}
+                      </Button>
+                      {movie && (
+                        <ImportedSourceSelector
+                          tmdbId={movie.id}
+                          onSelect={handleImportedSourceSelect}
+                          currentSource={currentImportedSource}
+                          loading={sourcesLoading}
+                          className="h-11 rounded-full border-white/20 bg-white/5 hover:bg-white/10"
+                        />
+                      )}
+                    </div>
+                  )}
                   {/* Available on - Plateformes */}
                   {movie && (
                     <div className="space-y-4">

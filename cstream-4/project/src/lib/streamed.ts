@@ -22,7 +22,7 @@ export interface StreamedLiveEvent {
     sources: any[];
 }
 
-const BASE_URL = 'https://streamed.pk/api';
+const BASE_URL = '/api/sports';
 
 export const StreamedAPI = {
     async getAllMatches(): Promise<StreamedMatch[]> {

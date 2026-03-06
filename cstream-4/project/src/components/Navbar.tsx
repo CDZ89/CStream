@@ -60,7 +60,8 @@ const getNavLinks = (t: (key: string) => string) => [
   { href: "/movies", label: t("nav.movies"), icon: Film },
   { href: "/tv", label: t("nav.tv"), icon: Tv },
   { href: "/anime", label: t("nav.anime"), icon: Sparkles },
-  { href: "/live", label: "Live", icon: Play, beta: true },
+  { href: "/live/tv", label: "Live TV", icon: Tv, beta: true },
+  { href: "/live/sport", label: "Live Sports", icon: Play, beta: true },
   { href: "/agent", label: "Agent AI", icon: Bot, hideOnDesktop: true },
 ];
 

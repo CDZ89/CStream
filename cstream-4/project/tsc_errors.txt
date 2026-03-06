@@ -1,0 +1,5 @@
+src/components/VoiceChat.tsx(15,37): error TS2304: Cannot find name 'SpeechRecognition'.
+src/lib/roles.ts(37,14): error TS2741: Property 'reine' is missing in type '{ creator: string[]; super_admin: string[]; admin: string[]; moderator: string[]; editor: string[]; member: string[]; }' but required in type 'Record<UserRole, string[]>'.
+src/lib/roles.ts(61,14): error TS2741: Property 'reine' is missing in type '{ creator: { label: string; icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>; ... 6 more ...; gradient: string; }; ... 4 more ...; member: { ...; }; }' but required in type 'Record<UserRole, { label: string; icon: ComponentType<{ className?: string; }>; variant: "default" | "destructive" | "outline" | "secondary"; className: string; ... 4 more ...; gradient: string; }>'.
+src/pages/Admin.tsx(3596,12): error TS2741: Property 'users' is missing in type '{}' but required in type 'OnlineUsersCounterProps'.
+src/pages/PlayerPage.tsx(705,20): error TS2304: Cannot find name 'SourceSelectorList'.

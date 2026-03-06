@@ -279,6 +279,9 @@ export const MediaCard = memo(
                   imageLoaded ? "opacity-100" : "opacity-0",
                 )}
                 loading="lazy"
+                decoding="async"
+                width={500}
+                height={750}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
             </>

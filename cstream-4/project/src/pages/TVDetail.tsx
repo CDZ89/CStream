@@ -24,6 +24,7 @@ import { EndOfEpisodeOverlay } from "@/components/EndOfEpisodeOverlay";
 import { SEO } from "@/components/SEO";
 import { PosterOverlay } from "@/components/PosterOverlay";
 import { ReviewsSection } from "@/components/ReviewsSection";
+import { CountdownTimer } from "@/components/CountdownTimer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1609,6 +1610,9 @@ const TVDetail = () => {
                         }
                         className="w-full h-full object-cover opacity-100"
                         alt={show.name}
+                        fetchPriority="high"
+                        loading="eager"
+                        decoding="sync"
                         onError={(e) =>
                         (e.currentTarget.src =
                           "https://via.placeholder.com/500x750?text=No+Poster")
@@ -1812,52 +1816,60 @@ const TVDetail = () => {
                       </Select>
                     </div>
 
-                    <Button
-                      size="lg"
-                      onClick={handleWatchQuick}
-                      className="gap-2 bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-full px-8 shadow-lg shadow-primary/20 group overflow-hidden relative"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                      {findingSource ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <>
-                          <Play className="w-5 h-5 fill-current" />
-                          Regarder
-                        </>
-                      )}
-                    </Button>
-                    {trailer && (
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => setTrailerOpen(true)}
-                        className="gap-2 rounded-full border-primary/50 text-primary hover:bg-primary/10 hover:border-primary h-12 px-8 shadow-lg shadow-primary/5"
-                      >
-                        <Film className="w-5 h-5" />
-                        Trailer
-                      </Button>
+                    {show.first_air_date && new Date(show.first_air_date).getTime() > Date.now() ? (
+                      <div className="flex-1 w-full max-w-xl">
+                        <CountdownTimer releaseDate={show.first_air_date} title={show.name} />
+                      </div>
+                    ) : (
+                      <>
+                        <Button
+                          size="lg"
+                          onClick={handleWatchQuick}
+                          className="gap-2 bg-primary hover:bg-primary/90 text-white font-bold h-12 rounded-full px-8 shadow-lg shadow-primary/20 group overflow-hidden relative"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                          {findingSource ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <>
+                              <Play className="w-5 h-5 fill-current" />
+                              Regarder
+                            </>
+                          )}
+                        </Button>
+                        {trailer && (
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={() => setTrailerOpen(true)}
+                            className="gap-2 rounded-full border-primary/50 text-primary hover:bg-primary/10 hover:border-primary h-12 px-8 shadow-lg shadow-primary/5"
+                          >
+                            <Film className="w-5 h-5" />
+                            Trailer
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={toggleFavorite}
+                          className={`gap-2 rounded-full border-white/20 hover:border-white/40 ${isFavorite ? "bg-primary/20 border-primary/50" : ""}`}
+                        >
+                          <Bookmark
+                            className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`}
+                          />
+                          Watchlist
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleShare}
+                          className="gap-2 rounded-full border-white/20 hover:border-white/40"
+                        >
+                          <Share2 className="w-4 h-4" />
+                          Share
+                        </Button>
+                      </>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleFavorite}
-                      className={`gap-2 rounded-full border-white/20 hover:border-white/40 ${isFavorite ? "bg-primary/20 border-primary/50" : ""}`}
-                    >
-                      <Bookmark
-                        className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`}
-                      />
-                      Watchlist
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleShare}
-                      className="gap-2 rounded-full border-white/20 hover:border-white/40"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </Button>
                   </div>
 
                   <div className="pt-3">

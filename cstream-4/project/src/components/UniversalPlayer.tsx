@@ -72,7 +72,6 @@ export type PlayerSource =
   | "zxcstream"
   | "quickwatch"
   | "pstream"
-  | "videasy"
   | "xpass"
   | "hexa"
   | "madplay"
@@ -671,22 +670,6 @@ export const SOURCES: PlayerSourceConfig[] = [
     },
   },
   {
-    id: "videasy",
-    name: "Videasy",
-    description: "Lightweight - Episode Selector",
-    color: "from-teal-500 to-cyan-600",
-    reliable: true,
-    priority: 29,
-    icon: "🎧",
-    buildUrl: (tmdbId, mediaType, season, episode) => {
-      const s = season || 1;
-      const e = episode || 1;
-      return mediaType === "movie"
-        ? `https://player.videasy.net/movie/${tmdbId}`
-        : `https://player.videasy.net/tv/${tmdbId}/${s}/${e}?episodeSelector=true`;
-    },
-  },
-  {
     id: "xpass",
     name: "XPass",
     description: "Premium Multi-Source",
@@ -1076,7 +1059,6 @@ export const UniversalPlayer = ({
             className="absolute inset-0 w-full h-full border-0 z-10"
             allowFullScreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-            sandbox={antiPubBeta ? "allow-scripts allow-forms allow-same-origin allow-presentation" : undefined}
             referrerPolicy="no-referrer-when-downgrade"
           />
         </div>

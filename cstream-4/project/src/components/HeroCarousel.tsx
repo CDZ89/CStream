@@ -196,6 +196,7 @@ const HeroSlide = memo(
             )}
             loading={isFirst ? "eager" : "lazy"}
             decoding={isFirst ? "sync" : "async"}
+            fetchPriority={isFirst ? "high" : "auto"}
           />
           {/* Effet de brillance animé */}
           <motion.div
