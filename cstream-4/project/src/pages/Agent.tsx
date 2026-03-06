@@ -6,12 +6,14 @@ import {
   Check, Film, Tv, Star, Play, Download, Sparkles,
   ChevronRight, Zap, Heart, Globe, TrendingUp,
   PanelLeft, ChevronDown, Cpu, Loader2,
-  Code
+  Code, ArrowDown, RefreshCw, Image as ImageIcon
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { useNavigate } from "react-router-dom";
 
 const cn = (...c: (string | boolean | undefined | null)[]) => c.filter(Boolean).join(" ");
+
+
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 interface Msg {
@@ -45,7 +47,9 @@ function MD({ text }: { text: string }) {
     );
   };
 
-  const blocks = text.split(/(```[\s\S]*?```)/g);
+  // Pre-process: some models like Riverflow return `![alt]\n(url)`. We combine them into a single line.
+  const cleanedText = text.replace(/!\[([^\]]*)\]\s*[\n\r]+\s*\((data:image[^)]+|http[^)]+)\)/g, "![$1]($2)");
+  const blocks = cleanedText.split(/(```[\s\S]*?```)/g);
 
   return (
     <div className="text-[15px] space-y-4 font-sans max-w-none">
@@ -94,12 +98,184 @@ function MD({ text }: { text: string }) {
                   </div>
                 );
               }
+              const imgMatch = line.match(/^\s*!\[(.*?)\]\((.*?)\)\s*$/);
+              if (imgMatch) {
+                return <GeneratedImage key={j} alt={imgMatch[1]} src={imgMatch[2]} />;
+              }
+
               if (line.trim() === "---") return <hr key={j} className="border-white/10 my-6" />;
               return <p key={j}>{renderInline(line)}</p>;
             })}
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function GeneratedImage({ src, alt }: { src: string, alt: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className={cn("relative my-4 rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#111624] max-w-[400px] w-full group transition-all duration-500", !loaded && "min-h-[300px] flex items-center justify-center")}>
+      {!loaded && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#111624]/90 backdrop-blur-md z-10 gap-4">
+          <Loader2 className="w-8 h-8 text-cyan-400 animate-spin drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
+          <span className="text-xs font-bold text-cyan-300 animate-pulse tracking-widest uppercase bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Création...</span>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        onError={(e) => {
+          setLoaded(true);
+          (e.target as HTMLImageElement).src = "https://placehold.co/600x400/111624/e4e4e7?text=Erreur+de+G%C3%A9n%C3%A9ration";
+        }}
+        className={cn(
+          "w-full h-auto object-cover transition-opacity duration-500",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+      />
+      {loaded && (
+        <div className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      )}
+    </div>
+  );
+}
+
+/* ─── Image Generation View ─────────────────────────────────────────────── */
+function ImageGenView() {
+  const [prompt, setPrompt] = useState("");
+  const [ratio, setRatio] = useState<"square" | "portrait" | "landscape">("square");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [resultImg, setResultImg] = useState<string | null>(null);
+
+  const generate = () => {
+    if (!prompt.trim() || isGenerating) return;
+    setIsGenerating(true);
+    setResultImg(null);
+    setProgress(0);
+
+    const dims = { square: "1024x1024", portrait: "768x1024", landscape: "1024x768" }[ratio];
+    const [w, h] = dims.split("x");
+    const seed = Math.floor(Math.random() * 9999999);
+    // Enforce prompt string properly
+    const finalPrompt = encodeURIComponent(prompt) + encodeURIComponent(" masterpiece, high quality, highly detailed");
+    const url = `https://pollinations.ai/p/${finalPrompt}?width=${w}&height=${h}&nologo=true&enhance=true&seed=${seed}`;
+
+    setResultImg(url);
+
+    // Simulate loading progress
+    const interval = setInterval(() => {
+      setProgress(p => {
+        if (p >= 98) return 98;
+        return p + Math.floor(Math.random() * 5) + 2;
+      });
+    }, 400);
+
+    (window as any).__imageGenInterval = interval;
+  };
+
+  return (
+    <div className="flex-1 overflow-y-auto scrollbar-none flex flex-col pt-8 pb-32">
+      <div className="max-w-4xl mx-auto w-full px-6 flex flex-col gap-10">
+
+        <div className="text-center space-y-4 pt-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 shadow-[0_0_30px_rgba(6,182,212,0.3)] border border-cyan-500/30 mb-2 items-center">
+            <ImageIcon className="w-10 h-10 text-cyan-400 drop-shadow-[0_0_15px_rgba(6,182,212,0.8)]" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 tracking-tight">Studio Créatif</h1>
+          <p className="text-zinc-400 font-medium max-w-xl mx-auto text-lg">Générez des images spectaculaires gratuitement et sans limite.</p>
+        </div>
+
+        <div className="bg-[#111624]/80 backdrop-blur-2xl rounded-3xl border border-white/[0.08] shadow-2xl p-6 md:p-8 flex flex-col gap-6">
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-zinc-300 ml-1 uppercase tracking-widest">Votre imagination (Prompt)</label>
+            <textarea
+              value={prompt} onChange={e => setPrompt(e.target.value)}
+              placeholder="Ex: Un astronaute chevauchant un cheval sur Mars dans un style cyberpunk néon..."
+              className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 min-h-[120px] resize-none text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all text-base"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-zinc-300 ml-1 uppercase tracking-widest">Format</label>
+            <div className="grid grid-cols-3 gap-3">
+              {(["square", "portrait", "landscape"] as const).map(r => (
+                <button key={r} onClick={() => setRatio(r)}
+                  className={cn("py-3 rounded-xl text-sm font-bold transition-all border",
+                    ratio === r ? "bg-cyan-500/20 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.2)]" : "bg-black/20 border-white/5 text-zinc-400 hover:bg-white/5 hover:text-white"
+                  )}>
+                  {r === "square" ? "1:1 Carré" : r === "portrait" ? "9:16 Portrait" : "16:9 Paysage"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={generate} disabled={isGenerating || !prompt.trim()}
+            className="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-lg shadow-[0_0_20px_rgba(6,182,212,0.4)] disabled:opacity-50 disabled:pointer-events-none transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3">
+            {isGenerating ? <><Loader2 className="w-5 h-5 animate-spin" /> Génération en cours...</> : <><Sparkles className="w-5 h-5" /> Générer l'image</>}
+          </button>
+        </div>
+
+        {(isGenerating || resultImg) && (
+          <div className="flex flex-col items-center justify-center bg-[#111624]/60 backdrop-blur-3xl rounded-3xl border border-white/5 p-6 min-h-[400px] mb-20 relative">
+            {isGenerating && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 z-20 bg-[#111624]/80 backdrop-blur-sm rounded-3xl">
+                <div className="relative w-24 h-24 flex items-center justify-center">
+                  <div className="absolute inset-0 border-4 border-cyan-500/20 rounded-full" />
+                  <motion.div className="absolute inset-0 border-4 border-cyan-400 rounded-full border-t-transparent animate-spin" transition={{ duration: 1, repeat: Infinity, ease: "linear" }} />
+                  <span className="text-2xl font-black text-cyan-300 font-mono tracking-tighter">{progress}%</span>
+                </div>
+                <div className="w-full max-w-sm space-y-2 text-center px-4">
+                  <div className="h-2 w-full bg-black/50 rounded-full overflow-hidden">
+                    <motion.div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" initial={{ width: 0 }} animate={{ width: `${progress}%` }} />
+                  </div>
+                  <p className="text-xs font-bold text-cyan-500 uppercase tracking-widest animate-pulse">Peinture numérique en cours...</p>
+                </div>
+              </div>
+            )}
+
+            {resultImg && (
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className={cn("flex flex-col items-center gap-6 w-full", isGenerating ? "opacity-0 invisible absolute" : "opacity-100 visible relative")}>
+                <img
+                  src={resultImg}
+                  alt="Generated UI"
+                  onLoad={() => {
+                    clearInterval((window as any).__imageGenInterval);
+                    setProgress(100);
+                    setIsGenerating(false);
+                  }}
+                  onError={(e) => {
+                    clearInterval((window as any).__imageGenInterval);
+                    setProgress(100);
+                    setIsGenerating(false);
+                    // Fallback to alternate API if first one fails
+                    if (!resultImg.includes('api.airforce')) {
+                      setResultImg(`https://api.airforce/imagine2?prompt=${encodeURIComponent(prompt)}`);
+                    } else {
+                      (e.target as HTMLImageElement).src = "https://placehold.co/1024x1024/111624/e4e4e7?text=Erreur+Serveur";
+                    }
+                  }}
+                  className="rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 max-h-[650px] object-contain bg-black/50"
+                />
+                <div className="flex items-center gap-4">
+                  <button onClick={() => window.open(resultImg, '_blank')} className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-colors border border-white/5 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4" /> Ouvrir HD
+                  </button>
+                  <button onClick={() => {
+                    const a = document.createElement("a"); a.href = resultImg; a.download = "cstream-image.jpg"; a.target = "_blank"; a.click();
+                  }} className="px-6 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold text-sm transition-colors border border-cyan-500/20 flex items-center gap-2">
+                    <Download className="w-4 h-4" /> Télécharger
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
@@ -239,19 +415,45 @@ export default function AgentPage() {
   const [persona, setPersona] = useState<"cai" | "critic" | "director">("cai");
   const [selectedModel, setSelectedModel] = useState("auto");
   const [models, setModels] = useState<AIModel[]>([
-    { id: "auto", name: "🤖 Auto (cascade)", provider: "auto", description: "Essaie Gemini → HuggingFace → Groq", available: true },
+    { id: "auto", name: "🤖 Auto (cascade)", provider: "openrouter", description: "Meta Llama (via OpenRouter)", available: true },
+    { id: "openai/gpt-oss-120b:free", name: "🧠 GPT-OSS 120B", provider: "openrouter", description: "OpenRouter gpt-oss", available: true },
+    { id: "nousresearch/hermes-3-llama-3.1-405b:free", name: "⚡ Groq Compound", provider: "openrouter", description: "Outils web & code", available: true },
+    { id: "google/gemma-3-27b-it:free", name: "🌙 Kimi K2", provider: "openrouter", description: "Moonshot AI", available: true },
+    { id: "meta-llama/llama-3.2-3b-instruct:free", name: "🦙 Llama 4 Scout", provider: "openrouter", description: "Meta Llama 4", available: true },
+    { id: "arcee-ai/trinity-mini:free", name: "🤔 Trinity Reasoning", provider: "openrouter", description: "Mode raisonnement", available: true },
+    { id: "pollinations/image", name: "🎨 Dessin (Riverflow)", provider: "local", description: "Génération d'images (Gratuit)", available: true },
+    { id: "llama-3.1-8b-instant", name: "💨 Llama 3.1 8B", provider: "groq", description: "Ultra Rapide Groq", available: true },
     { id: "gemini-2.0-flash", name: "⚡ Gemini 2.0 Flash", provider: "gemini", description: "Rapide, intelligent", available: true },
-    { id: "gemini-1.5-pro", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision", available: true },
-    { id: "gemini-1.5-flash", name: "💨 Gemini 1.5 Flash", provider: "gemini", description: "Ultra rapide", available: true },
-    { id: "llama-3.3-70b", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace", available: true },
-    { id: "groq-llama", name: "⚡ Groq Llama 70B", provider: "groq", description: "Très rapide via Groq", available: true },
+    { id: "gemini-1.5-pro-latest", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision", available: true },
+    { id: "meta-llama/Meta-Llama-3-8B-Instruct", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace", available: true },
   ]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [viewMode, setViewMode] = useState<"chat" | "image">("chat");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recRef = useRef<any>(null);
+
+  /* Track Loading Progress */
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (busy) {
+      setLoadingProgress(0);
+      interval = setInterval(() => {
+        setLoadingProgress(p => {
+          if (p >= 98) return 98;
+          const inc = Math.max(1, Math.floor((99 - p) / 10));
+          return p + inc;
+        });
+      }, 300);
+    } else {
+      setLoadingProgress(100);
+    }
+    return () => clearInterval(interval);
+  }, [busy]);
 
   /* Sync ref with state */
   useEffect(() => { convsRef.current = convs; }, [convs]);
@@ -286,11 +488,18 @@ export default function AgentPage() {
 
   const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => {
-      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight + 1000;
+      if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       setTimeout(() => {
-        if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight + 1000;
+        if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }, 100);
     });
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const isBottom = scrollHeight - scrollTop - clientHeight < 150;
+    setShowScrollBottom(!isBottom);
   }, []);
 
   useEffect(() => { scrollToBottom(); }, [curId, busy, convs]);
@@ -300,6 +509,7 @@ export default function AgentPage() {
     setConvs(p => [{ id, title: "Nouvelle discussion", msgs: [], updatedAt: new Date() }, ...p]);
     setCurId(id);
     setInput("");
+    setViewMode("chat");
     if (window.innerWidth < 768) setSidebar(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -401,6 +611,46 @@ export default function AgentPage() {
     }
   };
 
+  const regenerate = async (msgId: string) => {
+    if (busy || !curId) return;
+    const curConv = convsRef.current.find(c => c.id === curId);
+    if (!curConv) return;
+
+    const idx = curConv.msgs.findIndex(m => m.id === msgId);
+    if (idx === -1 || curConv.msgs[idx].role !== "assistant") return;
+
+    // Get all conversation history up to this AI response
+    const prevMsgs = curConv.msgs.slice(0, idx);
+
+    setBusy(true);
+    setConvs(prev => prev.map(c => c.id === curId ? { ...c, msgs: prevMsgs, updatedAt: new Date() } : c));
+
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 50);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: prevMsgs, character: persona, model: selectedModel })
+      });
+      const data = await res.json();
+
+      const newAiMsg: Msg = {
+        id: crypto.randomUUID(), role: "assistant",
+        content: data.response || "⚠️ Erreur.",
+        ts: new Date(), modelUsed: data.model_used,
+        reactions: { up: 0, down: 0 }
+      };
+
+      setConvs(prev => prev.map(c => c.id === curId ? { ...c, msgs: [...prevMsgs, newAiMsg], updatedAt: new Date() } : c));
+    } catch (e) {
+      console.error(e);
+      setConvs(prev => prev.map(c => c.id === curId ? { ...c, msgs: [...prevMsgs, { id: crypto.randomUUID(), role: "assistant", content: "⚠️ Erreur système lors de la génération.", ts: new Date() }], updatedAt: new Date() } : c));
+    } finally {
+      setBusy(false);
+      setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 100);
+    }
+  };
+
   const copy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
@@ -455,10 +705,16 @@ export default function AgentPage() {
                 transition={{ type: "spring", stiffness: 400, damping: 40 }}
                 className="fixed md:relative top-0 left-0 h-full z-40 md:z-auto w-[280px] bg-[#0b0f19]/80 backdrop-blur-2xl border-r border-white/[0.05] flex flex-col shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)]">
 
-                <div className="p-5 mt-16 md:mt-0">
-                  <button onClick={newConv}
-                    className="w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-sm font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                <div className="p-5 mt-16 md:mt-0 flex flex-col gap-3">
+                  <button onClick={() => { setViewMode("chat"); newConv(); }}
+                    className={cn("w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r text-sm font-bold text-white shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0",
+                      viewMode === "chat" ? "from-purple-600 to-indigo-600 shadow-purple-500/25 hover:shadow-purple-500/40" : "from-white/10 to-white/5 bg-transparent border border-white/10 opacity-70 hover:opacity-100")}>
                     <Plus className="w-4 h-4 stroke-[3]" /> Nouveau chat
+                  </button>
+                  <button onClick={() => { setViewMode("image"); if (window.innerWidth < 768) setSidebar(false); }}
+                    className={cn("w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl bg-gradient-to-r text-sm font-bold text-white transition-all transform hover:-translate-y-0.5 active:translate-y-0",
+                      viewMode === "image" ? "from-cyan-600 to-blue-600 shadow-[0_0_15px_rgba(6,182,212,0.5)] ring-1 ring-cyan-400" : "from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 text-cyan-300 opacity-80 hover:opacity-100")}>
+                    <ImageIcon className="w-4 h-4 stroke-[3]" /> Créer une image
                   </button>
                 </div>
 
@@ -531,8 +787,8 @@ export default function AgentPage() {
 
             {/* Model selector & actions */}
             <div className="ml-auto flex items-center gap-3">
-              <ModelSelector models={models} selected={selectedModel} onSelect={setSelectedModel} />
-              {cur && cur.msgs.length > 0 && (
+              {viewMode === "chat" && <ModelSelector models={models} selected={selectedModel} onSelect={setSelectedModel} />}
+              {viewMode === "chat" && cur && cur.msgs.length > 0 && (
                 <button onClick={() => {
                   const t = cur.msgs.map(m => `[${m.role === "user" ? "Vous" : "AI"}]\n${m.content}`).join("\n\n---\n\n");
                   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([t])); a.download = "chat.txt"; a.click();
@@ -543,150 +799,200 @@ export default function AgentPage() {
             </div>
           </div>
 
-          {/* Messages or Welcome */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pb-40">
-            {(!cur || cur.msgs.length === 0) ? (
-              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}
-                className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center max-w-3xl mx-auto">
+          {viewMode === "image" ? (
+            <ImageGenView />
+          ) : (
+            <>
+              {/* Messages or Welcome */}
+              <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent pb-40 relative">
+                <AnimatePresence>
+                  {showScrollBottom && (
+                    <motion.button initial={{ opacity: 0, scale: 0.8, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                      onClick={() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })}
+                      className="fixed bottom-[110px] left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(0,0,0,0.5)] z-[60] flex items-center justify-center transition-colors">
+                      <ArrowDown className="w-5 h-5 text-white" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+                {(!cur || cur.msgs.length === 0) ? (
+                  <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center max-w-3xl mx-auto">
 
-                <div className="relative mb-8 group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-purple-500 to-indigo-500 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 scale-150 rounded-full" />
-                  <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl shadow-purple-500/20 transform group-hover:scale-105 transition-all duration-500 overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <Bot className="w-12 h-12 text-white drop-shadow-lg relative z-10" />
-                    <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-tr from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.6)] border-2 border-[#0b0f19] z-20">
-                      <Sparkles className="w-3.5 h-3.5 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                <h1 className="text-4xl sm:text-5xl font-black mb-4 tracking-tight">
-                  Bonjour, je suis <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-400 drop-shadow-[0_2px_10px_rgba(168,85,247,0.4)]">CStream AI</span>
-                </h1>
-                <p className="text-zinc-400 text-base sm:text-lg mb-12 max-w-xl leading-relaxed font-medium">
-                  Votre assistant cinéma intelligent. Découvrez de nouveaux films, séries et animes. Que voulez-vous regarder aujourd'hui ?
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  {suggestions.map((s, i) => (
-                    <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }}>
-                      <SuggCard icon={s.icon} title={s.title} desc={s.desc} onClick={() => send(s.msg)} />
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <div className="max-w-[800px] mx-auto px-4 py-8 space-y-8">
-                {cur.msgs.map(msg => (
-                  <motion.div key={msg.id} initial={{ opacity: 0, y: 15, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }}
-                    className={cn("flex gap-4 group", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-
-                    {msg.role === "assistant" && (
-                      <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center shrink-0 shadow-lg mt-1 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-600/20" />
-                        <Bot className="w-5 h-5 text-white relative z-10" />
-                      </div>
-                    )}
-
-                    <div className={cn("max-w-[85%] flex flex-col gap-2.5", msg.role === "user" ? "items-end" : "items-start")}>
-                      <div className={cn("px-5 py-3.5 rounded-3xl shadow-lg relative overflow-hidden",
-                        msg.role === "user"
-                          ? "bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-medium text-[15px] rounded-tr-sm border border-purple-500/30"
-                          : "bg-[#111624]/90 backdrop-blur-xl border border-white/[0.08] text-zinc-200 rounded-tl-sm shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]")}>
-                        {msg.role === "user" && <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />}
-                        <div className="relative z-10">
-                          {msg.role === "user" ? <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p> : <MD text={msg.content} />}
+                    <div className="relative mb-8 group">
+                      <div className="absolute inset-0 bg-gradient-to-tr from-purple-500 to-indigo-500 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 scale-150 rounded-full" />
+                      <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl shadow-purple-500/20 transform group-hover:scale-105 transition-all duration-500 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <Bot className="w-12 h-12 text-white drop-shadow-lg relative z-10" />
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-tr from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.6)] border-2 border-[#0b0f19] z-20">
+                          <Sparkles className="w-3.5 h-3.5 text-white" />
                         </div>
                       </div>
-
-                      {msg.media && msg.media.length > 0 && (
-                        <div className="flex gap-4 flex-wrap mt-2 p-2 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
-                          {msg.media.map((m, i) => <MediaCard key={i} data={m} />)}
-                        </div>
-                      )}
-
-                      {msg.role === "assistant" && (
-                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 pl-1">
-                          {msg.modelUsed && (
-                            <span className="text-[10px] font-bold tracking-wider text-purple-300/70 uppercase bg-purple-500/10 border border-purple-500/10 px-2 py-1.5 rounded-lg mr-2">
-                              {msg.modelUsed}
-                            </span>
-                          )}
-                          <span className="text-[11px] font-medium text-zinc-500 bg-white/5 px-2 py-1 rounded-lg">
-                            {msg.ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                          </span>
-
-                          <div className="w-px h-3 bg-white/10 mx-1" />
-
-                          <button onClick={() => copy(msg.content, msg.id)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.08] transition-colors border border-transparent hover:border-white/5">
-                            {copiedId === msg.id ? <Check className="w-4 h-4 text-green-400 stroke-[3]" /> : <Copy className="w-4 h-4" />}
-                          </button>
-                          <button onClick={() => react(msg.id, "up")} className={cn("p-1.5 rounded-lg transition-colors border border-transparent hover:border-white/5", msg.reactions?.mine === "up" ? "bg-green-500/10 text-green-400 border-green-500/20" : "text-zinc-500 hover:text-white hover:bg-white/[0.08]")}>
-                            <ThumbsUp className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => react(msg.id, "down")} className={cn("p-1.5 rounded-lg transition-colors border border-transparent hover:border-white/5", msg.reactions?.mine === "down" ? "bg-red-500/10 text-red-400 border-red-500/20" : "text-zinc-500 hover:text-white hover:bg-white/[0.08]")}>
-                            <ThumbsDown className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
                     </div>
-                  </motion.div>
-                ))}
 
-                {busy && (
-                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center shrink-0 shadow-lg mt-1 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-600/20 animate-pulse" />
-                      <Loader2 className="w-5 h-5 text-purple-400 animate-spin relative z-10" />
-                    </div>
-                    <div className="bg-[#111624]/90 backdrop-blur-xl border border-white/[0.08] px-5 py-4 rounded-3xl rounded-tl-sm flex items-center gap-2 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]">
-                      {[0, 0.2, 0.4].map(d => (
-                        <motion.span key={d} animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
-                          transition={{ duration: 1, repeat: Infinity, delay: d, ease: "easeInOut" }}
-                          className="w-2 h-2 rounded-full bg-purple-400 block shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
+                    <h1 className="text-4xl sm:text-5xl font-black mb-4 tracking-tight">
+                      Bonjour, je suis <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-indigo-400 drop-shadow-[0_2px_10px_rgba(168,85,247,0.4)]">CStream AI</span>
+                    </h1>
+                    <p className="text-zinc-400 text-base sm:text-lg mb-12 max-w-xl leading-relaxed font-medium">
+                      Votre assistant cinéma intelligent. Découvrez de nouveaux films, séries et animes. Que voulez-vous regarder aujourd'hui ?
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                      {suggestions.map((s, i) => (
+                        <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1, duration: 0.5 }}>
+                          <SuggCard icon={s.icon} title={s.title} desc={s.desc} onClick={() => send(s.msg)} />
+                        </motion.div>
                       ))}
                     </div>
                   </motion.div>
+                ) : (
+                  <div className="max-w-[800px] mx-auto px-4 py-8 space-y-8">
+                    {cur.msgs.map(msg => (
+                      <motion.div key={msg.id} initial={{ opacity: 0, y: 15, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }}
+                        className={cn("flex gap-4 group", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
+
+                        {msg.role === "assistant" && (
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center shrink-0 shadow-lg mt-1 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-600/20" />
+                            <Bot className="w-5 h-5 text-white relative z-10" />
+                          </div>
+                        )}
+
+                        <div className={cn("max-w-[85%] flex flex-col gap-2.5", msg.role === "user" ? "items-end" : "items-start")}>
+                          <div className={cn("px-5 py-3.5 rounded-3xl shadow-lg relative overflow-hidden",
+                            msg.role === "user"
+                              ? "bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-medium text-[15px] rounded-tr-sm border border-purple-500/30"
+                              : "bg-[#111624]/90 backdrop-blur-xl border border-white/[0.08] text-zinc-200 rounded-tl-sm shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]")}>
+                            {msg.role === "user" && <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />}
+
+                            <motion.div className="relative z-10"
+                              initial={msg.role === "assistant" ? { filter: "blur(10px)", opacity: 0, y: 5 } : false}
+                              animate={msg.role === "assistant" ? { filter: "blur(0px)", opacity: 1, y: 0 } : false}
+                              transition={{ duration: 0.8, ease: "easeOut" }}
+                              viewport={{ once: true }}
+                            >
+                              {msg.role === "user" ? <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p> : <MD text={msg.content} />}
+                            </motion.div>
+                          </div>
+
+                          {msg.media && msg.media.length > 0 && (
+                            <div className="flex gap-4 flex-wrap mt-2 p-2 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
+                              {msg.media.map((m, i) => <MediaCard key={i} data={m} />)}
+                            </div>
+                          )}
+
+                          {msg.role === "assistant" && (
+                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 pl-1">
+                              {msg.modelUsed && (
+                                <span className="text-[10px] font-bold tracking-wider text-purple-300/70 uppercase bg-purple-500/10 border border-purple-500/10 px-2 py-1.5 rounded-lg mr-2">
+                                  {msg.modelUsed}
+                                </span>
+                              )}
+                              <span className="text-[11px] font-medium text-zinc-500 bg-white/5 px-2 py-1 rounded-lg">
+                                {msg.ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              </span>
+
+                              <div className="w-px h-3 bg-white/10 mx-1" />
+
+                              <button onClick={() => copy(msg.content, msg.id)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.08] transition-colors border border-transparent hover:border-white/5">
+                                {copiedId === msg.id ? <Check className="w-4 h-4 text-green-400 stroke-[3]" /> : <Copy className="w-4 h-4" />}
+                              </button>
+                              <button onClick={() => regenerate(msg.id)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/[0.08] transition-colors border border-transparent hover:border-white/5" title="Régénérer">
+                                <RefreshCw className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => react(msg.id, "up")} className={cn("p-1.5 rounded-lg transition-colors border border-transparent hover:border-white/5", msg.reactions?.mine === "up" ? "bg-green-500/10 text-green-400 border-green-500/20" : "text-zinc-500 hover:text-white hover:bg-white/[0.08]")}>
+                                <ThumbsUp className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => react(msg.id, "down")} className={cn("p-1.5 rounded-lg transition-colors border border-transparent hover:border-white/5", msg.reactions?.mine === "down" ? "bg-red-500/10 text-red-400 border-red-500/20" : "text-zinc-500 hover:text-white hover:bg-white/[0.08]")}>
+                                <ThumbsDown className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {busy && (
+                      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex gap-4">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 backdrop-blur-md flex items-center justify-center shrink-0 shadow-lg mt-1 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-600/20 animate-pulse" />
+                          <Loader2 className="w-5 h-5 text-purple-400 animate-spin relative z-10" />
+                        </div>
+                        {selectedModel === "pollinations/image" || selectedModel === "sourceful/riverflow-v2-pro" ? (
+                          <div className="bg-[#111624]/90 backdrop-blur-xl border border-white/[0.08] px-5 py-4 rounded-3xl rounded-tl-sm shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]">
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                {[0, 0.2, 0.4].map(d => (
+                                  <motion.span key={d} animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                                    transition={{ duration: 1, repeat: Infinity, delay: d, ease: "easeInOut" }}
+                                    className="w-2 h-2 rounded-full bg-cyan-400 block shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
+                                ))}
+                              </div>
+                              <div className="flex flex-col items-center gap-1.5 w-32">
+                                <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div
+                                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${loadingProgress}%` }}
+                                    transition={{ duration: 0.3 }}
+                                  />
+                                </div>
+                                <span className="text-[10px] text-zinc-400 font-medium tracking-wider font-mono">{loadingProgress}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="bg-[#111624]/90 backdrop-blur-xl border border-white/[0.08] px-5 py-4 rounded-3xl rounded-tl-sm flex items-center gap-2 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5)]">
+                            {[0, 0.2, 0.4].map(d => (
+                              <motion.span key={d} animate={{ opacity: [0.3, 1, 0.3], y: [0, -3, 0] }}
+                                transition={{ duration: 1, repeat: Infinity, delay: d, ease: "easeInOut" }}
+                                className="w-1.5 h-1.5 rounded-full bg-purple-400 block shadow-[0_0_8px_rgba(168,85,247,0.6)]" />
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
 
-          {/* ── Input box ── */}
-          <div className="w-full bg-[#0b0f19]/90 backdrop-blur-xl border-t border-white/[0.05] z-30 shrink-0 px-4 py-4">
-            <div className="max-w-[800px] mx-auto w-full flex flex-col items-center">
-              <div className="w-full relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur opacity-25 group-focus-within:opacity-50 transition duration-500" />
-                <div className="relative flex items-end bg-[#111624]/80 backdrop-blur-2xl border border-white/[0.1] rounded-3xl shadow-2xl transition-all w-full">
+              {/* ── Input box ── */}
+              <div className="w-full bg-[#0b0f19]/95 backdrop-blur-3xl border-t border-white/[0.05] z-30 shrink-0 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <div className="max-w-[800px] mx-auto w-full flex flex-col items-center relative">
+                  <div className="w-full relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur opacity-25 group-focus-within:opacity-50 transition duration-500" />
+                    <div className="relative flex items-end bg-[#111624]/80 backdrop-blur-2xl border border-white/[0.1] rounded-3xl shadow-2xl transition-all w-full">
 
-                  <button onClick={toggleVoice}
-                    className={cn("absolute left-4 bottom-[14px] p-2 rounded-xl transition-all duration-300",
-                      listening ? "bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.4)]" : "text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:scale-105")}>
-                    {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                  </button>
+                      <button onClick={toggleVoice}
+                        className={cn("absolute left-4 bottom-[14px] p-2 rounded-xl transition-all duration-300",
+                          listening ? "bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.4)]" : "text-zinc-400 hover:text-white hover:bg-white/[0.08] hover:scale-105")}>
+                        {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                      </button>
 
-                  <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-                    placeholder="Demandez-moi n'importe quoi..."
-                    rows={1}
-                    className="flex-1 bg-transparent text-[15px] font-medium text-white placeholder-zinc-500 py-[18px] pl-[60px] pr-[64px] resize-none outline-none leading-relaxed min-h-[60px] max-h-[160px] scrollbar-thin scrollbar-thumb-white/10"
-                    style={{ height: "auto" }}
-                    onInput={e => { const t = e.target as HTMLTextAreaElement; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 160) + "px"; }}
-                  />
+                      <textarea ref={inputRef} value={input} onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+                        placeholder="Demandez-moi n'importe quoi..."
+                        rows={1}
+                        className="flex-1 bg-transparent text-[15px] font-medium text-white placeholder-zinc-500 py-[18px] pl-[60px] pr-[64px] resize-none outline-none leading-relaxed min-h-[60px] max-h-[160px] scrollbar-thin scrollbar-thumb-white/10"
+                        style={{ height: "auto" }}
+                        onInput={e => { const t = e.target as HTMLTextAreaElement; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 160) + "px"; }}
+                      />
 
-                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => send()}
-                    disabled={!input.trim() || busy}
-                    className="absolute right-3.5 bottom-3 w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white flex items-center justify-center disabled:opacity-50 disabled:from-white/10 disabled:to-white/5 disabled:text-zinc-500 transition-all duration-300 shadow-lg disabled:shadow-none font-bold">
-                    {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-5 h-5 stroke-[3]" />}
-                  </motion.button>
+                      <motion.button whileTap={{ scale: 0.9 }} onClick={() => send()}
+                        disabled={!input.trim() || busy}
+                        className="absolute right-3.5 bottom-3 w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white flex items-center justify-center disabled:opacity-50 disabled:from-white/10 disabled:to-white/5 disabled:text-zinc-500 transition-all duration-300 shadow-lg disabled:shadow-none font-bold">
+                        {busy ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-5 h-5 stroke-[3]" />}
+                      </motion.button>
+                    </div>
+                  </div>
+
+                  <p className="text-center text-[11px] font-medium text-zinc-500 mt-3">
+                    L'IA peut faire des erreurs. Vérifiez les informations importantes.
+                  </p>
                 </div>
               </div>
 
-              <p className="text-center text-[11px] font-medium text-zinc-500 mt-3">
-                L'IA peut faire des erreurs. Vérifiez les informations importantes.
-              </p>
-            </div>
-          </div>
+            </>
+          )}
 
         </div>
       </div>

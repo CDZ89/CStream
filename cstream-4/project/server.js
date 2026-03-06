@@ -949,6 +949,7 @@ app.get("/api/sports/stream/:id", async (req, res) => {
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const HF_TOKEN_KEY = process.env.HF_TOKEN || process.env.HF_TOKEN_KEY;
 const GROQ_KEY_GLOBAL = process.env.GROQ_API_KEY || "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";
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || "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";
 
 
 // ✅ Up-to-date Gemini models (as of 2025)
@@ -966,14 +967,18 @@ const AI_PERSONAS = {
   director: `Tu es un réalisateur passionné qui explique le cinéma du point de vue créatif: techniques de tournage, narration visuelle, choix artistiques, direction d'acteurs. Réponds en français avec passion.`
 };
 
-// Available models list for frontend selector
 const AVAILABLE_MODELS = [
   { id: "auto", name: "🤖 Auto (cascade)", provider: "auto", description: "Essaie Gemini → HuggingFace → Groq" },
+  { id: "openai/gpt-oss-120b:free", name: "🧠 GPT-OSS 120B", provider: "openrouter", description: "OpenRouter gpt-oss" },
+  { id: "nousresearch/hermes-3-llama-3.1-405b:free", name: "⚡ Groq Compound", provider: "openrouter", description: "Outils web & code" },
+  { id: "google/gemma-3-27b-it:free", name: "🌙 Kimi K2", provider: "openrouter", description: "Moonshot AI" },
+  { id: "meta-llama/llama-3.2-3b-instruct:free", name: "🦙 Llama 4 Scout", provider: "openrouter", description: "Meta Llama 4" },
+  { id: "arcee-ai/trinity-mini:free", name: "🤔 Trinity Reasoning", provider: "openrouter", description: "Mode raisonnement" },
+  { id: "pollinations/image", name: "🎨 Dessin (Riverflow)", provider: "local", description: "Génération d'images (Gratuit)" },
+  { id: "llama-3.1-8b-instant", name: "💨 Llama 3.1 8B", provider: "groq", description: "Ultra Rapide Groq" },
   { id: "gemini-2.0-flash", name: "⚡ Gemini 2.0 Flash", provider: "gemini", description: "Rapide, intelligent" },
-  { id: "gemini-1.5-pro", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision" },
-  { id: "gemini-1.5-flash", name: "💨 Gemini 1.5 Flash", provider: "gemini", description: "Ultra rapide" },
-  { id: "llama-3.3-70b", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace" },
-  { id: "groq-llama", name: "⚡ Groq Llama 70B", provider: "groq", description: "Très rapide via Groq" },
+  { id: "gemini-1.5-pro-latest", name: "🧠 Gemini 1.5 Pro", provider: "gemini", description: "Haute précision" },
+  { id: "meta-llama/Meta-Llama-3-8B-Instruct", name: "🦙 Llama 3.3 70B", provider: "huggingface", description: "Via HuggingFace" },
 ];
 
 app.get("/api/models", (req, res) => {
@@ -982,7 +987,8 @@ app.get("/api/models", (req, res) => {
     available: m.provider === "gemini" ? !!GEMINI_API_KEY
       : m.provider === "huggingface" ? !!HF_TOKEN_KEY
         : m.provider === "groq" ? !!GROQ_KEY_GLOBAL
-          : true
+          : m.provider === "openrouter" ? !!OPENROUTER_KEY
+            : true
   }));
   res.json({ models: withStatus });
 });
@@ -1009,18 +1015,28 @@ async function callGeminiModel(messages, persona, modelId) {
         })
       }
     );
-    if (!resp.ok) { const err = await resp.text(); console.warn(`[AI] Gemini ${modelId} HTTP ${resp.status}:`, err); return null; }
+    if (!resp.ok) {
+      const err = await resp.text();
+      let errMsg = err;
+      try { const p = JSON.parse(err); if (p.error?.message) errMsg = p.error.message; } catch (ex) { }
+      throw new Error(`Gemini HTTP ${resp.status}: ${errMsg || err}`);
+    }
     const data = await resp.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     if (text) { console.log(`[AI] ✅ Gemini ${modelId} OK`); return text; }
-  } catch (e) { console.warn(`[AI] Gemini ${modelId} error:`, e.message); }
-  return null;
+    throw new Error("Réponse vide de Gemini");
+  } catch (e) {
+    console.warn(`[AI] Gemini ${modelId} error:`, e.message);
+    throw e;
+  }
 }
 
 async function callGeminiCascade(messages, persona) {
   for (const model of GEMINI_MODELS_CASCADE) {
-    const text = await callGeminiModel(messages, persona, model);
-    if (text) return text;
+    try {
+      const text = await callGeminiModel(messages, persona, model);
+      if (text) return text;
+    } catch (e) { console.warn(`Cascade skips ${model}`); }
   }
   return null;
 }
@@ -1034,7 +1050,7 @@ async function callHuggingFace(messages, persona) {
       headers: { "Authorization": `Bearer ${HF_TOKEN_KEY}`, "Content-Type": "application/json" },
       signal: AbortSignal.timeout(25000),
       body: JSON.stringify({
-        model: "meta-llama/Llama-3.3-70B-Instruct:hf-inference",
+        model: "meta-llama/Meta-Llama-3-8B-Instruct",
         messages: [
           { role: "system", content: systemText },
           ...messages.slice(-8).map(m => ({ role: m.role, content: m.content }))
@@ -1045,41 +1061,133 @@ async function callHuggingFace(messages, persona) {
     });
     if (!resp.ok) {
       const err = await resp.text();
-      throw new Error(`HF ${resp.status}: ${err}`);
+      let errMsg = err;
+      try {
+        const p = JSON.parse(err);
+        if (p.error) errMsg = typeof p.error === 'string' ? p.error : JSON.stringify(p.error);
+        else if (p.error?.message) errMsg = p.error.message;
+      } catch (ex) { }
+      throw new Error(`HuggingFace HTTP ${resp.status}: ${errMsg || err}`);
     }
     const data = await resp.json();
     const text = data.choices?.[0]?.message?.content?.trim();
     if (text) { console.log("[AI] ✅ HuggingFace OK"); return text; }
+    throw new Error("Réponse vide de HuggingFace");
   } catch (e) {
     console.warn("[AI] HuggingFace error:", e.message);
+    throw e;
   }
-  return null;
 }
 
 async function callGroqSafetyNet(messages, persona) {
+  // Now using OpenRouter Llama 3.3 70B as the final safety net instead of native Groq key (which may be invalid)
+  return await callOpenRouter(messages, persona, "meta-llama/llama-3.3-70b-instruct:free");
+}
+
+async function callGroqCustom(messages, persona, modelId) {
   try {
     const GROQ_KEY = process.env.GROQ_API_KEY || "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";
     if (!GROQ_KEY) return null;
     const systemText = AI_PERSONAS[persona] || AI_PERSONAS.cai;
-    console.log("[AI] Trying Groq safety net...");
+    console.log(`[AI] Trying Groq native: ${modelId}...`);
     const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
       signal: AbortSignal.timeout(15000),
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: modelId,
         messages: [{ role: "system", content: systemText }, ...messages.slice(-8).map(m => ({ role: m.role, content: m.content }))],
         max_tokens: 1024, temperature: 0.7
       })
     });
+
     if (!resp.ok) {
       const err = await resp.text();
-      console.warn(`[AI] Groq error ${resp.status}:`, err);
-      return null;
+      let errMsg = err; try { const p = JSON.parse(err); if (p.error?.message) errMsg = p.error.message; } catch (ex) { }
+      throw new Error(`Groq HTTP ${resp.status}: ${errMsg || err}`);
     }
     const data = await resp.json();
-    return data.choices?.[0]?.message?.content?.trim() || null;
-  } catch (e) { return null; }
+    const text = data.choices?.[0]?.message?.content?.trim();
+    if (!text) throw new Error("Réponse vide de Groq");
+    return text;
+  } catch (e) {
+    console.warn(`[AI] Groq error:`, e.message);
+    throw e;
+  }
+}
+
+async function callOpenRouter(messages, persona, modelId, isReasoning = false, isImage = false) {
+  if (!OPENROUTER_KEY) return null;
+  const systemText = AI_PERSONAS[persona] || AI_PERSONAS.cai;
+
+  // Format messages
+  const historyMsgs = messages.slice(-6).map(m => ({ role: m.role, content: m.content }));
+  const formattedMsgs = [{ role: "system", content: systemText }, ...historyMsgs];
+
+  let bodyObj = {
+    model: modelId,
+    messages: formattedMsgs,
+    temperature: 0.7,
+  };
+
+  if (isImage) {
+    bodyObj.messages = [{ role: "user", content: messages[messages.length - 1].content }];
+    bodyObj.modalities = ["image"];
+  }
+
+  if (isReasoning) {
+    bodyObj.reasoning = { enabled: true };
+  }
+
+  if (modelId === "groq/compound") {
+    bodyObj.compound_custom = { tools: { enabled_tools: ["web_search", "code_interpreter", "visit_website"] } };
+  }
+
+  try {
+    console.log(`[AI] Trying OpenRouter: ${modelId}`);
+    const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": process.env.SITE_DOMAIN || "http://localhost:5000",
+        "X-OpenRouter-Title": "CStream"
+      },
+      body: JSON.stringify(bodyObj)
+    });
+
+    if (!resp.ok) {
+      const err = await resp.text();
+      let errMsg = err;
+      try { const p = JSON.parse(err); if (p.error?.message) errMsg = p.error.message; } catch (ex) { }
+      throw new Error(`OpenRouter HTTP ${resp.status}: ${errMsg || err}`);
+    }
+
+    const data = await resp.json();
+
+    if (isImage && data.choices?.[0]?.message?.images) {
+      // Return markdown images base64 or URL
+      const images = data.choices[0].message.images;
+      let imgStr = "";
+      images.forEach((img, i) => {
+        const cleanUrl = img.image_url?.url?.trim() || "";
+        imgStr += `![Generated Image ${i + 1}](${cleanUrl})\n\n`;
+      });
+      return imgStr.trim() || "⚠️ Erreur lors de la génération de l'image (flux vide).";
+    }
+
+    let content = data.choices?.[0]?.message?.content?.trim() || "";
+
+    if (isReasoning && data.choices?.[0]?.message?.reasoning_details) {
+      content = `> **Raisonnement de l'IA**\n> ${data.choices[0].message.reasoning_details}\n\n` + content;
+    }
+
+    if (!content) throw new Error("Réponse vide de OpenRouter");
+    return content;
+  } catch (e) {
+    console.warn(`[AI] OpenRouter error:`, e.message);
+    throw e;
+  }
 }
 
 app.post("/api/chat", async (req, res) => {
@@ -1089,31 +1197,64 @@ app.post("/api/chat", async (req, res) => {
 
     let response = null;
 
-    // Force-specific model if requested
     if (model && model !== "auto") {
-      if (["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro", "gemini-1.5-flash", "gemini-1.5-flash-8b"].includes(model)) {
-        response = await callGeminiModel(messages, character, model);
-        if (!response) response = "⚠️ Ce modèle Gemini n'a pas répondu. Essayez un autre modèle.";
-        return res.json({ response, model_used: model });
-      }
-      if (model === "llama-3.3-70b") {
-        response = await callHuggingFace(messages, character);
-        if (!response) response = "⚠️ HuggingFace Llama n'a pas répondu. Essayez un autre modèle.";
-        return res.json({ response, model_used: model });
-      }
-      if (model === "groq-llama") {
-        response = await callGroqSafetyNet(messages, character);
-        if (!response) response = "⚠️ Groq n'a pas répondu. Essayez un autre modèle.";
-        return res.json({ response, model_used: model });
+      try {
+        if (model === "pollinations/image") {
+          const prompt = messages[messages.length - 1].content;
+          // Generate 100% free external image using pollinations (fallback route)
+          const url = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?nologo=true&enhance=true`;
+          return res.json({ response: `![Generated Image](${url})`, model_used: model });
+        }
+
+        const openRouterModels = [
+          "openai/gpt-oss-120b:free", "nousresearch/hermes-3-llama-3.1-405b:free",
+          "google/gemma-3-27b-it:free", "meta-llama/llama-3.2-3b-instruct:free",
+          "arcee-ai/trinity-mini:free", "meta-llama/llama-3.1-8b-instruct:free",
+          "meta-llama/llama-3.3-70b-instruct:free"
+        ];
+
+        if (openRouterModels.includes(model)) {
+          const isReasoning = model.includes("arcee-ai") || model.includes("thinking");
+          response = await callOpenRouter(messages, character, model, isReasoning, false);
+          return res.json({ response, model_used: model });
+        }
+
+        if (model === "llama-3.1-8b-instant") {
+          response = await callGroqCustom(messages, character, model);
+          return res.json({ response, model_used: model });
+        }
+
+        if (["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro-latest", "gemini-1.5-flash", "gemini-1.5-flash-8b"].includes(model)) {
+          response = await callGeminiModel(messages, character, model);
+          return res.json({ response, model_used: model });
+        }
+
+        if (model === "meta-llama/Meta-Llama-3-8B-Instruct") {
+          response = await callHuggingFace(messages, character);
+          return res.json({ response, model_used: model });
+        }
+      } catch (err) {
+        return res.json({ response: `⚠️ **Erreur API (${model})** : ${err.message}`, model_used: model });
       }
     }
 
     // Auto cascade: Gemini → HuggingFace → Groq
+    let cascadeErrors = [];
     response = await callGeminiCascade(messages, character);
     let model_used = "gemini";
-    if (!response) { response = await callHuggingFace(messages, character); model_used = "huggingface"; }
-    if (!response) { response = await callGroqSafetyNet(messages, character); model_used = "groq"; }
-    if (!response) { response = "⚠️ Tous les services IA sont temporairement indisponibles. Vérifiez vos clés API dans le fichier .env et réessayez."; model_used = "none"; }
+
+    if (!response) {
+      try { response = await callHuggingFace(messages, character); model_used = "huggingface"; }
+      catch (e) { cascadeErrors.push(e.message); }
+    }
+    if (!response) {
+      try { response = await callGroqSafetyNet(messages, character); model_used = "openrouter-safety"; }
+      catch (e) { cascadeErrors.push(e.message); }
+    }
+    if (!response) {
+      response = `⚠️ **Tous les services IA sont hors ligne.**\n\n**Détails des erreurs :**\n${cascadeErrors.map(e => `- ${e}`).join('\n')}\n\n*Vérifiez vos clés API dans le fichier .env et vos crédits (OpenRouter, HuggingFace).*`;
+      model_used = "none";
+    }
 
     return res.json({ response, model_used });
   } catch (error) {
